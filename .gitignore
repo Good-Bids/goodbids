@@ -45,3 +45,6 @@ phpcs.xml
 
 # Composer (repo root only)
 /vendor/
+
+# PhpStorm
+.idea/
