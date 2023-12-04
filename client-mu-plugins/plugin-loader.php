@@ -9,7 +9,9 @@
  * @see https://docs.wpvip.com/technical-references/vip-codebase/client-mu-plugins-directory/
  */
 
- wpcom_vip_load_plugin( 'goodbids/goodbids.php' );
+require WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
+
+// wpcom_vip_load_plugin( '' );
 
 /**
  * The above example requires the plugin to use a specific naming structure: /plugin-name/plugin-name.php
