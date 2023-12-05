@@ -69,6 +69,7 @@ class Core {
 
 		wpcom_vip_load_plugin( 'advanced-custom-fields-pro/acf.php' );
 		wpcom_vip_load_plugin( 'woocommerce' );
+		wpcom_vip_load_plugin( 'pojo-accessibility' );
 		wpcom_vip_load_plugin( 'svg-support' );
 		wpcom_vip_load_plugin( 'cookie-law-info' );
 		wpcom_vip_load_plugin( 'user-switching' );

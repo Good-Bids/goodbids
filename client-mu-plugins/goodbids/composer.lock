@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "926bd92df5cef790da8475fd48fbaac5",
+    "content-hash": "43b6b0a2c0e7284e4a1dbacfcd4f9ac1",
     "packages": [
         {
             "name": "composer/installers",
@@ -742,6 +742,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/cookie-law-info/"
+        },
+        {
+            "name": "wpackagist-plugin/pojo-accessibility",
+            "version": "2.1.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/pojo-accessibility/",
+                "reference": "tags/2.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/pojo-accessibility.2.1.0.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/pojo-accessibility/"
         },
         {
             "name": "wpackagist-plugin/svg-support",
