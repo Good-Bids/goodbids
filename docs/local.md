@@ -1,36 +1,34 @@
-# Local Install
-Clone repo: `git clone https://github.com/Good-Bids/goodbids.git`
+# Local Installation Guide
 
-Install VIP CLI:
-  - Make sure you are running the minimum installed version of Node.js v18 and npm v8: `node -v && npm -v`
-	- Install VIP-CLI `npm install -g @automattic/vip`
-	- [Authenticate VIP-CLI](https://docs.wpvip.com/technical-references/vip-cli/installing-vip-cli/#h-authenticate-vip-cli)
+> _If at any point you run into an issue, please refer back to the repo's [main README](../README.md) and follow the WP VIP Local Development Guidebook._
 
-Go to your local repo directory and run `vip dev-env create --slug=goodbids`
+1. Clone repo:  
+`git clone https://github.com/Good-Bids/goodbids.git`
+2. Configure Remote WPVIP Repo:   
+`git remote add wpvip git@github.com:wpcomvip/goodbids.git`
+3. Install VIP CLI: [Setup Guide](https://docs.wpvip.com/technical-references/vip-cli/installing-vip-cli/)
+4. Create WP VIP Dev Environment:  
+`vip dev-env create --slug=goodbids --multisite`  
+   **When prompted, here are the recommended responses:**
+   * WordPress site title: `GoodBids Dev`
+   * Multisite: `true`
+   * PHP version to use: `8.1`
+   * WordPress - Which version would you like: 
+      `6.4 or latest`
+   * How would you like to source vip-go-mu-plugins: `Demo - Automatically fetched vip-go-mu-plugins`
+   * How would you like to source application code: `Custom`: `/Absolute/Path/To/Local/Repo`
+   * Enable Elasticsearch (needed by Enterprise Search)?: `false`
+   * Enable phpMyAdmin: `optional`
+   * Enable XDebug: `true`
+   * Enable Mailpit: `false`
+   * Enable Photon: `false`
 
-Which will ask you a bunch of options:
-
-```
-WordPress site title: GoodBids Dev
-Multisite: true
-PHP version to use: 8.1
-WordPress - Which version would you like: 6.4 or latest
-How would you like to source vip-go-mu-plugins: image
-  Use: vip-go-mu-plugins
-How would you like to source application code: .
-Enable Elasticsearch (needed by Enterprise Search)?: false
-Enable phpMyAdmin: optional
-Enable XDebug: true
-Enable Mailpit: false
-Enable Photon: false
-```
-One the install has run then update the url for the app code to pull from your local files `vip dev-env update --app-code=/Users/[LOCAL-DIRECTORY] --slug=goodbids`
-
-After you have update the `app-code` stop the server and then restart it
-
+If needed, here is a quick reference on restarting your environment:
 ```
 vip dev-env --slug=goodbids start
 vip dev-env --slug=goodbids stop
 ```
 
-Then you should able to go to [http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/ )
+## Local Environment URL
+
+[http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/)

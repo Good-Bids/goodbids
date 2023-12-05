@@ -2,9 +2,11 @@
 
 Welcome to WordPress VIP! This repository is a starting point for building your WordPress VIP application, including all the base directories.
 
-## Guidebooks
-- [Local install](/docs/local.md)
+## Getting Started
 
+- [Local installation Guide](/docs/local.md)
+
+## Guidebooks
 
 We recommend starting with one of the following WordPress VIP guidebooks:
 
