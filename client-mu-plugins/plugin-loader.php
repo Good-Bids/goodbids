@@ -9,7 +9,9 @@
  * @see https://docs.wpvip.com/technical-references/vip-codebase/client-mu-plugins-directory/
  */
 
-require WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
+if ( defined( 'WPCOM_VIP_CLIENT_MU_PLUGIN_DIR' ) ) {
+	require WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
+}
 
 // wpcom_vip_load_plugin( '' );
 
