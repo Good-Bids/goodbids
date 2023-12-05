@@ -10,10 +10,11 @@
  */
 
 if ( defined( 'WPCOM_VIP_CLIENT_MU_PLUGIN_DIR' ) ) {
-	require WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
+	$plugin_path = WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
+	if ( file_exists( $plugin_path ) ) {
+		require_once $plugin_path;
+	}
 }
-
-// wpcom_vip_load_plugin( '' );
 
 /**
  * The above example requires the plugin to use a specific naming structure: /plugin-name/plugin-name.php

@@ -16,3 +16,28 @@
  * @since             1.0.0
  * @package           GoodBids
  */
+
+/* Constants */
+defined( 'GOODBIDS_PLUGIN_PATH' ) || define( 'GOODBIDS_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+defined( 'GOODBIDS_PLUGIN_URL' ) || define( 'GOODBIDS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+/* Autoloader */
+if ( file_exists( GOODBIDS_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
+	require GOODBIDS_PLUGIN_PATH . 'vendor/autoload.php';
+}
+
+/**
+ * Plugin Function Shortcode.
+ *
+ * @return \GoodBids\Core|null
+ */
+function goodbids() {
+	if ( class_exists( '\GoodBids\Core' ) ) {
+		return \GoodBids\Core::get_instance();
+	}
+
+	return null;
+}
+
+// Init GoodBids plugin.
+goodbids();
