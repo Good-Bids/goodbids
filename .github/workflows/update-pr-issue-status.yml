@@ -1,0 +1,49 @@
+name: Update Issue Project Status From PR
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  update-issue-status:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR links to an issue
+        id: check-issue
+        run: |
+          ISSUE_NUMBER=$(curl -sL https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }} | jq -r '.issue_url' | awk -F'/' '{print $NF}')
+          echo "Issue Number: $ISSUE_NUMBER"
+          if [ "$ISSUE_NUMBER" != "null" ]; then
+            echo "::set-output name=issue_number::$ISSUE_NUMBER"
+          else
+            echo "No linked issue found."
+            exit 0
+          fi
+
+      - name: Update Issue Project Status to "In Review"
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = process.env.issue_number;
+            const projectId = 4;
+            const columnName = "In Review";
+
+            const { data: project } = await github.projects.get({
+              project_id: projectId
+            });
+
+            const column = project.columns.find(col => col.name === columnName);
+
+            if (!column) {
+              throw new Error(`Column "${columnName}" not found in project.`);
+            }
+
+            await github.projects.moveCard({
+              card_id: issueNumber,
+              position: 'top',
+              column_id: column.id
+            });
