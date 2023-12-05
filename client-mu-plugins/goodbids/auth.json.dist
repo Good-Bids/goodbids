@@ -1,0 +1,8 @@
+{
+	"http-basic": {
+		"connect.advancedcustomfields.com": {
+			"username": "",
+			"password": "https://goodbids.vipdev.lndo.site/"
+		}
+	}
+}
