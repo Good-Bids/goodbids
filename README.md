@@ -1,10 +1,11 @@
-# GoodBid WordPress VIP 
+# GoodBids WordPress VIP 
 
 Welcome to WordPress VIP! This repository is a starting point for building your WordPress VIP application, including all the base directories.
 
 ## Getting Started
 
 - [Local installation Guide](/docs/local.md)
+- [Git Workflow](/docs/workflow.md)
 
 ## Guidebooks
 

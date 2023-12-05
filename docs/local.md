@@ -32,3 +32,4 @@ vip dev-env --slug=goodbids stop
 ## Local Environment URL
 
 [http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/)
+
