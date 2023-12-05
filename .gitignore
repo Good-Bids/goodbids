@@ -18,6 +18,14 @@ node_modules
 /plugins/two-factor/
 /plugins/vaultpress/
 
+# Loaded via Composer
+/plugins/advanced-custom-fields-pro/
+/plugins/cookie-law-info/
+/plugins/pojo-accessibility/
+/plugins/svg-support/
+/plugins/user-switching/
+/plugins/woocommerce/
+
 # Uploads directory
 /uploads/
 
