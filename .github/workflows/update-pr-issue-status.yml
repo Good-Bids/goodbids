@@ -32,17 +32,17 @@ jobs:
             const projectId = 4;
             const columnName = "In Review";
 
-            const { data: project } = await github.projects.get({
+            const { data: project } = await github.rest.projects.get({
               project_id: projectId
             });
 
-            const column = project.columns.find(col => col.name === columnName);
+            const column = project.rest.columns.find(col => col.name === columnName);
 
             if (!column) {
               throw new Error(`Column "${columnName}" not found in project.`);
             }
 
-            await github.projects.moveCard({
+            await github.rest.projects.moveCard({
               card_id: issueNumber,
               position: 'top',
               column_id: column.id
