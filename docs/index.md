@@ -1,20 +1,23 @@
-# Document Your Application Here
+# GoodBids
 
-VIP encourages you to document your application in Markdown. This is a great way of keeping your documentation up to date with what the application actually does.
+## Getting Started
 
-You can create new Markdown files in this `docs/` directory for each important part of your application.
+- [Local installation Guide](local.md)
+- [Git Workflow](workflow.md)
 
-## Examples
+## Installing Plugins
 
-For example, you might have:
-- `docs/local.md` that describes how to run your application locally
-- `docs/REST.md` that describes any custom endpoints that your application has
-- `docs/syndication.md` might describe how syndication works between subsites in your application
-- `docs/build.md` describes what parts of your application gets built into the final deployable application
-- `docs/qa.md` describes any manual or automated QA tests and processes that you have run on your application prior to deployment.
-- etc.
+We are using [Composer](https://getcomposer.org/) and [WPackagist](https://wpackagist.org/) to manage our plugins. To install a new plugin that exists in the WordPress Plugin Repository, run the following command:
 
-## Benefits
+```sh
+composer require wpackagist-plugin/plugin-name
+```
 
-Not only does this help you onboard your new engineers, it also helps VIP support staff to understand the moving parts or complexities of your application better at a glance, without having to dig into the code.
+### Activating Plugins
 
+Plugins can be activated in-code by using:
+```php
+wpcom_vip_load_plugin( 'plugin-name/plugin-file.php' )
+```
+
+You can add to the list of active plugins in `client-mu-plugins/goodbids/src/classes/Core.php` 
