@@ -31,7 +31,9 @@ vip dev-env --slug=goodbids stop
 
 ### Install Dependencies
 
-Run `composer install` in the following directories:
+For ACF Pro, copy `auth.json.dist` to `auth.json` in `client-mu-plugins/goodbids` and use config from [ACF's Website](https://www.advancedcustomfields.com/my-account/view-licenses/). (Credentials are in 1Password)
+
+Then, run `composer install` in the following directories:
 1. `root`: Run at project root.
 2. `client-mu-plugins/goodbids`: GoodBids MU Plugin
 
