@@ -84,7 +84,7 @@ class Core {
 			return false;
 		}
 
-		$json = json_decode( wpcom_vip_file_get_contents( $json_path ), true );
+		$json = json_decode( file_get_contents( $json_path ), true ); // phpcs:ignore
 
 		if ( ! is_array( $json ) ) {
 			return false;
