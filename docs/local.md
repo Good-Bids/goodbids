@@ -48,3 +48,17 @@ Run the following command to [watch the logs](https://docs.wpvip.com/technical-r
 ```sh
 vip dev-env logs --service=php --follow --slug=goodbids
 ```
+
+## IntelliSense Set Up
+Because the repo does not have the core WordPress files, IntelliSense does not know any of the WordPress functions/variables. 
+
+In order to get IntelliSense to work you will need to do these steps:
+1. Clone the [vip-go-mu-plugins](https://github.com/Automattic/vip-go-mu-plugins)
+1. Include the path to your local `vip-go-mu-plugins` directory in your PHP includes path. 
+ 
+	- If you are using Visual Studio Code and have the Extensions [PHP Intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client) then go to the extensions settings.
+	- [PhpStorm Instructions](https://www.jetbrains.com/help/phpstorm/configuring-include-paths.html) on adding include paths.
+1. Next include the WordPress Core directory that was installed using VIP CLI. It should be at `/Absolute/Path/To/.local/share/vip/dev-environment/goodbids`
+1. You may need to reload your code editor once you have added both include paths. 
+
+
