@@ -5,3 +5,5 @@ We are using [Composer](https://getcomposer.org/) and [WPackagist](https://wpack
 ```sh
 composer require wpackagist-plugin/plugin-name
 ```
+
+Once added to composer, update the main `.gitignore` file to exclude the plugin from version control.
