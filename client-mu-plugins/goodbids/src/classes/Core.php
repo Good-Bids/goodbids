@@ -157,13 +157,18 @@ class Core {
 	}
 
 	/**
-	 * Initialize Modules
+	 * Initialize Modules after GoodBids has initialized.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
 	private function load_modules() : void {
-		$this->acf = new ACF();
+		add_action(
+			'mu_plugin_loaded',
+			function() {
+				$this->acf = new ACF();
+			}
+		);
 	}
 }
