@@ -67,6 +67,14 @@ class ACF {
 				return GOODBIDS_PLUGIN_PATH;
 			}
 		);
+
+		add_filter(
+			'acf/settings/load_json',
+			function( array $paths ) {
+				$paths[] = GOODBIDS_PLUGIN_PATH;
+				return $paths;
+			}
+		);
 	}
 
 	/**
