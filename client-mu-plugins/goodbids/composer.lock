@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43b6b0a2c0e7284e4a1dbacfcd4f9ac1",
+    "content-hash": "436a15832d1f2bbca2839e99d5f15a0c",
     "packages": [
         {
             "name": "composer/installers",
@@ -726,6 +726,24 @@
             "time": "2023-11-12T22:43:29+00:00"
         },
         {
+            "name": "wpackagist-plugin/accessibility-checker",
+            "version": "1.6.10",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/accessibility-checker/",
+                "reference": "tags/1.6.10"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.6.10.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/accessibility-checker/"
+        },
+        {
             "name": "wpackagist-plugin/cookie-law-info",
             "version": "3.1.7",
             "source": {
@@ -742,24 +760,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/cookie-law-info/"
-        },
-        {
-            "name": "wpackagist-plugin/pojo-accessibility",
-            "version": "2.1.0",
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/pojo-accessibility/",
-                "reference": "tags/2.1.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/pojo-accessibility.2.1.0.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/pojo-accessibility/"
         },
         {
             "name": "wpackagist-plugin/svg-support",
@@ -1195,5 +1195,5 @@
         "ext-mbstring": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
