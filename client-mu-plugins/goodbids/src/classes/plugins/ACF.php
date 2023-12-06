@@ -54,7 +54,8 @@ class ACF {
 	}
 
 	/**
-	 * Save ACF JSON to the plugin directory
+	 * Save ACF JSON to the plugin directory, but only when developing locally.
+	 * We don't want to break this feature if the non-profit is using ACF.
 	 *
 	 * @since 1.0.0
 	 *
@@ -63,8 +64,12 @@ class ACF {
 	private function modify_save_directory() : void {
 		add_filter(
 			'acf/settings/save_json',
-			function() {
-				return GOODBIDS_PLUGIN_PATH;
+			function( $path ) {
+				if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT ) {
+					return GOODBIDS_PLUGIN_PATH;
+				}
+
+				return $path;
 			}
 		);
 
