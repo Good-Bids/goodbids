@@ -29,6 +29,12 @@ vip dev-env --slug=goodbids start
 vip dev-env --slug=goodbids stop
 ```
 
+### Install Dependencies
+
+Run `composer install` in the following directories:
+1. `root`: Run at project root.
+2. `client-mu-plugins/goodbids`: GoodBids MU Plugin
+
 ## Local Environment URL
 
 [http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/)
