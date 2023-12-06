@@ -41,3 +41,10 @@ Then, run `composer install` in the following directories:
 
 [http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/)
 
+## Error Logs
+
+Run the following command to [watch the logs](https://docs.wpvip.com/technical-references/vip-local-development-environment/#h-php):
+
+```sh
+vip dev-env logs --service=php --follow --slug=goodbids
+```
