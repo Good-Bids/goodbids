@@ -8,6 +8,8 @@
 
 namespace GoodBids;
 
+use GoodBids\Plugins\ACF;
+
 /**
  * Core Class
  */
@@ -32,6 +34,12 @@ class Core {
 	private array $config = [];
 
 	/**
+	 * @since 1.0.0
+	 * @var ACF
+	 */
+	public ACF $acf;
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.0.0
@@ -46,6 +54,7 @@ class Core {
 	 * Get the singleton instance of this class
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return Core
 	 */
 	public static function get_instance() : Core {
@@ -60,14 +69,17 @@ class Core {
 	 * Initialize the plugin
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
-	public function init() {
+	public function init() : void {
 		if ( ! $this->load_config() ) {
 			// TODO: Log error.
 			return;
 		}
 
 		$this->load_plugins();
+		$this->load_modules();
 
 		$this->initialized = true;
 	}
@@ -76,6 +88,7 @@ class Core {
 	 * Sets the Plugin Config.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return bool
 	 */
 	private function load_config() {
@@ -110,8 +123,10 @@ class Core {
 	 * Load 3rd Party Plugins.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
-	private function load_plugins() {
+	private function load_plugins() : void {
 		if ( ! function_exists( 'wpcom_vip_load_plugin' ) ) {
 			return;
 		}
@@ -125,5 +140,30 @@ class Core {
 		foreach ( $plugins as $plugin ) {
 			wpcom_vip_load_plugin( $plugin );
 		}
+	}
+
+	/**
+	 * Check if a plugin is in the active plugins list.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $plugin
+	 *
+	 * @return bool
+	 */
+	public function is_plugin_active( string $plugin ) : bool {
+		$plugins = $this->get_config( 'active-plugins' );
+		return in_array( $plugin, $plugins, true );
+	}
+
+	/**
+	 * Initialize Modules
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function load_modules() : void {
+		$this->acf = new ACF();
 	}
 }
