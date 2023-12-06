@@ -29,7 +29,22 @@ vip dev-env --slug=goodbids start
 vip dev-env --slug=goodbids stop
 ```
 
+### Install Dependencies
+
+For ACF Pro, copy `auth.json.dist` to `auth.json` in `client-mu-plugins/goodbids` and use config from [ACF's Website](https://www.advancedcustomfields.com/my-account/view-licenses/). (Credentials are in 1Password)
+
+Then, run `composer install` in the following directories:
+1. `root`: Run at project root.
+2. `client-mu-plugins/goodbids`: GoodBids MU Plugin
+
 ## Local Environment URL
 
 [http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/)
 
+## Error Logs
+
+Run the following command to [watch the logs](https://docs.wpvip.com/technical-references/vip-local-development-environment/#h-php):
+
+```sh
+vip dev-env logs --service=php --follow --slug=goodbids
+```
