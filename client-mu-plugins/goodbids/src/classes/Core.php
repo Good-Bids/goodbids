@@ -15,11 +15,21 @@ class Core {
 
 	/**
 	 * @since 1.0.0
-	 * @var Core|null $instance
+	 * @var Core|null
 	 */
 	private static ?Core $instance = null;
 
+	/**
+	 * @since 1.0.0
+	 * @var bool
+	 */
 	private bool $initialized = false;
+
+	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private array $config = [];
 
 	/**
 	 * Constructor
@@ -52,9 +62,48 @@ class Core {
 	 * @since 1.0.0
 	 */
 	public function init() {
+		if ( ! $this->load_config() ) {
+			// TODO: Log error.
+			return;
+		}
+
 		$this->load_plugins();
 
 		$this->initialized = true;
+	}
+
+	/**
+	 * Sets the Plugin Config.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	private function load_config() {
+		$json_path = GOODBIDS_PLUGIN_PATH . 'config.json';
+		if ( ! file_exists( $json_path ) ) {
+			return false;
+		}
+
+		$json = json_decode( file_get_contents( $json_path ), true );
+
+		if ( ! is_array( $json ) ) {
+			return false;
+		}
+
+		$this->config = $json;
+
+		return true;
+	}
+
+	/**
+	 * Get a config value.
+	 *
+	 * @param string $key Config Key.
+	 *
+	 * @return mixed|null
+	 */
+	public function get_config( string $key ) {
+		return $this->config[ $key ] ?? null;
 	}
 
 	/**
@@ -67,11 +116,14 @@ class Core {
 			return;
 		}
 
-		wpcom_vip_load_plugin( 'advanced-custom-fields-pro/acf.php' );
-		wpcom_vip_load_plugin( 'woocommerce' );
-		wpcom_vip_load_plugin( 'pojo-accessibility' );
-		wpcom_vip_load_plugin( 'svg-support' );
-		wpcom_vip_load_plugin( 'cookie-law-info' );
-		wpcom_vip_load_plugin( 'user-switching' );
+		$plugins = $this->get_config( 'active-plugins' );
+
+		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
+			return;
+		}
+
+		foreach ( $plugins as $plugin ) {
+			wpcom_vip_load_plugin( $plugin );
+		}
 	}
 }
