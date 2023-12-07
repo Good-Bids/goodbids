@@ -29,7 +29,7 @@
 						?>
 					</label>
 				</th>
-				<td><input name="blog[<?php echo esc_attr( $key ); ?>]" type="<?php echo esc_attr( $field['type'] ); ?>" class="regular-text" id="<?php echo esc_attr( $key ); ?>" placeholder="<?php echo esc_attr( $placeholder ); ?>" <?php echo $required ? 'required' : ''; ?> /></td>
+				<td><input name="gbnp[<?php echo esc_attr( $key ); ?>]" type="<?php echo esc_attr( $field['type'] ); ?>" class="regular-text" id="<?php echo esc_attr( $key ); ?>" placeholder="<?php echo esc_attr( $placeholder ); ?>" <?php echo $required ? 'required' : ''; ?> /></td>
 			</tr>
 		<?php else : ?>
 			<p><?php esc_html_e( 'Unsupported field type.', 'goodbids' ); ?></p>

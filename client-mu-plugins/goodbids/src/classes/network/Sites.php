@@ -28,6 +28,7 @@ class Sites {
 	public function __construct() {
 		$this->init_np_fields();
 		$this->validate_new_site_fields();
+		$this->save_new_site_fields();
 		$this->new_site_form_fields();
 	}
 
@@ -103,14 +104,14 @@ class Sites {
 					wp_die( esc_html__( 'Cannot create an empty site.' ) );
 				}
 
-				$blog = $_POST['blog']; // phpcs:ignore
+				$gbnp = $_POST['gbnp']; // phpcs:ignore
 
 				foreach ( $this->get_np_fields() as $key => $field ) {
 					if ( empty( $field['required'] ) || true !== $field['required'] ) {
 						continue;
 					}
 
-					if ( empty( $blog[ $key ] ) ) {
+					if ( empty( $gbnp[ $key ] ) ) {
 						wp_die(
 							sprintf(
 								'%s %s',
@@ -138,6 +139,31 @@ class Sites {
 				$fields = $this->get_np_fields();
 				require GOODBIDS_PLUGIN_PATH . 'views/network/new-site-fields.php';
 			}
+		);
+	}
+
+	private function save_new_site_fields() : void {
+		add_action(
+			'wp_initialize_site',
+
+			/**
+			 * @param \WP_Site $new_site New site object.
+			 * @param array $args Arguments for the initialization.
+			 */
+			function ( \WP_Site $new_site, array $args ) {
+				if ( empty( $_POST['gbnp'] ) ) {
+					// TODO: Log error.
+					return;
+				}
+
+				$gbnp = $_POST['gbnp']; // phpcs:ignore
+
+				foreach ( $this->get_np_fields() as $key => $field ) {
+
+				}
+			},
+			10,
+			2
 		);
 	}
 }
