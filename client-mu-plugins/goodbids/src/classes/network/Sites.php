@@ -163,6 +163,7 @@ class Sites {
 			'network_site_new_form',
 			function() {
 				$fields = $this->get_np_fields();
+				$prefix = self::OPTION_SLUG;
 				require GOODBIDS_PLUGIN_PATH . 'views/network/new-site-fields.php';
 			}
 		);
