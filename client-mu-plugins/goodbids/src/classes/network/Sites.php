@@ -137,14 +137,14 @@ class Sites {
 					$ein = preg_replace( '/[^0-9]/', '', $data['ein'] );
 
 					if ( 9 !== strlen( $ein ) ) {
-						wp_die( esc_html__( 'Nonprofit EIN must be 9 digits.', 'goodbids' ) );
+						wp_die( esc_html__( 'Nonprofit EIN must include 9 digits. (##-#######)', 'goodbids' ) );
 					}
 				}
 
 				// Validate Website as URL.
 				if ( ! empty( $data['website'] ) ) {
 					if ( ! filter_var( $data['website'], FILTER_VALIDATE_URL ) ) {
-						wp_die( esc_html__( 'Nonprofit Website must be a valid URL.', 'goodbids' ) );
+						wp_die( esc_html__( 'Nonprofit Website must be a valid URL. Be sure to include "https://".', 'goodbids' ) );
 					}
 				}
 			}

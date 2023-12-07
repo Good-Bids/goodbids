@@ -38,5 +38,5 @@
 </table>
 
 <div class="warning-message">
-	<p><?php esc_html_e( 'Double check all fields before submitting this form. Data will not be restored in the event of an error and will be required to be filled in again.', 'goodbids' ); ?></p>
+	<p><?php esc_html_e( 'Double check all fields before submitting this form. Form data may not be restored in the event of an error and could be required to be filled in again.', 'goodbids' ); ?></p>
 </div>
