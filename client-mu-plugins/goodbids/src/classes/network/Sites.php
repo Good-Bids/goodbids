@@ -7,12 +7,20 @@
 
 namespace GoodBids\Network;
 
+use WP_Site;
+
 /**
  * Network Sites Class
  *
  * @since 1.0.0
  */
 class Sites {
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const OPTION_SLUG = 'gbnp';
 
 	/**
 	 * Nonprofit custom fields
@@ -43,21 +51,21 @@ class Sites {
 		$this->np_fields = apply_filters(
 			'goodbids_nonprofit_custom_fields',
 			[
-				'gbnp-legal-name' => [
+				'legal-name' => [
 					'label'       => __( 'Nonprofit Legal Name', 'goodbids' ),
 					'type'        => 'text',
 					'default'     => '',
 					'placeholder' => '',
 					'required'    => true,
 				],
-				'gbnp-ein'        => [
+				'ein'        => [
 					'label'       => __( 'Nonprofit EIN', 'goodbids' ),
 					'type'        => 'text',
 					'default'     => '',
 					'placeholder' => 'XX-XXXXXXX',
 					'required'    => true,
 				],
-				'gbnp-website'    => [
+				'website'    => [
 					'label'       => __( 'Nonprofit Website', 'goodbids' ),
 					'type'        => 'url',
 					'default'     => '',
@@ -100,18 +108,20 @@ class Sites {
 
 				check_admin_referer( 'add-blog', '_wpnonce_add-blog' );
 
-				if ( empty( $_POST['blog'] ) || ! is_array( $_POST['blog'] ) ) {
-					wp_die( esc_html__( 'Cannot create an empty site.' ) );
+				if ( empty( $_POST[ self::OPTION_SLUG ] ) || ! is_array( $_POST[ self::OPTION_SLUG ] ) ) {
+					wp_die( esc_html__( 'Missing required Nonprofit data.' ) );
 				}
 
-				$gbnp = $_POST['gbnp']; // phpcs:ignore
+				// Grab our nonprofit data.
+				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 
+				// Validate required fields.
 				foreach ( $this->get_np_fields() as $key => $field ) {
 					if ( empty( $field['required'] ) || true !== $field['required'] ) {
 						continue;
 					}
 
-					if ( empty( $gbnp[ $key ] ) ) {
+					if ( empty( $data[ $key ] ) ) {
 						wp_die(
 							sprintf(
 								'%s %s',
@@ -119,6 +129,22 @@ class Sites {
 								esc_html__( 'is a required field.', 'goodbids' )
 							)
 						);
+					}
+				}
+
+				// Validate EIN as 9 digits.
+				if ( ! empty( $data['ein'] ) ) {
+					$ein = preg_replace( '/[^0-9]/', '', $data['ein'] );
+
+					if ( 9 !== strlen( $ein ) ) {
+						wp_die( esc_html__( 'Nonprofit EIN must be 9 digits.', 'goodbids' ) );
+					}
+				}
+
+				// Validate Website as URL.
+				if ( ! empty( $data['website'] ) ) {
+					if ( ! filter_var( $data['website'], FILTER_VALIDATE_URL ) ) {
+						wp_die( esc_html__( 'Nonprofit Website must be a valid URL.', 'goodbids' ) );
 					}
 				}
 			}
@@ -142,24 +168,30 @@ class Sites {
 		);
 	}
 
+	/**
+	 * Save nonprofit field data to database.
+	 *
+	 * @return void
+	 */
 	private function save_new_site_fields() : void {
 		add_action(
 			'wp_initialize_site',
 
 			/**
-			 * @param \WP_Site $new_site New site object.
+			 * @param WP_Site $new_site New site object.
 			 * @param array $args Arguments for the initialization.
 			 */
-			function ( \WP_Site $new_site, array $args ) {
-				if ( empty( $_POST['gbnp'] ) ) {
+			function ( WP_Site $new_site, array $args ) {
+				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) { // phpcs:ignore
 					// TODO: Log error.
 					return;
 				}
 
-				$gbnp = $_POST['gbnp']; // phpcs:ignore
+				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 
 				foreach ( $this->get_np_fields() as $key => $field ) {
-
+					$meta_key = self::OPTION_SLUG . '-' . $key;
+					update_site_meta( $new_site->id, $meta_key, $data[ $key ] );
 				}
 			},
 			10,
