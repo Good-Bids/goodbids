@@ -14,29 +14,9 @@
 <table class="form-table" role="presentation">
 	<?php
 	foreach ( $fields as $key => $field ) :
-		$required    = ! empty( $field['required'] ) && true === $field['required'];
-		$placeholder = $field['placeholder'] ?? '';
-		$field_id    = $prefix . '-' . $key;
-
-		if ( in_array( $field['type'], [ 'text', 'url', 'email', 'tel', 'password', 'number' ], true ) ) :
-			?>
-			<tr class="form-field<?php echo $required ? ' form-required' : ''; ?>">
-				<th scope="row">
-					<label for="<?php echo esc_attr( $field_id ); ?>">
-						<?php
-						echo esc_html( $field['label'] );
-						if ( $required ) :
-							echo ' ' . wp_required_field_indicator(); // phpcs:ignore
-						endif;
-						?>
-					</label>
-				</th>
-				<td><input name="<?php echo esc_attr( $prefix ); ?>[<?php echo esc_attr( $key ); ?>]" type="<?php echo esc_attr( $field['type'] ); ?>" class="regular-text" id="<?php echo esc_attr( $field_id ); ?>" placeholder="<?php echo esc_attr( $placeholder ); ?>" <?php echo $required ? 'required' : ''; ?> /></td>
-			</tr>
-		<?php else : ?>
-			<p><?php esc_html_e( 'Unsupported field type.', 'goodbids' ); ?></p>
-		<?php endif; ?>
-	<?php endforeach; ?>
+		goodbids()->admin->render_field( $key, $field, $prefix );
+	endforeach;
+	?>
 </table>
 
 <div class="warning-message">
