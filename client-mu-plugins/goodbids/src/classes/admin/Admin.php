@@ -10,6 +10,8 @@ namespace GoodBids\Admin;
 
 /**
  * Admin Main Class
+ *
+ * @since 1.0.0
  */
 class Admin {
 
