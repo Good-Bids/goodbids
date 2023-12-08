@@ -8,7 +8,7 @@ This is a quick reference of some of the functions available in the GoodBids API
 
 Call the API using the `goodbids()` function.
 
-### Public Functions
+### Core Functions
 
 `goodbids()->get_version()`  
 Returns the current version of the GoodBids plugin.
@@ -21,13 +21,13 @@ Checks if the given plugin (slug) is active. This is not the same as the WordPre
 
 ### Network Sites Functions
 
-`goodbids()->get_np_data( string $site_id, string $field_id )`  
+`goodbids()->sites->get_np_data( string $site_id, string $field_id )`  
 Returns the custom Nonprofit data for the given network site. If `$field_id` is provided, only that field will be returned, otherwise all fields will be returned.
 
-`goodbids()->get_np_fields( string $context )`  
+`goodbids()->sites->get_np_fields( string $context )`  
 Returns the array of custom fields, based on the given context (create, edit, or both).
 
 ### Admin Functions
 
-`goodbids()->render_field( string $key, array $field, string $prefix, array $data )`  
+`goodbids()->admin->render_field( string $key, array $field, string $prefix, array $data )`  
 Renders an admin field based on the given field array. The `$prefix` and `$data` parameters are optional, but required for some field types.
