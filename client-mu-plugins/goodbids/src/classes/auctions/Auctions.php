@@ -53,7 +53,7 @@ class Auctions {
 		add_action(
 			'init',
 			function () {
-				$labels = array(
+				$labels = [
 					'name'                  => _x( 'Auctions', 'Post Type General Name', 'goodbids' ),
 					'singular_name'         => _x( 'Auction', 'Post Type Singular Name', 'goodbids' ),
 					'menu_name'             => __( 'Auctions', 'goodbids' ),
@@ -81,37 +81,37 @@ class Auctions {
 					'items_list'            => __( 'Auctions list', 'goodbids' ),
 					'items_list_navigation' => __( 'Auctions list navigation', 'goodbids' ),
 					'filter_items_list'     => __( 'Filter auctions list', 'goodbids' ),
-				);
+				];
 
-				$rewrite = array(
-					'slug'                  => self::SINGULAR_SLUG,
-					'with_front'            => false,
-					'pages'                 => true,
-					'feeds'                 => true,
-				);
+				$rewrite = [
+					'slug'       => self::SINGULAR_SLUG,
+					'with_front' => false,
+					'pages'      => true,
+					'feeds'      => true,
+				];
 
-				$args = array(
-					'label'                 => __( 'Auction', 'goodbids' ),
-					'description'           => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
-					'labels'                => $labels,
-					'supports'              => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
-					'hierarchical'          => false,
-					'public'                => true,
-					'show_ui'               => true,
-					'show_in_menu'          => true,
-					'menu_position'         => 5,
-					'menu_icon'             => 'dashicons-money-alt',
-					'show_in_admin_bar'     => true,
-					'show_in_nav_menus'     => true,
-					'can_export'            => true,
-					'has_archive'           => self::ARCHIVE_SLUG,
-					'exclude_from_search'   => false,
-					'publicly_queryable'    => true,
-					'rewrite'               => $rewrite,
-					'capability_type'       => 'page',
-					'show_in_rest'          => true,
-					'rest_base'             => self::SINGULAR_SLUG,
-				);
+				$args = [
+					'label'               => __( 'Auction', 'goodbids' ),
+					'description'         => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
+					'labels'              => $labels,
+					'supports'            => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
+					'hierarchical'        => false,
+					'public'              => true,
+					'show_ui'             => true,
+					'show_in_menu'        => true,
+					'menu_position'       => 5,
+					'menu_icon'           => 'dashicons-money-alt',
+					'show_in_admin_bar'   => true,
+					'show_in_nav_menus'   => true,
+					'can_export'          => true,
+					'has_archive'         => self::ARCHIVE_SLUG,
+					'exclude_from_search' => false,
+					'publicly_queryable'  => true,
+					'rewrite'             => $rewrite,
+					'capability_type'     => 'page',
+					'show_in_rest'        => true,
+					'rest_base'           => self::SINGULAR_SLUG,
+				];
 
 				register_post_type( self::POST_TYPE, $args );
 			}
