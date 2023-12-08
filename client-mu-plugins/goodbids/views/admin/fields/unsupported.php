@@ -2,6 +2,7 @@
 /**
  * Unsupported Field Type
  *
+ * @since 1.0.0
  * @package GoodBids
  */
 

@@ -10,6 +10,7 @@
  * @global string $field_id
  * @global mixed $value
  *
+ * @since 1.0.0
  * @package GoodBids
  */
 
