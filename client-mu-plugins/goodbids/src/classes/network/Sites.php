@@ -294,8 +294,9 @@ class Sites {
 						continue;
 					}
 
-					$meta_key = self::OPTION_SLUG . '-' . $key;
-					update_site_meta( $new_site->id, $meta_key, $data[ $key ] );
+					$meta_key   = self::OPTION_SLUG . '-' . $key;
+					$meta_value = sanitize_text_field( $data[ $key ] );
+					update_site_meta( $new_site->id, $meta_key, $meta_value );
 				}
 			},
 			10,
@@ -333,8 +334,9 @@ class Sites {
 						continue;
 					}
 
-					$meta_key = self::OPTION_SLUG . '-' . $key;
-					update_site_meta( $new_site->id, $meta_key, $data[ $key ] );
+					$meta_key   = self::OPTION_SLUG . '-' . $key;
+					$meta_value = sanitize_text_field( $data[ $key ] );
+					update_site_meta( $new_site->id, $meta_key, $meta_value );
 				}
 			},
 			10,
