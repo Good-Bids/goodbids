@@ -146,9 +146,9 @@ class Core {
 	 *
 	 * @param string $key Config Key.
 	 *
-	 * @return mixed|null
+	 * @return mixed
 	 */
-	public function get_config( string $key ) {
+	public function get_config( string $key ) : mixed {
 		return $this->config[ $key ] ?? null;
 	}
 
