@@ -62,3 +62,9 @@ In order to get IntelliSense to work you will need to do these steps:
 1. You may need to reload your code editor once you have added both include paths. 
 
 
+## Code Standards
+We are using `WordPress-VIP-Go` as the code standard. Follow the install instructions on [WP VIP](https://docs.wpvip.com/how-tos/php_codesniffer/) to set up `phpcs`. 
+
+Once that is all set up, copy the file `phpcs.xml.dist` in the goodbids repo and save it as `phpcs.xml`
+
+Set your `phpcs` standard to point to `/Absolute/Path/To/goodbids/.phpcs.xml",`
