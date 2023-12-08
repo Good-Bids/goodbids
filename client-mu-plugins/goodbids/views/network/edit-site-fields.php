@@ -6,6 +6,7 @@
  * @global array  $fields
  * @global string $prefix
  *
+ * @since 1.0.0
  * @package GoodBids
  */
 
