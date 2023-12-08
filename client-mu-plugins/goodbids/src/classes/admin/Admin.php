@@ -40,11 +40,11 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	public function render_field( string $key, array $field, string $prefix, array $data = [] ) : void {
+	public function render_field( string $key, array $field, string $prefix = '', array $data = [] ) : void {
 		$view_file   = 'unsupported';
 		$required    = ! empty( $field['required'] ) && true === $field['required'];
 		$placeholder = $field['placeholder'] ?? '';
-		$field_id    = $prefix . '-' . $key;
+		$field_id    = $prefix ? $prefix . '-' . $key : $key;
 		$value       = ! empty( $data[ $key ] ) ? $data[ $key ] : '';
 
 		if ( ! empty( $field['default'] ) && ! $value ) {
