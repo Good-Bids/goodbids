@@ -34,11 +34,21 @@ class Auctions {
 	const SINGULAR_SLUG = 'auction';
 
 	/**
+	 * @since 1.0.0
+	 * @var Bids
+	 */
+	public Bids $bids;
+
+	/**
 	 * Initialize Auctions
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Initialize Submodules.
+		$this->bids = new Bids();
+
+		// Register Post Type.
 		$this->register_post_type();
 	}
 
@@ -129,4 +139,128 @@ class Auctions {
 		return self::POST_TYPE;
 	}
 
+	/**
+	 * Retrieve the Prizes category ID, or create it if it doesn't exist.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_prizes_category_id() : int {
+		$prizes_category = get_term_by( 'slug', 'prizes', 'product_cat' );
+		if ( ! $prizes_category ) {
+			$prizes_category = wp_insert_term( 'Prizes', 'product_cat' );
+		}
+		return $prizes_category->term_id;
+	}
+
+	/**
+	 * Check if an auction has a Bid product.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function has_bid_product( int $auction_id ) : bool {
+		return boolval( $this->get_bid_product_id( $auction_id ) );
+	}
+
+	/**
+	 * Retrieves the Bid product ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_bid_product_id( int $auction_id ) : int {
+		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, true ) );
+	}
+
+	/**
+	 * Sets the Bid product ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $bid_product_id
+	 *
+	 * @return void
+	 */
+	public function set_bid_product_id( int $auction_id, int $bid_product_id ) : void {
+		update_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, $bid_product_id );
+	}
+
+	/**
+	 * Retrieves a setting for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string   $meta_key
+	 * @param int|null $auction_id
+	 *
+	 * @return mixed
+	 */
+	public function get_setting( string $meta_key, int $auction_id = null ) : mixed {
+		if ( ! $auction_id ) {
+			$auction_id = get_the_ID();
+		}
+
+		return get_field( $meta_key, $auction_id );
+	}
+
+	/**
+	 * Get the Auction Prize Product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|null $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_prize_product_id( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'auction_product', $auction_id ) );
+	}
+
+	/**
+	 * Get the Auction Start Date/Time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|null $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_start_date_time( int $auction_id = null ) : string {
+		return $this->get_setting( 'auction_start', $auction_id );
+	}
+
+	/**
+	 * Get the Auction Bid Increment amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|null $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_bid_increment( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'bid_increment', $auction_id ) );
+	}
+
+	/**
+	 * Get the Auction Goal Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|null $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_goal( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'auction_goal', $auction_id ) );
+	}
 }
