@@ -64,7 +64,7 @@ class ACF {
 	private function modify_save_directory() : void {
 		add_filter(
 			'acf/settings/save_json',
-			function( $path ) {
+			function ( $path ) {
 				if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT ) {
 					return GOODBIDS_PLUGIN_PATH;
 				}
@@ -75,7 +75,7 @@ class ACF {
 
 		add_filter(
 			'acf/settings/load_json',
-			function( array $paths ) {
+			function ( array $paths ) {
 				$paths[] = GOODBIDS_PLUGIN_PATH;
 				return $paths;
 			}
@@ -92,7 +92,7 @@ class ACF {
 	private function disable_database_storage() : void {
 		add_filter(
 			'acf/prepare_field_group_for_export',
-			function( array $group ) : array {
+			function ( array $group ) : array {
 				$group['private'] = true;
 				return $group;
 			}
@@ -113,7 +113,7 @@ class ACF {
 
 		add_filter(
 			'acf/pre_load_value',
-			function( $preload ) {
+			function ( $preload ) {
 				if ( $this->called_from_the_field() ) {
 					_doing_it_wrong( 'the_field', 'the_field() should not be used. Use get_field() instead.', '1.0.0' );
 				}
