@@ -192,7 +192,7 @@ class Core {
 	private function load_modules() : void {
 		add_action(
 			'mu_plugin_loaded',
-			function() {
+			function () {
 				$this->acf   = new ACF();
 				$this->sites = new Sites();
 				$this->admin = new Admin();

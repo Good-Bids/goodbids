@@ -179,7 +179,7 @@ class Sites {
 	private function validate_new_site_fields() : void {
 		add_action(
 			'admin_init',
-			function() {
+			function () {
 				if ( empty( $_REQUEST['action'] ) || 'add-site' !== $_REQUEST['action'] ) {
 					return;
 				}
@@ -239,7 +239,7 @@ class Sites {
 	private function new_site_form_fields() : void {
 		add_action(
 			'network_site_new_form',
-			function() {
+			function () {
 				$fields = $this->get_np_fields( 'create' );
 				$prefix = self::OPTION_SLUG;
 				require GOODBIDS_PLUGIN_PATH . 'views/network/new-site-fields.php';
@@ -257,7 +257,7 @@ class Sites {
 	private function edit_site_form_fields() : void {
 		add_action(
 			'network_site_info_form',
-			function( $site_id ) {
+			function ( $site_id ) {
 				$data   = $this->get_np_data( $site_id );
 				$fields = $this->get_np_fields( 'edit' );
 				$prefix = self::OPTION_SLUG;
