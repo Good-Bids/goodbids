@@ -40,7 +40,10 @@
 
 	<!-- Rules: VIP Coding Standards - see
 		https://github.com/Automattic/VIP-Coding-Standards -->
-	<rule ref="WordPress-VIP-Go"/>
+	<rule ref="WordPress-VIP-Go">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+	</rule>
 
 	<!-- Rules: WordPress Coding Standards - see
 		https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards -->

@@ -18,8 +18,9 @@
  */
 
 /* Constants */
-defined( 'GOODBIDS_PLUGIN_PATH' ) || define( 'GOODBIDS_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-defined( 'GOODBIDS_PLUGIN_URL' ) || define( 'GOODBIDS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+defined( 'GOODBIDS_PLUGIN_FILE' ) || define( 'GOODBIDS_PLUGIN_FILE', __FILE__ );
+defined( 'GOODBIDS_PLUGIN_PATH' ) || define( 'GOODBIDS_PLUGIN_PATH', plugin_dir_path( GOODBIDS_PLUGIN_FILE ) );
+defined( 'GOODBIDS_PLUGIN_URL' ) || define( 'GOODBIDS_PLUGIN_URL', plugin_dir_url( GOODBIDS_PLUGIN_FILE ) );
 
 /* Autoloader */
 if ( file_exists( GOODBIDS_PLUGIN_PATH . 'vendor/autoload.php' ) ) {

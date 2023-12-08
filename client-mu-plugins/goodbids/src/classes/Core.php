@@ -8,7 +8,9 @@
 
 namespace GoodBids;
 
+use GoodBids\Admin\Admin;
 use GoodBids\Auctions\Auctions;
+use GoodBids\Network\Sites;
 use GoodBids\Plugins\ACF;
 
 /**
@@ -39,6 +41,18 @@ class Core {
 	 * @var ACF
 	 */
 	public ACF $acf;
+
+	/**
+	 * @since 1.0.0
+	 * @var Sites
+	 */
+	public Sites $sites;
+
+	/**
+	 * @since 1.0.0
+	 * @var Admin
+	 */
+	public Admin $admin;
 
 	/**
 	 * @since 1.0.0
@@ -73,6 +87,18 @@ class Core {
 	}
 
 	/**
+	 * Get the plugin version
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_version() : string {
+		$data = get_plugin_data( GOODBIDS_PLUGIN_FILE );
+		return $data['Version'];
+	}
+
+	/**
 	 * Initialize the plugin
 	 *
 	 * @since 1.0.0
@@ -98,7 +124,7 @@ class Core {
 	 *
 	 * @return bool
 	 */
-	private function load_config() {
+	private function load_config() : bool {
 		$json_path = GOODBIDS_PLUGIN_PATH . 'config.json';
 		if ( ! file_exists( $json_path ) ) {
 			return false;
@@ -173,8 +199,10 @@ class Core {
 	private function load_modules() : void {
 		add_action(
 			'mu_plugin_loaded',
-			function() {
+			function () {
 				$this->acf      = new ACF();
+				$this->sites    = new Sites();
+				$this->admin    = new Admin();
 				$this->auctions = new Auctions();
 			}
 		);

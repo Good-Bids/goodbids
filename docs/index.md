@@ -9,3 +9,8 @@
 
 * [Installing Plugins](plugins/installing.md)
 * [Activating Plugins](plugins/activating.md)
+
+## Hooks
+
+* [Actions](hooks/actions.md)
+* [Filters](hooks/filters.md)
