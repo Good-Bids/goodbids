@@ -8,6 +8,7 @@
 
 namespace GoodBids;
 
+use GoodBids\Auctions\Auctions;
 use GoodBids\Plugins\ACF;
 
 /**
@@ -38,6 +39,12 @@ class Core {
 	 * @var ACF
 	 */
 	public ACF $acf;
+
+	/**
+	 * @since 1.0.0
+	 * @var Auctions
+	 */
+	public Auctions $auctions;
 
 	/**
 	 * Constructor
@@ -167,7 +174,8 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function() {
-				$this->acf = new ACF();
+				$this->acf      = new ACF();
+				$this->auctions = new Auctions();
 			}
 		);
 	}
