@@ -50,6 +50,9 @@ class Auctions {
 
 		// Register Post Type.
 		$this->register_post_type();
+
+		// Init Prizes Category.
+		$this->init_prizes_category();
 	}
 
 	/**
@@ -124,6 +127,22 @@ class Auctions {
 				];
 
 				register_post_type( self::POST_TYPE, $args );
+			}
+		);
+	}
+
+	/**
+	 * Initialize Prizes Category
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function init_prizes_category() : void {
+		add_action(
+			'init',
+			function () {
+				$this->get_prizes_category_id();
 			}
 		);
 	}
