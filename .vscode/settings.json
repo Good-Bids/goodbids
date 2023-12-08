@@ -1,0 +1,15 @@
+{
+	"editor.indentSize": "tabSize",
+	"editor.tabSize": 4,
+	"editor.formatOnSave": true,
+	"phpsab.debug": true,
+	"intelephense.environment.phpVersion": "8.1",
+	"phpsab.allowedAutoRulesets": [
+		".phpcs.xml",
+		".phpcs.xml.dist",
+		"phpcs.xml",
+		"phpcs.xml.dist",
+		"phpcs.ruleset.xml",
+		"ruleset.xml"
+	]
+}
