@@ -43,7 +43,7 @@ class Bids {
 			'wp_insert_post',
 			function ( $post_id ) {
 				// Bail if this is a revision.
-				if ( wp_is_post_revision( $post_id ) ) {
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
 					return;
 				}
 
