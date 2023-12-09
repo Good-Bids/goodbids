@@ -40,7 +40,7 @@ class Bids {
 	 */
 	private function create_bid_product_for_auction() : void {
 		add_action(
-			'wp_insert_post',
+			'wp_after_insert_post',
 			function ( $post_id ) {
 				// Bail if this is a revision.
 				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
@@ -57,6 +57,13 @@ class Bids {
 					return;
 				}
 
+				$bid_price = goodbids()->auctions->get_bid_increment( (int) $post_id );
+
+				// Make sure this meta value has been saved.
+				if ( ! $bid_price ) {
+					return;
+				}
+
 				$bid_title = sprintf(
 					'%s %s (%s: %s)',
 					__( 'Bid for', 'goodbids' ),
@@ -69,7 +76,7 @@ class Bids {
 				$bid_product = new \WC_Product_Simple();
 				$bid_product->set_name( $bid_title );
 				$bid_product->set_slug( sanitize_title( $bid_title ) );
-				$bid_product->set_regular_price( goodbids()->auctions->get_bid_increment( (int) $post_id ) );
+				$bid_product->set_regular_price( $bid_price );
 				$bid_product->set_category_ids( [ $this->get_bids_category_id() ] );
 				$bid_product->set_status( 'publish' );
 
