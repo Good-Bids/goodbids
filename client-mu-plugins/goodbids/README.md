@@ -51,3 +51,4 @@ Returns the Auction's Bid Increment value. If `$auction_id` is not provided, the
 
 `goodbids()->auctions->get_goal( int $auction_id )`  
 Returns the Auction's Goal value. If `$auction_id` is not provided, the current post ID will be used.
+
