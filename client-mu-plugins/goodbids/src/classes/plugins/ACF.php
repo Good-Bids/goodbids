@@ -55,7 +55,7 @@ class ACF {
 
 	/**
 	 * Save ACF JSON to the plugin directory, but only when developing locally.
-	 * We don't want to break this feature if the non-profit is using ACF.
+	 * We don't want to break this feature if the nonprofit is using ACF.
 	 *
 	 * @since 1.0.0
 	 *
