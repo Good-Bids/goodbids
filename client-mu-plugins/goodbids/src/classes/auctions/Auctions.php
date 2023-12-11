@@ -163,13 +163,19 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int
+	 * @return int|false
 	 */
-	public function get_prizes_category_id() : int {
+	public function get_prizes_category_id() : int|false {
 		$prizes_category = get_term_by( 'slug', 'prizes', 'product_cat' );
 		if ( ! $prizes_category ) {
 			$prizes_category = wp_insert_term( 'Prizes', 'product_cat' );
+
+			if ( ! $prizes_category ) {
+				// TODO: Log Error
+				return false;
+			}
 		}
+
 		return $prizes_category->term_id;
 	}
 
