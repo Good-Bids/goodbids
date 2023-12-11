@@ -27,6 +27,7 @@ class Admin {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Initialize Submodules.
 		$this->assets = new Assets();
 	}
 

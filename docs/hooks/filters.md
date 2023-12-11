@@ -2,7 +2,7 @@
 
 ### goodbids_nonprofit_custom_fields
 
-Add custom fields to the Nonprofit meta data during new site creation.
+Modify Nonprofit custom fields.
 
 ```php
 add_filter(
@@ -17,6 +17,19 @@ add_filter(
 		];
 		
 		return $fields;
+	}
+);
+```
+### goodbids_bid_product_create
+
+Modify the new bid product associated with a product.
+
+```php
+add_filter(
+	'goodbids_bid_product',
+	function( WC_Product_Simple $bid_product, int $post_id ) : WC_Product_Simple {
+		$bid_product->set_regular_price( 2 );
+		return $bid_product;
 	}
 );
 ```

@@ -22,7 +22,9 @@
             "post_status": [
                 "publish"
             ],
-            "taxonomy": "",
+            "taxonomy": [
+                "product_cat:prizes"
+            ],
             "return_format": "object",
             "multiple": 0,
             "allow_null": 0,
@@ -111,6 +113,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702068952,
+    "modified": 1702079254,
     "private": true
 }
