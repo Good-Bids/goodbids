@@ -1,13 +1,3 @@
-<?php
-/**
- * Title: Non-profit Home Template
- * Slug: goodbids-nonprofit/template-home-nonprofit
- * Categories: page
- * Template Types: front-page, home
- * Viewport width: 1400
- */
-?>
-
 <!-- wp:template-part {"slug":"header","area":"header","tagName":"header"} /-->
 
 <!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"default"}} -->
