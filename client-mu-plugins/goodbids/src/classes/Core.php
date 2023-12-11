@@ -9,6 +9,7 @@
 namespace GoodBids;
 
 use GoodBids\Admin\Admin;
+use GoodBids\Auctions\Auctions;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\ACF;
 
@@ -52,6 +53,12 @@ class Core {
 	 * @var Admin
 	 */
 	public Admin $admin;
+
+	/**
+	 * @since 1.0.0
+	 * @var Auctions
+	 */
+	public Auctions $auctions;
 
 	/**
 	 * Constructor
@@ -139,9 +146,9 @@ class Core {
 	 *
 	 * @param string $key Config Key.
 	 *
-	 * @return mixed|null
+	 * @return mixed
 	 */
-	public function get_config( string $key ) {
+	public function get_config( string $key ) : mixed {
 		return $this->config[ $key ] ?? null;
 	}
 
@@ -193,9 +200,10 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->acf   = new ACF();
-				$this->sites = new Sites();
-				$this->admin = new Admin();
+				$this->acf      = new ACF();
+				$this->sites    = new Sites();
+				$this->admin    = new Admin();
+				$this->auctions = new Auctions();
 			}
 		);
 	}

@@ -31,3 +31,8 @@ Returns the array of custom fields, based on the given context (create, edit, or
 
 `goodbids()->admin->render_field( string $key, array $field, string $prefix, array $data )`  
 Renders an admin field based on the given field array. The `$prefix` and `$data` parameters are optional, but required for some field types.
+
+### Auction Functions
+
+`goodbids()->auctions->get_post_type()`  
+Returns the auction post type slug.

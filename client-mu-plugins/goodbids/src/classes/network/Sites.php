@@ -320,12 +320,16 @@ class Sites {
 			 * @param WP_Site $old_site Old site object.
 			 */
 			function ( WP_Site $new_site, WP_Site $old_site ) {
-				check_admin_referer( 'edit-site' );
+				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+					return;
+				}
 
-				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) { // phpcs:ignore
+				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) {
 					// TODO: Log error.
 					return;
 				}
+
+				check_admin_referer( 'edit-site' );
 
 				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 
