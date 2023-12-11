@@ -148,7 +148,7 @@ class Core {
 	 *
 	 * @return mixed
 	 */
-	public function get_config( string $key ) : mixed {
+	public function get_config( string $key ): mixed {
 		return $this->config[ $key ] ?? null;
 	}
 

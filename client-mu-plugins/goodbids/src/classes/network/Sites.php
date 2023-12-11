@@ -41,7 +41,7 @@ class Sites {
 		$this->save_edit_site_fields();
 		$this->new_site_form_fields();
 		$this->edit_site_form_fields();
-		$this->activate_child_theme();
+		$this->activate_child_theme_on_new_site();
 	}
 
 	/**
@@ -313,7 +313,7 @@ class Sites {
 	 */
 	private function save_edit_site_fields(): void {
 		add_action(
-			'wp_update_site',
+			'wp_initialize_site',
 			/**
 			 * @param WP_Site $new_site New site object.
 			 * @param WP_Site $old_site Old site object.
@@ -352,23 +352,22 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $site_id Site ID.
-	 *
 	 * @return void
 	 */
-	private function activate_child_theme(): void {
+	private function activate_child_theme_on_new_site(): void {
 		add_action(
-			'wpmu_new_blog',
+			'wp_initialize_site',
 			function ( $site_id ) {
 				$stylesheet = 'goodbids-nonprofit';
 
 				// Switch to the new site
 				switch_to_blog( $site_id );
 
-				// Check if we the Goodbids child theme exists
+				// Check if the Goodbids child theme exists
 				if ( ! wp_get_theme( $stylesheet )->exists() ) {
 					return;
 				}
+
 				switch_theme( $stylesheet );
 
 				restore_current_blog();
