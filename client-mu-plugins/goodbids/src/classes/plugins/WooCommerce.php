@@ -36,6 +36,7 @@ class WooCommerce {
 		$this->add_auth_page_setting();
 		$this->display_post_states();
 		$this->authentication_redirect();
+		$this->prevent_wp_login_access();
 	}
 
 	/**
@@ -231,6 +232,43 @@ class WooCommerce {
 				wp_safe_redirect( $auth_page_url );
 				exit;
 			}
+		);
+	}
+
+	/**
+	 * Prevent access to WP Login page unless user can manage options.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function prevent_wp_login_access() : void {
+		add_action(
+			'login_head',
+			function () {
+				$request = ! empty( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( $_SERVER['REQUEST_URI'] ) : '';
+
+				// Check if the current URL contains /wp-admin or /wp-login.php
+				if ( ! str_contains( $request, '/wp-admin' ) && ! str_contains( $request, '/wp-login.php' ) ) {
+					return;
+				}
+
+				// Allow logged-in users with manage_options permissions.
+				if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+					return;
+				}
+
+				$auth_page_url = wc_get_page_permalink( 'authentication' );
+
+				if ( ! $auth_page_url ) {
+					return;
+				}
+
+				// Redirect to custom Auth page.
+				wp_safe_redirect( $auth_page_url );
+				exit;
+			},
+			2
 		);
 	}
 }
