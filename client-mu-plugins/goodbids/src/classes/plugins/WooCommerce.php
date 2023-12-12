@@ -34,6 +34,8 @@ class WooCommerce {
 		$this->configure_new_site();
 		$this->create_auth_page();
 		$this->add_auth_page_setting();
+		$this->display_post_states();
+		$this->authentication_redirect();
 	}
 
 	/**
@@ -103,7 +105,8 @@ class WooCommerce {
 
 				update_option( 'woocommerce_authentication_page_id', $auth_page_id );
 			},
-			6
+			6,
+			2
 		);
 	}
 
@@ -148,6 +151,85 @@ class WooCommerce {
 				}
 
 				return $new_settings;
+			}
+		);
+	}
+
+	/**
+	 * Add a post display state for special GoodBids pages.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function display_post_states() : void {
+		add_filter(
+			'display_post_states',
+			function ( array $post_states, \WP_Post $post ) : array {
+				if ( wc_get_page_id( 'authentication' ) === $post->ID ) {
+					$post_states['wc_page_for_authentication'] = __( 'Authentication Page', 'goodbids' );
+				}
+
+				return $post_states;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Redirect to Authentication Page if user is not logged in.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function authentication_redirect() : void {
+		add_action(
+			'template_redirect',
+			function () : void {
+				global $wp;
+
+				// Make sure we have a My Account & Authentication page.
+				$auth_page_id    = wc_get_page_id( 'authentication' );
+				$account_page_id = wc_get_page_id( 'myaccount' );
+
+				if ( ! $auth_page_id || ! $account_page_id ) {
+					return;
+				}
+
+				// If logged in, perform WooCommerce Login Redirect.
+				if ( is_user_logged_in() ) {
+					if ( $auth_page_id === get_queried_object_id() ) {
+						$redirect = apply_filters( 'woocommerce_login_redirect', wc_get_page_permalink( 'myaccount' ) );
+
+						if ( $redirect ) {
+							wp_safe_redirect( $redirect );
+							exit;
+						}
+					}
+
+					return;
+				}
+
+				if ( $account_page_id !== get_queried_object_id() ) {
+					return;
+				}
+
+				$auth_page_url = wc_get_page_permalink( 'authentication' );
+
+				if ( ! $auth_page_url ) {
+					return;
+				}
+
+				$auth_page_url = add_query_arg(
+					'redirect_to',
+					urlencode( home_url( $wp->request ) ),
+					$auth_page_url
+				);
+
+				wp_safe_redirect( $auth_page_url );
+				exit;
 			}
 		);
 	}

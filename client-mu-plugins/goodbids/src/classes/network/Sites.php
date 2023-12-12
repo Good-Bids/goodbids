@@ -185,7 +185,7 @@ class Sites {
 					return;
 				}
 
-				check_admin_referer( 'add-blog', '_wpnonce_add-blog' );
+				check_admin_referer( 'add-np-site', '_wpnonce_add-np-site' );
 
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) || ! is_array( $_POST[ self::OPTION_SLUG ] ) ) {
 					wp_die( esc_html__( 'Missing required Nonprofit data.' ) );
