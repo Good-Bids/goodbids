@@ -33,6 +33,7 @@ class WooCommerce {
 
 		$this->configure_new_site();
 		$this->create_auth_page();
+		$this->add_auth_page_setting();
 	}
 
 	/**
@@ -75,35 +76,23 @@ class WooCommerce {
 	 */
 	private function create_auth_page() : void {
 		add_action(
-			'goodbids_init_site',
-			function ( int $site_id ) : void {
-				// Get WooCommerce My Account Page ID
-				$account_page_id = get_option( 'woocommerce_myaccount_page_id' );
-
-				if ( ! $account_page_id ) {
-					$account_page = wpcom_vip_get_page_by_path( 'my-account' );
-
-					if ( $account_page ) {
-						$account_page_id = $account_page->ID;
-					}
-				}
-
-				$auth_page_args = [
-					'post_title'     => __( 'Authentication', 'goodbids' ),
-					'post_name'      => 'authentication',
-					'post_status'    => 'publish',
-					'post_type'      => 'page',
-					'comment_status' => 'closed',
-					'ping_status'    => 'closed',
-					'post_content'   => '<!-- wp:acf/authentication {"name":"acf/authentication","mode":"preview"} /-->',
-				];
-
-				if ( $account_page_id ) {
-					$auth_page_args['post_parent'] = $account_page_id;
+			'woocommerce_page_created',
+			function ( int $page_id, array $page_data ) : void {
+				if ( empty( $page_data['post_name'] ) || 'my-account' !== $page_data['post_name'] ) {
+					return;
 				}
 
 				$auth_page_id = wp_insert_post(
-					$auth_page_args,
+					[
+						'post_title'     => __( 'Authentication', 'goodbids' ),
+						'post_name'      => 'authentication',
+						'post_status'    => 'publish',
+						'post_type'      => 'page',
+						'comment_status' => 'closed',
+						'ping_status'    => 'closed',
+						'post_content'   => '<!-- wp:acf/authentication {"name":"acf/authentication","mode":"preview"} /-->',
+						'post_parent'    => $page_id,
+					],
 					true
 				);
 
@@ -115,6 +104,51 @@ class WooCommerce {
 				update_option( 'woocommerce_authentication_page_id', $auth_page_id );
 			},
 			6
+		);
+	}
+
+	/**
+	 * Add Authentication Page setting to WooCommerce Advanced Settings
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_auth_page_setting() : void {
+		add_filter(
+			'woocommerce_settings_pages',
+			function ( array $settings ) : array {
+				$auth_setting = [
+					'title'    => __( 'Authentication', 'goodbids' ),
+					'desc'     => __( 'Page contents: GoodBids Authentication Block.', 'goodbids' ),
+					'id'       => 'woocommerce_authentication_page_id',
+					'type'     => 'single_select_page_with_search',
+					'default'  => '',
+					'class'    => 'wc-page-search',
+					'css'      => 'min-width:300px;',
+					'args'     => [
+						'exclude' => [ // phpcs:ignore
+							wc_get_page_id( 'cart' ),
+							wc_get_page_id( 'checkout' ),
+							wc_get_page_id( 'my-account' ),
+						],
+					],
+					'desc_tip' => true,
+					'autoload' => false,
+				];
+
+				$new_settings = [];
+
+				foreach ( $settings as $setting ) {
+					$new_settings[] = $setting;
+
+					if ( 'woocommerce_myaccount_page_id' === $setting['id'] ) {
+						$new_settings[] = $auth_setting;
+					}
+				}
+
+				return $new_settings;
+			}
 		);
 	}
 }
