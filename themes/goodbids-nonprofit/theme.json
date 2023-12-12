@@ -53,6 +53,12 @@
 			"fontSizes": [
 				{
 					"fluid": false,
+					"name": "X Small",
+					"size": "0.9rem",
+					"slug": "x-small"
+				},
+				{
+					"fluid": false,
 					"name": "Small",
 					"size": "1.125rem",
 					"slug": "small"
