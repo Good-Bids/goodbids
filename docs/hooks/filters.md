@@ -33,3 +33,30 @@ add_filter(
 	}
 );
 ```
+
+### goodbids_block_class
+
+Modifies the classes for custom blocks.
+
+```php
+add_filter(
+	'goodbids_block_class',
+	function( array $class, array $block ) : array {
+		$class[] = 'my-custom-class';
+		return $class;
+	}
+);
+```
+### goodbids_block_locations
+
+Adds support for additional custom block directories.
+
+```php
+add_filter(
+	'goodbids_block_locations',
+	function( array $locations ) : array {
+		$locations[] = get_stylesheet_directory() . '/blocks';
+		return $locations;
+	}
+);
+```

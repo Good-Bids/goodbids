@@ -2,10 +2,13 @@
 /**
  * ACF Functionality
  *
+ * @since 1.0.0
  * @package GoodBids
  */
 
 namespace GoodBids\Plugins;
+
+use GoodBids\Plugins\ACF\Blocks;
 
 /**
  * Class for Advanced Custom Fields Pro
@@ -21,6 +24,12 @@ class ACF {
 	private string $slug = 'advanced-custom-fields-pro/acf.php';
 
 	/**
+	 * @since 1.0.0
+	 * @var Blocks
+	 */
+	private Blocks $blocks;
+
+	/**
 	 * Initialize ACF Functionality
 	 *
 	 * @since 1.0.0
@@ -30,10 +39,24 @@ class ACF {
 			return;
 		}
 
+		// Initialize Submodules.
+		$this->blocks = new Blocks();
+
 		$this->disable_admin();
 		$this->discourage_the_field_usage();
 		$this->modify_save_directory();
 		$this->disable_database_storage();
+	}
+
+	/**
+	 * Return the Blocks submodule
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Blocks
+	 */
+	public function blocks() : Blocks {
+		return $this->blocks;
 	}
 
 	/**

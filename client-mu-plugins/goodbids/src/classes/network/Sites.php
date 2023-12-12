@@ -36,6 +36,7 @@ class Sites {
 	 */
 	public function __construct() {
 		$this->init_np_fields();
+
 		$this->validate_new_site_fields();
 		$this->save_new_site_fields();
 		$this->save_edit_site_fields();
@@ -298,6 +299,8 @@ class Sites {
 					$meta_value = sanitize_text_field( $data[ $key ] );
 					update_site_meta( $new_site->id, $meta_key, $meta_value );
 				}
+
+				$this->init_site_defaults( $new_site->id );
 			},
 			10,
 			2
@@ -346,5 +349,22 @@ class Sites {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Initialize new site defaults.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $site_id
+	 *
+	 * @return void
+	 */
+	private function init_site_defaults( int $site_id ) : void {
+		switch_to_blog( $site_id );
+
+		do_action( 'goodbids_init_site', $site_id );
+
+		restore_current_blog();
 	}
 }
