@@ -4,7 +4,15 @@
  *
  * @package GoodBids_Nonprofit
  *
- * @since 1.0
+ * @since 1.0.0
  */
 
- require_once get_stylesheet_directory() . '/inc/assets.php';
+/**
+ * Load Theme Assets
+ */
+require_once get_stylesheet_directory() . '/inc/assets.php';
+
+/**
+ * Load Theme Patterns
+ */
+require_once get_stylesheet_directory() . '/inc/patterns.php';
