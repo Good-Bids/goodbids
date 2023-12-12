@@ -4,21 +4,21 @@
  *
  * @package GoodBids_Nonprofit
  *
- * @since 1.0
+ * @since 1.0.0
  */
 
 /**
  * Register Component Pattern Category
  *
- * @since 1.0
+ * @since 1.0.0
  */
 add_action(
 	'init',
-	function() {
+	function () {
 		register_block_pattern_category(
 			'goodBids-nonprofit',
 			[
-				'label' => __( 'GoodBids Non-profit', 'goodbids-nonprofit' ),
+				'label' => __( 'GoodBids Nonprofit', 'goodbids-nonprofit' ),
 			]
 		);
 	}
@@ -27,21 +27,21 @@ add_action(
 /**
  * Register Patterns
  *
- * @since 1.0
+ * @since 1.0.0
  */
 add_action(
 	'init',
-	function() {
+	function () {
 		$patterns = [
 			[
-				'name'        	=> 'template-home-nonprofit',
-				'path'        	=> 'patterns/template-home-nonprofit.php',
-				'title'       	=> __( 'Non-profit Home Template', 'goodbids-nonprofit' ),
-				'description' 	=> _x( 'Template for the Non-profit Homepage', 'Block pattern description', 'goodbids-nonprofit' ),
-				'categories' 	=> ['featured', 'goodBids-nonprofit'],
-				'keywords'    	=> ['home', 'non-profit', 'template', 'page'],
-				'templateTypes' => ['front-page', 'home', 'page'],
-			]
+				'name'          => 'template-home-nonprofit',
+				'path'          => 'patterns/template-home-nonprofit.php',
+				'title'         => __( 'Nonprofit Home Template', 'goodbids-nonprofit' ),
+				'description'   => _x( 'Template for the Nonprofit Homepage', 'Block pattern description', 'goodbids-nonprofit' ),
+				'categories'    => [ 'featured', 'goodBids-nonprofit' ],
+				'keywords'      => [ 'home', 'non-profit', 'template', 'page' ],
+				'templateTypes' => [ 'front-page', 'home', 'page' ],
+			],
 		];
 
 		foreach ( $patterns as $pattern ) {
@@ -57,7 +57,7 @@ add_action(
 				include $path;
 				$content = ob_get_clean();
 			} else {
-				$content = file_get_contents( $path );
+				$content = wpcom_vip_file_get_contents( $path );
 			}
 
 			$pattern['content'] = $content;
