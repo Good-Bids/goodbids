@@ -271,6 +271,19 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction Starting Bid amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|null $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_starting_bid( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'starting_bid', $auction_id ) );
+	}
+
+	/**
 	 * Get the Auction Goal Amount
 	 *
 	 * @since 1.0.0
