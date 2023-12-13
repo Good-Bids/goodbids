@@ -52,8 +52,8 @@ Thumbs.db
 .phpcs.xml
 phpcs.xml
 
-# Composer
-vendor
+# Composer (only root)
+/vendor/
 
 # PhpStorm
 .idea/
