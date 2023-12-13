@@ -22,7 +22,7 @@ jobs:
 
       - run: echo "Building..."
       - run: echo "${ACF_CREDS}" >> client-mu-plugins/goodbids/auth.json
-      - run: cd client-mu-plugins/goodbids && composer install --no-progress
+      - run: cd client-mu-plugins/goodbids && composer install --verbose
 
       # @TODO: Add tests
       # - run:
