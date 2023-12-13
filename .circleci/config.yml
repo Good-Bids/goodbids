@@ -19,7 +19,10 @@ jobs:
 
       # @TODO: modify or remove this example
       - run: echo "Building..."
-      - run: php composer.phar install
+      - run: |
+          cd client-mu-plugins/goodbids
+          echo "${ACF_CREDS}" >> auth.json
+          composer install
 
       # NT - Not sure what will be needed here.
       # Test to ensure the build was good, do not deploy bad stuff!
