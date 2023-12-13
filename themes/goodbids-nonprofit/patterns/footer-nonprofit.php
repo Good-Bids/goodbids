@@ -1,32 +1,55 @@
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|50"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
-<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
+<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignwide has-background">
+	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide">
 
-	<!-- wp:image {"width":"30px","aspectRatio":"1","scale":"contain"} -->
-		<figure class="wp-block-image is-resized">
-			<a href="/">
-				<img style="aspect-ratio:1;object-fit:contain;width:30px" src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/images/goodbids-icon.png" alt="<?php esc_attr_e( 'GoodBids', 'goodbids-nonprofit' ); ?>"/>
-			</a>
-		</figure>
-	<!-- /wp:image -->
+		<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|50"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+		<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
 
-	<!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--20)">
-		<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","justifyContent":"center"},"fontSize":"small"} /-->
+			<!-- wp:image {"width":"30px","aspectRatio":"1","scale":"contain"} -->
+				<figure class="wp-block-image is-resized">
+					<a href="/">
+						<img style="aspect-ratio:1;object-fit:contain;width:30px" src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/assets/images/goodbids-icon.png" alt="<?php esc_attr_e( 'GoodBids', 'goodbids-nonprofit' ); ?>"/>
+					</a>
+				</figure>
+			<!-- /wp:image -->
+
+			<!-- wp:site-title /-->
+
+			<!-- wp:group {"layout":{"type":"constrained","contentSize":"350px"},"fontSize":"small"} -->
+			<div class="wp-block-group has-small-font-size">
+				<!-- wp:site-tagline {"align":"center","fontSize":"small"} /-->
+			</div>
+			<!-- /wp:group -->
+
+			<!-- wp:group {"style":{"spacing":{"margin":{"top":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--20)">
+				<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","justifyContent":"center"},"fontSize":"small"} /-->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"templateLock":"all","lock":{"move":true,"remove":true},"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"},"fontSize":"small"} -->
+		<div class="wp-block-group alignwide has-small-font-size" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)">
+			<!-- wp:paragraph -->
+				<p>GOODBIDS positive auctions</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-group">
+				<!-- wp:paragraph -->
+					<p><a href="#">Terms &amp; Conditions</a></p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p><a href="#">Privacy Policy</a></p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
-
-	<!-- wp:paragraph {"align":"center","style":{"elements":{"link":{"color":{"text":"var:preset|color|contrast"}}},"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"0"}}},"textColor":"secondary","fontSize":"x-small"} -->
-	<p class="has-text-align-center has-secondary-color has-text-color has-link-color" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:0;font-size:1rem">
-	<?php
-	/* Translators: WordPress link. */
-		$wordpress_link = '<a href="' . esc_url( __( 'https://wordpress.org', 'twentytwentyfour' ) ) . '" rel="nofollow">' . esc_attr_e( 'WordPress', 'goodbids-nonprofit' ) . '</a>';
-		printf(
-			/* Translators: Designed with WordPress */
-			esc_html__( 'Designed with %1$s', 'twentytwentyfour' ),
-			$wordpress_link
-		);
-		?>
-	</p>
-	<!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
