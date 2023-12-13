@@ -15,25 +15,23 @@ jobs:
     steps:
       - checkout
 
-      # NT - @TODO: Build React apps
+      # @TODO: Build React apps
 
-      # @TODO: modify or remove this example
       - run: echo "Building..."
       - run: |
           cd client-mu-plugins/goodbids
           echo "${ACF_CREDS}" >> auth.json
           composer install
 
-      # NT - Not sure what will be needed here.
-      # Test to ensure the build was good, do not deploy bad stuff!
-      - run:
-          name: Test the build
-          command: |
-            if [ -f build/README.md ]; then
-              echo "Build succeeded";
-            else
-              echo "Build failed, file missing"; exit 1
-            fi
+      # @TODO: Add tests
+      # - run:
+      #     name: Test the build
+      #     command: |
+      #       if [ -f build/README.md ]; then
+      #         echo "Build succeeded";
+      #       else
+      #         echo "Build failed, file missing"; exit 1
+      #       fi
 
       - add_ssh_keys:
           fingerprints:
