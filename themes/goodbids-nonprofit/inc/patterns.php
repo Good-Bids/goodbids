@@ -34,12 +34,20 @@ add_action(
 	function () {
 		$patterns = [
 			[
+				'name'       => 'header-nonprofit',
+				'file'       => 'patterns/header-nonprofit.php',
+				'title'      => __( 'GoodBids Header', 'goodbids-nonprofit' ),
+				'categories' => [ 'header', 'goodbids-np' ],
+				'keywords'   => [ 'header', 'non-profit', 'template' ],
+				'blockTypes' => [ 'core/template-part/header' ],
+				'source'     => 'theme',
+			],
+			[
 				'name'       => 'footer-nonprofit',
 				'file'       => 'patterns/footer-nonprofit.php',
 				'title'      => __( 'GoodBids Footer', 'goodbids-nonprofit' ),
 				'categories' => [ 'footer', 'goodbids-np' ],
 				'blockTypes' => [ 'core/template-part/footer' ],
-				'source'     => 'theme',
 			],
 			[
 				'name'          => 'template-home-nonprofit',
