@@ -345,7 +345,7 @@ class Auctions {
 	private function update_bid_product_on_auction_update(): void {
 		add_action(
 			'post_updated',
-			function ( int $post_id, \WP_Post $post_after, \WP_Post $post_before ) {
+			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
 				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || self::POST_TYPE !== get_post_type( $post_id ) ) {
 					return;
@@ -371,7 +371,7 @@ class Auctions {
 					$bid_product->set_price( $starting_bid );
 					$bid_product->save();
 				}
-			},
+			}
 		);
 	}
 }
