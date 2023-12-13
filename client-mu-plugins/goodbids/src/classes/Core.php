@@ -85,7 +85,7 @@ class Core {
 	 *
 	 * @return Core
 	 */
-	public static function get_instance() : Core {
+	public static function get_instance(): Core {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -100,7 +100,7 @@ class Core {
 	 *
 	 * @return string
 	 */
-	public function get_version() : string {
+	public function get_version(): string {
 		$data = get_plugin_data( GOODBIDS_PLUGIN_FILE );
 		return $data['Version'];
 	}
@@ -112,7 +112,7 @@ class Core {
 	 *
 	 * @return void
 	 */
-	public function init() : void {
+	public function init(): void {
 		if ( ! $this->load_config() ) {
 			// TODO: Log error.
 			return;
@@ -132,7 +132,7 @@ class Core {
 	 *
 	 * @return bool
 	 */
-	private function load_config() : bool {
+	private function load_config(): bool {
 		$json_path = GOODBIDS_PLUGIN_PATH . 'config.json';
 		if ( ! file_exists( $json_path ) ) {
 			return false;
@@ -156,7 +156,7 @@ class Core {
 	 *
 	 * @return mixed
 	 */
-	public function get_config( string $key ) : mixed {
+	public function get_config( string $key ): mixed {
 		return $this->config[ $key ] ?? null;
 	}
 
@@ -178,7 +178,7 @@ class Core {
 	 *
 	 * @return void
 	 */
-	private function load_plugins() : void {
+	private function load_plugins(): void {
 		if ( ! function_exists( 'wpcom_vip_load_plugin' ) ) {
 			return;
 		}
@@ -203,7 +203,7 @@ class Core {
 	 *
 	 * @return bool
 	 */
-	public function is_plugin_active( string $plugin ) : bool {
+	public function is_plugin_active( string $plugin ): bool {
 		$plugins = $this->get_config( 'active-plugins' );
 		return in_array( $plugin, $plugins, true );
 	}
@@ -215,7 +215,7 @@ class Core {
 	 *
 	 * @return void
 	 */
-	private function load_modules() : void {
+	private function load_modules(): void {
 		add_action(
 			'mu_plugin_loaded',
 			function () {

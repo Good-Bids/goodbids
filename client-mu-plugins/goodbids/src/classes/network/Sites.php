@@ -42,6 +42,7 @@ class Sites {
 		$this->save_edit_site_fields();
 		$this->new_site_form_fields();
 		$this->edit_site_form_fields();
+		$this->activate_child_theme_on_new_site();
 	}
 
 	/**
@@ -51,7 +52,7 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function init_np_fields() : void {
+	private function init_np_fields(): void {
 		$this->np_fields = apply_filters(
 			'goodbids_nonprofit_custom_fields',
 			[
@@ -79,7 +80,7 @@ class Sites {
 					'required'    => true,
 					'context'     => 'both',
 				],
-				'status'    => [
+				'status'     => [
 					'label'       => __( 'Site Status', 'goodbids' ),
 					'type'        => 'select',
 					'default'     => 'pending',
@@ -115,7 +116,7 @@ class Sites {
 	 *
 	 * @return array
 	 */
-	public function get_np_fields( string $context = 'both' ) : array {
+	public function get_np_fields( string $context = 'both' ): array {
 		if ( empty( $this->np_fields ) ) {
 			$this->init_np_fields();
 		}
@@ -149,7 +150,7 @@ class Sites {
 	 *
 	 * @return mixed
 	 */
-	public function get_np_data( int $site_id, string $field_id = '' ) : mixed {
+	public function get_np_data( int $site_id, string $field_id = '' ): mixed {
 		$data = [];
 
 		foreach ( $this->get_np_fields() as $key => $field ) {
@@ -177,7 +178,7 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function validate_new_site_fields() : void {
+	private function validate_new_site_fields(): void {
 		add_action(
 			'admin_init',
 			function () {
@@ -237,7 +238,7 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function new_site_form_fields() : void {
+	private function new_site_form_fields(): void {
 		add_action(
 			'network_site_new_form',
 			function () {
@@ -255,7 +256,7 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function edit_site_form_fields() : void {
+	private function edit_site_form_fields(): void {
 		add_action(
 			'network_site_info_form',
 			function ( $site_id ) {
@@ -274,10 +275,9 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function save_new_site_fields() : void {
+	private function save_new_site_fields(): void {
 		add_action(
 			'wp_initialize_site',
-
 			/**
 			 * @param WP_Site $new_site New site object.
 			 * @param array $args Arguments for the initialization.
@@ -314,10 +314,9 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function save_edit_site_fields() : void {
+	private function save_edit_site_fields(): void {
 		add_action(
-			'wp_update_site',
-
+			'wp_initialize_site',
 			/**
 			 * @param WP_Site $new_site New site object.
 			 * @param WP_Site $old_site Old site object.
@@ -348,6 +347,34 @@ class Sites {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Activate nonprofit child theme.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function activate_child_theme_on_new_site(): void {
+		add_action(
+			'wp_initialize_site',
+			function ( $site_id ) {
+				$stylesheet = 'goodbids-nonprofit';
+
+				// Switch to the new site
+				switch_to_blog( $site_id );
+
+				// Check if the Goodbids child theme exists
+				if ( ! wp_get_theme( $stylesheet )->exists() ) {
+					return;
+				}
+
+				switch_theme( $stylesheet );
+
+				restore_current_blog();
+			}
 		);
 	}
 
