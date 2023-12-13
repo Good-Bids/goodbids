@@ -319,11 +319,12 @@ class Sites {
 	private function save_edit_site_fields(): void {
 		add_action(
 			'wp_initialize_site',
+
 			/**
 			 * @param WP_Site $new_site New site object.
-			 * @param WP_Site $old_site Old site object.
+			 * @param array $args Arguments for the initialization.
 			 */
-			function ( WP_Site $new_site, WP_Site $old_site ) {
+			function ( WP_Site $new_site, array $args ): void {
 				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 					return;
 				}
