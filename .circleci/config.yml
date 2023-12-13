@@ -1,0 +1,41 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: cimg/php:8.1.26-node
+
+    branches:
+      # Don't build from a branch with the `-built` suffix, to
+      # prevent endless loops of deploy scripts.
+      # REQUIRED: If you're amended an existing config, the below are two
+      # of the required lines you must add
+      ignore:
+        - /^.*-built$/
+
+    steps:
+      - checkout
+
+      # NT - @TODO: Build React apps
+
+      # @TODO: modify or remove this example
+      - run: echo "Building..."
+      - run: php composer.phar install
+
+      # NT - Not sure what will be needed here.
+      # Test to ensure the build was good, do not deploy bad stuff!
+      - run:
+          name: Test the build
+          command: |
+            if [ -f build/README.md ]; then
+              echo "Build succeeded";
+            else
+              echo "Build failed, file missing"; exit 1
+            fi
+
+      - add_ssh_keys:
+          fingerprints:
+            - "6f:3b:07:c2:f1:23:5a:5d:9d:3a:b0:2d:b2:00:9d:0a"
+
+      - deploy:
+          name: Deploy -built branch to github
+          command: bash <(curl -s "https://raw.githubusercontent.com/Automattic/vip-go-build/master/deploy.sh")

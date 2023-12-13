@@ -1,18 +1,19 @@
 {
-  "name": "automattic/vip-go-skeleton",
-  "description": "Used for setting up development dependencies across the whole repository.",
-  "homepage": "https://github.com/automattic/vip-go-skeleton",
-  "license": "GPL-2.0-or-later",
-  "require": {
-    "php": ">=8.1"
-  },
-  "require-dev": {
-    "automattic/vipwpcs": "^3",
-    "phpcompatibility/phpcompatibility-wp": "^2"
-  },
-  "config": {
-    "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
-    }
-  }
+	"name": "automattic/vip-go-skeleton",
+	"description": "Used for setting up development dependencies across the whole repository.",
+	"homepage": "https://github.com/automattic/vip-go-skeleton",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"automattic/vipwpcs": "^3",
+		"phpcompatibility/phpcompatibility-wp": "^2"
+	},
+	"config": {
+		"vendor-dir": "client-mu-plugins/vendor",
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
 }
