@@ -58,13 +58,11 @@ class Bids {
 				}
 
 				// Set starting bid amount.
-				$starting_bid = goodbids()->auctions->get_starting_bid( (int) $post_id );
-				if ( ! $starting_bid ) {
-					$starting_bid = goodbids()->auctions->get_bid_increment( (int) $post_id );
-				}
+				$starting_bid = goodbids()->auctions->calculate_starting_bid( (int) $post_id );
 
 				// Make sure this meta value has been saved.
 				if ( ! $starting_bid ) {
+					// TODO: Log error.
 					return;
 				}
 
