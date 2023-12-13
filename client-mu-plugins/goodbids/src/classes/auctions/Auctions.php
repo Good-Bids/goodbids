@@ -248,6 +248,19 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction Prize Estimated Value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_estimated_value( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'estimated_value', $auction_id ) );
+	}
+
+	/**
 	 * Get the Auction Start Date/Time
 	 *
 	 * @since 1.0.0
@@ -333,6 +346,19 @@ class Auctions {
 	 */
 	public function get_goal( int $auction_id = null ) : int {
 		return intval( $this->get_setting( 'auction_goal', $auction_id ) );
+	}
+
+	/**
+	 * Get the Auction Expected High Bid Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_expected_high_bid( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'expected_high_bid', $auction_id ) );
 	}
 
 	/**

@@ -43,6 +43,9 @@ Returns a setting value for an auction. If `$auction_id` is not provided, the cu
 `goodbids()->auctions->get_prize_product_id( int $auction_id )`  
 Returns the Auction's Prize Product ID. If `$auction_id` is not provided, the current post ID will be used.
 
+`goodbids()->auctions->get_estimated_value( int $auction_id )`  
+Returns the Auction Prize's Estimated Value. If `$auction_id` is not provided, the current post ID will be used.
+
 `goodbids()->auctions->get_start_date_time( int $auction_id )`  
 Returns the Auction's Start Date/Time in MySQL format. If `$auction_id` is not provided, the current post ID will be used.
 
@@ -60,4 +63,7 @@ Returns the Auction's Calculated Starting Bid value, which will use the Bid Incr
 
 `goodbids()->auctions->get_goal( int $auction_id )`  
 Returns the Auction's Goal value. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->get_expected_high_bid( int $auction_id )`  
+Returns the Auction's Expected High Bid value. If `$auction_id` is not provided, the current post ID will be used.
 
