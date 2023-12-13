@@ -130,6 +130,8 @@ class Blocks {
 	/**
 	 * Get path to block by name.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param string $block_name
 	 * @param string $return
 	 *
