@@ -37,11 +37,14 @@ class Sites {
 	public function __construct() {
 		$this->init_np_fields();
 
+		// Process New Site Custom Meta Fields.
+		$this->new_site_form_fields();
 		$this->validate_new_site_fields();
 		$this->save_new_site_fields();
-		$this->save_edit_site_fields();
-		$this->new_site_form_fields();
+
+		// Process Edit Site Custom Meta Fields.
 		$this->edit_site_form_fields();
+		$this->save_edit_site_fields();
 
 		// New Site Actions
 		$this->activate_child_theme_on_new_site();
@@ -318,13 +321,13 @@ class Sites {
 	 */
 	private function save_edit_site_fields(): void {
 		add_action(
-			'wp_initialize_site',
+			'wp_update_site',
 
 			/**
 			 * @param WP_Site $new_site New site object.
-			 * @param array $args Arguments for the initialization.
+			 * @param WP_Site $old_site Old site object.
 			 */
-			function ( WP_Site $new_site, array $args ): void {
+			function ( WP_Site $new_site, WP_Site $old_site ): void {
 				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 					return;
 				}
@@ -334,7 +337,7 @@ class Sites {
 					return;
 				}
 
-				check_admin_referer( 'edit-site' );
+				check_admin_referer( 'edit-np-site', '_wpnonce_edit-np-site' );
 
 				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 

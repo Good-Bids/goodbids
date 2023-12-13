@@ -55,7 +55,7 @@ class Blocks {
 						require $include;
 					}
 
-					register_block_type( $block['path'] . '/block.json' );
+					register_block_type( trailingslashit( $block['path'] ) . 'block.json' );
 				}
 			}
 		);
@@ -152,7 +152,7 @@ class Blocks {
 			}
 
 			if ( 'json' === $return ) {
-				return $block['path'] . '/block.json';
+				return trailingslashit( $block['path'] ) . 'block.json';
 			}
 
 			return $block['path'];
