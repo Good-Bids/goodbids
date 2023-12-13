@@ -21,10 +21,11 @@ jobs:
       # @TODO: Build React apps
 
       - run: echo "Building..."
-      - run: |
-          cd client-mu-plugins/goodbids
-          echo "${ACF_CREDS}" >> auth.json
-          composer install
+      - run:
+          command: |
+            cd client-mu-plugins/goodbids
+            echo "${ACF_CREDS}" >> auth.json
+            composer install
 
       # @TODO: Add tests
       # - run:
@@ -40,6 +41,6 @@ jobs:
           fingerprints:
             - "6f:3b:07:c2:f1:23:5a:5d:9d:3a:b0:2d:b2:00:9d:0a"
 
-      - deploy:
+      - run:
           name: Deploy -built branch to github
           command: bash <(curl -s "https://raw.githubusercontent.com/Automattic/vip-go-build/master/deploy.sh")
