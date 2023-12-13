@@ -799,15 +799,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce",
-            "version": "8.3.1",
+            "version": "8.4.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce/",
-                "reference": "tags/8.3.1"
+                "reference": "tags/8.4.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.3.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.4.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
