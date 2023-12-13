@@ -1,6 +1,6 @@
 <?php
 /**
- * Block: User Login/Registration
+ * Block: Authentication
  *
  * @global array $block
  *
