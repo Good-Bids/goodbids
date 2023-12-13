@@ -73,6 +73,28 @@
             "append": ".00"
         },
         {
+            "key": "field_6579e95a0278a",
+            "label": "Starting Bid",
+            "name": "starting_bid",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "If left empty, starting bid will default to Bid Increment value.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "min": "",
+            "max": "",
+            "placeholder": "(Optional)",
+            "step": "",
+            "prepend": "$",
+            "append": ".00"
+        },
+        {
             "key": "field_657334428904d",
             "label": "Auction Goal",
             "name": "auction_goal",
@@ -113,6 +135,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702079254,
+    "modified": 1702488459,
     "private": true
 }
