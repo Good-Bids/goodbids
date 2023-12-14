@@ -48,6 +48,7 @@ class Sites {
 
 		// New Site Actions
 		$this->activate_child_theme_on_new_site();
+		$this->default_child_theme_logo();
 	}
 
 	/**
@@ -392,5 +393,31 @@ class Sites {
 		do_action( 'goodbids_init_site', $site_id );
 
 		restore_current_blog();
+	}
+
+	/**
+	 * Set the GoodBids logo on the child theme.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function default_child_theme_logo(): void {
+		add_filter(
+			'get_custom_logo',
+			function ( string $html, int $blog_id ) {
+				if ( $html ) {
+					return $html;
+				}
+
+				return sprintf(
+					'<a href="%1$s" class="custom-logo-link" rel="home" itemprop="url"><img src="%2$s" class="custom-logo" itemprop="logo" alt="GoodBids"></a>',
+					esc_url( home_url( '/' ) ),
+					esc_attr( GOODBIDS_PLUGIN_URL . 'assets/images/goodbids-logo.png' ),
+				);
+			},
+			10,
+			2
+		);
 	}
 }
