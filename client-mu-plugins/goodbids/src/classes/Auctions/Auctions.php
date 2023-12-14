@@ -370,7 +370,7 @@ class Auctions {
 	 */
 	private function update_bid_product_on_auction_update(): void {
 		add_action(
-			'post_updated',
+			'save_post',
 			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
 				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || self::POST_TYPE !== get_post_type( $post_id ) ) {
@@ -392,8 +392,13 @@ class Auctions {
 				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
 				$bid_product    = wc_get_product( $bid_product_id );
 				$starting_bid   = $this->calculate_starting_bid( $post_id );
+				$bid_price      = intval( $bid_product->get_price( 'edit' ) );
 
-				if ( $starting_bid && $bid_product->get_price( 'edit' ) !== $starting_bid ) {
+				if ( $starting_bid && $bid_price !== $starting_bid ) {
+					// Update postmeta.
+					update_post_meta( $bid_product_id, '_price', $starting_bid );
+
+					// Update current instance.
 					$bid_product->set_price( $starting_bid );
 					$bid_product->save();
 				}
