@@ -3,36 +3,6 @@
     "title": "Auction Settings",
     "fields": [
         {
-            "key": "field_657334958904f",
-            "label": "Auction Product",
-            "name": "auction_product",
-            "aria-label": "",
-            "type": "post_object",
-            "instructions": "",
-            "required": 1,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "post_type": [
-                "product"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": [
-                "product_cat:prizes"
-            ],
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
-        },
-        {
             "key": "field_6570c1fb429a8",
             "label": "Auction Start",
             "name": "auction_start",
@@ -51,6 +21,58 @@
             "first_day": 0
         },
         {
+            "key": "field_657334958904f",
+            "label": "Auction Product",
+            "name": "auction_product",
+            "aria-label": "",
+            "type": "post_object",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "product"
+            ],
+            "post_status": [
+                "publish"
+            ],
+            "taxonomy": [
+                "product_cat:rewards"
+            ],
+            "return_format": "object",
+            "multiple": 0,
+            "allow_null": 0,
+            "bidirectional": 0,
+            "ui": 1,
+            "bidirectional_target": []
+        },
+        {
+            "key": "field_6579fb39bce91",
+            "label": "Estimated Value",
+            "name": "estimated_value",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "min": "",
+            "max": "",
+            "placeholder": "",
+            "step": "",
+            "prepend": "$",
+            "append": ".00"
+        },
+        {
             "key": "field_657334728904e",
             "label": "Bid Increment",
             "name": "bid_increment",
@@ -60,7 +82,7 @@
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "50",
                 "class": "",
                 "id": ""
             },
@@ -68,6 +90,28 @@
             "min": "",
             "max": "",
             "placeholder": "",
+            "step": "",
+            "prepend": "$",
+            "append": ".00"
+        },
+        {
+            "key": "field_6579e95a0278a",
+            "label": "Starting Bid",
+            "name": "starting_bid",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "If left empty, starting bid will default to Bid Increment value.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "min": "",
+            "max": "",
+            "placeholder": "(Optional)",
             "step": "",
             "prepend": "$",
             "append": ".00"
@@ -82,7 +126,29 @@
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "min": "",
+            "max": "",
+            "placeholder": "",
+            "step": "",
+            "prepend": "$",
+            "append": ".00"
+        },
+        {
+            "key": "field_6579fb64bce92",
+            "label": "Expected High Bid",
+            "name": "expected_high_bid",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
                 "class": "",
                 "id": ""
             },
@@ -108,11 +174,11 @@
     "position": "normal",
     "style": "default",
     "label_placement": "top",
-    "instruction_placement": "label",
+    "instruction_placement": "field",
     "hide_on_screen": "",
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702079254,
+    "modified": 1702493167,
     "private": true
 }

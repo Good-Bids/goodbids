@@ -3,6 +3,7 @@
 	"active-plugins": [
 		"advanced-custom-fields-pro/acf.php",
 		"woocommerce",
+		"woocommerce-gateway-stripe",
 		"accessibility-checker",
 		"svg-support",
 		"cookie-law-info",
