@@ -26,6 +26,7 @@ node_modules
 /plugins/svg-support/
 /plugins/user-switching/
 /plugins/woocommerce/
+/plugins/woocommerce-gateway-stripe/
 
 # Uploads directory
 /uploads/

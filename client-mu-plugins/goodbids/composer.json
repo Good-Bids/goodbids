@@ -54,7 +54,8 @@
 		"wpackagist-plugin/cookie-law-info": "^3.1",
 		"wpackagist-plugin/svg-support": "^2.5",
 		"wpackagist-plugin/user-switching": "^1.7",
-		"wpackagist-plugin/woocommerce": "^8.3",
+		"wpackagist-plugin/woocommerce": "^8.4",
+		"wpackagist-plugin/woocommerce-gateway-stripe": "^7.7",
 		"wpengine/advanced-custom-fields-pro": "*"
 	},
 	"require-dev": {
