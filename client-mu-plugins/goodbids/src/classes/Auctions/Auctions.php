@@ -124,6 +124,14 @@ class Auctions {
 					'show_in_nav_menus'   => true,
 					'can_export'          => true,
 					'has_archive'         => self::ARCHIVE_SLUG,
+					'template'            => [
+						[
+							'core/pattern',
+							[
+								'slug' => 'goodbids-np/template-auction',
+							],
+						],
+					],
 					'exclude_from_search' => false,
 					'publicly_queryable'  => true,
 					'rewrite'             => $rewrite,
@@ -279,7 +287,7 @@ class Auctions {
 	 * @return mixed
 	 */
 	public function get_setting( string $meta_key, int $auction_id = null ): mixed {
-		if ( ! $auction_id ) {
+		if ( null === $auction_id ) {
 			$auction_id = get_the_ID();
 		}
 
