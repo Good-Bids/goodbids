@@ -41,7 +41,7 @@
                 "publish"
             ],
             "taxonomy": [
-                "product_cat:prizes"
+                "product_cat:rewards"
             ],
             "return_format": "object",
             "multiple": 0,

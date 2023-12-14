@@ -51,8 +51,8 @@ class Auctions {
 		// Register Post Type.
 		$this->register_post_type();
 
-		// Init Prizes Category.
-		$this->init_prizes_category();
+		// Init Rewards Category.
+		$this->init_rewards_category();
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
@@ -135,17 +135,17 @@ class Auctions {
 	}
 
 	/**
-	 * Initialize Prizes Category
+	 * Initialize Rewards Category
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function init_prizes_category() : void {
+	private function init_rewards_category() : void {
 		add_action(
 			'init',
 			function () {
-				$this->get_prizes_category_id();
+				$this->get_rewards_category_id();
 			}
 		);
 	}
@@ -162,18 +162,27 @@ class Auctions {
 	}
 
 	/**
-	 * Retrieve the Prizes category ID, or create it if it doesn't exist.
+	 * Retrieve the Rewards category ID, or create it if it doesn't exist.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_prizes_category_id() : int {
-		$prizes_category = get_term_by( 'slug', 'prizes', 'product_cat' );
-		if ( ! $prizes_category ) {
-			$prizes_category = wp_insert_term( 'Prizes', 'product_cat' );
+	public function get_rewards_category_id() : ?int {
+		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
+
+		if ( ! $rewards_category ) {
+			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
+
+			if ( ! $rewards_category ) {
+				// TODO: Log error.
+				return null;
+			}
+
+			return $rewards_category['term_id'];
 		}
-		return $prizes_category->term_id;
+
+		return $rewards_category->term_id;
 	}
 
 	/**
@@ -235,7 +244,7 @@ class Auctions {
 	}
 
 	/**
-	 * Get the Auction Prize Product ID.
+	 * Get the Auction Reward Product ID.
 	 *
 	 * @since 1.0.0
 	 *
@@ -243,12 +252,12 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_prize_product_id( int $auction_id = null ) : int {
+	public function get_reward_product_id( int $auction_id = null ) : int {
 		return intval( $this->get_setting( 'auction_product', $auction_id ) );
 	}
 
 	/**
-	 * Get the Auction Prize Estimated Value.
+	 * Get the Auction Reward Estimated Value.
 	 *
 	 * @since 1.0.0
 	 *
