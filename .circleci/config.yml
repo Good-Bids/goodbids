@@ -1,0 +1,44 @@
+version: 2.1
+
+workflows:
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - develop
+                - production
+
+jobs:
+  build:
+    docker:
+      - image: cimg/php:8.1.26-node
+
+    steps:
+      - checkout
+
+      # @TODO: Build React apps
+
+      - run: echo "Building..."
+      - run: echo "${ACF_DEVELOP}" >> ./client-mu-plugins/goodbids/auth.json
+      - run: echo "$(< ./client-mu-plugins/goodbids/auth.json)"
+      - run: cd client-mu-plugins/goodbids && composer install --verbose
+
+      # @TODO: Add tests
+      # - run:
+      #     name: Test the build
+      #     command: |
+      #       if [ -f build/README.md ]; then
+      #         echo "Build succeeded";
+      #       else
+      #         echo "Build failed, file missing"; exit 1
+      #       fi
+
+      - add_ssh_keys:
+          fingerprints:
+            - "6f:3b:07:c2:f1:23:5a:5d:9d:3a:b0:2d:b2:00:9d:0a"
+
+      - run:
+          name: Deploy -built branch to github
+          command: bash <(curl -s "https://raw.githubusercontent.com/Automattic/vip-go-build/master/deploy.sh")
