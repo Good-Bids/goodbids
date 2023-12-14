@@ -66,7 +66,7 @@ class ACF {
 			'acf/settings/save_json',
 			function ( $path ) {
 				if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT ) {
-					return GOODBIDS_PLUGIN_PATH;
+					return GOODBIDS_PLUGIN_PATH . 'acf-json';
 				}
 
 				return $path;
@@ -76,7 +76,7 @@ class ACF {
 		add_filter(
 			'acf/settings/load_json',
 			function ( array $paths ) {
-				$paths[] = GOODBIDS_PLUGIN_PATH;
+				$paths[] = GOODBIDS_PLUGIN_PATH . 'acf-json';
 				return $paths;
 			}
 		);

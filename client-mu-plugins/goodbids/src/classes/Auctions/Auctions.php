@@ -51,8 +51,11 @@ class Auctions {
 		// Register Post Type.
 		$this->register_post_type();
 
-		// Init Prizes Category.
-		$this->init_prizes_category();
+		// Init Rewards Category.
+		$this->init_rewards_category();
+
+		// Update Bid Product when Auction is updated.
+		$this->update_bid_product_on_auction_update();
 	}
 
 	/**
@@ -132,17 +135,17 @@ class Auctions {
 	}
 
 	/**
-	 * Initialize Prizes Category
+	 * Initialize Rewards Category
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function init_prizes_category() : void {
+	private function init_rewards_category() : void {
 		add_action(
 			'init',
 			function () {
-				$this->get_prizes_category_id();
+				$this->get_rewards_category_id();
 			}
 		);
 	}
@@ -159,18 +162,27 @@ class Auctions {
 	}
 
 	/**
-	 * Retrieve the Prizes category ID, or create it if it doesn't exist.
+	 * Retrieve the Rewards category ID, or create it if it doesn't exist.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_prizes_category_id() : int {
-		$prizes_category = get_term_by( 'slug', 'prizes', 'product_cat' );
-		if ( ! $prizes_category ) {
-			$prizes_category = wp_insert_term( 'Prizes', 'product_cat' );
+	public function get_rewards_category_id() : ?int {
+		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
+
+		if ( ! $rewards_category ) {
+			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
+
+			if ( ! $rewards_category ) {
+				// TODO: Log error.
+				return null;
+			}
+
+			return $rewards_category['term_id'];
 		}
-		return $prizes_category->term_id;
+
+		return $rewards_category->term_id;
 	}
 
 	/**
@@ -219,7 +231,7 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param string   $meta_key
-	 * @param int|null $auction_id
+	 * @param ?int $auction_id
 	 *
 	 * @return mixed
 	 */
@@ -232,16 +244,29 @@ class Auctions {
 	}
 
 	/**
-	 * Get the Auction Prize Product ID.
+	 * Get the Auction Reward Product ID.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|null $auction_id
+	 * @param ?int $auction_id
 	 *
 	 * @return int
 	 */
-	public function get_prize_product_id( int $auction_id = null ) : int {
+	public function get_reward_product_id( int $auction_id = null ) : int {
 		return intval( $this->get_setting( 'auction_product', $auction_id ) );
+	}
+
+	/**
+	 * Get the Auction Reward Estimated Value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_estimated_value( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'estimated_value', $auction_id ) );
 	}
 
 	/**
@@ -249,7 +274,7 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|null $auction_id
+	 * @param ?int $auction_id
 	 *
 	 * @return string
 	 */
@@ -258,11 +283,29 @@ class Auctions {
 	}
 
 	/**
+	 * Check if an Auction has started.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function has_started( int $auction_id = null ): bool {
+		$start_date_time = $this->get_start_date_time( $auction_id );
+		if ( ! $start_date_time ) {
+			return false;
+		}
+
+		return strtotime( $start_date_time ) < time();
+	}
+
+	/**
 	 * Get the Auction Bid Increment amount
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|null $auction_id
+	 * @param ?int $auction_id
 	 *
 	 * @return int
 	 */
@@ -271,15 +314,104 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction Starting Bid amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_starting_bid( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'starting_bid', $auction_id ) );
+	}
+
+	/**
+	 * Calculate the Auction Starting Bid amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function calculate_starting_bid( int $auction_id = null ): int {
+		$starting_bid = $this->get_starting_bid( (int) $auction_id );
+		if ( ! $starting_bid ) {
+			$starting_bid = $this->get_bid_increment( (int) $auction_id );
+		}
+
+		return $starting_bid;
+	}
+
+	/**
 	 * Get the Auction Goal Amount
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|null $auction_id
+	 * @param ?int $auction_id
 	 *
 	 * @return int
 	 */
 	public function get_goal( int $auction_id = null ) : int {
 		return intval( $this->get_setting( 'auction_goal', $auction_id ) );
+	}
+
+	/**
+	 * Get the Auction Expected High Bid Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_expected_high_bid( int $auction_id = null ) : int {
+		return intval( $this->get_setting( 'expected_high_bid', $auction_id ) );
+	}
+
+	/**
+	 * Update the Bid Product when an Auction is updated.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_bid_product_on_auction_update(): void {
+		add_action(
+			'save_post',
+			function ( int $post_id ) {
+				// Bail if not an Auction and not published.
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || self::POST_TYPE !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				// Bail if the Auction doesn't have a Bid product.
+				if ( ! $this->has_bid_product( $post_id ) ) {
+					// TODO: Log error.
+					return;
+				}
+
+				if ( $this->has_started( $post_id ) ) {
+					// TODO: Log warning.
+					return;
+				}
+
+				// Update the Bid product.
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+				$bid_product    = wc_get_product( $bid_product_id );
+				$starting_bid   = $this->calculate_starting_bid( $post_id );
+				$bid_price      = intval( $bid_product->get_price( 'edit' ) );
+
+				if ( $starting_bid && $bid_price !== $starting_bid ) {
+					// Update postmeta.
+					update_post_meta( $bid_product_id, '_price', $starting_bid );
+
+					// Update current instance.
+					$bid_product->set_price( $starting_bid );
+					$bid_product->save();
+				}
+			}
+		);
 	}
 }
