@@ -127,10 +127,29 @@ class Auctions {
 					'capability_type'     => 'page',
 					'show_in_rest'        => true,
 					'rest_base'           => self::SINGULAR_SLUG,
+					'template'            => $this->get_template(),
 				];
 
 				register_post_type( self::POST_TYPE, $args );
 			}
+		);
+	}
+
+	/**
+	 * Get the default template for Auctions.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	private function get_template(): array {
+		return apply_filters(
+			'woocommerce_auction_default_template',
+			[
+				[
+					'acf/bid-now',
+				],
+			]
 		);
 	}
 

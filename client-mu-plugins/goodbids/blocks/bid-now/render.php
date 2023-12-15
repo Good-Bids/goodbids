@@ -15,11 +15,9 @@ endif;
 
 $auction_id     = goodbids()->auctions->get_auction_id();
 $bid_product_id = goodbids()->auctions->get_bid_product_id( $auction_id );
-$bid_product    = wc_get_product( $bid_product_id );
 
 $classes    = 'wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex';
-$button_url = add_query_arg( 'add-to-cart', $bid_product_id, wc_get_checkout_url() );
-
+$button_url = $bid_product_id && ! is_admin() ? add_query_arg( 'add-to-cart', $bid_product_id, wc_get_checkout_url() ) : '#';
 ?>
 <div <?php block_attr( $block, $classes ); ?>>
 	<div class="wp-block-button has-custom-width wp-block-button__width-100">
