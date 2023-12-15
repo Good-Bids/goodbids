@@ -1,6 +1,6 @@
 <?php
 /**
- * Block: Authentication
+ * Block: Reward Product Gallery
  *
  * @global array $block
  *
@@ -8,9 +8,9 @@
  * @package GoodBids
  */
 global $product;
-$auction_id = is_admin() ? intval( sanitize_text_field( $_GET['post'] ) ) : get_queried_object_id();
-$reward_id  = goodbids()->auctions->get_reward_product_id( $auction_id );
-$product    = wc_get_product( $reward_id );
+$auction_id        = is_admin() ? intval( sanitize_text_field( $_GET['post'] ) ) : get_queried_object_id();
+$reward_id         = goodbids()->auctions->get_reward_product_id( $auction_id );
+$product           = wc_get_product( $reward_id );
 ?>
 
 

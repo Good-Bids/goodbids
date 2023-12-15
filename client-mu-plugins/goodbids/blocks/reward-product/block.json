@@ -1,0 +1,14 @@
+{
+	"name": "reward-product",
+	"title": "Reward Product",
+	"description": "Displays the reward product information",
+	"icon": "align-pull-right",
+	"category": "goodbids",
+	"keywords": ["custom", "product", "reward", "auction"],
+	"acf": {
+		"mode": "preview"
+	},
+	"supports": {
+		"jsx": false
+	}
+}
