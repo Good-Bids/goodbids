@@ -13,6 +13,8 @@
 ?>
 <h3><?php esc_html_e( 'GoodBids Nonprofit Settings', 'goodbids' ); ?></h3>
 
+<?php wp_nonce_field( 'edit-np-site', '_wpnonce_edit-np-site' ); ?>
+
 <table class="form-table" role="presentation">
 	<?php
 	foreach ( $fields as $key => $field ) :

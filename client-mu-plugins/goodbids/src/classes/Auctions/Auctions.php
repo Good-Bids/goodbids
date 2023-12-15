@@ -65,7 +65,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	private function register_post_type() : void {
+	private function register_post_type(): void {
 		add_action(
 			'init',
 			function () {
@@ -157,7 +157,7 @@ class Auctions {
 	 *
 	 * @return string
 	 */
-	public function get_post_type() : string {
+	public function get_post_type(): string {
 		return self::POST_TYPE;
 	}
 
@@ -174,7 +174,7 @@ class Auctions {
 		if ( ! $rewards_category ) {
 			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
 
-			if ( ! $rewards_category ) {
+			if ( is_wp_error( $rewards_category ) ) {
 				// TODO: Log error.
 				return null;
 			}
@@ -194,7 +194,7 @@ class Auctions {
 	 *
 	 * @return bool
 	 */
-	public function has_bid_product( int $auction_id ) : bool {
+	public function has_bid_product( int $auction_id ): bool {
 		return boolval( $this->get_bid_product_id( $auction_id ) );
 	}
 
@@ -207,7 +207,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_bid_product_id( int $auction_id ) : int {
+	public function get_bid_product_id( int $auction_id ): int {
 		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, true ) );
 	}
 
@@ -221,7 +221,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	public function set_bid_product_id( int $auction_id, int $bid_product_id ) : void {
+	public function set_bid_product_id( int $auction_id, int $bid_product_id ): void {
 		update_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, $bid_product_id );
 	}
 
@@ -235,7 +235,7 @@ class Auctions {
 	 *
 	 * @return mixed
 	 */
-	public function get_setting( string $meta_key, int $auction_id = null ) : mixed {
+	public function get_setting( string $meta_key, int $auction_id = null ): mixed {
 		if ( ! $auction_id ) {
 			$auction_id = get_the_ID();
 		}
@@ -278,7 +278,7 @@ class Auctions {
 	 *
 	 * @return string
 	 */
-	public function get_start_date_time( int $auction_id = null ) : string {
+	public function get_start_date_time( int $auction_id = null ): string {
 		return $this->get_setting( 'auction_start', $auction_id );
 	}
 
@@ -309,7 +309,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_bid_increment( int $auction_id = null ) : int {
+	public function get_bid_increment( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'bid_increment', $auction_id ) );
 	}
 
@@ -353,7 +353,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_goal( int $auction_id = null ) : int {
+	public function get_goal( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'auction_goal', $auction_id ) );
 	}
 

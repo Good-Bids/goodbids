@@ -36,11 +36,17 @@ class Sites {
 	 */
 	public function __construct() {
 		$this->init_np_fields();
+
+		// Process New Site Custom Meta Fields.
+		$this->new_site_form_fields();
 		$this->validate_new_site_fields();
 		$this->save_new_site_fields();
-		$this->save_edit_site_fields();
-		$this->new_site_form_fields();
+
+		// Process Edit Site Custom Meta Fields.
 		$this->edit_site_form_fields();
+		$this->save_edit_site_fields();
+
+		// New Site Actions
 		$this->activate_child_theme_on_new_site();
 	}
 
@@ -185,7 +191,7 @@ class Sites {
 					return;
 				}
 
-				check_admin_referer( 'add-blog', '_wpnonce_add-blog' );
+				check_admin_referer( 'add-np-site', '_wpnonce_add-np-site' );
 
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) || ! is_array( $_POST[ self::OPTION_SLUG ] ) ) {
 					wp_die( esc_html__( 'Missing required Nonprofit data.' ) );
@@ -298,6 +304,8 @@ class Sites {
 					$meta_value = sanitize_text_field( $data[ $key ] );
 					update_site_meta( $new_site->id, $meta_key, $meta_value );
 				}
+
+				$this->init_site_defaults( $new_site->id );
 			},
 			10,
 			2
@@ -313,12 +321,13 @@ class Sites {
 	 */
 	private function save_edit_site_fields(): void {
 		add_action(
-			'wp_initialize_site',
+			'wp_update_site',
+
 			/**
 			 * @param WP_Site $new_site New site object.
 			 * @param WP_Site $old_site Old site object.
 			 */
-			function ( WP_Site $new_site, WP_Site $old_site ) {
+			function ( WP_Site $new_site, WP_Site $old_site ): void {
 				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 					return;
 				}
@@ -328,7 +337,7 @@ class Sites {
 					return;
 				}
 
-				check_admin_referer( 'edit-site' );
+				check_admin_referer( 'edit-np-site', '_wpnonce_edit-np-site' );
 
 				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 
@@ -356,22 +365,32 @@ class Sites {
 	 */
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
-			'wp_initialize_site',
+			'goodbids_init_site',
 			function ( $site_id ) {
 				$stylesheet = 'goodbids-nonprofit';
 
-				// Switch to the new site
-				switch_to_blog( $site_id );
-
-				// Check if the Goodbids child theme exists
-				if ( ! wp_get_theme( $stylesheet )->exists() ) {
-					return;
+				// Check if the Goodbids child theme exists first.
+				if ( wp_get_theme( $stylesheet )->exists() ) {
+					switch_theme( $stylesheet );
 				}
-
-				switch_theme( $stylesheet );
-
-				restore_current_blog();
 			}
 		);
+	}
+
+	/**
+	 * Initialize new site defaults.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $site_id
+	 *
+	 * @return void
+	 */
+	private function init_site_defaults( int $site_id ): void {
+		switch_to_blog( $site_id );
+
+		do_action( 'goodbids_init_site', $site_id );
+
+		restore_current_blog();
 	}
 }

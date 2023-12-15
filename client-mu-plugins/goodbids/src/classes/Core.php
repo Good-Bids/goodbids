@@ -12,6 +12,7 @@ use GoodBids\Admin\Admin;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\WooCommerce;
 
 /**
  * Core Class
@@ -59,6 +60,12 @@ class Core {
 	 * @var Auctions
 	 */
 	public Auctions $auctions;
+
+	/**
+	 * @since 1.0.0
+	 * @var WooCommerce
+	 */
+	public WooCommerce $woocommerce;
 
 	/**
 	 * Constructor
@@ -111,6 +118,7 @@ class Core {
 			return;
 		}
 
+		$this->load_dependencies();
 		$this->load_plugins();
 		$this->load_modules();
 
@@ -150,6 +158,17 @@ class Core {
 	 */
 	public function get_config( string $key ): mixed {
 		return $this->config[ $key ] ?? null;
+	}
+
+	/**
+	 * Load plugin dependencies.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function load_dependencies() : void {
+		require_once GOODBIDS_PLUGIN_PATH . '/src/helpers.php';
 	}
 
 	/**
@@ -200,10 +219,11 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->acf      = new ACF();
-				$this->sites    = new Sites();
-				$this->admin    = new Admin();
-				$this->auctions = new Auctions();
+				$this->acf         = new ACF();
+				$this->sites       = new Sites();
+				$this->admin       = new Admin();
+				$this->auctions    = new Auctions();
+				$this->woocommerce = new WooCommerce();
 			}
 		);
 	}

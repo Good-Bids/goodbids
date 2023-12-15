@@ -30,9 +30,9 @@ if ( file_exists( GOODBIDS_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
 /**
  * Plugin Function Shortcode.
  *
- * @return \GoodBids\Core|null
+ * @return ?\GoodBids\Core
  */
-function goodbids() {
+function goodbids() : ?\GoodBids\Core {
 	if ( class_exists( '\GoodBids\Core' ) ) {
 		return \GoodBids\Core::get_instance();
 	}
