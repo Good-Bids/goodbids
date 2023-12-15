@@ -162,6 +162,27 @@ class Auctions {
 	}
 
 	/**
+	 * Returns the current Auction post ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id() : ?int {
+		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
+
+		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) {
+			$auction_id = intval( sanitize_text_field( $_GET['post'] ) );
+		}
+
+		if ( $this->get_post_type() !== get_post_type( $auction_id ) ) {
+			return null;
+		}
+
+		return $auction_id;
+	}
+
+	/**
 	 * Retrieve the Rewards category ID, or create it if it doesn't exist.
 	 *
 	 * @since 1.0.0
