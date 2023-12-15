@@ -43,7 +43,7 @@
             "taxonomy": [
                 "product_cat:rewards"
             ],
-            "return_format": "object",
+            "return_format": "id",
             "multiple": 0,
             "allow_null": 0,
             "bidirectional": 0,
@@ -179,6 +179,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702493167,
+    "modified": 1702659886,
     "private": true
 }
