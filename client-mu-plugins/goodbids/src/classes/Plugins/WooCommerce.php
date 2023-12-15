@@ -31,6 +31,8 @@ class WooCommerce {
 			return;
 		}
 
+		$this->enqueue_styles();
+
 		$this->configure_new_site();
 		$this->create_auth_page();
 		$this->add_auth_page_setting();
@@ -296,6 +298,27 @@ class WooCommerce {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Enqueue frontend WooCommerce styles.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function enqueue_styles(): void {
+		add_action(
+			'wp_enqueue_scripts',
+			function (): void {
+				wp_enqueue_style(
+					'goodbids-woocommerce',
+					GOODBIDS_PLUGIN_URL . '/assets/css/woocommerce.css',
+					[],
+					goodbids()->get_version()
+				);
+			}
 		);
 	}
 }
