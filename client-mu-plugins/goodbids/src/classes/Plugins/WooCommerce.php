@@ -35,8 +35,8 @@ class WooCommerce {
 		$this->create_auth_page();
 		$this->add_auth_page_setting();
 		$this->display_post_states();
-		$this->authentication_redirect();
-		$this->prevent_wp_login_access();
+//		$this->authentication_redirect();
+//		$this->prevent_wp_login_access();
 	}
 
 	/**
