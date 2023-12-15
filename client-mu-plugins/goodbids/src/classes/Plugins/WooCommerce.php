@@ -31,15 +31,12 @@ class WooCommerce {
 			return;
 		}
 
-		$this->enqueue_styles();
-
 		$this->configure_new_site();
 		$this->create_auth_page();
 		$this->add_auth_page_setting();
 		$this->display_post_states();
 //		$this->authentication_redirect();
 //		$this->prevent_wp_login_access();
-		$this->disable_woocommerce_blocks();
 	}
 
 	/**
@@ -275,50 +272,4 @@ class WooCommerce {
 		);
 	}
 
-	/**
-	 * Disable some WooCommerce Blocks.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function disable_woocommerce_blocks(): void {
-		add_filter(
-			'render_block',
-			function ( string $block_content, array $block ): string {
-				$disable_blocks = [
-					'woocommerce/checkout-totals-block',
-				];
-
-				if ( in_array( $block['blockName'], $disable_blocks, true ) ) {
-					return '';
-				}
-
-				return $block_content;
-			},
-			10,
-			2
-		);
-	}
-
-	/**
-	 * Enqueue frontend WooCommerce styles.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function enqueue_styles(): void {
-		add_action(
-			'wp_enqueue_scripts',
-			function (): void {
-				wp_enqueue_style(
-					'goodbids-woocommerce',
-					GOODBIDS_PLUGIN_URL . '/assets/css/woocommerce.css',
-					[],
-					goodbids()->get_version()
-				);
-			}
-		);
-	}
 }
