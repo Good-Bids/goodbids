@@ -37,6 +37,7 @@ class WooCommerce {
 		$this->display_post_states();
 //		$this->authentication_redirect();
 //		$this->prevent_wp_login_access();
+		$this->disable_woocommerce_blocks();
 	}
 
 	/**
@@ -268,6 +269,32 @@ class WooCommerce {
 				wp_safe_redirect( $auth_page_url );
 				exit;
 			},
+			2
+		);
+	}
+
+	/**
+	 * Disable some WooCommerce Blocks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_woocommerce_blocks(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				$disable_blocks = [
+					'woocommerce/checkout-totals-block',
+				];
+
+				if ( in_array( $block['blockName'], $disable_blocks, true ) ) {
+					return '';
+				}
+
+				return $block_content;
+			},
+			10,
 			2
 		);
 	}
