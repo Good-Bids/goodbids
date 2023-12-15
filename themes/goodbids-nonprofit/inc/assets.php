@@ -22,10 +22,6 @@ function enqueue_styles(): void {
 		array(),
 		wp_get_theme()->get( 'Version' )
 	);
-
-	\WC_Frontend_Scripts::load_scripts();
 }
 
 add_action( 'wp_enqueue_scripts', 'GoodBids_Nonprofit\Assets\enqueue_styles' );
-
-

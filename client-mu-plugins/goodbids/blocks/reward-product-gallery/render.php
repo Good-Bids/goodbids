@@ -18,7 +18,6 @@ $product    = wc_get_product( $reward_id );
 	<?php
 	if ( $product ) {
 		wc_get_template( 'single-product/product-image.php' );
-		wc_get_template( 'single-product/product-thumbnails.php' );
 	} else {
 		printf(
 			'<p style="text-align: center;">%s</p>',

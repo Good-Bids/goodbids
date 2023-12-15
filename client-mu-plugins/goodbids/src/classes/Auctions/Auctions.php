@@ -54,6 +54,9 @@ class Auctions {
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
+		// Init Auction Gallery.
+		$this->init_image_gallery();
+
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
 
@@ -176,6 +179,35 @@ class Auctions {
 			'init',
 			function () {
 				$this->get_rewards_category_id();
+			}
+		);
+	}
+
+	/**
+	 * Initialize the WooCommerce Gallery Script
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function init_image_gallery(): void {
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				if ( is_singular( 'gb-auction' ) ) {
+					if ( current_theme_supports( 'wc-product-gallery-zoom' ) ) {
+						wp_enqueue_script( 'zoom' );
+					}
+					if ( current_theme_supports( 'wc-product-gallery-slider' ) ) {
+						wp_enqueue_script( 'flexslider' );
+					}
+					if ( current_theme_supports( 'wc-product-gallery-lightbox' ) ) {
+						wp_enqueue_script( 'photoswipe-ui-default' );
+						wp_enqueue_style( 'photoswipe-default-skin' );
+						add_action( 'wp_footer', 'woocommerce_photoswipe' );
+					}
+					wp_enqueue_script( 'wc-single-product' );
+				}
 			}
 		);
 	}

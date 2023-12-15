@@ -82,7 +82,7 @@ add_filter(
 				'title'         => __( 'Auction', 'goodbids-nonprofit' ),
 				'description'   => _x( 'Template for GoodBids Auction Page', 'Block pattern description', 'goodbids-nonprofit' ),
 				'categories'    => [ 'page', 'goodbids-np' ],
-				'keywords'      => [ 'non-profit', 'starter', 'page' ],
+				'keywords'      => [ 'non-profit', 'auction' ],
 				'postTypes'     => [ 'gb-auction', 'wp_template' ],
 				'source'        => 'theme',
 			],
