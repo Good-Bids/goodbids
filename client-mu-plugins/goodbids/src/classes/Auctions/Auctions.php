@@ -127,14 +127,6 @@ class Auctions {
 					'show_in_nav_menus'   => true,
 					'can_export'          => true,
 					'has_archive'         => self::ARCHIVE_SLUG,
-					'template'            => [
-						[
-							'core/pattern',
-							[
-								'slug' => 'goodbids-np/template-auction',
-							],
-						],
-					],
 					'exclude_from_search' => false,
 					'publicly_queryable'  => true,
 					'rewrite'             => $rewrite,
@@ -161,7 +153,10 @@ class Auctions {
 			'woocommerce_auction_default_template',
 			[
 				[
-					'acf/bid-now',
+					'core/pattern',
+					[
+						'slug' => 'goodbids-np/template-auction',
+					],
 				],
 			]
 		);

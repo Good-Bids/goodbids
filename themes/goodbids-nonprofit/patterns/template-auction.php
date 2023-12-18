@@ -15,6 +15,8 @@
 			<!-- wp:post-title /-->
 
 			<!-- wp:post-excerpt /-->
+
+			<!-- wp:acf/bid-now {"name":"acf/bid-now","data":{},"mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
 	</div>
