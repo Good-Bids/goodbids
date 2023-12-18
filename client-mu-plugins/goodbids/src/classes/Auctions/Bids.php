@@ -168,7 +168,9 @@ class Bids {
 
 				$bid_product->set_regular_price( $bid_price + $increment );
 				$bid_product->save();
-			}
+			},
+			10,
+			2
 		);
 	}
 }
