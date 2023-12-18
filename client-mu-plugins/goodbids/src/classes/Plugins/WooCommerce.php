@@ -348,6 +348,14 @@ class WooCommerce {
 					update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
 
 					do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
+
+					if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+						return;
+					}
+
+					// TODO: Check if Auction is over.
+					wp_safe_redirect( get_permalink( $auction_id ) );
+					exit;
 				}
 			}
 		);
