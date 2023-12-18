@@ -190,8 +190,8 @@ class Auctions {
 	public function get_auction_id() : ?int {
 		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
 
-		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) {
-			$auction_id = intval( sanitize_text_field( $_GET['post'] ) );
+		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) { // phpcs:ignore
+			$auction_id = intval( sanitize_text_field( $_GET['post'] ) ); // phpcs:ignore
 		}
 
 		if ( $this->get_post_type() !== get_post_type( $auction_id ) ) {
@@ -263,6 +263,7 @@ class Auctions {
 	 */
 	public function set_bid_product_id( int $auction_id, int $bid_product_id ): void {
 		update_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, $bid_product_id );
+		update_post_meta( $bid_product_id, Bids::BID_AUCTION_META_KEY, $auction_id );
 	}
 
 	/**
@@ -453,5 +454,29 @@ class Auctions {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Get the Product Type
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $product_id
+	 *
+	 * @return ?string
+	 */
+	public function get_product_type( int $product_id ): ?string {
+		$valid      = [ 'bids', 'rewards' ];
+		$categories = get_the_terms( $product_id, 'product_cat' );
+
+		if ( ! is_array( $categories ) ) {
+			return null;
+		}
+
+		foreach ( $categories as $category ) {
+			if ( in_array( $category->slug, $valid, true ) ) {
+				return $category->slug;
+			}
+		}
 	}
 }

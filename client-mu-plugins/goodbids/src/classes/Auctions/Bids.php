@@ -22,6 +22,12 @@ class Bids {
 	const AUCTION_BID_META_KEY = 'gb_bid_product_id';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_AUCTION_META_KEY = 'gb_auction_id';
+
+	/**
 	 * Initialize Bids
 	 *
 	 * @since 1.0.0
@@ -107,13 +113,36 @@ class Bids {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_bids_category_id() : int {
+	public function get_bids_category_id(): ?int {
 		$bids_category = get_term_by( 'slug', 'bids', 'product_cat' );
+
 		if ( ! $bids_category ) {
 			$bids_category = wp_insert_term( 'Bids', 'product_cat' );
+
+			if ( is_wp_error( $bids_category ) ) {
+				// TODO: Log error.
+				return null;
+			}
+
+			return $bids_category['term_id'];
 		}
+
 		return $bids_category->term_id;
+	}
+
+	/**
+	 * Retrieve the Bid product ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $bid_product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id( int $bid_product_id ): ?int {
+		$auction_id = get_post_meta( $bid_product_id, self::BID_AUCTION_META_KEY, true );
+		return intval( $auction_id ) ?: null;
 	}
 }
