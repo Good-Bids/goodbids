@@ -76,6 +76,19 @@ add_filter(
 				'source'        => 'theme',
 				'inserter'      => true,
 			],
+			[
+				'name'        => 'template-archive-auction',
+				'file'        => 'patterns/template-archive-auction.php',
+				'title'       => __( 'Archive Auction', 'goodbids-nonprofit' ),
+				'description' => _x( 'Template for the Auction Archive', 'Block pattern description', 'goodbids-nonprofit' ),
+				'categories'  => [ 'goodbids-np' ],
+				'keywords'    => [ 'non-profit', 'starter', 'archive' ],
+				'blockTypes'  => [ 'core/post-content' ],
+				'postTypes'   => [ 'archive', 'wp_template' ],
+				'source'      => 'theme',
+			],
+
+
 		];
 
 		return array_merge( $patterns, $theme_patterns );

@@ -56,6 +56,9 @@ class Auctions {
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
+
+		// Sets a default image
+		$this->set_default_feature_image();
 	}
 
 	/**
@@ -110,7 +113,7 @@ class Auctions {
 					'label'               => __( 'Auction', 'goodbids' ),
 					'description'         => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
 					'labels'              => $labels,
-					'supports'            => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
+					'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'revisions' ),
 					'hierarchical'        => false,
 					'public'              => true,
 					'show_ui'             => true,
@@ -160,7 +163,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	private function init_rewards_category() : void {
+	private function init_rewards_category(): void {
 		add_action(
 			'init',
 			function () {
@@ -187,7 +190,7 @@ class Auctions {
 	 *
 	 * @return ?int
 	 */
-	public function get_auction_id() : ?int {
+	public function get_auction_id(): ?int {
 		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
 
 		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) {
@@ -208,7 +211,7 @@ class Auctions {
 	 *
 	 * @return ?int
 	 */
-	public function get_rewards_category_id() : ?int {
+	public function get_rewards_category_id(): ?int {
 		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
 
 		if ( ! $rewards_category ) {
@@ -270,8 +273,8 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string   $meta_key
-	 * @param ?int $auction_id
+	 * @param string $meta_key
+	 * @param ?int   $auction_id
 	 *
 	 * @return mixed
 	 */
@@ -292,7 +295,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_reward_product_id( int $auction_id = null ) : int {
+	public function get_reward_product_id( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'auction_product', $auction_id ) );
 	}
 
@@ -305,7 +308,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_estimated_value( int $auction_id = null ) : int {
+	public function get_estimated_value( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'estimated_value', $auction_id ) );
 	}
 
@@ -362,7 +365,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_starting_bid( int $auction_id = null ) : int {
+	public function get_starting_bid( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'starting_bid', $auction_id ) );
 	}
 
@@ -406,7 +409,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_expected_high_bid( int $auction_id = null ) : int {
+	public function get_expected_high_bid( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'expected_high_bid', $auction_id ) );
 	}
 
@@ -452,6 +455,31 @@ class Auctions {
 					$bid_product->save();
 				}
 			}
+		);
+	}
+
+	/**
+	 * Update the Bid Product when an Auction is updated.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_default_feature_image(): void {
+		add_filter(
+			'post_thumbnail_html',
+			function ( string $html, int $blog_id ) {
+				if ( $html ) {
+					return $html;
+				}
+
+				return sprintf(
+					'<img src="%1$s" class="custom-logo" itemprop="logo" alt="GoodBids">',
+					esc_attr( GOODBIDS_PLUGIN_URL . 'assets/images/goodbids-logo.png' ),
+				);
+			},
+			10,
+			2
 		);
 	}
 }
