@@ -60,6 +60,9 @@ class Auctions {
 		// Set the auction archive page in the main navigation
 		$this->set_auction_archive_posts_per_page();
 
+		// Adds the auction archive page to the pages
+		$this->add_auction_archive_page();
+
 		// Sets a default image
 		$this->set_default_feature_image();
 	}
@@ -478,6 +481,31 @@ class Auctions {
 			}
 		);
 	}
+
+	/**
+	 * Adds the Auction archive page the pages section
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_auction_archive_page(): void {
+		add_action(
+			'goodbids_init_site',
+			function () {
+				$page = array(
+					'post_type'   => 'page',
+					'post_title'  => ucfirst( self::ARCHIVE_SLUG ),
+					'post_status' => 'publish',
+					'post_author' => 1,
+					'post_name'   => self::ARCHIVE_SLUG,
+				);
+
+				wp_insert_post( $page );
+			}
+		);
+	}
+
 
 	/**
 	 * Set the default feature image for Auction
