@@ -116,7 +116,7 @@ class Auctions {
 					'label'               => __( 'Auction', 'goodbids' ),
 					'description'         => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
 					'labels'              => $labels,
-					'supports'            => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
+					'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'revisions' ),
 					'hierarchical'        => false,
 					'public'              => true,
 					'show_ui'             => true,
