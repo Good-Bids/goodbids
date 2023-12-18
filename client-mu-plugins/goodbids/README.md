@@ -70,6 +70,11 @@ Returns the Auction's Goal value. If `$auction_id` is not provided, the current 
 `goodbids()->auctions->get_expected_high_bid( int $auction_id )`  
 Returns the Auction's Expected High Bid value. If `$auction_id` is not provided, the current post ID will be used.
 
+### Bids Functions
+
+`goodbids()->auctions->bids->get_auction_id( int $bid_product_id )`  
+Returns the Auction ID for the given Bid Product ID.
+
 ### ACF Block Functions
 
 `goodbids()->acf->blocks()->get_all_blocks()`  

@@ -149,6 +149,13 @@ class Bids {
 		return intval( $auction_id ) ?: null;
 	}
 
+	/**
+	 * Update the Bid product price when an order is completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
 	private function update_bid_product_on_order_complete(): void {
 		add_action(
 			'goodbids_order_payment_complete',
