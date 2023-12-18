@@ -35,7 +35,10 @@ Renders an admin field based on the given field array. The `$prefix` and `$data`
 ### Auction Functions
 
 `goodbids()->auctions->get_post_type()`  
-Returns the auction post type slug.
+Returns the Auction post type slug.
+
+`goodbids()->auctions->get_auction_id()`  
+Returns the current Auction ID (if valid).
 
 `goodbids()->auctions->get_setting( string $setting, int $auction_id )`  
 Returns a setting value for an auction. If `$auction_id` is not provided, the current post ID will be used.

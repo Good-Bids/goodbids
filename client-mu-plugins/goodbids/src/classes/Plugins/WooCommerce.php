@@ -271,4 +271,5 @@ class WooCommerce {
 			2
 		);
 	}
+
 }

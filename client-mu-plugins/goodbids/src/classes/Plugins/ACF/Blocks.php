@@ -76,7 +76,7 @@ class Blocks {
 			$group = glob( trailingslashit( $location ) . '**/block.json' );
 
 			foreach ( $group as $block_path ) {
-				$block = json_decode( wpcom_vip_file_get_contents( $block_path ), true );
+				$block = json_decode( file_get_contents( $block_path ), true ); // phpcs:ignore
 
 				// Add path as a property.
 				$block['path'] = dirname( $block_path );

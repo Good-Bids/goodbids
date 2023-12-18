@@ -127,10 +127,29 @@ class Auctions {
 					'capability_type'     => 'page',
 					'show_in_rest'        => true,
 					'rest_base'           => self::SINGULAR_SLUG,
+					'template'            => $this->get_template(),
 				];
 
 				register_post_type( self::POST_TYPE, $args );
 			}
+		);
+	}
+
+	/**
+	 * Get the default template for Auctions.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	private function get_template(): array {
+		return apply_filters(
+			'woocommerce_auction_default_template',
+			[
+				[
+					'acf/bid-now',
+				],
+			]
 		);
 	}
 
@@ -159,6 +178,27 @@ class Auctions {
 	 */
 	public function get_post_type(): string {
 		return self::POST_TYPE;
+	}
+
+	/**
+	 * Returns the current Auction post ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id() : ?int {
+		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
+
+		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) {
+			$auction_id = intval( sanitize_text_field( $_GET['post'] ) );
+		}
+
+		if ( $this->get_post_type() !== get_post_type( $auction_id ) ) {
+			return null;
+		}
+
+		return $auction_id;
 	}
 
 	/**
