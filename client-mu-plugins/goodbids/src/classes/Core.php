@@ -10,6 +10,7 @@ namespace GoodBids;
 
 use GoodBids\Admin\Admin;
 use GoodBids\Auctions\Auctions;
+use GoodBids\Frontend\Patterns;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
@@ -66,6 +67,12 @@ class Core {
 	 * @var WooCommerce
 	 */
 	public WooCommerce $woocommerce;
+
+	/**
+	 * @since 1.0.0
+	 * @var Patterns
+	 */
+	public Patterns $patterns;
 
 	/**
 	 * Constructor
@@ -224,6 +231,7 @@ class Core {
 				$this->admin       = new Admin();
 				$this->auctions    = new Auctions();
 				$this->woocommerce = new WooCommerce();
+				$this->patterns    = new Patterns();
 			}
 		);
 	}

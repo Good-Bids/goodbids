@@ -1,0 +1,115 @@
+<?php
+/**
+ * Patterns Functionality
+ *
+ * @since 1.0.0
+ * @package GoodBids
+ */
+
+namespace GoodBids\Frontend;
+
+/**
+ * Class for patterns
+ *
+ * @since 1.0.0
+ */
+class Patterns {
+
+	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private array $patterns = [];
+
+	/**
+	 * Initialize Patterns
+	 *
+	 * @since 1.0.0
+	 */
+	public function __construct() {
+		$this->register_patterns();
+	}
+
+	/**
+	 * Register Block Patterns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function register_patterns(): void {
+		add_action(
+			'init',
+			function (): void {
+				// Register the GoodBids Pattern Category.
+				register_block_pattern_category(
+					'goodbids',
+					[
+						'label' => __( 'GoodBids', 'goodbids' ),
+					]
+				);
+
+				$sample_pattern = [
+					'name'       => 'sample-pattern',
+					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/sample-pattern.php',
+					'title'      => __( 'GoodBids Sample Pattern', 'goodbids' ),
+					'categories' => [ 'goodbids' ],
+					'keywords'   => [ 'example', 'template', 'demo' ],
+					'inserter'   => true,
+				];
+
+				$this->patterns = apply_filters(
+					'goodbids_patterns',
+					[
+						$sample_pattern,
+					]
+				);
+
+				foreach ( $this->patterns as $pattern ) {
+					$this->register_pattern( $pattern );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Register a block pattern
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $pattern
+	 *
+	 * @return bool
+	 */
+	public function register_pattern( array $pattern ): bool {
+		if ( ! file_exists( $pattern['path'] ) ) {
+			return false;
+		}
+
+		$path      = $pattern['path'];
+		$name      = $pattern['name'];
+		$extension = pathinfo( $path, PATHINFO_EXTENSION );
+
+		unset( $pattern['path'], $pattern['name'] );
+
+		if ( str_starts_with( $path, 'http' ) ) {
+			// TODO: Log warning.
+			return false;
+		}
+
+		if ( 'php' === $extension ) {
+			ob_start();
+			include $path;
+			$content = ob_get_clean();
+		} else {
+			$content = file_get_contents( $path ); // phpcs:ignore
+		}
+
+		$pattern['content'] = $content;
+
+		return register_block_pattern(
+			'goodbids/' . $name,
+			$pattern
+		);
+	}
+}
