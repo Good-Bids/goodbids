@@ -17,6 +17,12 @@ class Patterns {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const DEFAULT_NAMESPACE = 'goodbids';
+
+	/**
+	 * @since 1.0.0
 	 * @var array
 	 */
 	private array $patterns = [];
@@ -59,7 +65,7 @@ class Patterns {
 				];
 
 				$this->patterns = apply_filters(
-					'goodbids_patterns',
+					'goodbids_block_patterns',
 					[
 						$sample_pattern,
 					]
@@ -107,9 +113,10 @@ class Patterns {
 
 		$pattern['content'] = $content;
 
-		return register_block_pattern(
-			'goodbids/' . $name,
-			$pattern
-		);
+		if ( ! str_contains( $name, '/' ) ) {
+			$name = self::DEFAULT_NAMESPACE . '/' . $name;
+		}
+
+		return register_block_pattern( $name, $pattern );
 	}
 }
