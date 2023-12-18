@@ -7,8 +7,22 @@ Action performed when a new site is created. `switch_to_blog()` has already been
 ```php
 add_action(
 	'goodbids_init_site',
-	function( int $site_id ) : void {
+	function ( int $site_id ): void {
 		update_option( 'my_option_name', 'my_value' );
+	}
+);
+```
+
+### goodbids_order_payment_complete
+
+Action performed after an Auction-related order has a successful payment.
+
+```php
+add_action(
+	'goodbids_order_payment_complete',
+	function ( int $order_id, int $auction_id ): void {
+		$bid_count = get_post_meta( $auction_id, '_bid_count', true );
+		update_post_meta( $auction_id, '_bid_count', $bid_count + 1 );
 	}
 );
 ```

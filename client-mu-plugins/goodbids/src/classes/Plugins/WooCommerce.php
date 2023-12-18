@@ -284,7 +284,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Store the Auction ID in the Order Item Meta.
+	 * Store the Auction ID in the Cart Item Meta.
 	 *
 	 * @since 1.0.0
 	 *
@@ -333,7 +333,7 @@ class WooCommerce {
 			function ( int $order_id ) {
 				$order = wc_get_order( $order_id );
 
-				// Finder order items with Auction Meta.
+				// Find order items with Auction Meta.
 				foreach ( $order->get_items() as $item ) {
 					try {
 						$auction_id = wc_get_order_item_meta( $item->get_id(), self::AUCTION_META_KEY );
@@ -346,6 +346,8 @@ class WooCommerce {
 					}
 
 					update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
+
+					do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
 				}
 			}
 		);

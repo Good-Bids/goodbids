@@ -35,6 +35,9 @@ class Bids {
 	public function __construct() {
 		// Create a Bid product when an Auction is created.
 		$this->create_bid_product_for_auction();
+
+		// Bump Auction Bid Product Price when an Order is completed.
+		$this->update_bid_product_on_order_complete();
 	}
 
 	/**
@@ -144,5 +147,28 @@ class Bids {
 	public function get_auction_id( int $bid_product_id ): ?int {
 		$auction_id = get_post_meta( $bid_product_id, self::BID_AUCTION_META_KEY, true );
 		return intval( $auction_id ) ?: null;
+	}
+
+	private function update_bid_product_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $auction_id );
+
+				if ( ! $bid_product_id ) {
+					// TODO: Log error.
+					return;
+				}
+
+				// TODO: Check if Auction is over.
+
+				$increment   = goodbids()->auctions->get_bid_increment( $auction_id );
+				$bid_product = wc_get_product( $bid_product_id );
+				$bid_price   = intval( $bid_product->get_regular_price( 'edit' ) );
+
+				$bid_product->set_regular_price( $bid_price + $increment );
+				$bid_product->save();
+			}
+		);
 	}
 }
