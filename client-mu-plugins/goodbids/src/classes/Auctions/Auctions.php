@@ -113,7 +113,7 @@ class Auctions {
 					'label'               => __( 'Auction', 'goodbids' ),
 					'description'         => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
 					'labels'              => $labels,
-					'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'revisions' ),
+					'supports'            => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
 					'hierarchical'        => false,
 					'public'              => true,
 					'show_ui'             => true,
@@ -468,15 +468,19 @@ class Auctions {
 	private function set_default_feature_image(): void {
 		add_filter(
 			'post_thumbnail_html',
-			function ( string $html, int $blog_id ) {
+			function ( string $html, int $auction_id ) {
 				if ( $html ) {
 					return $html;
 				}
 
-				return sprintf(
-					'<img src="%1$s" class="custom-logo" itemprop="logo" alt="GoodBids">',
-					esc_attr( GOODBIDS_PLUGIN_URL . 'assets/images/goodbids-logo.png' ),
-				);
+				if ( is_post_type_archive( 'gb-auction' ) ) {
+					$reward_id   = goodbids()->auctions->get_reward_product_id( $auction_id );
+					$product = wc_get_product( $reward_id );
+					$product_html = $product->get_image();
+					return sprintf(
+						$product_html,
+					);
+				}
 			},
 			10,
 			2

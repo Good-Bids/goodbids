@@ -1,10 +1,16 @@
 <!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 <main class="wp-block-group" style="margin-top:0">
-	<!-- wp:heading {"level":1} -->
-	<h1 class="wp-block-heading"><?php esc_html_e( 'Our Auctions', 'goodbids-nonprofit' ); ?></h1>
+	<!-- wp:spacer -->
+	<div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div>
+	<!-- /wp:spacer -->
+
+	<!-- wp:heading {"level":1,"style":{"typography":{"textTransform":"capitalize"}}} -->
+	<h1 class="wp-block-heading" style="text-transform:capitalize">
+		<?php esc_html_e( 'Our Auctions', 'goodbids-nonprofit' ); ?>
+	</h1>
 	<!-- /wp:heading -->
 
-	<!-- wp:query {"query":{"perPage":10,"pages":0,"offset":"0","postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true},"align":"wide","layout":{"type":"default"}} -->
+	<!-- wp:query {"query":{"perPage":9,"pages":0,"offset":"0","postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true},"align":"wide","layout":{"type":"default"}} -->
 	<div class="wp-block-query alignwide">
 		<!-- wp:query-no-results -->
 		<!-- wp:pattern {"slug":"twentytwentyfour/hidden-no-results"} /-->
