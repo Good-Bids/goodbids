@@ -49,7 +49,7 @@ class Patterns {
 			function (): void {
 				// Register the GoodBids Pattern Category.
 				register_block_pattern_category(
-					'goodbids',
+					self::DEFAULT_NAMESPACE,
 					[
 						'label' => __( 'GoodBids', 'goodbids' ),
 					]
@@ -101,6 +101,10 @@ class Patterns {
 		if ( str_starts_with( $path, 'http' ) ) {
 			// TODO: Log warning.
 			return false;
+		}
+
+		if ( empty( $pattern['categories'] ) ) {
+			$pattern['categories'] = [ self::DEFAULT_NAMESPACE ];
 		}
 
 		if ( 'php' === $extension ) {
