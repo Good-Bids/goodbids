@@ -35,6 +35,18 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_COUNT_META = '_gb_bid_count';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TOTAL_RAISED_META = '_gb_total_raised';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -56,6 +68,9 @@ class Auctions {
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
+
+		// Update Total Raised when an Order is completed.
+		$this->update_total_raised_on_order_complete();
 	}
 
 	/**
@@ -480,5 +495,73 @@ class Auctions {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get the Auction Bid Count
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_bid_count( int $auction_id ): int {
+		return intval( get_post_meta( $auction_id, self::BID_COUNT_META, true ) );
+	}
+
+	/**
+	 * Increase the Auction Bid Count
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function increase_bid_count( int $auction_id ): bool {
+		$bid_count = $this->get_bid_count( $auction_id );
+		$bid_count++;
+		return update_post_meta( $auction_id, self::BID_COUNT_META, $bid_count );
+	}
+
+	/**
+	 * Get the Auction Total Raised
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return float
+	 */
+	public function get_total_raised( int $auction_id ): float {
+		return floatval( get_post_meta( $auction_id, self::TOTAL_RAISED_META, true ) );
+	}
+
+	/**
+	 * Update the Total Raised value when an Order is completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function update_total_raised_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				// Don't increment if this isn't a Bid order.
+				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$total_raised  = $this->get_total_raised( $auction_id );
+				$order         = wc_get_order( $order_id );
+				$total_raised += $order->get_total( 'edit' );
+
+				update_post_meta( $auction_id, self::TOTAL_RAISED_META, $total_raised );
+			},
+			10,
+			2
+		);
 	}
 }

@@ -25,6 +25,12 @@ class WooCommerce {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const TYPE_META_KEY = '_goodbids_product_type';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	private string $slug = 'woocommerce';
 
 	/**
@@ -314,6 +320,7 @@ class WooCommerce {
 				}
 
 				$item->update_meta_data( self::AUCTION_META_KEY, $auction_id );
+				$item->update_meta_data( self::TYPE_META_KEY, $product_type );
 			},
 			10,
 			4
@@ -345,7 +352,14 @@ class WooCommerce {
 						continue;
 					}
 
+					try {
+						$order_type = wc_get_order_item_meta( $item->get_id(), self::TYPE_META_KEY );
+					} catch (\Exception $e) {
+						continue;
+					}
+
 					update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
+					update_post_meta( $order_id, self::TYPE_META_KEY, $order_type );
 
 					do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
 
@@ -444,5 +458,45 @@ class WooCommerce {
 			esc_html( get_the_title( $reward_id ) ),
 			esc_html( $reward_id )
 		);
+	}
+
+	/**
+	 * Get the Order Type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return string
+	 */
+	public function get_order_type( int $order_id ): string {
+		$type = get_post_meta( $order_id, self::TYPE_META_KEY, true );
+		return $type ?: 'unknown';
+	}
+
+	/**
+	 * Check if an Order is a Bid Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function is_bid_order( int $order_id ): bool {
+		return 'bids' === $this->get_order_type( $order_id );
+	}
+
+	/**
+	 * Check if an Order is a Reward Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function is_reward_order( int $order_id ): bool {
+		return 'rewards' === $this->get_order_type( $order_id );
 	}
 }

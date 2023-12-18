@@ -38,6 +38,9 @@ class Bids {
 
 		// Bump Auction Bid Product Price when an Order is completed.
 		$this->update_bid_product_on_order_complete();
+
+		// Increase the Bid count when a Bid product is purchased.
+		$this->increment_bid_count();
 	}
 
 	/**
@@ -175,6 +178,39 @@ class Bids {
 
 				$bid_product->set_regular_price( $bid_price + $increment );
 				$bid_product->save();
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Increase the Bid count when a Bid product is purchased.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function increment_bid_count(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $auction_id );
+
+				if ( ! $bid_product_id ) {
+					// TODO: Log error.
+					return;
+				}
+
+				// Don't increment if this isn't a Bid order.
+				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				if ( ! goodbids()->auctions->increase_bid_count( $auction_id ) ) {
+					// TODO: Log error.
+					return;
+				}
 			},
 			10,
 			2
