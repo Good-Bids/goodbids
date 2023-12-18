@@ -478,5 +478,7 @@ class Auctions {
 				return $category->slug;
 			}
 		}
+
+		return null;
 	}
 }
