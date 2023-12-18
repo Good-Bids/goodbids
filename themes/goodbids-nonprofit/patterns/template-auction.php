@@ -16,6 +16,8 @@
 
 			<!-- wp:post-excerpt /-->
 
+			<!-- wp:acf/reward-product {"name":"acf/reward-product","mode":"preview"} /-->
+
 			<!-- wp:acf/bid-now {"name":"acf/bid-now","data":{},"mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
