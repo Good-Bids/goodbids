@@ -53,7 +53,7 @@ class WooCommerce {
 
 		$this->store_auction_id_in_cart();
 		$this->store_auction_id_on_checkout();
-		$this->auction_meta_box();
+		$this->add_auction_meta_box();
 	}
 
 	/**
@@ -403,7 +403,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function auction_meta_box(): void {
+	private function add_auction_meta_box(): void {
 		add_action(
 			'current_screen',
 			function (): void {
@@ -422,7 +422,7 @@ class WooCommerce {
 				add_meta_box(
 					'goodbids-auction-info',
 					__( 'Auction Info', 'goodbids' ),
-					[ $this, 'auction_info_meta_box' ],
+					[ $this, 'auction_meta_box' ],
 					$screen->id,
 					'side'
 				);
@@ -437,7 +437,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	public function auction_info_meta_box(): void {
+	public function auction_meta_box(): void {
 		$order_id   = ! empty( $_GET['id'] ) ? intval( sanitize_text_field( $_GET['id'] ) ) : false; // phpcs:ignore
 		$auction_id = $this->get_order_auction_id( $order_id );
 
