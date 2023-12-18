@@ -57,6 +57,9 @@ class Auctions {
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
 
+		// Set the auction archive page in the main navigation
+		$this->set_auction_archive_posts_per_page();
+
 		// Sets a default image
 		$this->set_default_feature_image();
 	}
@@ -459,7 +462,25 @@ class Auctions {
 	}
 
 	/**
-	 * Update the Bid Product when an Auction is updated.
+	 * Set the Auction archive page to show nine posts per pagination
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_auction_archive_posts_per_page(): void {
+		add_action(
+			'pre_get_posts',
+			function ( $query ) {
+				if ( ! is_admin() && is_post_type_archive( 'gb-auction' ) ) {
+					$query->set( 'posts_per_page', 9 );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Set the default feature image for Auction
 	 *
 	 * @since 1.0.0
 	 *
@@ -474,8 +495,8 @@ class Auctions {
 				}
 
 				if ( is_post_type_archive( 'gb-auction' ) ) {
-					$reward_id   = goodbids()->auctions->get_reward_product_id( $auction_id );
-					$product = wc_get_product( $reward_id );
+					$reward_id    = goodbids()->auctions->get_reward_product_id( $auction_id );
+					$product      = wc_get_product( $reward_id );
 					$product_html = $product->get_image();
 					return sprintf(
 						$product_html,
