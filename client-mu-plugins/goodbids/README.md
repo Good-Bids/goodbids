@@ -91,3 +91,9 @@ Get the location of a block. Return values can be: "directory" (Default) or "jso
 
 `goodbids()->acf->blocks()->get_block_locations()`  
 Get all directories where blocks can be found.
+
+
+### WooCommerce Functions
+
+`goodbids()->woocommerce->get_order_auction_id( int $order_id)`  
+Get the Auction ID for the given Order ID. If `$order_id` is not provided, the current order ID will be used.
