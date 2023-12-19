@@ -559,14 +559,10 @@ class Auctions {
 	public function get_bid_orders( int $auction_id, int $limit = -1 ): array {
 		$orders = $this->get_bid_order_ids( $auction_id, $limit );
 
-		array_walk(
-			$orders,
-			function( &$order ) {
-				$order = wc_get_order( $order );
-			}
+		return array_map(
+			fn ( $order ) => wc_get_order( $order ),
+			$orders
 		);
-
-		return $orders;
 	}
 
 	/**
