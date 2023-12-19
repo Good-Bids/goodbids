@@ -25,43 +25,47 @@ add_action(
 );
 
 /**
- * Register Patterns
+ * Register Theme Patterns
  *
  * @since 1.0.0
  */
-add_action(
-	'init',
-	function () {
-		$patterns = [
+add_filter(
+	'goodbids_block_patterns',
+	function ( array $patterns ): array {
+		$theme_patterns = [
 			[
-				'name'       => 'header-nonprofit',
-				'file'       => 'patterns/header-nonprofit.php',
+				'name'       => 'goodbids-np/header-nonprofit',
+				'path'       => get_stylesheet_directory() . '/patterns/header-nonprofit.php',
 				'title'      => __( 'GoodBids Header', 'goodbids-nonprofit' ),
 				'categories' => [ 'header', 'goodbids-np' ],
 				'keywords'   => [ 'header', 'non-profit', 'template' ],
 				'blockTypes' => [ 'core/template-part/header' ],
 				'source'     => 'theme',
+				'inserter'   => true,
 			],
 			[
-				'name'       => 'footer-nonprofit',
-				'file'       => 'patterns/footer-nonprofit.php',
+				'name'       => 'goodbids-np/footer-nonprofit',
+				'path'       => get_stylesheet_directory() . '/patterns/footer-nonprofit.php',
 				'title'      => __( 'GoodBids Footer', 'goodbids-nonprofit' ),
 				'categories' => [ 'footer', 'goodbids-np' ],
 				'blockTypes' => [ 'core/template-part/footer' ],
+				'source'     => 'theme',
+				'inserter'   => true,
 			],
 			[
-				'name'          => 'template-home-nonprofit',
-				'file'          => 'patterns/template-home-nonprofit.php',
+				'name'          => 'goodbids-np/template-home-nonprofit',
+				'path'          => get_stylesheet_directory() . '/patterns/template-home-nonprofit.php',
 				'title'         => __( 'GoodBids Home Template', 'goodbids-nonprofit' ),
 				'description'   => _x( 'Template for the Nonprofit Homepage', 'Block pattern description', 'goodbids-nonprofit' ),
 				'categories'    => [ 'featured', 'goodbids-np' ],
 				'keywords'      => [ 'home', 'non-profit', 'template', 'page' ],
 				'templateTypes' => [ 'front-page', 'home', 'page' ],
 				'source'        => 'theme',
+				'inserter'      => true,
 			],
 			[
-				'name'          => 'about-nonprofit',
-				'file'          => 'patterns/about-nonprofit.php',
+				'name'          => 'goodbids-np/about-nonprofit',
+				'path'          => get_stylesheet_directory() . '/patterns/about-nonprofit.php',
 				'title'         => __( 'About GoodBids', 'goodbids-nonprofit' ),
 				'description'   => _x( 'Template for About Page', 'Block pattern description', 'goodbids-nonprofit' ),
 				'categories'    => [ 'about','page', 'goodbids-np' ],
@@ -70,35 +74,10 @@ add_action(
 				'postTypes'     => [ 'page', 'wp_template' ],
 				'templateTypes' => [ 'front-page', 'home', 'page' ],
 				'source'        => 'theme',
+				'inserter'      => true,
 			],
 		];
 
-		foreach ( $patterns as $pattern ) {
-			if ( ! file_exists( get_stylesheet_directory() . '/' . $pattern['file'] ) ) {
-				continue;
-			}
-
-			$file      = $pattern['file'];
-			$name      = $pattern['name'];
-			$path      = get_stylesheet_directory() . '/' . $file;
-			$extension = pathinfo( $path, PATHINFO_EXTENSION );
-
-			unset( $pattern['file'], $pattern['name'] );
-
-			if ( 'php' === $extension ) {
-				ob_start();
-				include $path;
-				$content = ob_get_clean();
-			} else {
-				$content = wpcom_vip_file_get_contents( $path );
-			}
-
-			$pattern['content'] = $content;
-
-			register_block_pattern(
-				'goodbids-np/' . $name,
-				$pattern
-			);
-		}
+		return array_merge( $patterns, $theme_patterns );
 	}
 );
