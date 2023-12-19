@@ -55,19 +55,19 @@ class Patterns {
 					]
 				);
 
-				$sample_pattern = [
-					'name'       => 'sample-pattern',
-					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/sample-pattern.php',
-					'title'      => __( 'GoodBids Sample Pattern', 'goodbids' ),
+				$auction_archive = [
+					'name'       => 'template-archive-auction',
+					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-archive-auction.php',
+					'title'      => __( 'Archive Auction', 'goodbids' ),
 					'categories' => [ 'goodbids' ],
-					'keywords'   => [ 'example', 'template', 'demo' ],
+					'keywords'   => [ 'non-profit', 'starter', 'archive' ],
 					'inserter'   => true,
 				];
 
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
-						$sample_pattern,
+						$auction_archive,
 					]
 				);
 

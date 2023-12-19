@@ -49,6 +49,7 @@ class Sites {
 		// New Site Actions
 		$this->activate_child_theme_on_new_site();
 		$this->default_child_theme_logo();
+		$this->set_default_posts_per_page();
 	}
 
 	/**
@@ -323,7 +324,6 @@ class Sites {
 	private function save_edit_site_fields(): void {
 		add_action(
 			'wp_update_site',
-
 			/**
 			 * @param WP_Site $new_site New site object.
 			 * @param WP_Site $old_site Old site object.
@@ -418,6 +418,25 @@ class Sites {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Set the archive to show nine posts per pagination
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_default_posts_per_page(): void {
+		add_action(
+			'goodbids_init_site',
+			function ( int $site_id ): void {
+				update_option(
+					'posts_per_page',
+					9
+				);
+			}
 		);
 	}
 }
