@@ -79,6 +79,9 @@ class Auctions {
 
 		// Clear metric transients on new Bid Order.
 		$this->maybe_clear_metric_transients();
+
+		// Sets a default image
+		$this->set_default_feature_image();
 	}
 
 	/**
@@ -133,7 +136,7 @@ class Auctions {
 					'label'               => __( 'Auction', 'goodbids' ),
 					'description'         => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
 					'labels'              => $labels,
-					'supports'            => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
+					'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'revisions' ),
 					'hierarchical'        => false,
 					'public'              => true,
 					'show_ui'             => true,
@@ -170,7 +173,10 @@ class Auctions {
 			'woocommerce_auction_default_template',
 			[
 				[
-					'acf/bid-now',
+					'core/pattern',
+					[
+						'slug' => 'goodbids/template-auction',
+					],
 				],
 			]
 		);
@@ -183,7 +189,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	private function init_rewards_category() : void {
+	private function init_rewards_category(): void {
 		add_action(
 			'init',
 			function () {
@@ -191,6 +197,7 @@ class Auctions {
 			}
 		);
 	}
+
 
 	/**
 	 * Returns the Auction post type slug.
@@ -210,7 +217,7 @@ class Auctions {
 	 *
 	 * @return ?int
 	 */
-	public function get_auction_id() : ?int {
+	public function get_auction_id(): ?int {
 		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
 
 		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) { // phpcs:ignore
@@ -231,7 +238,7 @@ class Auctions {
 	 *
 	 * @return ?int
 	 */
-	public function get_rewards_category_id() : ?int {
+	public function get_rewards_category_id(): ?int {
 		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
 
 		if ( ! $rewards_category ) {
@@ -294,14 +301,14 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string   $meta_key
-	 * @param ?int $auction_id
+	 * @param string $meta_key
+	 * @param ?int   $auction_id
 	 *
 	 * @return mixed
 	 */
 	public function get_setting( string $meta_key, int $auction_id = null ): mixed {
-		if ( ! $auction_id ) {
-			$auction_id = get_the_ID();
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
 		}
 
 		return get_field( $meta_key, $auction_id );
@@ -316,7 +323,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_reward_product_id( int $auction_id = null ) : int {
+	public function get_reward_product_id( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'auction_product', $auction_id ) );
 	}
 
@@ -329,7 +336,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_estimated_value( int $auction_id = null ) : int {
+	public function get_estimated_value( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'estimated_value', $auction_id ) );
 	}
 
@@ -386,7 +393,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_starting_bid( int $auction_id = null ) : int {
+	public function get_starting_bid( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'starting_bid', $auction_id ) );
 	}
 
@@ -430,7 +437,7 @@ class Auctions {
 	 *
 	 * @return int
 	 */
-	public function get_expected_high_bid( int $auction_id = null ) : int {
+	public function get_expected_high_bid( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'expected_high_bid', $auction_id ) );
 	}
 
@@ -792,6 +799,33 @@ class Auctions {
 					$bid_product = wc_get_product( $this->get_bid_product_id( $post_id ) );
 					echo wp_kses_post( wc_price( $bid_product->get_price() ) );
 				}
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Set the default feature image for Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_default_feature_image(): void {
+		add_filter(
+			'post_thumbnail_html',
+			function ( string $html, int $post_id ) {
+				if ( ! is_post_type_archive( $this->get_post_type() ) ) {
+					return $html;
+				}
+
+				$reward_id  = goodbids()->auctions->get_reward_product_id( $post_id );
+				$product    = wc_get_product( $reward_id );
+				$image_html = $product->get_image();
+				return sprintf(
+					$image_html,
+				);
 			},
 			10,
 			2

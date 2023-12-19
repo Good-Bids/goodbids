@@ -60,3 +60,24 @@ add_filter(
 	}
 );
 ```
+### goodbids_block_patterns
+
+Registers custom block patterns.
+
+```php
+add_filter(
+	'goodbids_block_patterns',
+	function ( array $patterns ): array {
+		$theme_patterns = [
+			[
+				'name'     => 'goodbids-np/my-pattern',
+				'path'     => get_stylesheet_directory() . '/patterns/my-pattern.php',
+				'title'    => __( 'My Pattern', 'goodbids-nonprofit' ),
+				'source'   => 'theme',
+				'inserter' => true,
+			]
+		];
+
+		return array_merge( $patterns, $theme_patterns );
+	}
+```
