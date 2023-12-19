@@ -12,7 +12,25 @@
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
-                "width": "",
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "display_format": "m\/d\/Y g:i a",
+            "return_format": "Y-m-d H:i:s",
+            "first_day": 0
+        },
+        {
+            "key": "field_65822160b4398",
+            "label": "Auction End",
+            "name": "auction_end",
+            "aria-label": "",
+            "type": "date_time_picker",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
                 "class": "",
                 "id": ""
             },
@@ -179,6 +197,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1702659886,
+    "modified": 1703027242,
     "private": true
 }
