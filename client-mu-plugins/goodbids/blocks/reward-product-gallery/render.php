@@ -15,17 +15,17 @@ if ( $reward ) {
 	$product = $reward;
 }
 ?>
-
-
-<section <?php block_attr( $block ); ?>>
-	<?php
-	if ( $product ) {
-		wc_get_template( 'single-product/product-image.php' );
-	} else {
-		printf(
-			'<p style="text-align: center;">%s</p>',
-			esc_html__( 'No Auction Product selected', 'goodbids' )
-		);
-	}
-	?>
+<section <?php block_attr( $block, 'woocommerce' ); ?>>
+	<div class="woocommerce product">
+		<?php
+		if ( $product ) {
+			wc_get_template( 'single-product/product-image.php' );
+		} else {
+			printf(
+				'<p style="text-align: center;">%s</p>',
+				esc_html__( 'No Auction Product selected', 'goodbids' )
+			);
+		}
+		?>
+	</div>
 </section>
