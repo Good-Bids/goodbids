@@ -64,10 +64,23 @@ class Patterns {
 					'inserter'   => true,
 				];
 
+				$template_auction = [
+					'name'        => 'template-auction',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-auction.php',
+					'title'       => __( 'Auction', 'goodbids' ),
+					'description' => _x( 'Template for GoodBids Auction Page', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids' ],
+					'keywords'    => [ 'non-profit', 'auction' ],
+					'postTypes'   => [ 'gb-auction', 'wp_template' ],
+					'source'      => 'theme',
+					'inserter'    => false,
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
 						$auction_archive,
+						$template_auction,
 					]
 				);
 

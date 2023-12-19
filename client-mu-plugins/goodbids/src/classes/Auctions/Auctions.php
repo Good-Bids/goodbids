@@ -113,7 +113,7 @@ class Auctions {
 					'label'               => __( 'Auction', 'goodbids' ),
 					'description'         => __( 'GoodBids Auction Custom Post Type', 'goodbids' ),
 					'labels'              => $labels,
-					'supports'            => array( 'title', 'editor', 'thumbnail', 'comments', 'revisions' ),
+					'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'revisions' ),
 					'hierarchical'        => false,
 					'public'              => true,
 					'show_ui'             => true,
@@ -150,7 +150,10 @@ class Auctions {
 			'woocommerce_auction_default_template',
 			[
 				[
-					'acf/bid-now',
+					'core/pattern',
+					[
+						'slug' => 'goodbids/template-auction',
+					],
 				],
 			]
 		);
@@ -171,6 +174,7 @@ class Auctions {
 			}
 		);
 	}
+
 
 	/**
 	 * Returns the Auction post type slug.
@@ -279,8 +283,8 @@ class Auctions {
 	 * @return mixed
 	 */
 	public function get_setting( string $meta_key, int $auction_id = null ): mixed {
-		if ( ! $auction_id ) {
-			$auction_id = get_the_ID();
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
 		}
 
 		return get_field( $meta_key, $auction_id );
