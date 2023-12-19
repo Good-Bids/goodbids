@@ -70,6 +70,11 @@ Returns the Auction's Goal value. If `$auction_id` is not provided, the current 
 `goodbids()->auctions->get_expected_high_bid( int $auction_id )`  
 Returns the Auction's Expected High Bid value. If `$auction_id` is not provided, the current post ID will be used.
 
+### Bids Functions
+
+`goodbids()->auctions->bids->get_auction_id( int $bid_product_id )`  
+Returns the Auction ID for the given Bid Product ID.
+
 ### ACF Block Functions
 
 `goodbids()->acf->blocks()->get_all_blocks()`  
@@ -86,3 +91,9 @@ Get the location of a block. Return values can be: "directory" (Default) or "jso
 
 `goodbids()->acf->blocks()->get_block_locations()`  
 Get all directories where blocks can be found.
+
+
+### WooCommerce Functions
+
+`goodbids()->woocommerce->get_order_auction_id( int $order_id)`  
+Get the Auction ID for the given Order ID. If `$order_id` is not provided, the current order ID will be used.

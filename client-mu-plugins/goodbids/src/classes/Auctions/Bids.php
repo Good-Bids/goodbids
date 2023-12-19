@@ -22,6 +22,12 @@ class Bids {
 	const AUCTION_BID_META_KEY = 'gb_bid_product_id';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_AUCTION_META_KEY = 'gb_auction_id';
+
+	/**
 	 * Initialize Bids
 	 *
 	 * @since 1.0.0
@@ -29,6 +35,9 @@ class Bids {
 	public function __construct() {
 		// Create a Bid product when an Auction is created.
 		$this->create_bid_product_for_auction();
+
+		// Bump Auction Bid Product Price when an Order is completed.
+		$this->update_bid_product_on_order_complete();
 	}
 
 	/**
@@ -107,13 +116,68 @@ class Bids {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_bids_category_id() : int {
+	public function get_bids_category_id(): ?int {
 		$bids_category = get_term_by( 'slug', 'bids', 'product_cat' );
+
 		if ( ! $bids_category ) {
 			$bids_category = wp_insert_term( 'Bids', 'product_cat' );
+
+			if ( is_wp_error( $bids_category ) ) {
+				// TODO: Log error.
+				return null;
+			}
+
+			return $bids_category['term_id'];
 		}
+
 		return $bids_category->term_id;
+	}
+
+	/**
+	 * Retrieve the Bid product ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $bid_product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id( int $bid_product_id ): ?int {
+		$auction_id = get_post_meta( $bid_product_id, self::BID_AUCTION_META_KEY, true );
+		return intval( $auction_id ) ?: null;
+	}
+
+	/**
+	 * Update the Bid product price when an order is completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_bid_product_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $auction_id );
+
+				if ( ! $bid_product_id ) {
+					// TODO: Log error.
+					return;
+				}
+
+				// TODO: Check if Auction is over.
+
+				$increment   = goodbids()->auctions->get_bid_increment( $auction_id );
+				$bid_product = wc_get_product( $bid_product_id );
+				$bid_price   = intval( $bid_product->get_regular_price( 'edit' ) );
+
+				$bid_product->set_regular_price( $bid_price + $increment );
+				$bid_product->save();
+			},
+			10,
+			2
+		);
 	}
 }
