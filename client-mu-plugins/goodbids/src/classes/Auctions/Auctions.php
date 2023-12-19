@@ -506,18 +506,18 @@ class Auctions {
 	}
 
 	/**
-	 * Get Bid Orders for an Auction
+	 * Get Bid Order IDs for an Auction
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
-	 * @param string $context
+	 * @param int $limit
 	 *
-	 * @return array|WC_Order|false
+	 * @return int[]
 	 */
-	public function get_bid_orders( int $auction_id, string $context = 'count' ): array|WC_Order|false {
+	public function get_bid_order_ids( int $auction_id, int $limit = -1 ): array {
 		$args = [
-			'limit'   => 'last' === $context ? 1 : -1,
+			'limit'   => $limit,
 			'status'  => [ 'processing', 'completed' ],
 			'return'  => 'ids',
 			'orderby' => 'date',
@@ -540,14 +540,33 @@ class Auctions {
 				continue;
 			}
 
-			$return[] = 'count' === $context ? $order_id : wc_get_order( $order_id );
-		}
-
-		if ( 'last' === $context ) {
-			return count( $return ) ? $return[0] : false;
+			$return[] = $order_id;
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Get Bid Order objects for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $limit
+	 *
+	 * @return WC_Order[]
+	 */
+	public function get_bid_orders( int $auction_id, int $limit = -1 ): array {
+		$orders = $this->get_bid_order_ids( $auction_id, $limit );
+
+		array_walk(
+			$orders,
+			function( &$order ) {
+				$order = wc_get_order( $order );
+			}
+		);
+
+		return $orders;
 	}
 
 	/**
@@ -567,7 +586,7 @@ class Auctions {
 			return $bid_count;
 		}
 
-		$orders    = $this->get_bid_orders( $auction_id, 'count' );
+		$orders    = $this->get_bid_order_ids( $auction_id );
 		$bid_count = count( $orders );
 
 		set_transient( $transient, $bid_count, HOUR_IN_SECONDS );
@@ -592,7 +611,7 @@ class Auctions {
 			return $total;
 		}
 
-		$orders = $this->get_bid_orders( $auction_id, 'totals' );
+		$orders = $this->get_bid_orders( $auction_id );
 		$total  = 0;
 
 		foreach ( $orders as $order ) {
@@ -613,10 +632,16 @@ class Auctions {
 	 *
 	 * @param int $auction_id
 	 *
-	 * @return WC_Order|false
+	 * @return ?WC_Order
 	 */
-	public function get_last_bid( int $auction_id ): WC_Order|false {
-		return $this->get_bid_orders( $auction_id, 'last' );
+	public function get_last_bid( int $auction_id ): ?WC_Order {
+		$orders = $this->get_bid_orders( $auction_id, 1 );
+
+		if ( empty( $orders ) ) {
+			return null;
+		}
+
+		return $orders[0];
 	}
 
 	/**
