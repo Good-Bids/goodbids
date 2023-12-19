@@ -25,6 +25,12 @@ class WooCommerce {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const TYPE_META_KEY = '_goodbids_product_type';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	private string $slug = 'woocommerce';
 
 	/**
@@ -47,7 +53,9 @@ class WooCommerce {
 
 		$this->store_auction_id_in_cart();
 		$this->store_auction_id_on_checkout();
-		$this->auction_meta_box();
+		$this->redirect_after_bid_checkout();
+
+		$this->add_auction_meta_box();
 	}
 
 	/**
@@ -314,6 +322,7 @@ class WooCommerce {
 				}
 
 				$item->update_meta_data( self::AUCTION_META_KEY, $auction_id );
+				$item->update_meta_data( self::TYPE_META_KEY, $product_type );
 			},
 			10,
 			4
@@ -331,32 +340,62 @@ class WooCommerce {
 		add_action(
 			'woocommerce_payment_complete',
 			function ( int $order_id ) {
-				$order = wc_get_order( $order_id );
+				$order      = wc_get_order( $order_id );
+				$auction_id = false;
+				$order_type = false;
 
 				// Find order items with Auction Meta.
 				foreach ( $order->get_items() as $item ) {
 					try {
 						$auction_id = wc_get_order_item_meta( $item->get_id(), self::AUCTION_META_KEY );
+						$order_type = wc_get_order_item_meta( $item->get_id(), self::TYPE_META_KEY );
 					} catch (\Exception $e) {
 						continue;
 					}
 
-					if ( ! $auction_id ) {
-						continue;
+					if ( $auction_id && $order_type ) {
+						break;
 					}
-
-					update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
-
-					do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
-
-					if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
-						return;
-					}
-
-					// TODO: Check if Auction is over.
-					wp_safe_redirect( get_permalink( $auction_id ) );
-					exit;
 				}
+
+				if ( ! $auction_id || ! $order_type ) {
+					// TODO: Log warning.
+					return;
+				}
+
+				update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
+				update_post_meta( $order_id, self::TYPE_META_KEY, $order_type );
+
+				do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
+			}
+		);
+	}
+
+	/**
+	 * Redirect back to Auction after Checkout.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_bid_checkout(): void {
+		add_action(
+			'woocommerce_thankyou',
+			function ( int $order_id ): void {
+				if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+					return;
+				}
+
+				if ( ! $this->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_order_auction_id( $order_id );
+
+				// TODO: Check if Auction has ended.
+
+				wp_safe_redirect( get_permalink( $auction_id ) );
+				exit;
 			}
 		);
 	}
@@ -389,7 +428,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function auction_meta_box(): void {
+	private function add_auction_meta_box(): void {
 		add_action(
 			'current_screen',
 			function (): void {
@@ -408,7 +447,7 @@ class WooCommerce {
 				add_meta_box(
 					'goodbids-auction-info',
 					__( 'Auction Info', 'goodbids' ),
-					[ $this, 'auction_info_meta_box' ],
+					[ $this, 'auction_meta_box' ],
 					$screen->id,
 					'side'
 				);
@@ -423,7 +462,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	public function auction_info_meta_box(): void {
+	public function auction_meta_box(): void {
 		$order_id   = ! empty( $_GET['id'] ) ? intval( sanitize_text_field( $_GET['id'] ) ) : false; // phpcs:ignore
 		$auction_id = $this->get_order_auction_id( $order_id );
 
@@ -444,5 +483,45 @@ class WooCommerce {
 			esc_html( get_the_title( $reward_id ) ),
 			esc_html( $reward_id )
 		);
+	}
+
+	/**
+	 * Get the Order Type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return string
+	 */
+	public function get_order_type( int $order_id ): string {
+		$type = get_post_meta( $order_id, self::TYPE_META_KEY, true );
+		return $type ?: 'unknown';
+	}
+
+	/**
+	 * Check if an Order is a Bid Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function is_bid_order( int $order_id ): bool {
+		return 'bids' === $this->get_order_type( $order_id );
+	}
+
+	/**
+	 * Check if an Order is a Reward Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function is_reward_order( int $order_id ): bool {
+		return 'rewards' === $this->get_order_type( $order_id );
 	}
 }
