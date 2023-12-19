@@ -96,7 +96,7 @@ class Auctions {
 					'update_item'           => __( 'Update Auction', 'goodbids' ),
 					'view_item'             => __( 'View Auction', 'goodbids' ),
 					'view_items'            => __( 'View Auctions', 'goodbids' ),
-					'search_items'          => __( 'Search Auction', 'goodbids' ),
+					'search_items'          => __( 'Search Auctions', 'goodbids' ),
 					'not_found'             => __( 'Not found', 'goodbids' ),
 					'not_found_in_trash'    => __( 'Not found in Trash', 'goodbids' ),
 					'featured_image'        => __( 'Featured Image', 'goodbids' ),
