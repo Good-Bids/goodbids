@@ -37,18 +37,6 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
-	 */
-	const BID_COUNT_META = '_gb_bid_count';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const TOTAL_RAISED_META = '_gb_total_raised';
-
-	/**
-	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -70,6 +58,9 @@ class Auctions {
 
 		// Add Auction Metrics Meta Box.
 		$this->add_metrics_meta_box();
+
+		// Add custom Admin Columns for Auctions.
+		$this->add_admin_columns();
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
@@ -522,14 +513,13 @@ class Auctions {
 		];
 
 		$orders = wc_get_orders( $args );
-
-		if ( 'last' === $context ) {
-			return count( $orders ) ? wc_get_order( $orders[0] ) : false;
-		}
-
 		$return = [];
 
 		foreach ( $orders as $order_id ) {
+			// We need to filter the orders out here, for some reason.
+			// meta_query doesn't seem to work with the following filter hooks:
+			// - woocommerce_order_query_args
+			// - woocommerce_order_data_store_cpt_get_orders_query
 			if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
 				continue;
 			}
@@ -539,6 +529,10 @@ class Auctions {
 			}
 
 			$return[] = 'count' === $context ? $order_id : wc_get_order( $order_id );
+		}
+
+		if ( 'last' === $context ) {
+			return count( $return ) ? $return[0] : false;
 		}
 
 		return $return;
@@ -711,5 +705,69 @@ class Auctions {
 				wp_kses_post( wc_price( $last_bid->get_total() ) )
 			);
 		}
+	}
+
+	private function add_admin_columns(): void {
+		add_filter(
+			'manage_' . $this->get_post_type() . '_posts_columns',
+			function ( array $columns ): array {
+				$new_columns = [];
+
+				foreach ( $columns as $column => $label ) {
+					$new_columns[ $column ] = $label;
+
+					// Insert Custom Columns after the Title column.
+					if ( 'title' === $column ) {
+						$new_columns['starting_bid']  = __( 'Starting Bid', 'goodbids' );
+						$new_columns['bid_increment'] = __( 'Bid Increment', 'goodbids' );
+						$new_columns['total_bids']    = __( 'Total Bids', 'goodbids' );
+						$new_columns['total_raised']  = __( 'Total Raised', 'goodbids' );
+						$new_columns['last_bid']      = __( 'Last Bid', 'goodbids' );
+						$new_columns['current_bid']   = __( 'Current Bid', 'goodbids' );
+					}
+				}
+
+				return $new_columns;
+			}
+		);
+
+		add_action(
+			'manage_' . $this->get_post_type() . '_posts_custom_column',
+			function ( $column, $post_id ) {
+				$bid_cols = [
+					'starting_bid',
+					'bid_increment',
+					'total_bids',
+					'total_raised',
+					'last_bid',
+					'current_bid',
+				];
+
+				// Bail early if Auction isn't published.
+				if ( in_array( $column, $bid_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
+					echo '&mdash;';
+					return;
+				}
+
+				// Output the column values.
+				if ( 'starting_bid' === $column ) {
+					echo wp_kses_post( wc_price( $this->calculate_starting_bid( $post_id ) ) );
+				} elseif ( 'bid_increment' === $column ) {
+					echo wp_kses_post( wc_price( $this->get_bid_increment( $post_id ) ) );
+				} elseif ( 'total_bids' === $column ) {
+					echo esc_html( $this->get_bid_count( $post_id ) );
+				} elseif ( 'total_raised' === $column ) {
+					echo wp_kses_post( wc_price( $this->get_total_raised( $post_id ) ) );
+				} elseif ( 'last_bid' === $column ) {
+					$last_bid = $this->get_last_bid( $post_id );
+					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
+				} elseif ( 'current_bid' === $column ) {
+					$bid_product = wc_get_product( $this->get_bid_product_id( $post_id ) );
+					echo wp_kses_post( wc_price( $bid_product->get_price() ) );
+				}
+			},
+			10,
+			2
+		);
 	}
 }
