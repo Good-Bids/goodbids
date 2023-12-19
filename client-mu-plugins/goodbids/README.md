@@ -52,6 +52,9 @@ Returns the Auction Reward's Estimated Value. If `$auction_id` is not provided, 
 `goodbids()->auctions->get_start_date_time( int $auction_id )`  
 Returns the Auction's Start Date/Time in MySQL format. If `$auction_id` is not provided, the current post ID will be used.
 
+`goodbids()->auctions->get_end_date_time( int $auction_id )`  
+Returns the Auction's End Date/Time in MySQL format. If `$auction_id` is not provided, the current post ID will be used.
+
 `goodbids()->auctions->has_started( int $auction_id )`  
 Checks if the Auction has started. If `$auction_id` is not provided, the current post ID will be used.
 
@@ -69,6 +72,9 @@ Returns the Auction's Goal value. If `$auction_id` is not provided, the current 
 
 `goodbids()->auctions->get_expected_high_bid( int $auction_id )`  
 Returns the Auction's Expected High Bid value. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->get_guid( int $auction_id )`  
+Returns the Auction's Unique GUID. If `$auction_id` is not provided, the current post ID will be used.
 
 ### Bids Functions
 

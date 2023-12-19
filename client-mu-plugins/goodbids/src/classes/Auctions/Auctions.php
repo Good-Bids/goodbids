@@ -363,6 +363,19 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction End Date/Time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_end_date_time( int $auction_id = null ): string {
+		return $this->get_setting( 'auction_end', $auction_id );
+	}
+
+	/**
 	 * Check if an Auction has started.
 	 *
 	 * @since 1.0.0
