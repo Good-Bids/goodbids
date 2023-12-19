@@ -155,7 +155,7 @@ class Auctions {
 				[
 					'core/pattern',
 					[
-						'slug' => 'goodbids-np/template-auction',
+						'slug' => 'goodbids/template-auction',
 					],
 				],
 			]

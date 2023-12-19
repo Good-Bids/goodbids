@@ -76,16 +76,6 @@ add_filter(
 				'source'        => 'theme',
 				'inserter'      => true,
 			],
-			[
-				'name'          => 'template-auction',
-				'file'          => 'patterns/template-auction.php',
-				'title'         => __( 'Auction', 'goodbids-nonprofit' ),
-				'description'   => _x( 'Template for GoodBids Auction Page', 'Block pattern description', 'goodbids-nonprofit' ),
-				'categories'    => [ 'page', 'goodbids-np' ],
-				'keywords'      => [ 'non-profit', 'auction' ],
-				'postTypes'     => [ 'gb-auction', 'wp_template' ],
-				'source'        => 'theme',
-			],
 		];
 
 		return array_merge( $patterns, $theme_patterns );

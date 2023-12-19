@@ -22,11 +22,6 @@ if ( $goal ) {
 		'<p style="text-align: center;">%s</p>',
 		esc_html__( $goal, 'goodbids' )
 	);
-} else {
-	printf(
-		'<p style="text-align: center;">%s</p>',
-		esc_html__( 'No Goal Set', 'goodbids' )
-	);
 }
 
 // Estimated Value
@@ -35,11 +30,6 @@ if ( $estimated_value ) {
 		'<p style="text-align: center;">%s</p>',
 		esc_html__( $estimated_value, 'goodbids' )
 	);
-} else {
-	printf(
-		'<p style="text-align: center;">%s</p>',
-		esc_html__( 'No Estimated Value Set', 'goodbids' )
-	);
 }
 
 // Expected High Bid
@@ -47,11 +37,6 @@ if ( $expected_high_bid ) {
 	printf(
 		'<p style="text-align: center;">%s</p>',
 		esc_html__( $expected_high_bid, 'goodbids' )
-	);
-} else {
-	printf(
-		'<p style="text-align: center;">%s</p>',
-		esc_html__( 'No Expected High Bid Set', 'goodbids' )
 	);
 }
 ?>

@@ -1,3 +1,15 @@
+<?php
+/**
+ * Pattern: Auction Template
+ *
+ * Auto loaded as the default template for the gb-auction custom post type
+ *
+ * @since 1.0.0
+ * @package GoodBids
+ */
+
+?>
+
 <!-- wp:group {"tagName":"main","align":"wide"} -->
 <main class="wp-block-group alignwide">
 	<!-- wp:columns -->
