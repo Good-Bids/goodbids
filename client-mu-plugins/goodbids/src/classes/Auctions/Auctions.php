@@ -37,6 +37,18 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_COUNT_TRANSIENT = 'gb:bid-count:%d';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TOTAL_RAISED_TRANSIENT = 'gb:total-raised:%d';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -548,7 +560,7 @@ class Auctions {
 	 * @return int
 	 */
 	public function get_bid_count( int $auction_id ): int {
-		$transient = 'gb:bid-count:' . $auction_id;
+		$transient = sprintf( self::BID_COUNT_TRANSIENT, $auction_id );
 		$bid_count = get_transient( $transient );
 
 		if ( $bid_count ) {
@@ -573,7 +585,7 @@ class Auctions {
 	 * @return float
 	 */
 	public function get_total_raised( int $auction_id ): float {
-		$transient = 'gb:total-raised:' . $auction_id;
+		$transient = sprintf( self::TOTAL_RAISED_TRANSIENT, $auction_id );
 		$total     = get_transient( $transient );
 
 		if ( $total ) {
