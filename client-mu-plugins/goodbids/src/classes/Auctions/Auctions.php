@@ -57,9 +57,6 @@ class Auctions {
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
 
-		// Set the auction archive page in the main navigation
-		$this->set_auction_archive_posts_per_page();
-
 		// Sets a default image
 		$this->set_default_feature_image();
 	}
@@ -460,25 +457,6 @@ class Auctions {
 			}
 		);
 	}
-
-	/**
-	 * Set the Auction archive page to show nine posts per pagination
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function set_auction_archive_posts_per_page(): void {
-		add_action(
-			'pre_get_posts',
-			function ( \WP_Query $query ): void {
-				if ( ! is_admin() && is_post_type_archive( 'gb-auction' ) ) {
-					$query->set( 'posts_per_page', 9 );
-				}
-			}
-		);
-	}
-
 
 	/**
 	 * Set the default feature image for Auction
