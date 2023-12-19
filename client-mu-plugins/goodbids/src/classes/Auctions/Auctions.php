@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctions;
 
+use WC_Order;
+
 /**
  * Class for Auctions
  *
@@ -66,11 +68,14 @@ class Auctions {
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
+		// Add Auction Metrics Meta Box.
+		$this->add_metrics_meta_box();
+
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
 
-		// Update Total Raised when an Order is completed.
-		$this->update_total_raised_on_order_complete();
+		// Clear metric transients on new Bid Order.
+		$this->maybe_clear_metric_transients();
 	}
 
 	/**
@@ -460,7 +465,7 @@ class Auctions {
 				$bid_price      = intval( $bid_product->get_price( 'edit' ) );
 
 				if ( $starting_bid && $bid_price !== $starting_bid ) {
-					// Update postmeta.
+					// Update post meta.
 					update_post_meta( $bid_product_id, '_price', $starting_bid );
 
 					// Update current instance.
@@ -498,6 +503,48 @@ class Auctions {
 	}
 
 	/**
+	 * Get Bid Orders for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param string $context
+	 *
+	 * @return array|WC_Order|false
+	 */
+	public function get_bid_orders( int $auction_id, string $context = 'count' ): array|WC_Order|false {
+		$args = [
+			'limit'   => 'last' === $context ? 1 : -1,
+			'status'  => [ 'processing', 'completed' ],
+			'return'  => 'ids',
+			'orderby' => 'date',
+			'order'   => 'DESC',
+		];
+
+		$orders = wc_get_orders( $args );
+
+		if ( 'last' === $context ) {
+			return count( $orders ) ? wc_get_order( $orders[0] ) : false;
+		}
+
+		$return = [];
+
+		foreach ( $orders as $order_id ) {
+			if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				continue;
+			}
+
+			if ( $auction_id !== goodbids()->woocommerce->get_order_auction_id( $order_id ) ) {
+				continue;
+			}
+
+			$return[] = 'count' === $context ? $order_id : wc_get_order( $order_id );
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Get the Auction Bid Count
 	 *
 	 * @since 1.0.0
@@ -507,22 +554,19 @@ class Auctions {
 	 * @return int
 	 */
 	public function get_bid_count( int $auction_id ): int {
-		return intval( get_post_meta( $auction_id, self::BID_COUNT_META, true ) );
-	}
+		$transient = 'gb:bid-count:' . $auction_id;
+		$bid_count = get_transient( $transient );
 
-	/**
-	 * Increase the Auction Bid Count
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 *
-	 * @return bool
-	 */
-	public function increase_bid_count( int $auction_id ): bool {
-		$bid_count = $this->get_bid_count( $auction_id );
-		$bid_count++;
-		return update_post_meta( $auction_id, self::BID_COUNT_META, $bid_count );
+		if ( $bid_count ) {
+			return $bid_count;
+		}
+
+		$orders    = $this->get_bid_orders( $auction_id, 'count' );
+		$bid_count = count( $orders );
+
+		set_transient( $transient, $bid_count, HOUR_IN_SECONDS );
+
+		return $bid_count;
 	}
 
 	/**
@@ -535,33 +579,137 @@ class Auctions {
 	 * @return float
 	 */
 	public function get_total_raised( int $auction_id ): float {
-		return floatval( get_post_meta( $auction_id, self::TOTAL_RAISED_META, true ) );
+		$transient = 'gb:total-raised:' . $auction_id;
+		$total     = get_transient( $transient );
+
+		if ( $total ) {
+			return $total;
+		}
+
+		$orders = $this->get_bid_orders( $auction_id, 'totals' );
+		$total  = 0;
+
+		foreach ( $orders as $order ) {
+			$total += $order->get_total( 'edit' );
+		}
+
+		$total = floatval( $total );
+
+		set_transient( $transient, $total, HOUR_IN_SECONDS );
+
+		return $total;
 	}
 
 	/**
-	 * Update the Total Raised value when an Order is completed.
+	 * Get the last bid order for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return WC_Order|false
+	 */
+	public function get_last_bid( int $auction_id ): WC_Order|false {
+		return $this->get_bid_orders( $auction_id, 'last' );
+	}
+
+	/**
+	 * Add a meta box to show Auction metrics.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function update_total_raised_on_order_complete(): void {
+	private function add_metrics_meta_box(): void {
+		add_action(
+			'current_screen',
+			function (): void {
+				$screen = get_current_screen();
+
+				if ( $this->get_post_type() !== $screen->id ) {
+					return;
+				}
+
+				add_meta_box(
+					'goodbids-auction-metrics',
+					__( 'Auction Metrics', 'goodbids' ),
+					[ $this, 'metrics_meta_box' ],
+					$screen->id,
+					'side'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Clear Metric Transients on new Bid Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_clear_metric_transients(): void {
 		add_action(
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
-				// Don't increment if this isn't a Bid order.
+				// Don't clear if this isn't a Bid order.
 				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
 					return;
 				}
 
-				$total_raised  = $this->get_total_raised( $auction_id );
-				$order         = wc_get_order( $order_id );
-				$total_raised += $order->get_total( 'edit' );
+				$transients = [
+					'gb:bid-count:' . $auction_id,
+					'gb:total-raised:' . $auction_id,
+				];
 
-				update_post_meta( $auction_id, self::TOTAL_RAISED_META, $total_raised );
+				foreach ( $transients as $transient ) {
+					delete_transient( $transient );
+				}
 			},
-			10,
+			11,
 			2
 		);
+	}
+
+	/**
+	 * Display the Auction Metrics
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function metrics_meta_box(): void {
+		$auction_id = $this->get_auction_id();
+
+		printf(
+			'<p><strong>%s</strong><br>%s</p>',
+			esc_html__( 'Total Bids', 'goodbids' ),
+			esc_html( $this->get_bid_count( $auction_id ) )
+		);
+
+		printf(
+			'<p><strong>%s</strong><br>%s</p>',
+			esc_html__( 'Total Raised', 'goodbids' ),
+			wp_kses_post( wc_price( $this->get_total_raised( $auction_id ) ) )
+		);
+
+		$bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
+
+		printf(
+			'<p><strong>%s</strong><br>%s</p>',
+			esc_html__( 'Current Bid', 'goodbids' ),
+			wp_kses_post( wc_price( $bid_product->get_price() ) )
+		);
+
+		$last_bid = $this->get_last_bid( $auction_id );
+
+		if ( $last_bid ) {
+			printf(
+				'<p><strong>%s</strong><br><a href="%s">%s</a></p>',
+				esc_html__( 'Last Bid', 'goodbids' ),
+				esc_url( get_edit_post_link( $last_bid->get_id() ) ),
+				wp_kses_post( wc_price( $last_bid->get_total() ) )
+			);
+		}
 	}
 }

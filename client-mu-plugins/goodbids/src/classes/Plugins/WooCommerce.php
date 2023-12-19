@@ -53,6 +53,8 @@ class WooCommerce {
 
 		$this->store_auction_id_in_cart();
 		$this->store_auction_id_on_checkout();
+		$this->redirect_after_bid_checkout();
+
 		$this->add_auction_meta_box();
 	}
 
@@ -338,39 +340,62 @@ class WooCommerce {
 		add_action(
 			'woocommerce_payment_complete',
 			function ( int $order_id ) {
-				$order = wc_get_order( $order_id );
+				$order      = wc_get_order( $order_id );
+				$auction_id = false;
+				$order_type = false;
 
 				// Find order items with Auction Meta.
 				foreach ( $order->get_items() as $item ) {
 					try {
 						$auction_id = wc_get_order_item_meta( $item->get_id(), self::AUCTION_META_KEY );
-					} catch (\Exception $e) {
-						continue;
-					}
-
-					if ( ! $auction_id ) {
-						continue;
-					}
-
-					try {
 						$order_type = wc_get_order_item_meta( $item->get_id(), self::TYPE_META_KEY );
 					} catch (\Exception $e) {
 						continue;
 					}
 
-					update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
-					update_post_meta( $order_id, self::TYPE_META_KEY, $order_type );
-
-					do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
-
-					if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
-						return;
+					if ( $auction_id && $order_type ) {
+						break;
 					}
-
-					// TODO: Check if Auction is over.
-					wp_safe_redirect( get_permalink( $auction_id ) );
-					exit;
 				}
+
+				if ( ! $auction_id || ! $order_type ) {
+					// TODO: Log warning.
+					return;
+				}
+
+				update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
+				update_post_meta( $order_id, self::TYPE_META_KEY, $order_type );
+
+				do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
+			}
+		);
+	}
+
+	/**
+	 * Redirect back to Auction after Checkout.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_bid_checkout(): void {
+		add_action(
+			'woocommerce_thankyou',
+			function ( int $order_id ): void {
+				if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+					return;
+				}
+
+				if ( ! $this->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_order_auction_id( $order_id );
+
+				// TODO: Check if Auction has ended.
+
+				wp_safe_redirect( get_permalink( $auction_id ) );
+				exit;
 			}
 		);
 	}
