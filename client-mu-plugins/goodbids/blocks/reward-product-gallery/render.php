@@ -7,10 +7,13 @@
  * @since 1.0.0
  * @package GoodBids
  */
+
 global $product;
-$auction_id = is_admin() ? intval( sanitize_text_field( $_GET['post'] ) ) : get_queried_object_id();
-$reward_id  = goodbids()->auctions->get_reward_product_id( $auction_id );
-$product    = wc_get_product( $reward_id );
+$reward_id = goodbids()->auctions->get_reward_product_id( goodbids()->auctions->get_auction_id() );
+$reward    = wc_get_product( $reward_id );
+if ( $reward ) {
+	$product = $reward;
+}
 ?>
 
 

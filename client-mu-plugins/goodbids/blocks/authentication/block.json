@@ -4,6 +4,7 @@
 	"description": "Displays a user login and registration form for GoodBids.",
 	"icon": "feedback",
 	"category": "goodbids",
+	"textdomain": "goodbids",
 	"keywords": ["custom", "sign", "up", "register", "registration", "form", "users", "authentication"],
 	"acf": {
 		"mode": "preview"
