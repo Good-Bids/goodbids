@@ -685,8 +685,8 @@ class Auctions {
 				}
 
 				$transients = [
-					'gb:bid-count:' . $auction_id,
-					'gb:total-raised:' . $auction_id,
+					sprintf( self::BID_COUNT_TRANSIENT, $auction_id ),
+					sprintf( self::TOTAL_RAISED_TRANSIENT, $auction_id ),
 				];
 
 				foreach ( $transients as $transient ) {
