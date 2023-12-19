@@ -495,7 +495,7 @@ class Auctions {
 			function () {
 				$page = array(
 					'post_type'   => 'page',
-					'post_title'  => ucfirst( self::ARCHIVE_SLUG ),
+					'post_title'  => __( 'Auctions', 'goodbids' ),
 					'post_status' => 'publish',
 					'post_author' => 1,
 					'post_name'   => self::ARCHIVE_SLUG,
@@ -517,19 +517,17 @@ class Auctions {
 	private function set_default_feature_image(): void {
 		add_filter(
 			'post_thumbnail_html',
-			function ( string $html, int $auction_id ) {
-				if ( $html ) {
+			function ( string $html, int $post_id ) {
+				if ( ! is_post_type_archive( $this->get_post_type() ) ) {
 					return $html;
 				}
 
-				if ( is_post_type_archive( 'gb-auction' ) ) {
-					$reward_id    = goodbids()->auctions->get_reward_product_id( $auction_id );
-					$product      = wc_get_product( $reward_id );
-					$product_html = $product->get_image();
-					return sprintf(
-						$product_html,
-					);
-				}
+				$reward_id  = goodbids()->auctions->get_reward_product_id( $post_id );
+				$product    = wc_get_product( $reward_id );
+				$image_html = $product->get_image();
+				return sprintf(
+					$image_html,
+				);
 			},
 			10,
 			2

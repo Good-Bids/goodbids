@@ -75,7 +75,7 @@ add_filter(
 				'templateTypes' => [ 'front-page', 'home', 'page' ],
 				'source'        => 'theme',
 				'inserter'      => true,
-			]
+			],
 		];
 
 		return array_merge( $patterns, $theme_patterns );
