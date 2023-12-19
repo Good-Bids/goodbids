@@ -607,14 +607,8 @@ class Auctions {
 			return $total;
 		}
 
-		$orders = $this->get_bid_orders( $auction_id );
-		$total  = 0;
-
-		foreach ( $orders as $order ) {
-			$total += $order->get_total( 'edit' );
-		}
-
-		$total = floatval( $total );
+		$total = collect( $this->get_bid_orders( $auction_id ) )
+			->sum( fn( $order ) => $order->get_total( 'edit' ) );
 
 		set_transient( $transient, $total, HOUR_IN_SECONDS );
 
