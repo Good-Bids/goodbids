@@ -11,5 +11,7 @@
 	},
 	"supports": {
 		"jsx": false
-	}
+	},
+	"editorStyle": "file:block.css",
+	"style": "file:block.css"
 }
