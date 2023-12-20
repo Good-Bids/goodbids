@@ -196,7 +196,7 @@ class Auctions {
 					'template'            => $this->get_template(),
 				];
 
-				register_post_type( self::POST_TYPE, $args );
+				register_post_type( $this->get_post_type(), $args );
 			}
 		);
 	}
@@ -539,7 +539,7 @@ class Auctions {
 				}
 
 				// Bail if not an Auction.
-				if ( Auctions::POST_TYPE !== get_post_type( $post_id ) ) {
+				if ( $this->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
 				}
 
@@ -562,7 +562,7 @@ class Auctions {
 			'save_post',
 			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || self::POST_TYPE !== get_post_type( $post_id ) ) {
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
 				}
 
