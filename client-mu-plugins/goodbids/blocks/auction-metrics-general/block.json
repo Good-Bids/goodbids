@@ -1,0 +1,15 @@
+{
+	"name": "auction-metrics-general",
+	"title": "Auction Metrics (General)",
+	"description": "Displays the general Auction metrics.",
+	"icon": "awards",
+	"category": "goodbids",
+	"textdomain": "goodbids",
+	"keywords": ["custom", "details", "stats", "auction"],
+	"acf": {
+		"mode": "preview"
+	},
+	"supports": {
+		"jsx": false
+	}
+}

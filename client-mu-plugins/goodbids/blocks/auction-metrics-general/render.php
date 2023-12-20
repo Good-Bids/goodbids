@@ -1,6 +1,6 @@
 <?php
 /**
- * Block: Reward Product Stats
+ * Block: Auction Metrics (General)
  *
  * @global array $block
  *
@@ -11,6 +11,15 @@
 $goal              = goodbids()->auctions->get_goal();
 $estimated_value   = goodbids()->auctions->get_estimated_value();
 $expected_high_bid = goodbids()->auctions->get_expected_high_bid();
+
+// Display an Admin message to make the block easier to find.
+if ( ! $goal && ! $estimated_value && ! $expected_high_bid && is_admin() ) :
+	printf(
+		'<p style="text-align:center;">%s</p>',
+		esc_html__( 'No stats yet.', 'goodbids' )
+	);
+	return;
+endif;
 ?>
 <section <?php block_attr( $block ); ?>>
 	<?php
@@ -18,7 +27,7 @@ $expected_high_bid = goodbids()->auctions->get_expected_high_bid();
 	if ( $goal ) :
 		printf(
 			'<p style="text-align: center;">%s</p>',
-			esc_html__( $goal, 'goodbids' )
+			esc_html__( wc_price( $goal ), 'goodbids' )
 		);
 	endif;
 
@@ -26,7 +35,7 @@ $expected_high_bid = goodbids()->auctions->get_expected_high_bid();
 	if ( $estimated_value ) :
 		printf(
 			'<p style="text-align: center;">%s</p>',
-			esc_html__( $estimated_value, 'goodbids' )
+			esc_html__( wc_price( $estimated_value ), 'goodbids' )
 		);
 	endif;
 
@@ -34,7 +43,7 @@ $expected_high_bid = goodbids()->auctions->get_expected_high_bid();
 	if ( $expected_high_bid ) :
 		printf(
 			'<p style="text-align: center;">%s</p>',
-			esc_html__( $expected_high_bid, 'goodbids' )
+			esc_html__( wc_price( $expected_high_bid ), 'goodbids' )
 		);
 	endif;
 	?>
