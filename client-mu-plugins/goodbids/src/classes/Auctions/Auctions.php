@@ -1076,10 +1076,10 @@ class Auctions {
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
-					// TODO: Tell Node first.
-					// TODO: Wrap in condition based on Node API response.
-					// Update the Auction meta to indicate it has started.
-					update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+					if ( $this->trigger_auction_start( $auction_id ) ) {
+						// Update the Auction meta to indicate it has started.
+						update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+					}
 				}
 			}
 		);
@@ -1115,5 +1115,18 @@ class Auctions {
 		];
 
 		return new WP_Query( $args );
+	}
+
+	/**
+	 * Trigger to Node the start of an auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function trigger_auction_start( int $auction_id ): bool {
+		return true;
 	}
 }
