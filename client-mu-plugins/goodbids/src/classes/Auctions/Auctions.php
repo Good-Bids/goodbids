@@ -943,7 +943,7 @@ class Auctions {
 					return $html;
 				}
 
-				$reward_id = goodbids()->auctions->get_reward_product_id( $post_id );
+				$reward_id = $this->get_reward_product_id( $post_id );
 				$product   = wc_get_product( $reward_id );
 
 				return $product->get_image();
