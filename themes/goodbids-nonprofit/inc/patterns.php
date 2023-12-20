@@ -8,6 +8,12 @@
  */
 
 /**
+ * Disable remote block patterns.
+ */
+add_filter( 'should_load_remote_block_patterns', '__return_false' );
+
+
+/**
  * Register Component Pattern Category
  *
  * @since 1.0.0
