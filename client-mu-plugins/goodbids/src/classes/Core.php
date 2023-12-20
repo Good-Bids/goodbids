@@ -174,7 +174,7 @@ class Core {
 	 *
 	 * @return void
 	 */
-	private function load_dependencies() : void {
+	private function load_dependencies(): void {
 		require_once GOODBIDS_PLUGIN_PATH . '/src/helpers.php';
 	}
 

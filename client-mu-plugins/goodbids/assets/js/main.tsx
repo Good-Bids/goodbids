@@ -1,1 +1,1 @@
-import '../css/admin.css'
+import '../css/block.css'

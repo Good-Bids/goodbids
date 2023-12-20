@@ -32,18 +32,17 @@ class Assets {
 	 *
 	 * @return void
 	 */
-	private function enqueue_css() : void {
+	private function enqueue_css(): void {
 		add_action(
 			'admin_enqueue_scripts',
 			function () {
 				wp_enqueue_style(
 					'goodbids-admin',
-					GOODBIDS_PLUGIN_URL . 'assets/css/admin.css',
+					GOODBIDS_PLUGIN_URL . asset_path( '/assets/js/admin.tsx', 'css' ),
 					[],
 					goodbids()->get_version()
 				);
 			}
 		);
 	}
-
 }
