@@ -372,7 +372,13 @@ class Auctions {
 	 * @return string
 	 */
 	public function get_end_date_time( int $auction_id = null ): string {
-		return $this->get_setting( 'auction_end', $auction_id );
+		$end = $this->get_setting( 'auction_end', $auction_id );
+
+		if ( ! $end ) {
+			return '';
+		}
+
+		return $end;
 	}
 
 	/**
@@ -779,8 +785,6 @@ class Auctions {
 	 */
 	public function info_meta_box(): void {
 		$auction_id  = $this->get_auction_id();
-		$bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
-		$last_bid    = $this->get_last_bid( $auction_id );
 
 		// Display the Auction Details.
 		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
@@ -807,6 +811,7 @@ class Auctions {
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
+						$new_columns['status']        = __( 'Status', 'goodbids' );
 						$new_columns['starting_bid']  = __( 'Starting Bid', 'goodbids' );
 						$new_columns['bid_increment'] = __( 'Bid Increment', 'goodbids' );
 						$new_columns['total_bids']    = __( 'Total Bids', 'goodbids' );
@@ -823,7 +828,7 @@ class Auctions {
 		add_action(
 			'manage_' . $this->get_post_type() . '_posts_custom_column',
 			function ( $column, $post_id ) {
-				$bid_cols = [
+				$published_cols = [
 					'starting_bid',
 					'bid_increment',
 					'total_bids',
@@ -833,13 +838,15 @@ class Auctions {
 				];
 
 				// Bail early if Auction isn't published.
-				if ( in_array( $column, $bid_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
+				if ( in_array( $column, $published_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
 					echo '&mdash;';
 					return;
 				}
 
 				// Output the column values.
-				if ( 'starting_bid' === $column ) {
+				if ( 'status' === $column ) {
+					echo esc_html( $this->get_status( $post_id ) );
+				} elseif ( 'starting_bid' === $column ) {
 					echo wp_kses_post( wc_price( $this->calculate_starting_bid( $post_id ) ) );
 				} elseif ( 'bid_increment' === $column ) {
 					echo wp_kses_post( wc_price( $this->get_bid_increment( $post_id ) ) );
