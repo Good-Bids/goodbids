@@ -74,8 +74,8 @@ class Auctions {
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
-		// Add Auction Metrics Meta Box.
-		$this->add_metrics_meta_box();
+		// Add Auction Meta Box to display info and metrics.
+		$this->add_details_meta_box();
 
 		// Add custom Admin Columns for Auctions.
 		$this->add_admin_columns();
@@ -386,11 +386,33 @@ class Auctions {
 	 */
 	public function has_started( int $auction_id = null ): bool {
 		$start_date_time = $this->get_start_date_time( $auction_id );
+
 		if ( ! $start_date_time ) {
+			// TODO: Log error.
 			return false;
 		}
 
 		return strtotime( $start_date_time ) < time();
+	}
+
+	/**
+	 * Check if an Auction has ended.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function has_ended( int $auction_id = null ): bool {
+		$end_date_time = $this->get_end_date_time( $auction_id );
+
+		if ( ! $end_date_time ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		return strtotime( $end_date_time ) < time();
 	}
 
 	/**
@@ -664,13 +686,40 @@ class Auctions {
 	}
 
 	/**
-	 * Add a meta box to show Auction metrics.
+	 * Get the status of an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_status( int $auction_id ): string {
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			return __( 'Draft', 'goodbids' );
+		}
+
+		$status = __( 'Upcoming', 'goodbids' );
+
+		if ( $this->has_started( $auction_id ) ) {
+			$status = __( 'Live', 'goodbids' );
+		}
+
+		if ( $this->has_ended( $auction_id ) ) {
+			$status = __( 'Closed', 'goodbids' );
+		}
+
+		return $status;
+	}
+
+	/**
+	 * Add a meta box to show Auction metrics and other details.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function add_metrics_meta_box(): void {
+	private function add_details_meta_box(): void {
 		add_action(
 			'current_screen',
 			function (): void {
@@ -681,9 +730,9 @@ class Auctions {
 				}
 
 				add_meta_box(
-					'goodbids-auction-metrics',
-					__( 'Auction Metrics', 'goodbids' ),
-					[ $this, 'metrics_meta_box' ],
+					'goodbids-auction-info',
+					__( 'Auction Info', 'goodbids' ),
+					[ $this, 'info_meta_box' ],
 					$screen->id,
 					'side'
 				);
@@ -722,47 +771,31 @@ class Auctions {
 	}
 
 	/**
-	 * Display the Auction Metrics
+	 * Display the Auction Metrics and other details.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function metrics_meta_box(): void {
-		$auction_id = $this->get_auction_id();
-
-		printf(
-			'<p><strong>%s</strong><br>%s</p>',
-			esc_html__( 'Total Bids', 'goodbids' ),
-			esc_html( $this->get_bid_count( $auction_id ) )
-		);
-
-		printf(
-			'<p><strong>%s</strong><br>%s</p>',
-			esc_html__( 'Total Raised', 'goodbids' ),
-			wp_kses_post( wc_price( $this->get_total_raised( $auction_id ) ) )
-		);
-
+	public function info_meta_box(): void {
+		$auction_id  = $this->get_auction_id();
 		$bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
+		$last_bid    = $this->get_last_bid( $auction_id );
 
-		printf(
-			'<p><strong>%s</strong><br>%s</p>',
-			esc_html__( 'Current Bid', 'goodbids' ),
-			wp_kses_post( wc_price( $bid_product->get_price() ) )
-		);
+		// Display the Auction Details.
+		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
 
-		$last_bid = $this->get_last_bid( $auction_id );
-
-		if ( $last_bid ) {
-			printf(
-				'<p><strong>%s</strong><br><a href="%s">%s</a></p>',
-				esc_html__( 'Last Bid', 'goodbids' ),
-				esc_url( get_edit_post_link( $last_bid->get_id() ) ),
-				wp_kses_post( wc_price( $last_bid->get_total() ) )
-			);
-		}
+		// Display the Auction Metrics.
+		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/metrics.php';
 	}
 
+	/**
+	 * Insert custom metrics admin columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
 	private function add_admin_columns(): void {
 		add_filter(
 			'manage_' . $this->get_post_type() . '_posts_columns',
@@ -842,12 +875,10 @@ class Auctions {
 					return $html;
 				}
 
-				$reward_id  = goodbids()->auctions->get_reward_product_id( $post_id );
-				$product    = wc_get_product( $reward_id );
-				$image_html = $product->get_image();
-				return sprintf(
-					$image_html,
-				);
+				$reward_id = goodbids()->auctions->get_reward_product_id( $post_id );
+				$product   = wc_get_product( $reward_id );
+
+				return $product->get_image();
 			},
 			10,
 			2
