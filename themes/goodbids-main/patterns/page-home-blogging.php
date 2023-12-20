@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Blogging home
- * Slug: twentytwentyfour/page-home-blogging
+ * Slug: goodbids-main/page-home-blogging
  * Categories: page
  * Keywords: page, starter
  * Post Types: page, wp_template
@@ -9,7 +9,7 @@
  */
 ?>
 
-<!-- wp:pattern {"slug":"twentytwentyfour/text-centered-statement-small"}	/-->
+<!-- wp:pattern {"slug":"goodbids-main/text-centered-statement-small"}	/-->
 
 <!-- wp:group {"align":"wide","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
@@ -53,7 +53,7 @@
 				<!-- /wp:query-pagination -->
 
 				<!-- wp:query-no-results -->
-				<!-- wp:pattern {"slug":"twentytwentyfour/hidden-no-results"} /-->
+				<!-- wp:pattern {"slug":"goodbids-main/hidden-no-results"} /-->
 				<!-- /wp:query-no-results -->
 			</div>
 			<!-- /wp:query -->
@@ -80,4 +80,4 @@
 </div>
 <!-- /wp:group -->
 
-<!-- wp:pattern {"slug":"twentytwentyfour/cta-subscribe-centered"}	/-->
+<!-- wp:pattern {"slug":"goodbids-main/cta-subscribe-centered"}	/-->

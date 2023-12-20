@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Full screen image
- * Slug: twentytwentyfour/gallery-full-screen-image
+ * Slug: goodbids-main/gallery-full-screen-image
  * Categories: gallery, portfolio
  */
 ?>

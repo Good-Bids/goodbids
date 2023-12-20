@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Business home template
- * Slug: twentytwentyfour/template-home-business
+ * Slug: goodbids-main/template-home-business
  * Template Types: front-page, home
  * Viewport width: 1400
  * Inserter: no
@@ -12,7 +12,7 @@
 
 <!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"default"}} -->
 <main class="wp-block-group" style="margin-top:0">
-	<!-- wp:pattern {"slug":"twentytwentyfour/page-home-business"} /-->
+	<!-- wp:pattern {"slug":"goodbids-main/page-home-business"} /-->
 </main>
 <!-- /wp:group -->
 

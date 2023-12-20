@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Project description
- * Slug: twentytwentyfour/banner-project-description
+ * Slug: goodbids-main/banner-project-description
  * Categories: featured, banner, about, portfolio
  * Viewport width: 1400
  */
@@ -13,7 +13,7 @@
 		<!-- wp:column {"width":"40%"} -->
 		<div class="wp-block-column" style="flex-basis:40%">
 			<!-- wp:paragraph {"style":{"layout":{"selfStretch":"fixed","flexSize":"50%"}}} -->
-			<p><?php echo esc_html_x( 'Art Gallery — Overview', 'Sample title for a project or post', 'twentytwentyfour' ); ?></p>
+			<p><?php echo esc_html_x( 'Art Gallery — Overview', 'Sample title for a project or post', 'goodbids-main' ); ?></p>
 			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:column -->
@@ -22,7 +22,7 @@
 		<div class="wp-block-column" style="flex-basis:60%">
 
 			<!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.2"}},"fontSize":"x-large","fontFamily":"heading"} -->
-			<p class="has-heading-font-family has-x-large-font-size" style="line-height:1.2"><?php echo esc_html_x( 'This transformative project seeks to enhance the gallery\'s infrastructure, accessibility, and exhibition spaces while preserving its rich cultural heritage.', 'Sample descriptive text for a project or post.', 'twentytwentyfour' ); ?></p>
+			<p class="has-heading-font-family has-x-large-font-size" style="line-height:1.2"><?php echo esc_html_x( 'This transformative project seeks to enhance the gallery\'s infrastructure, accessibility, and exhibition spaces while preserving its rich cultural heritage.', 'Sample descriptive text for a project or post.', 'goodbids-main' ); ?></p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -37,7 +37,7 @@
 
 	<!-- wp:image {"align":"wide","sizeSlug":"large","linkDestination":"none","className":"is-style-rounded"} -->
 	<figure class="wp-block-image alignwide size-large is-style-rounded">
-		<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/hotel-facade.webp" alt="<?php esc_attr_e( 'Hyatt Regency San Francisco, San Francisco, United States', 'twentytwentyfour' ); ?>" />
+		<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/hotel-facade.webp" alt="<?php esc_attr_e( 'Hyatt Regency San Francisco, San Francisco, United States', 'goodbids-main' ); ?>" />
 	</figure>
 	<!-- /wp:image -->
 </div>

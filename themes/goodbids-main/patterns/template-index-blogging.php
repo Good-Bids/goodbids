@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Blogging index template
- * Slug: twentytwentyfour/template-index-blogging
+ * Slug: goodbids-main/template-index-blogging
  * Template Types: index, home
  * Viewport width: 1400
  * Inserter: no
@@ -13,10 +13,10 @@
 <!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"constrained"}} -->
 <main class="wp-block-group" style="margin-top:0">
 	<!-- wp:heading {"level":1,"style":{"typography":{"lineHeight":"1"},"spacing":{"padding":{"top":"var:preset|spacing|50"}}}} -->
-	<h1 class="wp-block-heading" style="padding-top:var(--wp--preset--spacing--50);line-height:1"><?php esc_html_e( 'Watch, Read, Listen', 'twentytwentyfour' ); ?></h1>
+	<h1 class="wp-block-heading" style="padding-top:var(--wp--preset--spacing--50);line-height:1"><?php esc_html_e( 'Watch, Read, Listen', 'goodbids-main' ); ?></h1>
 	<!-- /wp:heading -->
 
-	<!-- wp:pattern {"slug":"twentytwentyfour/posts-1-col"} /-->
+	<!-- wp:pattern {"slug":"goodbids-main/posts-1-col"} /-->
 </main>
 <!-- /wp:group -->
 

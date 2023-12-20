@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Portfolio archive template
- * Slug: twentytwentyfour/template-archive-portfolio
+ * Slug: goodbids-main/template-archive-portfolio
  * Template Types: archive
  * Viewport width: 1400
  * Inserter: no
@@ -15,7 +15,7 @@
 
 	<!-- wp:query-title {"type":"archive","align":"wide","style":{"typography":{"lineHeight":"1"},"spacing":{"padding":{"top":"var:preset|spacing|50"}}}} /-->
 
-	<!-- wp:pattern {"slug":"twentytwentyfour/posts-images-only-3-col"} /-->
+	<!-- wp:pattern {"slug":"goodbids-main/posts-images-only-3-col"} /-->
 
 </main>
 <!-- /wp:group -->

@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Portfolio project overview
- * Slug: twentytwentyfour/page-portfolio-overview
+ * Slug: goodbids-main/page-portfolio-overview
  * Categories: page, featured
  * Keywords: starter
  * Block Types: core/post-content
@@ -10,8 +10,8 @@
  */
 ?>
 
-<!-- wp:pattern {"slug":"twentytwentyfour/banner-project-description"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/text-project-details"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/gallery-full-screen-image"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/text-centered-statement"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/gallery-project-layout"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/banner-project-description"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/text-project-details"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/gallery-full-screen-image"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/text-centered-statement"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/gallery-project-layout"} /-->

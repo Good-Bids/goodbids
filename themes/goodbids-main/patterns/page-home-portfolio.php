@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Portfolio home with post featured images
- * Slug: twentytwentyfour/page-home-portfolio
+ * Slug: goodbids-main/page-home-portfolio
  * Categories: page
  * Keywords: starter
  * Block Types: core/post-content
@@ -10,5 +10,5 @@
  */
 ?>
 
-<!-- wp:pattern {"slug":"twentytwentyfour/hidden-portfolio-hero"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/posts-images-only-offset-4-col"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/hidden-portfolio-hero"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/posts-images-only-offset-4-col"} /-->

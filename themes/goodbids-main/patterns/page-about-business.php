@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: About
- * Slug: twentytwentyfour/page-about-business
+ * Slug: goodbids-main/page-about-business
  * Categories: page
  * Keywords: starter
  * Block Types: core/post-content
@@ -10,10 +10,10 @@
  */
 ?>
 
-<!-- wp:pattern {"slug":"twentytwentyfour/text-title-left-image-right"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/text-project-details"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/cta-services-image-left"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/team-4-col"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/text-title-left-image-right"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/text-project-details"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/cta-services-image-left"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/team-4-col"} /-->
 <!-- wp:pattern {"slug":"clients-section"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/text-faq"} /-->
-<!-- wp:pattern {"slug":"twentytwentyfour/cta-content-image-on-right"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/text-faq"} /-->
+<!-- wp:pattern {"slug":"goodbids-main/cta-content-image-on-right"} /-->

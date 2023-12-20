@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Portfolio index template
- * Slug: twentytwentyfour/template-index-portfolio
+ * Slug: goodbids-main/template-index-portfolio
  * Template Types: index
  * Viewport width: 1400
  * Inserter: no
@@ -13,10 +13,10 @@
 <!-- wp:group {"tagName":"main","align":"full","layout":{"type":"constrained"}} -->
 <main class="wp-block-group alignfull">
 	<!-- wp:heading {"level":1,"align":"wide","style":{"spacing":{"padding":{"top":"var:preset|spacing|50"}}}} -->
-	<h1 class="wp-block-heading alignwide" style="padding-top:var(--wp--preset--spacing--50)"><?php esc_html_e( 'Posts', 'twentytwentyfour' ); ?></h1>
+	<h1 class="wp-block-heading alignwide" style="padding-top:var(--wp--preset--spacing--50)"><?php esc_html_e( 'Posts', 'goodbids-main' ); ?></h1>
 	<!-- /wp:heading -->
 
-	<!-- wp:pattern {"slug":"twentytwentyfour/posts-images-only-offset-4-col"} /-->
+	<!-- wp:pattern {"slug":"goodbids-main/posts-images-only-offset-4-col"} /-->
 
 </main>
 <!-- /wp:group -->

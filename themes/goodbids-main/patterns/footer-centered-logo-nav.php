@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Footer with centered logo and navigation
- * Slug: twentytwentyfour/footer-centered-logo-nav
+ * Slug: goodbids-main/footer-centered-logo-nav
  * Categories: footer
  * Block Types: core/template-part/footer
  */
@@ -18,10 +18,10 @@
 	<p class="has-text-align-center has-secondary-color has-text-color has-link-color has-small-font-size">
 	<?php
 	/* Translators: WordPress link. */
-		$wordpress_link = '<a href="' . esc_url( __( 'https://wordpress.org', 'twentytwentyfour' ) ) . '" rel="nofollow">WordPress</a>';
-		echo sprintf(
+		$wordpress_link = '<a href="' . esc_url( __( 'https://wordpress.org', 'goodbids-main' ) ) . '" rel="nofollow">WordPress</a>';
+		printf(
 			/* Translators: Designed with WordPress */
-			esc_html__( 'Designed with %1$s', 'twentytwentyfour' ),
+			esc_html__( 'Designed with %1$s', 'goodbids-main' ),
 			$wordpress_link
 		);
 		?>

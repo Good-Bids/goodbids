@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Portfolio hero
- * Slug: twentytwentyfour/hidden-portfolio-hero
+ * Slug: goodbids-main/hidden-portfolio-hero
  * Inserter: no
  */
 ?>

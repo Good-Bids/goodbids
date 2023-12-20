@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Services call to action with image on left
- * Slug: twentytwentyfour/cta-services-image-left
+ * Slug: goodbids-main/cta-services-image-left
  * Categories: call-to-action, banner, featured, services
  * Viewport width: 1400
  */
@@ -15,7 +15,7 @@
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:60%">
 			<!-- wp:image {"aspectRatio":"4/3","scale":"cover","sizeSlug":"full","linkDestination":"none","style":{"color":{"duotone":"var:preset|duotone|duotone-1"}},"className":"is-style-rounded"} -->
 			<figure class="wp-block-image size-full is-style-rounded">
-				<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/abstract-geometric-art.webp" alt="<?php esc_attr_e( 'White abstract geometric artwork from Dresden, Germany', 'twentytwentyfour' ); ?>" style="aspect-ratio:4/3;object-fit:cover" />
+				<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/abstract-geometric-art.webp" alt="<?php esc_attr_e( 'White abstract geometric artwork from Dresden, Germany', 'goodbids-main' ); ?>" style="aspect-ratio:4/3;object-fit:cover" />
 			</figure>
 			<!-- /wp:image -->
 		</div>
@@ -24,18 +24,18 @@
 		<!-- wp:column {"width":"40%"} -->
 		<div class="wp-block-column" style="flex-basis:40%">
 			<!-- wp:heading -->
-			<h2 class="wp-block-heading"><?php echo esc_html_x( 'Guiding your business through the project', 'Sample heading of the services pattern', 'twentytwentyfour' ); ?></h2>
+			<h2 class="wp-block-heading"><?php echo esc_html_x( 'Guiding your business through the project', 'Sample heading of the services pattern', 'goodbids-main' ); ?></h2>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p><?php echo esc_html_x( 'Experience the fusion of imagination and expertise with Études—the catalyst for architectural transformations that enrich the world around us.', 'Sample description of the services pattern', 'twentytwentyfour' ); ?></p>
+			<p><?php echo esc_html_x( 'Experience the fusion of imagination and expertise with Études—the catalyst for architectural transformations that enrich the world around us.', 'Sample description of the services pattern', 'goodbids-main' ); ?></p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:buttons -->
 			<div class="wp-block-buttons">
 				<!-- wp:button -->
 				<div class="wp-block-button">
-					<a class="wp-block-button__link wp-element-button"><?php echo esc_html_x( 'Our services', 'Sample button text to view the services', 'twentytwentyfour' ); ?></a>
+					<a class="wp-block-button__link wp-element-button"><?php echo esc_html_x( 'Our services', 'Sample button text to view the services', 'goodbids-main' ); ?></a>
 				</div>
 				<!-- /wp:button -->
 			</div>

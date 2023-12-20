@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Newsletter landing
- * Slug: twentytwentyfour/page-newsletter-landing
+ * Slug: goodbids-main/page-newsletter-landing
  * Categories: call-to-action, page, featured
  * Keywords: starter
  * Block Types: core/post-content
@@ -25,7 +25,7 @@
 		<!-- /wp:spacer -->
 
 		<!-- wp:heading {"textAlign":"center","style":{"spacing":{"margin":{"right":"0","left":"0"},"padding":{"right":"0","left":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|contrast"}}}},"textColor":"contrast","fontSize":"x-large"} -->
-		<h2 class="wp-block-heading has-text-align-center has-contrast-color has-text-color has-link-color has-x-large-font-size" style="margin-right:0;margin-left:0;padding-right:0;padding-left:0"><?php echo esc_html_x( 'Subscribe to the newsletter and stay connected with our community', 'sample content for newsletter subscription', 'twentytwentyfour' ); ?></h2>
+		<h2 class="wp-block-heading has-text-align-center has-contrast-color has-text-color has-link-color has-x-large-font-size" style="margin-right:0;margin-left:0;padding-right:0;padding-left:0"><?php echo esc_html_x( 'Subscribe to the newsletter and stay connected with our community', 'sample content for newsletter subscription', 'goodbids-main' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:spacer {"height":"var:preset|spacing|10"} -->
@@ -36,7 +36,7 @@
 		<div class="wp-block-buttons">
 			<!-- wp:button -->
 			<div class="wp-block-button">
-				<a class="wp-block-button__link wp-element-button"><?php echo esc_html_x( 'Sign up', 'Sample content for newsletter subscribe button', 'twentytwentyfour' ); ?></a>
+				<a class="wp-block-button__link wp-element-button"><?php echo esc_html_x( 'Sign up', 'Sample content for newsletter subscribe button', 'goodbids-main' ); ?></a>
 			</div>
 			<!-- /wp:button -->
 		</div>

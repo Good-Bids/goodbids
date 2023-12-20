@@ -1,22 +1,22 @@
 <?php
 /**
  * Title: Team members, 4 columns
- * Slug: twentytwentyfour/team-4-col
+ * Slug: goodbids-main/team-4-col
  * Categories: team, about
  * Viewport width: 1400
  */
 ?>
 
-<!-- wp:group {"metadata":{"name":"<?php echo esc_html_x( 'Team members', 'Name of team pattern', 'twentytwentyfour' ); ?>"},"align":"full","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"metadata":{"name":"<?php echo esc_html_x( 'Team members', 'Name of team pattern', 'goodbids-main' ); ?>"},"align":"full","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 	<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
 	<div class="wp-block-group">
 		<!-- wp:heading {"textAlign":"center","fontSize":"xx-large"} -->
-		<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size"><?php echo esc_html_x( 'Meet our team', 'Sample heading for the team pattern', 'twentytwentyfour' ); ?></h2>
+		<h2 class="wp-block-heading has-text-align-center has-xx-large-font-size"><?php echo esc_html_x( 'Meet our team', 'Sample heading for the team pattern', 'goodbids-main' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"align":"center"} -->
-		<p class="has-text-align-center"><?php echo esc_html_x( 'Our comprehensive suite of professionals caters to a diverse team, ranging from seasoned architects to renowned engineers.', 'Sample descriptive text of the team pattern', 'twentytwentyfour' ); ?></p>
+		<p class="has-text-align-center"><?php echo esc_html_x( 'Our comprehensive suite of professionals caters to a diverse team, ranging from seasoned architects to renowned engineers.', 'Sample descriptive text of the team pattern', 'goodbids-main' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
@@ -40,12 +40,12 @@
 			<div class="wp-block-group">
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
 				<p class="has-text-align-center has-small-font-size">
-					<strong><?php echo esc_html_x( 'Francesca Piovani', 'Sample name of a team member', 'twentytwentyfour' ); ?></strong>
+					<strong><?php echo esc_html_x( 'Francesca Piovani', 'Sample name of a team member', 'goodbids-main' ); ?></strong>
 				</p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
-				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Founder, CEO & Architect', 'Sample role of a team member', 'twentytwentyfour' ); ?></p>
+				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Founder, CEO & Architect', 'Sample role of a team member', 'goodbids-main' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -64,12 +64,12 @@
 			<div class="wp-block-group">
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
 				<p class="has-text-align-center has-small-font-size">
-					<strong><?php echo esc_html_x( 'Rhye Moore', 'Sample name of a team member', 'twentytwentyfour' ); ?></strong>
+					<strong><?php echo esc_html_x( 'Rhye Moore', 'Sample name of a team member', 'goodbids-main' ); ?></strong>
 				</p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
-				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Engineering Manager', 'Sample role of a team member', 'twentytwentyfour' ); ?></p>
+				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Engineering Manager', 'Sample role of a team member', 'goodbids-main' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -88,12 +88,12 @@
 			<div class="wp-block-group">
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
 				<p class="has-text-align-center has-small-font-size">
-					<strong><?php echo esc_html_x( 'Helga Steiner', 'Sample name of a team member', 'twentytwentyfour' ); ?></strong>
+					<strong><?php echo esc_html_x( 'Helga Steiner', 'Sample name of a team member', 'goodbids-main' ); ?></strong>
 				</p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
-				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Architect', 'Sample role of a team member', 'twentytwentyfour' ); ?></p>
+				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Architect', 'Sample role of a team member', 'goodbids-main' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -112,12 +112,12 @@
 			<div class="wp-block-group">
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
 				<p class="has-text-align-center has-small-font-size">
-					<strong><?php echo esc_html_x( 'Ivan Lawrence', 'Sample name of a team member', 'twentytwentyfour' ); ?></strong>
+					<strong><?php echo esc_html_x( 'Ivan Lawrence', 'Sample name of a team member', 'goodbids-main' ); ?></strong>
 				</p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"align":"center","fontSize":"small"} -->
-				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Project Manager', 'Sample role of a team member', 'twentytwentyfour' ); ?></p>
+				<p class="has-text-align-center has-small-font-size"><?php echo esc_html_x( 'Project Manager', 'Sample role of a team member', 'goodbids-main' ); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
