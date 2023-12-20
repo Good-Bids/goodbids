@@ -93,8 +93,8 @@ class Auctions {
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
-		// Add Auction Meta Box to display info and metrics.
-		$this->add_details_meta_box();
+		// Add Auction Meta Box to display details and metrics.
+		$this->add_info_meta_box();
 
 		// Add custom Admin Columns for Auctions.
 		$this->add_admin_columns();
@@ -784,7 +784,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	private function add_details_meta_box(): void {
+	private function add_info_meta_box(): void {
 		add_action(
 			'current_screen',
 			function (): void {
