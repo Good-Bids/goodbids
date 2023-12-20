@@ -13,9 +13,15 @@
 <p><strong><?php esc_html_e( 'Auction Details', 'goodbids' ); ?></strong></p>
 
 <?php
+$start_time = $this->get_start_date_time();
+
 printf(
-	'<p><strong>%s</strong><br>%s</p>',
+	'<p><strong>%s</strong><br>%s%s</p>',
 	esc_html__( 'Status', 'goodbids' ),
-	esc_html( $this->get_status( $auction_id ) )
+	esc_html( $this->get_status( $auction_id ) ),
+
+	$start_time ? sprintf(
+		' (%s)',
+		esc_html( human_time_diff( time(), strtotime( $start_time ) ) )
+	) : ''
 );
-?>
