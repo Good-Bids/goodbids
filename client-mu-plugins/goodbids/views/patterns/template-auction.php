@@ -9,7 +9,6 @@
  */
 
 ?>
-
 <!-- wp:group {"tagName":"main","align":"wide"} -->
 <main class="wp-block-group alignwide">
 	<!-- wp:columns -->

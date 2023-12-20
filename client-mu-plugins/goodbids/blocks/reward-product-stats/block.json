@@ -1,7 +1,7 @@
 {
-	"name": "reward-product",
-	"title": "Reward Product",
-	"description": "Displays the reward product information",
+	"name": "reward-product-stats",
+	"title": "Reward Product Stats",
+	"description": "Displays the reward product stats.",
 	"icon": "awards",
 	"category": "goodbids",
 	"textdomain": "goodbids",

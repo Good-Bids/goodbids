@@ -5,8 +5,8 @@
  * @since 1.0.0
  * @package GoodBids
  */
-?>
 
+?>
 <!-- wp:group {"tagName":"main","style":{"spacing":{"blockGap":"0","margin":{"top":"0"}}},"layout":{"type":"constrained","justifyContent":"left"}} -->
 <main class="wp-block-group" style="margin-top:0">
 	<!-- wp:spacer -->
