@@ -21,19 +21,19 @@
 					"name": "Black and sandstone"
 				},
 				{
-					"colors": ["#111111", "#D8613C"],
+					"colors": ["#111111", "#68004B"],
 					"slug": "duotone-3",
-					"name": "Black and rust"
+					"name": "Black and plum"
 				},
 				{
-					"colors": ["#111111", "#B1C5A4"],
+					"colors": ["#111111", "#FFB2B2"],
 					"slug": "duotone-4",
-					"name": "Black and sage"
+					"name": "Black and pink"
 				},
 				{
-					"colors": ["#111111", "#B5BDBC"],
+					"colors": ["#111111", "#FFE7EF"],
 					"slug": "duotone-5",
-					"name": "Black and pastel blue"
+					"name": "Black and pastel pink"
 				}
 			],
 			"gradients": [
@@ -49,18 +49,18 @@
 				},
 				{
 					"slug": "gradient-3",
-					"gradient": "linear-gradient(to bottom, #D8613C 0%, #F9F9F9 100%)",
-					"name": "Vertical soft rust to white"
+					"gradient": "linear-gradient(to bottom, #68004B 0%, #F9F9F9 100%)",
+					"name": "Vertical soft plum to white"
 				},
 				{
 					"slug": "gradient-4",
-					"gradient": "linear-gradient(to bottom, #B1C5A4 0%, #F9F9F9 100%)",
-					"name": "Vertical soft sage to white"
+					"gradient": "linear-gradient(to bottom, #FFB2B2 0%, #F9F9F9 100%)",
+					"name": "Vertical soft pink to white"
 				},
 				{
 					"slug": "gradient-5",
-					"gradient": "linear-gradient(to bottom, #B5BDBC 0%, #F9F9F9 100%)",
-					"name": "Vertical soft mint to white"
+					"gradient": "linear-gradient(to bottom, #FFE7EF 0%, #F9F9F9 100%)",
+					"name": "Vertical soft pink to white"
 				},
 				{
 					"slug": "gradient-6",
@@ -79,18 +79,18 @@
 				},
 				{
 					"slug": "gradient-9",
-					"gradient": "linear-gradient(to bottom, #D8613C 50%, #F9F9F9 50%)",
-					"name": "Vertical hard rust to white"
+					"gradient": "linear-gradient(to bottom, #68004B 50%, #F9F9F9 50%)",
+					"name": "Vertical hard plum to white"
 				},
 				{
 					"slug": "gradient-10",
-					"gradient": "linear-gradient(to bottom, #B1C5A4 50%, #F9F9F9 50%)",
-					"name": "Vertical hard sage to white"
+					"gradient": "linear-gradient(to bottom, #FFB2B2 50%, #F9F9F9 50%)",
+					"name": "Vertical hard pink to white"
 				},
 				{
 					"slug": "gradient-11",
-					"gradient": "linear-gradient(to bottom, #B5BDBC 50%, #F9F9F9 50%)",
-					"name": "Vertical hard mint to white"
+					"gradient": "linear-gradient(to bottom, #FFE7EF 50%, #F9F9F9 50%)",
+					"name": "Vertical hard pink to white"
 				},
 				{
 					"slug": "gradient-12",
@@ -145,17 +145,17 @@
 					"slug": "accent-2"
 				},
 				{
-					"color": "#d8613c",
+					"color": "#68004B",
 					"name": "Accent / Three",
 					"slug": "accent-3"
 				},
 				{
-					"color": "#b1c5a4",
+					"color": "#FFB2B2",
 					"name": "Accent / Four",
 					"slug": "accent-4"
 				},
 				{
-					"color": "#b5bdbc",
+					"color": "#FFE7EF",
 					"name": "Accent / Five",
 					"slug": "accent-5"
 				}
