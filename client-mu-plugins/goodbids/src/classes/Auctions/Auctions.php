@@ -843,7 +843,7 @@ class Auctions {
 	 * @return void
 	 */
 	public function info_meta_box(): void {
-		$auction_id  = $this->get_auction_id();
+		$auction_id = $this->get_auction_id();
 
 		// Display the Auction Details.
 		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
