@@ -390,7 +390,13 @@ class Auctions {
 	 * @return string
 	 */
 	public function get_start_date_time( int $auction_id = null ): string {
-		return $this->get_setting( 'auction_start', $auction_id );
+		$start = $this->get_setting( 'auction_start', $auction_id );
+
+		if ( ! $start ) {
+			return '';
+		}
+
+		return $start;
 	}
 
 	/**
