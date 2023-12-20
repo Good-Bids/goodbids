@@ -40,6 +40,5 @@ function asset_path( $asset_path, $file ) {
 
 	$manifest = json_decode( file_get_contents( $manifest_path ), true );
 
-	// var_dump( $manifest[ $asset_path ][ $file ] );
-	return 'dist/' . $manifest[ $asset_path ][ $file ];
+	return 'dist/' . $manifest['assets/js/admin.tsx']['css'][0];
 }

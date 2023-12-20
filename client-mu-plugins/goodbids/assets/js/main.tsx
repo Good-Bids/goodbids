@@ -1,1 +1,1 @@
-import '../css/block.css'
+import '../css/main.css'
