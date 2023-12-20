@@ -22,6 +22,6 @@ printf(
 
 	$start_time ? sprintf(
 		' (%s)',
-		esc_html( human_time_diff( time(), strtotime( $start_time ) ) )
+		esc_html( human_time_diff( current_datetime()->format( 'U' ), strtotime( $start_time ) ) )
 	) : ''
 );

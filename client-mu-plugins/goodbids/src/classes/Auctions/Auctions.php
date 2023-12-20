@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use WC_Order;
+use WP_Query;
 
 /**
  * Class for Auctions
@@ -55,9 +56,27 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const CRON_AUCTION_START_HOOK = 'goodbids_auction_start_event';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_STARTED_META_KEY = '_auction_started';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public string $cron_interval = '1min';
 
 	/**
 	 * Initialize Auctions
@@ -80,6 +99,9 @@ class Auctions {
 		// Add custom Admin Columns for Auctions.
 		$this->add_admin_columns();
 
+		// Configure some values for new Auction posts.
+		$this->new_auction_post_init();
+
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
 
@@ -91,6 +113,15 @@ class Auctions {
 
 		// Generate a unique ID for each Auction.
 		$this->generate_guid_on_publish();
+
+		// Set up 1min Cron Job Schedule.
+		$this->add_one_min_cron_schedule();
+
+		// Schedule a cron job to trigger the start of auctions.
+		$this->schedule_bid_start_cron();
+
+		// Use cron action to start auctions.
+		$this->check_for_starting_auctions();
 	}
 
 	/**
@@ -398,7 +429,7 @@ class Auctions {
 			return false;
 		}
 
-		return strtotime( $start_date_time ) < time();
+		return strtotime( $start_date_time ) < current_datetime()->format( 'U' );
 	}
 
 	/**
@@ -418,7 +449,7 @@ class Auctions {
 			return false;
 		}
 
-		return strtotime( $end_date_time ) < time();
+		return strtotime( $end_date_time ) < current_datetime()->format( 'U' );
 	}
 
 	/**
@@ -489,6 +520,34 @@ class Auctions {
 	 */
 	public function get_expected_high_bid( int $auction_id = null ): int {
 		return intval( $this->get_setting( 'expected_high_bid', $auction_id ) );
+	}
+
+	/**
+	 * Update Auction with some initial data when created.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function new_auction_post_init(): void {
+		add_action(
+			'wp_after_insert_post',
+			function ( $post_id ): void {
+				// Bail if this is a revision.
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
+					return;
+				}
+
+				// Bail if not an Auction.
+				if ( Auctions::POST_TYPE !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				// Set started to 0 for easier querying.
+				update_post_meta( $post_id, self::AUCTION_STARTED_META_KEY, 0 );
+			},
+			12
+		);
 	}
 
 	/**
@@ -940,5 +999,115 @@ class Auctions {
 				update_post_meta( $post_id, self::GUID_META_KEY, wp_generate_uuid4() );
 			}
 		);
+	}
+
+	/**
+	 * Add a 1min Cron Job Schedule.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_one_min_cron_schedule(): void {
+		add_filter(
+			'cron_schedules', // phpcs:ignore
+			function ( array $schedules ): array {
+				// If one is already set, confirm it matches our schedule.
+				if ( ! empty( $schedules[ $this->cron_interval ] ) ) {
+					if ( MINUTE_IN_SECONDS === $schedules[ $this->cron_interval ]['interval'] ) {
+						return $schedules;
+					}
+
+					$this->cron_interval = '1minute';
+				}
+
+				// Adds every minute cron schedule.
+				$schedules[ $this->cron_interval ] = [
+					'interval' => MINUTE_IN_SECONDS,
+					'display'  => __( 'Once Every Minute', 'goodbids' ),
+				];
+
+				return $schedules;
+			}
+		);
+	}
+
+	/**
+	 * Schedule a cron job that runs every minute to trigger auctions to start.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function schedule_bid_start_cron(): void {
+		add_action(
+			'init',
+			function (): void {
+				if ( wp_next_scheduled( self::CRON_AUCTION_START_HOOK ) ) {
+					return;
+				}
+
+				wp_schedule_event( current_datetime()->format( 'U' ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
+			}
+		);
+	}
+
+	/**
+	 * Check for Auctions that are starting during cron hook.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function check_for_starting_auctions(): void {
+		add_action(
+			self::CRON_AUCTION_START_HOOK,
+			function (): void {
+				$auctions = $this->get_starting_auctions();
+
+				if ( ! $auctions->have_posts() ) {
+					return;
+				}
+
+				foreach ( $auctions->posts as $auction_id ) {
+					// TODO: Tell Node first.
+					// TODO: Wrap in condition based on Node API response.
+					// Update the Auction meta to indicate it has started.
+					update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Get Auctions that are starting.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WP_Query
+	 */
+	private function get_starting_auctions(): WP_Query {
+		// Use the current time + 1min to get Auctions about to start.
+		$auction_start = current_datetime()->add( new \DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
+
+		$args = [
+			'post_type'      => $this->get_post_type(),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'return'         => 'ids',
+			'meta_query'     => [
+				[
+					'key'     => 'auction_start',
+					'value'   => $auction_start,
+					'compare' => '<=',
+				],
+				[
+					'key'   => self::AUCTION_STARTED_META_KEY,
+					'value' => 0,
+				],
+			],
+		];
+
+		return new WP_Query( $args );
 	}
 }
