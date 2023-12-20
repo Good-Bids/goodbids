@@ -1,0 +1,13 @@
+{
+	"name": "footer-main",
+	"title": "Footer Main",
+	"description": "Displays the main site footer",
+	"icon": "awards",
+	"textdomain": "goodbids",
+	"acf": {
+		"mode": "preview"
+	},
+	"supports": {
+		"jsx": false
+	}
+}
