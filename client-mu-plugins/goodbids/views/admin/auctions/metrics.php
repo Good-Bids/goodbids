@@ -13,7 +13,7 @@ $bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
 $last_bid    = $this->get_last_bid( $auction_id );
 ?>
 <div class="gb-auction-metrics">
-	<p><strong><?php esc_html_e( 'Auction Metrics', 'goodbids' ); ?></strong></p>
+	<h3><?php esc_html_e( 'Auction Metrics', 'goodbids' ); ?></h3>
 
 	<?php
 	printf(

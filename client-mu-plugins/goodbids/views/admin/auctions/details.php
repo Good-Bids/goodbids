@@ -10,7 +10,7 @@
  */
 
 ?>
-<p><strong><?php esc_html_e( 'Auction Details', 'goodbids' ); ?></strong></p>
+<h3><?php esc_html_e( 'Auction Details', 'goodbids' ); ?></h3>
 
 <?php
 $start_time = $this->get_start_date_time();

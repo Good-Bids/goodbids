@@ -789,6 +789,8 @@ class Auctions {
 		// Display the Auction Details.
 		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
 
+		echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
+
 		// Display the Auction Metrics.
 		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/metrics.php';
 	}
