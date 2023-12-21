@@ -16,7 +16,7 @@ if ( ! function_exists( 'goodbids_main_block_styles' ) ) :
 	/**
 	 * Register custom block styles
 	 *
-	 * @since GoodBids Main 1.0
+	 * @since GoodBids Main 1.0.0
 	 * @return void
 	 */
 	function goodbids_main_block_styles() {
@@ -154,7 +154,7 @@ if ( ! function_exists( 'goodbids_main_block_stylesheets' ) ) :
 	/**
 	 * Enqueue custom block stylesheets
 	 *
-	 * @since GoodBids Main 1.0
+	 * @since GoodBids Main 1.0.0
 	 * @return void
 	 */
 	function goodbids_main_block_stylesheets() {
@@ -188,7 +188,7 @@ if ( ! function_exists( 'goodbids_main_pattern_categories' ) ) :
 	/**
 	 * Register pattern categories
 	 *
-	 * @since GoodBids Main 1.0
+	 * @since GoodBids Main 1.0.0
 	 * @return void
 	 */
 	function goodbids_main_pattern_categories() {
