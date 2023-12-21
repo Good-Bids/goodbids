@@ -4,8 +4,8 @@
  *
  * @link https://developer.wordpress.org/themes/basics/theme-functions/
  *
- * @package GoodBids Main
- * @since GoodBids Main 1.0
+ * @package GoodBids_Main
+ * @since 1.0.0
  */
 
 /**
