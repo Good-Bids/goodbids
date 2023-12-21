@@ -1,5 +1,14 @@
+/* Import any CSS from blocks before tailwind */
 @import '../../../blocks/reward-product-gallery/block.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer components {
+	#vip-non-prod-bar,
+	#a8c-debug-flag {
+		@apply hidden;
+	}
+}

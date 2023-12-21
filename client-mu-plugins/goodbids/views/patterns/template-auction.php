@@ -16,9 +16,7 @@
 	<div class="wp-block-columns alignwide">
 		<!-- wp:column {"width":""} -->
 		<div class="wp-block-column">
-		<!-- wp:post-featured-image {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
-
-		<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","data":{},"mode":"preview"} /-->
+			<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","data":{},"mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
 

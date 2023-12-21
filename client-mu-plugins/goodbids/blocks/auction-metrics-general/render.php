@@ -21,7 +21,7 @@ if ( ! $goal && ! $estimated_value && ! $expected_high_bid && is_admin() ) :
 	return;
 endif;
 ?>
-<section <?php block_attr( $block, 'flex gap-5 my-4' ); ?>>
+<section <?php block_attr( $block, 'flex gap-5 my-4 flex-wrap' ); ?>>
 	<?php
 	// Goal.
 	if ( $goal ) :
