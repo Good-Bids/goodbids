@@ -23,7 +23,7 @@ class Core {
 
 	/**
 	 * @since 1.0.0
-	 * @var Core|null
+	 * @var ?Core
 	 */
 	private static ?Core $instance = null;
 

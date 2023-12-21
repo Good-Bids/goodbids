@@ -63,5 +63,6 @@ vendor
 src/index.js
 src/components
 
-# Credentials
+# Sensitive data
 auth.json
+client-mu-plugins/vip-env-vars.local.php

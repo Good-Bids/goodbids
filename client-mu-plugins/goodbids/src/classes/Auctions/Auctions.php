@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use WC_Order;
+use WC_Product;
 use WP_Query;
 
 /**
@@ -322,6 +323,25 @@ class Auctions {
 	}
 
 	/**
+	 * Retrieves the Bid product ID for an Auction.
+	 *
+	 * @param int $auction_id
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_bid_product( int $auction_id ): ?WC_Product {
+		$bid_product_id = $this->get_bid_product_id( $auction_id );
+
+		if ( ! $bid_product_id ) {
+			return null;
+		}
+
+		return wc_get_product( $bid_product_id );
+	}
+
+	/**
 	 * Sets the Bid product ID for an Auction.
 	 *
 	 * @since 1.0.0
@@ -386,17 +406,18 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $auction_id
+	 * @param string $format
 	 *
 	 * @return string
 	 */
-	public function get_start_date_time( int $auction_id = null ): string {
+	public function get_start_date_time( int $auction_id = null, string $format = '' ): string {
 		$start = $this->get_setting( 'auction_start', $auction_id );
 
 		if ( ! $start ) {
 			return '';
 		}
 
-		return $start;
+		return $this->format_date_time( $start, $format );
 	}
 
 	/**
@@ -405,17 +426,36 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $auction_id
+	 * @param string $format
 	 *
 	 * @return string
 	 */
-	public function get_end_date_time( int $auction_id = null ): string {
+	public function get_end_date_time( int $auction_id = null, string $format = '' ): string {
 		$end = $this->get_setting( 'auction_end', $auction_id );
 
 		if ( ! $end ) {
 			return '';
 		}
 
-		return $end;
+		return $this->format_date_time( $end, $format );
+	}
+
+	/**
+	 * Format a date/time string.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $datetime
+	 * @param string $format
+	 *
+	 * @return string
+	 */
+	private function format_date_time( string $datetime, string $format ): string {
+		if ( ! $format ) {
+			return $datetime;
+		}
+
+		return ( new \DateTimeImmutable( $datetime ) )->format( $format );
 	}
 
 	/**
@@ -1128,6 +1168,12 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_start( int $auction_id ): bool {
+		$result = goodbids()->auctioneer->auction_start( $auction_id );
+
+		if ( true !== $result ) {
+			return false;
+		}
+
 		return true;
 	}
 }
