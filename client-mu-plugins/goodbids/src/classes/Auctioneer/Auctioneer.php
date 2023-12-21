@@ -123,10 +123,16 @@ class Auctioneer {
 	 *
 	 * @param int $auction_id
 	 *
-	 * @return array|true
+	 * @return array|bool
 	 */
 	public function auction_start( int $auction_id ): array|bool {
-		$guid        = goodbids()->auctions->get_guid( $auction_id );
+		$guid = goodbids()->auctions->get_guid( $auction_id );
+
+		if ( ! $guid ) {
+			// TODO: Log error.
+			return false;
+		}
+
 		$endpoint    = sprintf( 'auctions/%s/start', $guid );
 		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
 
