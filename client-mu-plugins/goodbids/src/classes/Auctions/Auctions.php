@@ -455,7 +455,15 @@ class Auctions {
 			return $datetime;
 		}
 
-		return ( new \DateTimeImmutable( $datetime ) )->format( $format );
+		$formatted = $datetime;
+
+		try {
+			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
+		} catch ( \Exception $e ) {
+			// TODO: Log error.
+		}
+
+		return $formatted;
 	}
 
 	/**

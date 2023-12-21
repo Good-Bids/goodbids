@@ -43,16 +43,22 @@ Returns the current Auction ID (if valid).
 `goodbids()->auctions->get_setting( string $setting, int $auction_id )`  
 Returns a setting value for an auction. If `$auction_id` is not provided, the current post ID will be used.
 
+`goodbids()->auctions->get_bid_product_id( int $auction_id )`  
+Returns the Auction's Bid Product ID. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->get_bid_product( int $auction_id )`  
+Returns the Auction's Bid Product object. If `$auction_id` is not provided, the current post ID will be used.
+
 `goodbids()->auctions->get_reward_product_id( int $auction_id )`  
 Returns the Auction's Reward Product ID. If `$auction_id` is not provided, the current post ID will be used.
 
 `goodbids()->auctions->get_estimated_value( int $auction_id )`  
 Returns the Auction Reward's Estimated Value. If `$auction_id` is not provided, the current post ID will be used.
 
-`goodbids()->auctions->get_start_date_time( int $auction_id )`  
+`goodbids()->auctions->get_start_date_time( int $auction_id, string $format )`  
 Returns the Auction's Start Date/Time in MySQL format. If `$auction_id` is not provided, the current post ID will be used.
 
-`goodbids()->auctions->get_end_date_time( int $auction_id )`  
+`goodbids()->auctions->get_end_date_time( int $auction_id, string $format )`  
 Returns the Auction's End Date/Time in MySQL format. If `$auction_id` is not provided, the current post ID will be used.
 
 `goodbids()->auctions->has_started( int $auction_id )`  
