@@ -5,11 +5,13 @@ export default {
 	},
 	content: [
 		"./assets/**/*.{css,js,jsx,tsx}",
-		"./block/**/*.{php,css,js}",
+		"./blocks/**/*.{php,css,js}",
 		"./views/**/**/*.{php,html}",
 	],
 	theme: {
-		extend: {},
+		borderRadius: {
+			DEFAULT: '30px',
+		}
 	},
 	plugins: [],
 }

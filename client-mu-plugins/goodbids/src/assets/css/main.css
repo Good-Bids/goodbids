@@ -1,7 +1,5 @@
+@import '../../../blocks/reward-product-gallery/block.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-body {
-	@apply bg-emerald-500;
-}
