@@ -39,13 +39,12 @@ export default defineConfig(({ command }) => ({
   },
   server: {
     host: '0.0.0.0',
-    // I don't love that this is hard coded.
     origin: 'https://goodbids.vipdev.lndo.site:5173',
     // we need a strict port to match on PHP side
     strictPort: true,
     port: 5173,
     hmr: {
       overlay: false,
-    }
+	}
   },
 }));
