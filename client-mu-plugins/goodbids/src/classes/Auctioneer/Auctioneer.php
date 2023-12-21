@@ -128,35 +128,20 @@ class Auctioneer {
 	public function auction_start( int $auction_id ): array|bool {
 		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
 
+		// TODO: Refactor using individual Response classes.
 		$payload = [
-			'id'                => goodbids()->auctions->get_guid( $auction_id ),
-			'status'            => strtolower( goodbids()->auctions->get_status( $auction_id ) ),
-//			'startTime'         => goodbids()->auctions->get_start_date_time( $auction_id, 'c ),
-			'endTime'           => goodbids()->auctions->get_end_date_time( $auction_id, 'c' ),
-			'totalBids'         => goodbids()->auctions->get_bid_count( $auction_id ),
-			'totalRaised'       => goodbids()->auctions->get_total_raised( $auction_id ),
-			'currentBid'        => floatval( $bid_product?->get_price( 'edit' ) ),
-			'lastBid'           => goodbids()->auctions->get_last_bid( $auction_id )?->get_total(),
-			'lastBidder'        => null, // user id
-			'availableFreeBids' => 0,
-			'requestTime'       => current_datetime()->format( 'c' ),
-//			'viewers'           => 0,
+			'id'          => goodbids()->auctions->get_guid( $auction_id ),
+			'startTime'   => goodbids()->auctions->get_start_date_time( $auction_id, 'c' ),
+			'endTime'     => goodbids()->auctions->get_end_date_time( $auction_id, 'c' ),
+			'currentBid'  => floatval( $bid_product?->get_price( 'edit' ) ),
+			'requestTime' => current_datetime()->format( 'c' ),
 		];
 
-		$response = $this->request( 'auctions', $payload, 'POST' );
+		$response = $this->request( 'auctions/start', $payload, 'POST' );
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			// TODO: Log Response
 			error_log( '[GB] ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
-			return $response;
-		}
-
-		$message  = $this->get_response_message_raw( $response );
-		$expected = 'Auction stored';
-
-		if ( $message !== $expected ) {
-			// TODO: Log error.
-			error_log( '[GB] ' . $message );
 			return $response;
 		}
 
