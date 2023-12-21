@@ -209,17 +209,3 @@ add_action( 'init', 'goodbids_main_pattern_categories' );
  * Disable remote block patterns.
  */
 add_filter( 'should_load_remote_block_patterns', '__return_false' );
-
-
-add_filter(
-	'block_editor_settings_all',
-	static function ( $settings, $context ) {
-		// Only enable super admins.
-		if ( ! is_super_admin() ) {
-			$settings['canLockBlocks'] = false;
-		}
-		return $settings;
-	},
-	10,
-	2
-);

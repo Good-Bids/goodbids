@@ -1,8 +1,8 @@
 {
-	"name": "footer-main",
-	"title": "Footer Main",
+	"name": "main-footer",
+	"title": "Main Footer",
 	"description": "Displays the main site footer",
-	"icon": "awards",
+	"icon": "text-page",
 	"textdomain": "goodbids",
 	"acf": {
 		"mode": "preview"
