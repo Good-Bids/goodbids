@@ -50,6 +50,7 @@ class Sites {
 		$this->activate_child_theme_on_new_site();
 		$this->default_child_theme_logo();
 		$this->set_default_posts_per_page();
+		$this->lock_block_editor();
 	}
 
 	/**
@@ -434,6 +435,27 @@ class Sites {
 			function ( int $site_id ): void {
 				update_option( 'posts_per_page', 9 );
 			}
+		);
+	}
+
+	/**
+	 * Only allow super admins to lock and unlock blocks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function lock_block_editor(): void {
+		add_filter(
+			'block_editor_settings_all',
+			static function ( $settings, $context ) {
+				if ( ! is_super_admin() ) {
+					$settings['canLockBlocks'] = false;
+				}
+				return $settings;
+			},
+			10,
+			2
 		);
 	}
 }
