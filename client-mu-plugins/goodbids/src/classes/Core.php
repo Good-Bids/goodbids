@@ -9,6 +9,7 @@
 namespace GoodBids;
 
 use GoodBids\Admin\Admin;
+use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Network\Sites;
@@ -55,6 +56,12 @@ class Core {
 	 * @var Admin
 	 */
 	public Admin $admin;
+
+	/**
+	 * @since 1.0.0
+	 * @var Auctioneer
+	 */
+	public Auctioneer $auctioneer;
 
 	/**
 	 * @since 1.0.0
@@ -227,11 +234,12 @@ class Core {
 			'mu_plugin_loaded',
 			function () {
 				$this->acf         = new ACF();
-				$this->sites       = new Sites();
 				$this->admin       = new Admin();
+				$this->auctioneer  = new Auctioneer();
 				$this->auctions    = new Auctions();
-				$this->woocommerce = new WooCommerce();
 				$this->patterns    = new Patterns();
+				$this->sites       = new Sites();
+				$this->woocommerce = new WooCommerce();
 			}
 		);
 	}
