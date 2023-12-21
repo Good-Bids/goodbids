@@ -17,12 +17,6 @@ namespace GoodBids\Frontend;
 class Vite {
 
 	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private string $env;
-
-	/**
 	 * @var string
 	 */
 	private string $site_url;
@@ -68,16 +62,15 @@ class Vite {
 	 */
 	public function __construct() {
 		$this->site_url   = get_site_url();
-		$this->port       = is_ssl() ? getenv( 'VITE_PRIMARY_PORT' ): getenv( 'VITE_SECONDARY_PORT' );
+		$this->port       = 5173;
 		$this->dev_server = "{$this->site_url}:{$this->port}";
 
 		$this->dist_url  = GOODBIDS_PLUGIN_URL . 'dist/';
 		$this->dist_path = GOODBIDS_PLUGIN_PATH . 'dist/';
 
-		$this->env = getenv( 'ENVIRONMENT' );
-
-		$this->entries['default'] = 'main.js';
-		$this->entries['editor']  = 'editor.js';
+		$this->entries['default'] = 'main.tsx';
+		$this->entries['admin']   = 'admin.tsx';
+		$this->entries['editor']  = 'editor.tsx';
 
 		add_action( 'wp_head', [ $this, 'init' ] );
 
@@ -102,6 +95,17 @@ class Vite {
 		add_action( 'after_setup_theme', [ $this, 'after_setup_theme' ] );
 
 		add_action( 'acf/input/admin_footer', [ $this, 'acf_color_palette' ] );
+	}
+
+	/**
+	 * Checks if current environment is development.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_dev_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
 	}
 
 	/**
@@ -177,7 +181,7 @@ class Vite {
 	 * @return string
 	 */
 	public function vite( string $entry ): string {
-		if ( 'dev' === $this->env ) {
+		if ( $this->is_dev_env() ) {
 			$scripts = [];
 
 			if ( ! $this->initialized ) {
@@ -263,7 +267,7 @@ class Vite {
 	 * @return array
 	 */
 	private function get_manifest(): array {
-		$manifest = $this->dist_path . '/manifest.json';
+		$manifest = $this->dist_path . '/.vite/manifest.json';
 
 		if ( ! file_exists( $manifest ) ) {
 			add_action( 'admin_notices', function() {
@@ -271,7 +275,7 @@ class Vite {
 					'<div class="notice notice-warning is-dismissible">
 						<p>%s</p>
 					</div>',
-					esc_html__( 'Manifest.json file is missing. Run [some command]...', 'goodbids' )
+					esc_html__( 'Manifest.json file is missing. Run npm run build...', 'goodbids' )
 				);
 			});
 
@@ -307,7 +311,7 @@ class Vite {
 					esc_html( $entry )
 				)
 			);
-		}
+		};
 
 		return $this->dist_url . $manifest[ $entry ]['file'];
 	}
@@ -368,7 +372,7 @@ class Vite {
 	 * @return string
 	 */
 	public function script_loader( string $tag, string $handle, string $src ): string {
-		if ( ! str_contains( $handle, 'theme-script-' ) ) {
+		if ( ! str_contains( $handle, 'goodbids-script-' ) ) {
 			return $tag;
 		}
 
@@ -388,7 +392,7 @@ class Vite {
 	 * @return string
 	 */
 	public function style_loader( string $tag, string $handle, string $href, string $media ): string {
-		if ( ! str_contains( $handle, 'theme-style-preload-' ) ) {
+		if ( ! str_contains( $handle, 'goodbids-style-preload-' ) ) {
 			return $tag;
 		}
 
@@ -451,12 +455,12 @@ class Vite {
 
 		foreach ( $this->get_css( $file ) as $url ) {
 			$i++;
-			wp_enqueue_style( 'theme-style-editor-' . $i, $url, $css_dependencies, '1.0' );
+			wp_enqueue_style( 'goodbids-style-editor-' . $i, $url, $css_dependencies, '1.0' );
 		}
 
 		foreach ( $this->get_imports( $file ) as $url ) {
 			$i++;
-			wp_enqueue_style( 'theme-style-preload-editor-' . $i, $url, $css_dependencies, '1.0' );
+			wp_enqueue_style( 'goodbids-style-preload-editor-' . $i, $url, $css_dependencies, '1.0' );
 		}
 
 		// Theme Gutenberg blocks JS.
@@ -474,12 +478,12 @@ class Vite {
 
 		$script_url = $this->get_asset_url( $file );
 
-		if ( 'dev' === $this->env ) {
+		if ( $this->is_dev_env() ) {
 			$vite_client = $this->dev_server . '/@vite/client';
 			$vite_entry  = $this->dev_server . '/' . $entry;
 
 			wp_register_script(
-				'theme-script-editor-vite-client',
+				'goodbids-script-editor-vite-client',
 				$vite_client,
 				$js_dependencies,
 				'1.0',
@@ -487,15 +491,15 @@ class Vite {
 			);
 
 			wp_enqueue_script(
-				'theme-script-editor-vite-entry',
+				'goodbids-script-editor-vite-entry',
 				$vite_entry,
-				[ 'theme-script-editor-vite-client' ],
+				[ 'goodbids-script-editor-vite-client' ],
 				'1.0',
 				true
 			);
 		} else {
 			wp_enqueue_script(
-				'theme-script-editor-main',
+				'goodbids-script-editor-main',
 				$script_url,
 				$js_dependencies,
 				'1.0',

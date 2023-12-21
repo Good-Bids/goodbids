@@ -2,11 +2,12 @@
 import { defineConfig, splitVendorChunkPlugin } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import liveReload from 'vite-plugin-live-reload';
-import { resolve } from 'path';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-import tailwindConfig from './tailwind.config.js';
-import resolveConfig from 'tailwindcss/resolveConfig';
-import react from '@vitejs/plugin-react'
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import react from '@vitejs/plugin-react';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig(({ command }) => ({
   root: 'src',
@@ -14,26 +15,12 @@ export default defineConfig(({ command }) => ({
   plugins: [
     react(),
     liveReload([
-      resolve(__dirname, './assets/**/*'),
+      resolve(__dirname, './src/assets/**/*'),
       resolve(__dirname, './blocks/**/*'),
       resolve(__dirname, './views/**/*'),
     ]),
     splitVendorChunkPlugin(),
     svgr(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: resolve( __dirname, 'tailwind.config.js' ),
-          dest: resolve( __dirname, 'dist/config' ),
-          rename: 'tailwind.json',
-          transform: (contents, filename) => {
-            // See https://tailwindcss.com/docs/configuration#referencing-in-java-script
-            const config = resolveConfig( tailwindConfig );
-            return JSON.stringify( config, null, 2 );
-          },
-        },
-      ],
-    })
   ],
   build: {
     // output dir for production build
@@ -52,12 +39,11 @@ export default defineConfig(({ command }) => ({
   },
   server: {
     host: '0.0.0.0',
-    // I don't love that this is hard coded
+    // I don't love that this is hard coded.
     origin: 'https://goodbids.vipdev.lndo.site:5173',
     // we need a strict port to match on PHP side
     strictPort: true,
-    // Vite port is defined by https://github.com/torenware/ddev-viteserve
-    port: parseInt(process.env.VITE_PRIMARY_PORT ?? '5173'),
+    port: 5173,
     hmr: {
       overlay: false,
     }

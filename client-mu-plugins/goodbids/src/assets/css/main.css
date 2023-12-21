@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
-	@apply bg-black; //for testing
+	@apply bg-black;
 }

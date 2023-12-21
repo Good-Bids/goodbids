@@ -59,9 +59,8 @@ vendor
 # PhpStorm
 .idea/
 
-# Pre-compiled files
-src/index.js
-src/components
+# Build files
+client-mu-plugins/goodbids/build
 
 # Credentials
 auth.json
