@@ -49,6 +49,12 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const GUID_META_KEY = 'gb_guid';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -82,6 +88,9 @@ class Auctions {
 
 		// Sets a default image
 		$this->set_default_feature_image();
+
+		// Generate a unique ID for each Auction.
+		$this->generate_guid_on_publish();
 	}
 
 	/**
@@ -351,6 +360,19 @@ class Auctions {
 	 */
 	public function get_start_date_time( int $auction_id = null ): string {
 		return $this->get_setting( 'auction_start', $auction_id );
+	}
+
+	/**
+	 * Get the Auction End Date/Time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_end_date_time( int $auction_id = null ): string {
+		return $this->get_setting( 'auction_end', $auction_id );
 	}
 
 	/**
@@ -831,6 +853,54 @@ class Auctions {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Get the Auction GUID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_guid( int $auction_id = null ): string {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
+		return get_post_meta( $auction_id, self::GUID_META_KEY, true );
+	}
+
+	/**
+	 * Create a Bid product when an Auction is created.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function generate_guid_on_publish(): void {
+		add_action(
+			'wp_after_insert_post',
+			function ( $post_id ): void {
+				// Bail if this is a revision.
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
+					return;
+				}
+
+				// Bail if not an Auction.
+				if ( $this->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				// Bail if the Auction already has a guid.
+				if ( $this->get_guid( $post_id ) ) {
+					return;
+				}
+
+				update_post_meta( $post_id, self::GUID_META_KEY, wp_generate_uuid4() );
+			}
 		);
 	}
 }

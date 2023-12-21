@@ -42,9 +42,12 @@ class BidNow {
 	 * @param array $block
 	 */
 	public function __construct( array $block ) {
-		$this->block          = $block;
-		$this->auction_id     = goodbids()->auctions->get_auction_id();
-		$this->bid_product_id = goodbids()->auctions->get_bid_product_id( $this->auction_id );
+		$this->block      = $block;
+		$this->auction_id = goodbids()->auctions->get_auction_id();
+
+		if ( $this->auction_id ) {
+			$this->bid_product_id = goodbids()->auctions->get_bid_product_id( $this->auction_id );
+		}
 	}
 
 	/**
