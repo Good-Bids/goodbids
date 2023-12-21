@@ -897,7 +897,6 @@ class Auctions {
 			function ( $column, $post_id ) {
 				// Columns that require a "published" status.
 				$published_cols = [
-				$published_cols = [
 					'starting_bid',
 					'bid_increment',
 					'total_bids',
