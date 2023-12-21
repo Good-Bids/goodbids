@@ -723,11 +723,13 @@ class Auctions {
 
 		$bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
 
-		printf(
-			'<p><strong>%s</strong><br>%s</p>',
-			esc_html__( 'Current Bid', 'goodbids' ),
-			wp_kses_post( wc_price( $bid_product->get_price() ) )
-		);
+		if ( $bid_product ) :
+			printf(
+				'<p><strong>%s</strong><br>%s</p>',
+				esc_html__( 'Current Bid', 'goodbids' ),
+				wp_kses_post( wc_price( $bid_product->get_price() ) )
+			);
+		endif;
 
 		$last_bid = $this->get_last_bid( $auction_id );
 

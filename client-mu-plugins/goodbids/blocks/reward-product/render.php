@@ -8,12 +8,10 @@
  * @package GoodBids
  */
 
-$goal              = goodbids()->auctions->get_goal( goodbids()->auctions->get_auction_id() );
-$estimated_value   = goodbids()->auctions->get_estimated_value( $auction_id );
-$expected_high_bid = goodbids()->auctions->get_expected_high_bid( $auction_id );
+$goal              = goodbids()->auctions->get_goal();
+$estimated_value   = goodbids()->auctions->get_estimated_value();
+$expected_high_bid = goodbids()->auctions->get_expected_high_bid();
 ?>
-
-
 <section <?php block_attr( $block ); ?>>
 	<?php
 	// Goal
