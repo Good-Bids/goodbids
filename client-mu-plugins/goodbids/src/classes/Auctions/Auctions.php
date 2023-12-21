@@ -388,6 +388,25 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction Reward Product object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_reward_product( int $auction_id = null ): ?WC_Product {
+		$reward_product_id = $this->get_reward_product_id( $auction_id );
+
+		if ( ! $reward_product_id ) {
+			return null;
+		}
+
+		return wc_get_product( $reward_product_id );
+	}
+
+	/**
 	 * Get the Auction Reward Estimated Value.
 	 *
 	 * @since 1.0.0
@@ -998,10 +1017,13 @@ class Auctions {
 					return $html;
 				}
 
-				$reward_id = $this->get_reward_product_id( $post_id );
-				$product   = wc_get_product( $reward_id );
+				$reward = $this->get_reward_product( $post_id );
 
-				return $product->get_image();
+				if ( ! $reward ) {
+					return $html;
+				}
+
+				return $reward->get_image();
 			},
 			10,
 			2

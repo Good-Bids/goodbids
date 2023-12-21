@@ -52,6 +52,12 @@ Returns the Auction's Bid Product object. If `$auction_id` is not provided, the 
 `goodbids()->auctions->get_reward_product_id( int $auction_id )`  
 Returns the Auction's Reward Product ID. If `$auction_id` is not provided, the current post ID will be used.
 
+`goodbids()->auctions->get_reward_product( int $auction_id )`  
+Returns the Auction's Reward Product object. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->get_product_type( int $product_id )`  
+Returns the type of the given product ID. Available types are: "bids" and "rewards".
+
 `goodbids()->auctions->get_estimated_value( int $auction_id )`  
 Returns the Auction Reward's Estimated Value. If `$auction_id` is not provided, the current post ID will be used.
 
@@ -63,6 +69,9 @@ Returns the Auction's End Date/Time in MySQL format. If `$auction_id` is not pro
 
 `goodbids()->auctions->has_started( int $auction_id )`  
 Checks if the Auction has started. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->has_ended( int $auction_id )`  
+Checks if the Auction has ended. If `$auction_id` is not provided, the current post ID will be used.
 
 `goodbids()->auctions->get_bid_increment( int $auction_id )`  
 Returns the Auction's Bid Increment value. If `$auction_id` is not provided, the current post ID will be used.
@@ -81,6 +90,18 @@ Returns the Auction's Expected High Bid value. If `$auction_id` is not provided,
 
 `goodbids()->auctions->get_guid( int $auction_id )`  
 Returns the Auction's Unique GUID. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->get_bid_orders( int $auction_id, int $limit )`  
+Returns an array of Bid Order IDs for the given Auction ID. `$limit` can be specified to return a set number of orders.
+
+`goodbids()->auctions->get_bid_order( int $auction_id, int $limit )`  
+Returns an array of Bid Order objects for the given Auction ID. `$limit` can be specified to return a set number of orders.
+
+`goodbids()->auctions->get_last_bid( int $auction_id )`  
+Returns the Bid Order object of the last bid for the given Auction ID.
+
+`goodbids()->auctions->get_status( int $auction_id )`  
+Returns the status of the Auction. Possible values are: "Upcoming", "Live", and "Closed". If the Auction has not yet been published, it will return "Draft".
 
 ### Bids Functions
 
