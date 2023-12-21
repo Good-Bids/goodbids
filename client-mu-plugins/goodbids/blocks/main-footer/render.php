@@ -13,12 +13,9 @@
 <section <?php block_attr( $block, 'wp-block-group alignwide has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained' ); ?>>
 	<div class="wp-block-group alignwide has-global-padding is-layout-constrained wp-block-group-is-layout-constrained">
 		<div class="wp-block-group alignwide has-small-font-size is-content-justification-space-between is-nowrap is-layout-flex wp-container-core-group-layout-30 wp-block-group-is-layout-flex" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40);justify-content: space-between;flex-wrap: wrap;">
-			<?php
-			printf(
-				'<p>%s</p>',
-				esc_html__( 'GOODBIDS Positive Auctions', 'goodbids' )
-			);
-			?>
+
+			<p><?php esc_html_e( 'GOODBIDS Positive Auctions', 'goodbids' ); ?></p>
+
 			<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-layout-29 wp-block-group-is-layout-flex">
 				<?php
 				printf(
