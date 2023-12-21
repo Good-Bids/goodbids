@@ -950,6 +950,12 @@ class Auctions {
 					return $html;
 				}
 
+				// If the auction has a featured image
+				if ( has_post_thumbnail( $post_id ) ) {
+					return $html;
+				}
+
+				// Default to the WooCommerce featured image or WooCommerce default image
 				$reward_id = $this->get_reward_product_id( $post_id );
 				$product   = wc_get_product( $reward_id );
 
