@@ -182,13 +182,10 @@ class Vite {
 	 */
 	public function vite( string $entry ): string {
 		if ( $this->is_dev_env() ) {
-			$scripts = [];
-
-			if ( ! $this->initialized ) {
-				$scripts[] = "<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>";
-			}
-
-			$scripts[] = "<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>";
+			$scripts = [
+				"<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>",
+				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>"
+			];
 
 			return implode(PHP_EOL, $scripts );
 		}
