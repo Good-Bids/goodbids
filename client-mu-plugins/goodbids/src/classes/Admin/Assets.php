@@ -38,7 +38,7 @@ class Assets {
 			function () {
 				wp_enqueue_style(
 					'goodbids-admin',
-					GOODBIDS_PLUGIN_URL . asset_path( '/assets/js/admin.tsx', 'css' ),
+					GOODBIDS_PLUGIN_URL . 'assets/css/admin.css',
 					[],
 					goodbids()->get_version()
 				);

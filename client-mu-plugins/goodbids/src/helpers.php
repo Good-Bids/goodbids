@@ -22,23 +22,3 @@ if ( ! function_exists( 'block_attr' ) ) {
 		goodbids()->acf->blocks()->block_attr( $block, $addl_class, $attr );
 	}
 }
-
-/**
- * Render assets files from manifest
- *
- * @since 1.0.0
- *
- * @param  string $asset
- * @return string
- */
-function asset_path( $asset_path, $file ) {
-	$manifest_path = GOODBIDS_PLUGIN_PATH . 'dist/.vite/manifest.json';
-
-	if ( ! file_exists( $manifest_path ) ) {
-		return false;
-	}
-
-	$manifest = json_decode( file_get_contents( $manifest_path ), true );
-
-	return 'dist/' . $manifest['assets/js/admin.tsx']['css'][0];
-}
