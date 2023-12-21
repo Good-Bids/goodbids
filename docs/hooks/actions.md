@@ -26,3 +26,17 @@ add_action(
 	}
 );
 ```
+### goodbids_auction_start_event
+
+Cron event, fired every minute.
+
+> **Be EXTREMELY CAUTIOUS using this hook.**
+
+```php
+add_action(
+	'goodbids_auction_start_event',
+	function (): void {
+		// Are you sure you want to use this hook?
+	}
+);
+```

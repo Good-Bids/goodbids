@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use WC_Order;
+use WP_Query;
 
 /**
  * Class for Auctions
@@ -55,9 +56,27 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const CRON_AUCTION_START_HOOK = 'goodbids_auction_start_event';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_STARTED_META_KEY = '_auction_started';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public string $cron_interval = '1min';
 
 	/**
 	 * Initialize Auctions
@@ -74,11 +93,14 @@ class Auctions {
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
-		// Add Auction Metrics Meta Box.
-		$this->add_metrics_meta_box();
+		// Add Auction Meta Box to display details and metrics.
+		$this->add_info_meta_box();
 
 		// Add custom Admin Columns for Auctions.
 		$this->add_admin_columns();
+
+		// Configure some values for new Auction posts.
+		$this->new_auction_post_init();
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
@@ -91,6 +113,15 @@ class Auctions {
 
 		// Generate a unique ID for each Auction.
 		$this->generate_guid_on_publish();
+
+		// Set up 1min Cron Job Schedule.
+		$this->add_one_min_cron_schedule();
+
+		// Schedule a cron job to trigger the start of auctions.
+		$this->schedule_bid_start_cron();
+
+		// Use cron action to start auctions.
+		$this->check_for_starting_auctions();
 	}
 
 	/**
@@ -165,7 +196,7 @@ class Auctions {
 					'template'            => $this->get_template(),
 				];
 
-				register_post_type( self::POST_TYPE, $args );
+				register_post_type( $this->get_post_type(), $args );
 			}
 		);
 	}
@@ -359,7 +390,13 @@ class Auctions {
 	 * @return string
 	 */
 	public function get_start_date_time( int $auction_id = null ): string {
-		return $this->get_setting( 'auction_start', $auction_id );
+		$start = $this->get_setting( 'auction_start', $auction_id );
+
+		if ( ! $start ) {
+			return '';
+		}
+
+		return $start;
 	}
 
 	/**
@@ -372,7 +409,13 @@ class Auctions {
 	 * @return string
 	 */
 	public function get_end_date_time( int $auction_id = null ): string {
-		return $this->get_setting( 'auction_end', $auction_id );
+		$end = $this->get_setting( 'auction_end', $auction_id );
+
+		if ( ! $end ) {
+			return '';
+		}
+
+		return $end;
 	}
 
 	/**
@@ -386,11 +429,33 @@ class Auctions {
 	 */
 	public function has_started( int $auction_id = null ): bool {
 		$start_date_time = $this->get_start_date_time( $auction_id );
+
 		if ( ! $start_date_time ) {
+			// TODO: Log error.
 			return false;
 		}
 
-		return strtotime( $start_date_time ) < time();
+		return strtotime( $start_date_time ) < current_datetime()->format( 'U' );
+	}
+
+	/**
+	 * Check if an Auction has ended.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function has_ended( int $auction_id = null ): bool {
+		$end_date_time = $this->get_end_date_time( $auction_id );
+
+		if ( ! $end_date_time ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		return strtotime( $end_date_time ) < current_datetime()->format( 'U' );
 	}
 
 	/**
@@ -464,6 +529,34 @@ class Auctions {
 	}
 
 	/**
+	 * Update Auction with some initial data when created.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function new_auction_post_init(): void {
+		add_action(
+			'wp_after_insert_post',
+			function ( $post_id ): void {
+				// Bail if this is a revision.
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
+					return;
+				}
+
+				// Bail if not an Auction.
+				if ( $this->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				// Set started to 0 for easier querying.
+				update_post_meta( $post_id, self::AUCTION_STARTED_META_KEY, 0 );
+			},
+			12
+		);
+	}
+
+	/**
 	 * Update the Bid Product when an Auction is updated.
 	 *
 	 * @since 1.0.0
@@ -475,7 +568,7 @@ class Auctions {
 			'save_post',
 			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || self::POST_TYPE !== get_post_type( $post_id ) ) {
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
 				}
 
@@ -664,13 +757,40 @@ class Auctions {
 	}
 
 	/**
-	 * Add a meta box to show Auction metrics.
+	 * Get the status of an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_status( int $auction_id ): string {
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			return __( 'Draft', 'goodbids' );
+		}
+
+		$status = __( 'Upcoming', 'goodbids' );
+
+		if ( $this->has_started( $auction_id ) ) {
+			$status = __( 'Live', 'goodbids' );
+		}
+
+		if ( $this->has_ended( $auction_id ) ) {
+			$status = __( 'Closed', 'goodbids' );
+		}
+
+		return $status;
+	}
+
+	/**
+	 * Add a meta box to show Auction metrics and other details.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function add_metrics_meta_box(): void {
+	private function add_info_meta_box(): void {
 		add_action(
 			'current_screen',
 			function (): void {
@@ -681,9 +801,9 @@ class Auctions {
 				}
 
 				add_meta_box(
-					'goodbids-auction-metrics',
-					__( 'Auction Metrics', 'goodbids' ),
-					[ $this, 'metrics_meta_box' ],
+					'goodbids-auction-info',
+					__( 'Auction Info', 'goodbids' ),
+					[ $this, 'info_meta_box' ],
 					$screen->id,
 					'side'
 				);
@@ -722,49 +842,31 @@ class Auctions {
 	}
 
 	/**
-	 * Display the Auction Metrics
+	 * Display the Auction Metrics and other details.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function metrics_meta_box(): void {
+	public function info_meta_box(): void {
 		$auction_id = $this->get_auction_id();
 
-		printf(
-			'<p><strong>%s</strong><br>%s</p>',
-			esc_html__( 'Total Bids', 'goodbids' ),
-			esc_html( $this->get_bid_count( $auction_id ) )
-		);
+		// Display the Auction Details.
+		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
 
-		printf(
-			'<p><strong>%s</strong><br>%s</p>',
-			esc_html__( 'Total Raised', 'goodbids' ),
-			wp_kses_post( wc_price( $this->get_total_raised( $auction_id ) ) )
-		);
+		echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
 
-		$bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
-
-		if ( $bid_product ) :
-			printf(
-				'<p><strong>%s</strong><br>%s</p>',
-				esc_html__( 'Current Bid', 'goodbids' ),
-				wp_kses_post( wc_price( $bid_product->get_price() ) )
-			);
-		endif;
-
-		$last_bid = $this->get_last_bid( $auction_id );
-
-		if ( $last_bid ) {
-			printf(
-				'<p><strong>%s</strong><br><a href="%s">%s</a></p>',
-				esc_html__( 'Last Bid', 'goodbids' ),
-				esc_url( get_edit_post_link( $last_bid->get_id() ) ),
-				wp_kses_post( wc_price( $last_bid->get_total() ) )
-			);
-		}
+		// Display the Auction Metrics.
+		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/metrics.php';
 	}
 
+	/**
+	 * Insert custom metrics admin columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
 	private function add_admin_columns(): void {
 		add_filter(
 			'manage_' . $this->get_post_type() . '_posts_columns',
@@ -776,6 +878,7 @@ class Auctions {
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
+						$new_columns['status']        = __( 'Status', 'goodbids' );
 						$new_columns['starting_bid']  = __( 'Starting Bid', 'goodbids' );
 						$new_columns['bid_increment'] = __( 'Bid Increment', 'goodbids' );
 						$new_columns['total_bids']    = __( 'Total Bids', 'goodbids' );
@@ -792,7 +895,8 @@ class Auctions {
 		add_action(
 			'manage_' . $this->get_post_type() . '_posts_custom_column',
 			function ( $column, $post_id ) {
-				$bid_cols = [
+				// Columns that require a "published" status.
+				$published_cols = [
 					'starting_bid',
 					'bid_increment',
 					'total_bids',
@@ -802,13 +906,15 @@ class Auctions {
 				];
 
 				// Bail early if Auction isn't published.
-				if ( in_array( $column, $bid_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
+				if ( in_array( $column, $published_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
 					echo '&mdash;';
 					return;
 				}
 
 				// Output the column values.
-				if ( 'starting_bid' === $column ) {
+				if ( 'status' === $column ) {
+					echo esc_html( $this->get_status( $post_id ) );
+				} elseif ( 'starting_bid' === $column ) {
 					echo wp_kses_post( wc_price( $this->calculate_starting_bid( $post_id ) ) );
 				} elseif ( 'bid_increment' === $column ) {
 					echo wp_kses_post( wc_price( $this->get_bid_increment( $post_id ) ) );
@@ -844,12 +950,10 @@ class Auctions {
 					return $html;
 				}
 
-				$reward_id  = goodbids()->auctions->get_reward_product_id( $post_id );
-				$product    = wc_get_product( $reward_id );
-				$image_html = $product->get_image();
-				return sprintf(
-					$image_html,
-				);
+				$reward_id = $this->get_reward_product_id( $post_id );
+				$product   = wc_get_product( $reward_id );
+
+				return $product->get_image();
 			},
 			10,
 			2
@@ -902,5 +1006,115 @@ class Auctions {
 				update_post_meta( $post_id, self::GUID_META_KEY, wp_generate_uuid4() );
 			}
 		);
+	}
+
+	/**
+	 * Add a 1min Cron Job Schedule.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_one_min_cron_schedule(): void {
+		add_filter(
+			'cron_schedules', // phpcs:ignore
+			function ( array $schedules ): array {
+				// If one is already set, confirm it matches our schedule.
+				if ( ! empty( $schedules[ $this->cron_interval ] ) ) {
+					if ( MINUTE_IN_SECONDS === $schedules[ $this->cron_interval ]['interval'] ) {
+						return $schedules;
+					}
+
+					$this->cron_interval = '1minute';
+				}
+
+				// Adds every minute cron schedule.
+				$schedules[ $this->cron_interval ] = [
+					'interval' => MINUTE_IN_SECONDS,
+					'display'  => __( 'Once Every Minute', 'goodbids' ),
+				];
+
+				return $schedules;
+			}
+		);
+	}
+
+	/**
+	 * Schedule a cron job that runs every minute to trigger auctions to start.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function schedule_bid_start_cron(): void {
+		add_action(
+			'init',
+			function (): void {
+				if ( wp_next_scheduled( self::CRON_AUCTION_START_HOOK ) ) {
+					return;
+				}
+
+				wp_schedule_event( current_datetime()->format( 'U' ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
+			}
+		);
+	}
+
+	/**
+	 * Check for Auctions that are starting during cron hook.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function check_for_starting_auctions(): void {
+		add_action(
+			self::CRON_AUCTION_START_HOOK,
+			function (): void {
+				$auctions = $this->get_starting_auctions();
+
+				if ( ! $auctions->have_posts() ) {
+					return;
+				}
+
+				foreach ( $auctions->posts as $auction_id ) {
+					// TODO: Tell Node first.
+					// TODO: Wrap in condition based on Node API response.
+					// Update the Auction meta to indicate it has started.
+					update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Get Auctions that are starting.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WP_Query
+	 */
+	private function get_starting_auctions(): WP_Query {
+		// Use the current time + 1min to get Auctions about to start.
+		$auction_start = current_datetime()->add( new \DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
+
+		$args = [
+			'post_type'      => $this->get_post_type(),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'return'         => 'ids',
+			'meta_query'     => [
+				[
+					'key'     => 'auction_start',
+					'value'   => $auction_start,
+					'compare' => '<=',
+				],
+				[
+					'key'   => self::AUCTION_STARTED_META_KEY,
+					'value' => 0,
+				],
+			],
+		];
+
+		return new WP_Query( $args );
 	}
 }

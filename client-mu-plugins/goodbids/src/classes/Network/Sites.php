@@ -422,7 +422,7 @@ class Sites {
 	}
 
 	/**
-	 * Set the archive to show nine posts per pagination
+	 * Set the archive default to show 9 posts per page
 	 *
 	 * @since 1.0.0
 	 *
@@ -432,10 +432,7 @@ class Sites {
 		add_action(
 			'goodbids_init_site',
 			function ( int $site_id ): void {
-				update_option(
-					'posts_per_page',
-					9
-				);
+				update_option( 'posts_per_page', 9 );
 			}
 		);
 	}

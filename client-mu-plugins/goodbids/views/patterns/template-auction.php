@@ -9,7 +9,6 @@
  */
 
 ?>
-
 <!-- wp:group {"tagName":"main","align":"wide"} -->
 <main class="wp-block-group alignwide">
 	<!-- wp:columns -->
@@ -28,7 +27,7 @@
 
 			<!-- wp:post-excerpt /-->
 
-			<!-- wp:acf/reward-product {"name":"acf/reward-product","mode":"preview"} /-->
+			<!-- wp:acf/auction-metrics-general {"name":"acf/auction-metrics-general","mode":"preview"} /-->
 
 			<!-- wp:acf/bid-now {"name":"acf/bid-now","data":{},"mode":"preview"} /-->
 		</div>

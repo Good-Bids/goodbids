@@ -57,7 +57,7 @@ class Bids {
 				}
 
 				// Bail if not an Auction.
-				if ( Auctions::POST_TYPE !== get_post_type( $post_id ) ) {
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
 				}
 
