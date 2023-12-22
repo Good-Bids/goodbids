@@ -45,6 +45,6 @@ export default defineConfig(({ command }) => ({
     port: 5173,
     hmr: {
       overlay: false,
-	}
+    }
   },
 }));

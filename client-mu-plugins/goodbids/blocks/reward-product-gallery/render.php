@@ -18,14 +18,14 @@ if ( $reward ) {
 <section <?php block_attr( $block, 'woocommerce' ); ?>>
 	<div class="woocommerce product">
 		<?php
-		if ( $product ) {
+		if ( $product ) :
 			wc_get_template( 'single-product/product-image.php' );
-		} else {
+		else :
 			printf(
 				'<p style="text-align: center;">%s</p>',
 				esc_html__( 'No Auction Product selected', 'goodbids' )
 			);
-		}
+		endif;
 		?>
 	</div>
 </section>

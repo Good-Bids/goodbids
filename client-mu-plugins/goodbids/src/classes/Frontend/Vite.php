@@ -3,6 +3,7 @@
  * Vite Implementation
  *
  * Inspired from:
+ *
  * @source https://github.com/andrefelipe/vite-php-setup
  *
  * @since 1.0.0
@@ -76,17 +77,28 @@ class Vite {
 
 		add_action(
 			'admin_head',
-			function() {
+			function () {
 				$screen = get_current_screen();
 				if ( $screen->is_block_editor ) {
-//					$this->init(); // This breaks the block editor styles.
+					// $this->init(); // This breaks the block editor styles.
 					$this->init( 'editor' );
 				}
 			}
 		);
 
-//		add_action( 'enqueue_block_editor_assets', [ $this, 'block_assets'] );
-//		add_action( 'admin_init', [ $this, 'admin_assets' ], 15 );
+		add_action(
+			'admin_enqueue_scripts',
+			function () {
+				wp_enqueue_style(
+					'goodbids-admin',
+					GOODBIDS_PLUGIN_URL . 'assets/css/admin.css',
+					[],
+					goodbids()->get_version()
+				);
+			}
+		);
+
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_assets' ], 15 );
 
 		add_filter( 'script_loader_tag', [ $this, 'script_loader' ], 10, 3 );
 		add_filter( 'style_loader_tag', [ $this, 'style_loader' ], 10, 4 );
@@ -180,23 +192,26 @@ class Vite {
 	 *
 	 * @return string
 	 */
-	public function vite( string $entry ): string {
+	public function vite( string $entry ) {
 		if ( $this->is_dev_env() ) {
 			$scripts = [
 				"<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>",
-				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>"
+				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>",
 			];
 
-			return implode(PHP_EOL, $scripts );
+			return implode( PHP_EOL, $scripts );
 		}
 
 		// TODO this will need to be updated to work with vendor files
 		// Or we can just turn off vendor chunks
-		return implode(PHP_EOL, [
-			$this->js( $entry ),
-			$this->imports( $entry ),
-			$this->css( $entry ),
-		]);
+		return implode(
+			PHP_EOL,
+			[
+				$this->js( $entry ),
+				$this->imports( $entry ),
+				$this->css( $entry ),
+			]
+		);
 	}
 
 	/**
@@ -267,14 +282,17 @@ class Vite {
 		$manifest = $this->dist_path . '/.vite/manifest.json';
 
 		if ( ! file_exists( $manifest ) ) {
-			add_action( 'admin_notices', function() {
-				printf(
-					'<div class="notice notice-warning is-dismissible">
+			add_action(
+				'admin_notices',
+				function () {
+					printf(
+						'<div class="notice notice-warning is-dismissible">
 						<p>%s</p>
 					</div>',
-					esc_html__( 'Manifest.json file is missing. Run npm run build...', 'goodbids' )
-				);
-			});
+						esc_html__( 'Manifest.json file is missing. Run npm run build...', 'goodbids' )
+					);
+				}
+			);
 
 			return [];
 		}
@@ -308,7 +326,7 @@ class Vite {
 					esc_html( $entry )
 				)
 			);
-		};
+		}
 
 		return $this->dist_url . $manifest[ $entry ]['file'];
 	}
@@ -409,17 +427,15 @@ class Vite {
 	 */
 	public function admin_assets( $entry = '' ): void {
 		if ( ! $entry ) {
-			$screen = get_current_screen();
-			$entry  = $screen && 'site-editor' === $screen->base ? 'default' : 'editor';
+			$entry = 'admin';
 		}
-
 		if ( ! $this->get_entry( $entry ) ) {
 			return;
 		}
-
+		$i = 0;
 		foreach ( $this->get_css( $this->get_entry( $entry ) ) as $url ) {
-			add_editor_style( $url );
-			break;
+			++$i;
+			wp_enqueue_style( 'goodbids-style-admin-' . $i, $url, [], goodbids()->get_version() );
 		}
 	}
 
@@ -447,16 +463,16 @@ class Vite {
 
 		$css_dependencies = [
 			'wp-block-library-theme',
-			'wp-block-library'
+			'wp-block-library',
 		];
 
 		foreach ( $this->get_css( $file ) as $url ) {
-			$i++;
+			++$i;
 			wp_enqueue_style( 'goodbids-style-editor-' . $i, $url, $css_dependencies, '1.0' );
 		}
 
 		foreach ( $this->get_imports( $file ) as $url ) {
-			$i++;
+			++$i;
 			wp_enqueue_style( 'goodbids-style-preload-editor-' . $i, $url, $css_dependencies, '1.0' );
 		}
 
@@ -483,7 +499,7 @@ class Vite {
 				'goodbids-script-editor-vite-client',
 				$vite_client,
 				$js_dependencies,
-				'1.0',
+				goodbids()->get_version(),
 				true
 			);
 
@@ -491,7 +507,7 @@ class Vite {
 				'goodbids-script-editor-vite-entry',
 				$vite_entry,
 				[ 'goodbids-script-editor-vite-client' ],
-				'1.0',
+				goodbids()->get_version(),
 				true
 			);
 		} else {
@@ -499,7 +515,7 @@ class Vite {
 				'goodbids-script-editor-main',
 				$script_url,
 				$js_dependencies,
-				'1.0',
+				goodbids()->get_version(),
 				true
 			);
 		}

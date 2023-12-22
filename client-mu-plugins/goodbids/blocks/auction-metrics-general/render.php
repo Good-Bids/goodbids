@@ -27,7 +27,7 @@ endif;
 	if ( $goal ) :
 		?>
 		<div class="flex flex-col text-center">
-			<p class="m-0 uppercase font-thin has-x-small-font-size"><?php esc_html_e( 'Auction Goal' ); ?></p>
+			<p class="m-0 uppercase font-thin has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
 			<?php
 				printf(
 					'<p class="m-1 font-extrabold">%s</p>',
@@ -42,11 +42,11 @@ endif;
 	if ( $estimated_value ) :
 		?>
 		<div class="flex flex-col text-center">
-			<p class="m-0 uppercase font-thin has-x-small-font-size"><?php esc_html_e( 'Auction Goal' ); ?></p>
+			<p class="m-0 uppercase font-thin has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
 			<?php
 				printf(
 					'<p class="m-1 font-extrabold">%s</p>',
-					wp_kses_post( wc_price( $estimated_value ), 'goodbids' )
+					wp_kses_post( wc_price( $estimated_value ) )
 				);
 			?>
 		</div>
@@ -57,11 +57,11 @@ endif;
 	if ( $expected_high_bid ) :
 		?>
 		<div class="flex flex-col text-center">
-			<p class="m-0 uppercase font-thin has-x-small-font-size"><?php esc_html_e( 'Auction Goal' ); ?></p>
+			<p class="m-0 uppercase font-thin has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
 			<?php
 				printf(
 					'<p class="m-1 font-extrabold">%s</p>',
-					wp_kses_post( wc_price( $expected_high_bid ), 'goodbids' )
+					wp_kses_post( wc_price( $expected_high_bid ) )
 				);
 			?>
 		</div>
