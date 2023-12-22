@@ -34,12 +34,14 @@ class MainFooter {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$page_id = get_blog_option( get_main_site_id(), 'wp_page_for_privacy_policy' );
-
 		if ( is_multisite() ) {
+			$page_id = get_blog_option( get_main_site_id(), 'wp_page_for_privacy_policy' );
+
 			switch_to_blog( get_main_site_id() );
+
 			$this->privacy_policy_title = get_the_title( $page_id );
 			$this->privacy_policy_url   = get_privacy_policy_url( $page_id );
+
 			restore_current_blog();
 		}
 	}
@@ -76,11 +78,7 @@ class MainFooter {
 	 * @return string
 	 */
 	public function get_privacy_policy_title(): string {
-		return sprintf(
-			/** translators: %s: Privacy Policy */
-			__( '%1$s', 'goodbids' ),
-			wp_kses_post( $this->privacy_policy_title ),
-		);
+		return wp_kses_post( $this->privacy_policy_title );
 	}
 
 	/**
@@ -91,6 +89,6 @@ class MainFooter {
 	 * @return string
 	 */
 	public function get_privacy_policy_url(): string {
-		return $this->privacy_policy_url;
+		return wp_kses_post( $this->privacy_policy_url );
 	}
 }
