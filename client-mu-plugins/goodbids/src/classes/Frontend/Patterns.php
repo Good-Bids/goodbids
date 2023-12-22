@@ -78,12 +78,12 @@ class Patterns {
 
 				$hero_banner = [
 					'name'       => 'goodbids-banner-hero',
-					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/goodbids-banner-hero.php',
+					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/banner-hero.php',
 					'title'      => __( 'Goodbids Banner Hero', 'goodbids' ),
 					'categories' => [ 'banner', 'featured', 'call-to-action', 'goodbids' ],
-					'keywords'   => [ 'non-profit', 'auction' ],
-					'postTypes'  => [ 'gb-auction', 'wp_template' ],
+					'keywords'   => [ 'banner', 'call-to-action', 'featured', 'hero' ],
 					'source'     => 'plugin',
+					'inserter'   => true,
 				];
 
 				$this->patterns = apply_filters(
