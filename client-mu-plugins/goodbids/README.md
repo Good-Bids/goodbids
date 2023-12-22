@@ -73,6 +73,9 @@ Checks if the Auction has started. If `$auction_id` is not provided, the current
 `goodbids()->auctions->has_ended( int $auction_id )`  
 Checks if the Auction has ended. If `$auction_id` is not provided, the current post ID will be used.
 
+`goodbids()->auctions->get_bid_extension( int $auction_id )`  
+Returns the Auction's Bid Extension value (in seconds). If `$auction_id` is not provided, the current post ID will be used.
+
 `goodbids()->auctions->get_bid_increment( int $auction_id )`  
 Returns the Auction's Bid Increment value. If `$auction_id` is not provided, the current post ID will be used.
 

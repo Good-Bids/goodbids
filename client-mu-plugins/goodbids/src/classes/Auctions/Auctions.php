@@ -526,6 +526,29 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction Bid Extension time (in seconds)
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return ?int
+	 */
+	public function get_bid_extension( int $auction_id = null ): ?int {
+		$bid_extension = $this->get_setting( 'bid_extension', $auction_id );
+
+		if ( ! $bid_extension ) {
+			// TODO: Log error.
+			return null;
+		}
+
+		$minutes = ! empty( $bid_extension['minutes'] ) ? intval( $bid_extension['minutes'] ) : 0;
+		$seconds = ! empty( $bid_extension['seconds'] ) ? intval( $bid_extension['seconds'] ) : 0;
+
+		return ( $minutes * MINUTE_IN_SECONDS ) + $seconds;
+	}
+
+	/**
 	 * Get the Auction Bid Increment amount
 	 *
 	 * @since 1.0.0

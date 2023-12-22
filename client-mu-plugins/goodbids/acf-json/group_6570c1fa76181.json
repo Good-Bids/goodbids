@@ -3,6 +3,23 @@
     "title": "Auction Settings",
     "fields": [
         {
+            "key": "field_65859b2a3eb25",
+            "label": "Schedule",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
+        },
+        {
             "key": "field_6570c1fb429a8",
             "label": "Auction Start",
             "name": "auction_start",
@@ -37,6 +54,85 @@
             "display_format": "m\/d\/Y g:i a",
             "return_format": "Y-m-d H:i:s",
             "first_day": 0
+        },
+        {
+            "key": "field_65859b4a3eb26",
+            "label": "Bid Extension",
+            "name": "bid_extension",
+            "aria-label": "",
+            "type": "group",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "block",
+            "sub_fields": [
+                {
+                    "key": "field_65859b5f3eb27",
+                    "label": "Minutes",
+                    "name": "minutes",
+                    "aria-label": "",
+                    "type": "number",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "min": "",
+                    "max": "",
+                    "placeholder": "",
+                    "step": "",
+                    "prepend": "",
+                    "append": ""
+                },
+                {
+                    "key": "field_65859b753eb28",
+                    "label": "Seconds",
+                    "name": "seconds",
+                    "aria-label": "",
+                    "type": "number",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "50",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "min": "",
+                    "max": "",
+                    "placeholder": "",
+                    "step": "",
+                    "prepend": "",
+                    "append": ""
+                }
+            ]
+        },
+        {
+            "key": "field_65859ba03eb29",
+            "label": "Reward",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
         },
         {
             "key": "field_657334958904f",
@@ -89,6 +185,23 @@
             "step": "",
             "prepend": "$",
             "append": ".00"
+        },
+        {
+            "key": "field_65859bbb3eb2a",
+            "label": "Bids",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "left",
+            "endpoint": 0
         },
         {
             "key": "field_657334728904e",
@@ -197,6 +310,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1703027242,
+    "modified": 1703255005,
     "private": true
 }
