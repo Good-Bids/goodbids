@@ -160,6 +160,10 @@ class Bids {
 		add_action(
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
+				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+					return;
+				}
+
 				$bid_product_id = goodbids()->auctions->get_bid_product_id( $auction_id );
 
 				if ( ! $bid_product_id ) {

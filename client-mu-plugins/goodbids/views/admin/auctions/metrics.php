@@ -24,6 +24,18 @@ $last_bid    = $this->get_last_bid( $auction_id );
 
 	printf(
 		'<p><strong>%s</strong><br>%s</p>',
+		esc_html__( 'Total Extensions', 'goodbids' ),
+		esc_html( $this->get_extensions( $auction_id ) )
+	);
+
+	printf(
+		'<p><strong>%s</strong><br>%s</p>',
+		esc_html__( 'Auction Close', 'goodbids' ),
+		esc_html( $this->get_end_date_time( $auction_id, 'n/j/Y g:i a' ) )
+	);
+
+	printf(
+		'<p><strong>%s</strong><br>%s</p>',
 		esc_html__( 'Total Raised', 'goodbids' ),
 		wp_kses_post( wc_price( $this->get_total_raised( $auction_id ) ) )
 	);

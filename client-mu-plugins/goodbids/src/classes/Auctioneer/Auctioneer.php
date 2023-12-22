@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctioneer;
 
+use GoodBids\Auctions\Auctions;
+
 /**
  * Class for Auctioneer, our Node.js server
  *
@@ -133,18 +135,8 @@ class Auctioneer {
 			return false;
 		}
 
-		$endpoint    = sprintf( 'auctions/%s/start', $guid );
-		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
-
-		// TODO: Refactor using individual Response classes.
-		$payload = [
-			'id'          => $guid,
-			'startTime'   => goodbids()->auctions->get_start_date_time( $auction_id, 'c' ),
-			'endTime'     => goodbids()->auctions->get_end_date_time( $auction_id, 'c' ),
-			'currentBid'  => floatval( $bid_product?->get_price( 'edit' ) ),
-			'requestTime' => current_datetime()->format( 'c' ),
-		];
-
+		$endpoint = sprintf( 'auctions/%s/start', $guid );
+		$payload  = $this->get_auction_payload( $auction_id, 'start' );
 		$response = $this->request( $endpoint, $payload, 'POST' );
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
@@ -154,6 +146,68 @@ class Auctioneer {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Update an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param string $context
+	 *
+	 * @return bool
+	 */
+	public function auction_update( int $auction_id, string $context ): bool {
+		$guid = goodbids()->auctions->get_guid( $auction_id );
+
+		if ( ! $guid ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		$endpoint = sprintf( 'auctions/%s/update', $guid );
+		$payload  = $this->get_auction_payload( $auction_id, 'update:' . $context );
+		$response = $this->request( $endpoint, $payload, 'PUT' );
+
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			// TODO: Log Response
+			error_log( '[GB] ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get the payload based on context
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param string $context
+	 *
+	 * @return array
+	 */
+	private function get_auction_payload( int $auction_id, string $context ): array {
+		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
+
+		$payload = [
+			'id'          => goodbids()->auctions->get_guid( $auction_id ),
+			'requestTime' => current_datetime()->format( 'c' ),
+		];
+
+		// TODO: Maybe refactor using individual Response or Payload classes.
+		if ( 'start' === $context ) {
+			$payload['startTime']  = goodbids()->auctions->get_start_date_time( $auction_id, 'c' );
+			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
+			$payload['currentBid'] = floatval( $bid_product?->get_price( 'edit' ) );
+		} elseif ( 'update:' . Auctions::CONTEXT_EXTENSION === $context ) {
+			$payload['currentBid'] = floatval( $bid_product?->get_price( 'edit' ) );
+			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
+		}
+
+		return $payload;
 	}
 
 	/**

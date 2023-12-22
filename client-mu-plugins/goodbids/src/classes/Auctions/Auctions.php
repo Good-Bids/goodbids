@@ -69,6 +69,24 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_CLOSE_META_KEY = '_auction_close';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_EXTENSIONS_META_KEY = '_auction_extensions';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const CONTEXT_EXTENSION = 'extension';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -123,6 +141,9 @@ class Auctions {
 
 		// Use cron action to start auctions.
 		$this->check_for_starting_auctions();
+
+		// Extend the Auction time after bids within extension window.
+		$this->maybe_extend_auction_on_order_complete();
 	}
 
 	/**
@@ -371,7 +392,20 @@ class Auctions {
 			$auction_id = $this->get_auction_id();
 		}
 
-		return get_field( $meta_key, $auction_id );
+		$value = get_field( $meta_key, $auction_id );
+
+		// TODO: Move this to use the filter below.
+		if ( 'auction_end' === $meta_key ) {
+			$close = get_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, true );
+
+			if ( $close ) {
+				$value = $close;
+			} elseif ( $value ) {
+				update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $value );
+			}
+		}
+
+		return apply_filters( 'goodbids_auction_setting', $value, $meta_key, $auction_id );
 	}
 
 	/**
@@ -523,6 +557,69 @@ class Auctions {
 		}
 
 		return strtotime( $end_date_time ) < current_datetime()->format( 'U' );
+	}
+
+	/**
+	 * Get number of auction extensions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_extensions( int $auction_id ): int {
+		$extensions = get_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, true );
+
+		if ( ! is_numeric( $extensions ) ) {
+			return 0;
+		}
+
+		return intval( $extensions );
+	}
+
+	/**
+	 * Check if the current Auction is in the extension window.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_extension_window( int $auction_id = null ): bool {
+		if ( $this->has_ended( $auction_id ) ) {
+			return false;
+		}
+
+		// One extension = always in window.
+		if ( $this->get_auction_extensions( $auction_id ) ) {
+			return true;
+		}
+
+		$end_time  = $this->get_end_date_time( $auction_id );
+		$extension = $this->get_bid_extension( $auction_id );
+
+		if ( ! $end_time || ! $extension ) {
+			return false;
+		}
+
+		try {
+			$now = new \DateTimeImmutable();
+			$end = new \DateTimeImmutable( $end_time );
+
+			// Subtract seconds from end time to get window start.
+			$window = $end->sub( new \DateInterval( 'PT' . $extension . 'S' ) );
+		} catch ( \Exception $e ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		if ( $window < $now ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -1226,6 +1323,80 @@ class Auctions {
 		if ( true !== $result ) {
 			return false;
 		}
+
+		return true;
+	}
+
+	/**
+	 * Extend the Auction Close DateTime when a Bid is placed within the extension window.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_extend_auction_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				// Bail if this isn't a Bid order.
+				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				if ( ! $this->is_extension_window( $auction_id ) || $this->has_ended( $auction_id ) ) {
+					return;
+				}
+
+				if ( ! $this->extend_auction( $auction_id ) ) {
+					// TODO: Log error.
+				}
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Extend the auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function extend_auction( int $auction_id ): bool {
+		if ( ! $this->is_extension_window( $auction_id ) ) {
+			return false;
+		}
+
+		$extension = $this->get_bid_extension( $auction_id );
+
+		// Bail early if missing extension value.
+		if ( ! $extension ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		$end_time = $this->get_end_date_time( $auction_id );
+
+		try {
+			$close = ( new \DateTimeImmutable( $end_time ) )->add( new \DateInterval( 'PT' . $extension . 'S' ) );
+		} catch ( \Exception $e ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		// Update the Auction Close Date/Time
+		update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $close->format( 'Y-m-d H:i:s' ) );
+
+		// Update Extensions
+		$extensions = $this->get_extensions( $auction_id );
+		$extensions++;
+		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
+
+		// Trigger Node to update the Auction.
+		goodbids()->auctioneer->auction_update( $auction_id, self::CONTEXT_EXTENSION );
 
 		return true;
 	}
