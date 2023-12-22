@@ -20,6 +20,6 @@ endif;
 		href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
 		class="wp-block-button__link wp-element-button w-full block text-center"
 	>
-		<?php echo esc_html( $bid_now->get_button_text() ); ?>
+		<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
 	</a>
 </div>
