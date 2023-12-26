@@ -536,7 +536,7 @@ class Auctions {
 			return false;
 		}
 
-		return strtotime( $start_date_time ) < intval( current_datetime()->format( 'U' ) );
+		return $start_date_time < current_datetime()->format( 'Y-m-d H:i:s' );
 	}
 
 	/**
@@ -556,7 +556,7 @@ class Auctions {
 			return false;
 		}
 
-		return strtotime( $end_date_time ) > intval( current_datetime()->format( 'U' ) );
+		return $end_date_time > current_datetime()->format( 'Y-m-d H:i:s' );
 	}
 
 	/**
@@ -1240,7 +1240,7 @@ class Auctions {
 					return;
 				}
 
-				wp_schedule_event( intval( current_datetime()->format( 'U' ) ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
+				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
 			}
 		);
 	}
