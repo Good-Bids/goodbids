@@ -204,6 +204,34 @@ class Auctioneer {
 	}
 
 	/**
+	 * Trigger an Auction Close event for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function auction_close( int $auction_id ): bool {
+		$guid = goodbids()->auctions->get_guid( $auction_id );
+
+		if ( ! $guid ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		$endpoint = sprintf( 'auctions/%s/end', $guid );
+		$payload  = $this->get_auction_payload( $auction_id, 'close' );
+		$response = $this->request( $endpoint, $payload, 'POST' );
+
+		if ( ! $response ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Update an Auction
 	 *
 	 * @since 1.0.0
@@ -252,12 +280,27 @@ class Auctioneer {
 
 		// TODO: Maybe refactor using individual Response or Payload classes.
 		if ( 'start' === $context ) {
+
 			$payload['startTime']  = goodbids()->auctions->get_start_date_time( $auction_id, 'c' );
 			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
 			$payload['currentBid'] = floatval( $bid_product?->get_price( 'edit' ) );
+
+
 		} elseif ( 'update:' . Auctions::CONTEXT_EXTENSION === $context ) {
+
 			$payload['currentBid'] = floatval( $bid_product?->get_price( 'edit' ) );
 			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
+
+
+		} elseif ( 'close' === $context ) {
+
+			$last_bid    = goodbids()->auctions->get_last_bid( $auction_id );
+			$last_bidder = goodbids()->auctions->get_last_bidder( $auction_id );
+
+			$payload['totalBids']   = goodbids()->auctions->get_bid_count( $auction_id );
+			$payload['totalRaised'] = goodbids()->auctions->get_total_raised( $auction_id );
+			$payload['lastBid']     = $last_bid?->get_total( 'edit' );
+			$payload['lastBidder']  = $last_bidder?->ID;
 		}
 
 		return $payload;

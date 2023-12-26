@@ -11,6 +11,7 @@ namespace GoodBids\Auctions;
 use WC_Order;
 use WC_Product;
 use WP_Query;
+use WP_User;
 
 /**
  * Class for Auctions
@@ -65,7 +66,19 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const CRON_AUCTION_CLOSE_HOOK = 'goodbids_auction_close_event';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const AUCTION_STARTED_META_KEY = '_auction_started';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_CLOSED_META_KEY = '_auction_closed';
 
 	/**
 	 * @since 1.0.0
@@ -93,9 +106,9 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
+	 * @var array
 	 */
-	public string $cron_interval = '1min';
+	public array $cron_intervals = [];
 
 	/**
 	 * Initialize Auctions
@@ -105,6 +118,18 @@ class Auctions {
 	public function __construct() {
 		// Initialize Submodules.
 		$this->bids = new Bids();
+
+		// Set up Cron Schedules.
+		$this->cron_intervals['1min']  = [
+			'interval' => MINUTE_IN_SECONDS,
+			'name'     => '1min',
+			'display'  => __( 'Once Every Minute', 'goodbids' ),
+		];
+		$this->cron_intervals['30sec'] = [
+			'interval' => 30,
+			'name'     => '30sec',
+			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
+		];
 
 		// Register Post Type.
 		$this->register_post_type();
@@ -137,7 +162,10 @@ class Auctions {
 		$this->add_one_min_cron_schedule();
 
 		// Schedule a cron job to trigger the start of auctions.
-		$this->schedule_bid_start_cron();
+		$this->schedule_auction_start_cron();
+
+		// Schedule a cron job to trigger the close of auctions.
+		$this->schedule_auction_close_cron();
 
 		// Use cron action to start auctions.
 		$this->check_for_starting_auctions();
@@ -732,8 +760,9 @@ class Auctions {
 					return;
 				}
 
-				// Set started to 0 for easier querying.
+				// Set initial values for easier querying.
 				update_post_meta( $post_id, self::AUCTION_STARTED_META_KEY, 0 );
+				update_post_meta( $post_id, self::AUCTION_CLOSED_META_KEY, 0 );
 			},
 			12
 		);
@@ -937,6 +966,20 @@ class Auctions {
 		}
 
 		return $orders[0];
+	}
+
+	/**
+	 * Get the user that placed the last bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return ?WP_User
+	 */
+	public function get_last_bidder( int $auction_id ): ?WP_User {
+		$last_bid = $this->get_last_bid( $auction_id );
+		return $last_bid?->get_user();
 	}
 
 	/**
@@ -1205,20 +1248,22 @@ class Auctions {
 		add_filter(
 			'cron_schedules', // phpcs:ignore
 			function ( array $schedules ): array {
-				// If one is already set, confirm it matches our schedule.
-				if ( ! empty( $schedules[ $this->cron_interval ] ) ) {
-					if ( MINUTE_IN_SECONDS === $schedules[ $this->cron_interval ]['interval'] ) {
-						return $schedules;
+				foreach ( $this->cron_intervals as $id => $props ) {
+					// If one is already set, confirm it matches our schedule.
+					if ( ! empty( $schedules[ $props['name'] ] ) ) {
+						if ( MINUTE_IN_SECONDS === $schedules[ $props['name'] ] ) {
+							continue;
+						}
+
+						$this->cron_intervals[ $id ]['name'] .= '_goodbids';
 					}
 
-					$this->cron_interval = '1minute';
+					// Adds every minute cron schedule.
+					$schedules[ $this->cron_intervals[ $id ]['name'] ] = [
+						'interval' => $this->cron_intervals[ $id ]['interval'],
+						'display'  => $this->cron_intervals[ $id ]['display'],
+					];
 				}
-
-				// Adds every minute cron schedule.
-				$schedules[ $this->cron_interval ] = [
-					'interval' => MINUTE_IN_SECONDS,
-					'display'  => __( 'Once Every Minute', 'goodbids' ),
-				];
 
 				return $schedules;
 			}
@@ -1232,7 +1277,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	private function schedule_bid_start_cron(): void {
+	private function schedule_auction_start_cron(): void {
 		add_action(
 			'init',
 			function (): void {
@@ -1240,7 +1285,27 @@ class Auctions {
 					return;
 				}
 
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
+				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['1min']['name'], self::CRON_AUCTION_START_HOOK );
+			}
+		);
+	}
+
+	/**
+	 * Schedule a cron job that runs every half minute to trigger auctions to close.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function schedule_auction_close_cron(): void {
+		add_action(
+			'init',
+			function (): void {
+				if ( wp_next_scheduled( self::CRON_AUCTION_CLOSE_HOOK ) ) {
+					return;
+				}
+
+				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['30sec']['name'], self::CRON_AUCTION_CLOSE_HOOK );
 			}
 		);
 	}
@@ -1266,6 +1331,33 @@ class Auctions {
 					if ( $this->trigger_auction_start( $auction_id ) ) {
 						// Update the Auction meta to indicate it has started.
 						update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+					}
+				}
+			}
+		);
+	}
+
+	/**
+	 * Check for Auctions that have closed during cron hook.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function check_for_closing_auctions(): void {
+		add_action(
+			self::CRON_AUCTION_CLOSE_HOOK,
+			function (): void {
+				$auctions = $this->get_closing_auctions();
+
+				if ( ! $auctions->have_posts() ) {
+					return;
+				}
+
+				foreach ( $auctions->posts as $auction_id ) {
+					if ( $this->trigger_auction_close( $auction_id ) ) {
+						// Update the Auction meta to indicate it has closed.
+						update_post_meta( $auction_id, self::AUCTION_CLOSED_META_KEY, 1 );
 					}
 				}
 			}
@@ -1305,6 +1397,37 @@ class Auctions {
 	}
 
 	/**
+	 * Get Auctions that are closing.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WP_Query
+	 */
+	private function get_closing_auctions(): WP_Query {
+		$current_time = current_datetime()->format( 'Y-m-d H:i:s' );
+
+		$args = [
+			'post_type'      => $this->get_post_type(),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'return'         => 'ids',
+			'meta_query'     => [
+				[
+					'key'     => self::AUCTION_CLOSE_META_KEY,
+					'value'   => $current_time,
+					'compare' => '<=',
+				],
+				[
+					'key'   => self::AUCTION_CLOSED_META_KEY,
+					'value' => 0,
+				],
+			],
+		];
+
+		return new WP_Query( $args );
+	}
+
+	/**
 	 * Trigger to Node the start of an auction.
 	 *
 	 * @since 1.0.0
@@ -1315,6 +1438,25 @@ class Auctions {
 	 */
 	private function trigger_auction_start( int $auction_id ): bool {
 		$result = goodbids()->auctioneer->auction_start( $auction_id );
+
+		if ( true !== $result ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Trigger to Node the close of an auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function trigger_auction_close( int $auction_id ): bool {
+		$result = goodbids()->auctioneer->auction_close( $auction_id );
 
 		if ( true !== $result ) {
 			return false;
