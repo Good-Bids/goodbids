@@ -1392,7 +1392,7 @@ class Auctions {
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.
-//		goodbids()->auctioneer->auction_update( $auction_id, self::CONTEXT_EXTENSION );
+		goodbids()->auctioneer->auction_update( $auction_id, self::CONTEXT_EXTENSION );
 
 		return true;
 	}
