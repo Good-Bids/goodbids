@@ -614,8 +614,8 @@ class Auctions {
 			return false;
 		}
 
-		// Check if window start is before current time.
-		return intval( $window->format( 'U' ) ) < intval( current_datetime()->format( 'U' ) );
+		// Check if the current time is AFTER the start of the window.
+		return current_datetime()->format( 'Y-m-d H:i:s' ) >= $window->format( 'Y-m-d H:i:s' );
 	}
 
 	/**
@@ -1392,7 +1392,7 @@ class Auctions {
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auction_update( $auction_id, self::CONTEXT_EXTENSION );
+//		goodbids()->auctioneer->auction_update( $auction_id, self::CONTEXT_EXTENSION );
 
 		return true;
 	}
