@@ -536,7 +536,7 @@ class Auctions {
 			return false;
 		}
 
-		return strtotime( $start_date_time ) < current_datetime()->format( 'U' );
+		return strtotime( $start_date_time ) < intval( current_datetime()->format( 'U' ) );
 	}
 
 	/**
@@ -556,7 +556,7 @@ class Auctions {
 			return false;
 		}
 
-		return strtotime( $end_date_time ) < current_datetime()->format( 'U' );
+		return strtotime( $end_date_time ) > intval( current_datetime()->format( 'U' ) );
 	}
 
 	/**
@@ -593,7 +593,7 @@ class Auctions {
 		}
 
 		// One extension = always in window.
-		if ( $this->get_auction_extensions( $auction_id ) ) {
+		if ( $this->get_extensions( $auction_id ) ) {
 			return true;
 		}
 
@@ -605,7 +605,6 @@ class Auctions {
 		}
 
 		try {
-			$now = new \DateTimeImmutable();
 			$end = new \DateTimeImmutable( $end_time );
 
 			// Subtract seconds from end time to get window start.
@@ -615,11 +614,8 @@ class Auctions {
 			return false;
 		}
 
-		if ( $window < $now ) {
-			return false;
-		}
-
-		return true;
+		// Check if window start is before current time.
+		return intval( $window->format( 'U' ) ) < intval( current_datetime()->format( 'U' ) );
 	}
 
 	/**
@@ -1244,7 +1240,7 @@ class Auctions {
 					return;
 				}
 
-				wp_schedule_event( current_datetime()->format( 'U' ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
+				wp_schedule_event( intval( current_datetime()->format( 'U' ) ), $this->cron_interval, self::CRON_AUCTION_START_HOOK );
 			}
 		);
 	}
