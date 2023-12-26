@@ -23,12 +23,12 @@ if ( $start_time && ! $this->has_started() ) {
 		' (%s)',
 		esc_html( human_time_diff( $current_time, strtotime( $start_time ) ) )
 	);
-} elseif ( $this->get_extensions( $auction_id ) ) {
+} elseif ( ! $this->has_ended() && $this->get_extensions( $auction_id ) ) {
 	$extra = sprintf(
 		' (%s)',
 		__( 'Extended', 'goodbids' )
 	);
-} elseif ( $this->is_extension_window( $auction_id ) ) {
+} elseif ( ! $this->has_ended() && $this->is_extension_window( $auction_id ) ) {
 	$extra = sprintf(
 		' (%s)',
 		__( 'Extension Window', 'goodbids' )

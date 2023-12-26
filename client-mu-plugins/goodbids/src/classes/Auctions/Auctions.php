@@ -556,7 +556,7 @@ class Auctions {
 			return false;
 		}
 
-		return $end_date_time > current_datetime()->format( 'Y-m-d H:i:s' );
+		return $end_date_time <= current_datetime()->format( 'Y-m-d H:i:s' );
 	}
 
 	/**
