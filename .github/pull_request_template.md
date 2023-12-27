@@ -8,7 +8,7 @@
 
 ## Testing Instructions
 
-- List out testing instructions
+1. List out testing instructions
 
 ## Screenshots
 
