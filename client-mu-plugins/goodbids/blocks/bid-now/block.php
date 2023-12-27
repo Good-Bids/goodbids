@@ -108,4 +108,36 @@ class BidNow {
 	public function get_block_classes(): string {
 		return 'wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex';
 	}
+
+	/**
+	 * Determine if Auction is active.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_auction_active(): bool {
+		if ( ! goodbids()->auctions->has_started( $this->auction_id ) ) {
+			return false;
+		}
+
+		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Display a message when auction is not active.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function render_auction_not_active(): void {
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Auction is currently not active.', 'goodbids' )
+		);
+	}
 }
