@@ -44,7 +44,7 @@ class Auctions {
 	}
 
 	/**
-	 * Trigger an Auction Close event for an Auction
+	 * Trigger an Auction End event for an Auction
 	 *
 	 * @since 1.0.0
 	 *
@@ -52,7 +52,7 @@ class Auctions {
 	 *
 	 * @return bool
 	 */
-	public function close( int $auction_id ): bool {
+	public function end( int $auction_id ): bool {
 		$guid = goodbids()->auctions->get_guid( $auction_id );
 
 		if ( ! $guid ) {
@@ -61,7 +61,7 @@ class Auctions {
 		}
 
 		$endpoint = sprintf( 'auctions/%s/end', $guid );
-		$payload  = $this->get_payload( $auction_id, 'close' );
+		$payload  = $this->get_payload( $auction_id, 'end' );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
 		if ( ! $response ) {
@@ -132,7 +132,7 @@ class Auctions {
 			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
 
 
-		} elseif ( 'close' === $context ) {
+		} elseif ( 'end' === $context ) {
 
 			$last_bid    = goodbids()->auctions->get_last_bid( $auction_id );
 			$last_bidder = goodbids()->auctions->get_last_bidder( $auction_id );

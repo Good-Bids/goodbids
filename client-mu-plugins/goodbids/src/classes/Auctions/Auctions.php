@@ -1486,7 +1486,7 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_close( int $auction_id ): bool {
-		$result = goodbids()->auctioneer->auctions->close( $auction_id );
+		$result = goodbids()->auctioneer->auctions->end( $auction_id );
 
 		if ( true !== $result ) {
 			return false;

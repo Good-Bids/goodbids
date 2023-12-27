@@ -479,11 +479,11 @@ class WooCommerce {
 	 *
 	 * @param int $order_id
 	 *
-	 * @return string
+	 * @return ?string
 	 */
-	public function get_order_type( int $order_id ): string {
+	public function get_order_type( int $order_id ): ?string {
 		$type = get_post_meta( $order_id, self::TYPE_META_KEY, true );
-		return $type ?: 'unknown';
+		return $type ?: null;
 	}
 
 	/**
@@ -558,8 +558,16 @@ class WooCommerce {
 	 */
 	public function get_order_auction_info( int $order_id ): ?array {
 		$order      = wc_get_order( $order_id );
-		$auction_id = false;
-		$order_type = false;
+		$auction_id = $this->get_order_auction_id( $order_id );
+		$order_type = $this->get_order_type( $order_id );
+
+		// Return early if we already have this info.
+		if ( $auction_id && $order_type ) {
+			return [
+				'auction_id' => $auction_id,
+				'order_type' => $order_type,
+			];
+		}
 
 		// Find order items with Auction Meta.
 		foreach ( $order->get_items() as $item ) {

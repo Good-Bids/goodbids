@@ -8,8 +8,6 @@
 
 namespace GoodBids\Auctioneer;
 
-use GoodBids\Auctions\Auctions;
-
 /**
  * Class for Auctioneer, our Node.js server
  *
@@ -61,9 +59,9 @@ class Auctioneer {
 	 * Auctions Endpoint
 	 *
 	 * @since 1.0.0
-	 * @var ?\GoodBids\Auctioneer\Auctions
+	 * @var ?Auctions
 	 */
-	public ?\GoodBids\Auctioneer\Auctions $auctions = null;
+	public ?Auctions $auctions = null;
 
 	/**
 	 * Initialize Auctioneer
@@ -102,7 +100,7 @@ class Auctioneer {
 	 */
 	private function init(): void {
 		// Init Auctions Endpoint.
-		$this->auctions = new \GoodBids\Auctioneer\Auctions();
+		$this->auctions = new Auctions();
 
 		$this->initialized = true;
 	}
