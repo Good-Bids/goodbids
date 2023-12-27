@@ -41,3 +41,9 @@ printf(
 	esc_html( $this->get_status( $auction_id ) ),
 	esc_html( $extra )
 );
+
+printf(
+	'<p><strong>%s</strong><br>%s</p>',
+	esc_html__( 'Close Date/Time', 'goodbids' ),
+	esc_html( $this->get_end_date_time( $auction_id, 'n/j/Y g:i:s a' ) )
+);

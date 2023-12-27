@@ -33,7 +33,7 @@
                 "class": "",
                 "id": ""
             },
-            "display_format": "m\/d\/Y g:i a",
+            "display_format": "m\/d\/Y g:i:s a",
             "return_format": "Y-m-d H:i:s",
             "first_day": 0
         },
@@ -51,7 +51,7 @@
                 "class": "",
                 "id": ""
             },
-            "display_format": "m\/d\/Y g:i a",
+            "display_format": "m\/d\/Y g:i:s a",
             "return_format": "Y-m-d H:i:s",
             "first_day": 0
         },
@@ -310,6 +310,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1703615168,
+    "modified": 1703701540,
     "private": true
 }
