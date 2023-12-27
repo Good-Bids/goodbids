@@ -1516,17 +1516,21 @@ class Auctions {
 			return false;
 		}
 
-		$end_time = $this->get_end_date_time( $auction_id );
-
 		try {
-			$close = ( new \DateTimeImmutable( $end_time ) )->add( new \DateInterval( 'PT' . $extension . 'S' ) );
+			$close      = current_datetime()->add( new \DateInterval( 'PT' . $extension . 'S' ) );
+			$close_time = $close->format( 'Y-m-d H:i:s' );
 		} catch ( \Exception $e ) {
 			// TODO: Log error.
 			return false;
 		}
 
+		// Be sure to extend, not shorten.
+		if ( $close_time < $this->get_end_date_time( $auction_id ) ) {
+			return false;
+		}
+
 		// Update the Auction Close Date/Time
-		update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $close->format( 'Y-m-d H:i:s' ) );
+		update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $close_time );
 
 		// Update Extensions
 		$extensions = $this->get_extensions( $auction_id );
