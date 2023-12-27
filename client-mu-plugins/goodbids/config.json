@@ -4,6 +4,7 @@
 		"advanced-custom-fields-pro/acf.php",
 		"woocommerce",
 		"woocommerce-gateway-stripe",
+		"woocommerce-services",
 		"accessibility-checker",
 		"svg-support",
 		"user-switching"
