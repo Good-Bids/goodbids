@@ -155,6 +155,9 @@ class Auctions {
 		// Sets a default image
 		$this->set_default_feature_image();
 
+		// Override End Date/Time.
+		$this->override_end_date_time();
+
 		// Generate a unique ID for each Auction.
 		$this->generate_guid_on_publish();
 
@@ -425,18 +428,42 @@ class Auctions {
 
 		$value = get_field( $meta_key, $auction_id );
 
-		// TODO: Move this to use the filter below.
-		if ( 'auction_end' === $meta_key ) {
-			$close = get_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, true );
-
-			if ( $close ) {
-				$value = $close;
-			} elseif ( $value ) {
-				update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $value );
-			}
-		}
-
 		return apply_filters( 'goodbids_auction_setting', $value, $meta_key, $auction_id );
+	}
+
+	/**
+	 * Use Auction close date/time when asked for Auction End Date/Time.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function override_end_date_time(): void {
+		add_filter(
+			'goodbids_auction_setting',
+			function ( $value, $meta_key, $auction_id ) {
+				if ( 'auction_end' !== $meta_key ) {
+					return $value;
+				}
+
+				$close = get_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, true );
+
+				if ( $close ) {
+					// Always use the latest date value.
+					if ( $close > $value ) {
+						$value = $close;
+					} else {
+						update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $value );
+					}
+				} elseif ( $value ) {
+					// Initialize the close date.
+					update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $value );
+				}
+
+				return $value;
+			},
+			10,
+			3
+		);
 	}
 
 	/**
@@ -489,7 +516,7 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $auction_id
+	 * @param ?int   $auction_id
 	 * @param string $format
 	 *
 	 * @return string
