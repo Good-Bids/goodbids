@@ -170,6 +170,9 @@ class Auctions {
 		// Use cron action to start auctions.
 		$this->check_for_starting_auctions();
 
+		// Use cron action to close auctions.
+		$this->check_for_closing_auctions();
+
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
 	}
@@ -1437,7 +1440,7 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_start( int $auction_id ): bool {
-		$result = goodbids()->auctioneer->auction_start( $auction_id );
+		$result = goodbids()->auctioneer->auctions->start( $auction_id );
 
 		if ( true !== $result ) {
 			return false;
@@ -1456,7 +1459,7 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_close( int $auction_id ): bool {
-		$result = goodbids()->auctioneer->auction_close( $auction_id );
+		$result = goodbids()->auctioneer->auctions->close( $auction_id );
 
 		if ( true !== $result ) {
 			return false;
@@ -1538,7 +1541,7 @@ class Auctions {
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auction_update( $auction_id, self::CONTEXT_EXTENSION );
+		goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_EXTENSION );
 
 		return true;
 	}
