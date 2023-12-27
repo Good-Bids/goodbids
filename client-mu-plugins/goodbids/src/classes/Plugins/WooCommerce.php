@@ -51,6 +51,7 @@ class WooCommerce {
 //		$this->authentication_redirect();
 //		$this->prevent_wp_login_access();
 
+		$this->auto_empty_cart();
 		$this->validate_bid();
 
 		$this->store_auction_id_in_cart();
@@ -583,5 +584,28 @@ class WooCommerce {
 			'auction_id' => $auction_id,
 			'order_type' => $order_type,
 		];
+	}
+
+	/**
+	 * Empty cart before adding a Bid or Reward product.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function auto_empty_cart(): void {
+		add_filter(
+			'woocommerce_add_to_cart_handler',
+			function ( $handler, $product ) {
+				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+					return $handler;
+				}
+
+				WC()->cart->empty_cart();
+
+				return $handler;
+			},
+			10,
+			2
+		);
 	}
 }
