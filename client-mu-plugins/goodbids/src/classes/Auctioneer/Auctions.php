@@ -16,6 +16,14 @@ namespace GoodBids\Auctioneer;
 class Auctions {
 
 	/**
+	 * Auctioneer Auctions Endpoint
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private string $endpoint = 'auctions';
+
+	/**
 	 * Trigger an Auction Start event for an Auction
 	 *
 	 * @since 1.0.0
@@ -32,7 +40,7 @@ class Auctions {
 			return false;
 		}
 
-		$endpoint = sprintf( 'auctions/%s/start', $guid );
+		$endpoint = sprintf( '%s/%s/start', $this->endpoint, $guid );
 		$payload  = $this->get_payload( $auction_id, 'start' );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -60,7 +68,7 @@ class Auctions {
 			return false;
 		}
 
-		$endpoint = sprintf( 'auctions/%s/end', $guid );
+		$endpoint = sprintf( '%s/%s/end', $this->endpoint, $guid );
 		$payload  = $this->get_payload( $auction_id, 'end' );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -89,7 +97,7 @@ class Auctions {
 			return false;
 		}
 
-		$endpoint = sprintf( 'auctions/%s/update', $guid );
+		$endpoint = sprintf( '%s/%s/update', $this->endpoint, $guid );
 		$payload  = $this->get_payload( $auction_id, 'update:' . $context );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
 
