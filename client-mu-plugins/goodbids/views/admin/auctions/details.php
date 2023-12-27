@@ -14,7 +14,7 @@
 
 <?php
 $start_time   = $this->get_start_date_time();
-$current_time = intval( current_datetime()->format( 'U' ) );
+$current_time = strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) );
 $extra        = '';
 
 // Customize the Status Display.
