@@ -52,6 +52,7 @@ class WooCommerce {
 //		$this->prevent_wp_login_access();
 
 		$this->auto_empty_cart();
+		$this->redirect_after_add_bid_to_cart();
 		$this->validate_bid();
 
 		$this->store_auction_id_in_cart();
@@ -99,7 +100,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function create_auth_page() : void {
+	private function create_auth_page(): void {
 		add_action(
 			'woocommerce_page_created',
 			function ( int $page_id, array $page_data ) : void {
@@ -140,7 +141,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function add_auth_page_setting() : void {
+	private function add_auth_page_setting(): void {
 		add_filter(
 			'woocommerce_settings_pages',
 			function ( array $settings ) : array {
@@ -185,10 +186,10 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function display_post_states() : void {
+	private function display_post_states(): void {
 		add_filter(
 			'display_post_states',
-			function ( array $post_states, \WP_Post $post ) : array {
+			function ( array $post_states, \WP_Post $post ): array {
 				if ( wc_get_page_id( 'authentication' ) === $post->ID ) {
 					$post_states['wc_page_for_authentication'] = __( 'Authentication Page', 'goodbids' );
 				}
@@ -207,10 +208,10 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function authentication_redirect() : void {
+	private function authentication_redirect(): void {
 		add_action(
 			'template_redirect',
-			function () : void {
+			function (): void {
 				global $wp;
 
 				// Make sure we have a My Account & Authentication page.
@@ -264,7 +265,7 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function prevent_wp_login_access() : void {
+	private function prevent_wp_login_access(): void {
 		add_action(
 			'login_head',
 			function () {
@@ -611,6 +612,36 @@ class WooCommerce {
 				WC()->cart->empty_cart();
 
 				return $handler;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Redirect after adding bids to cart to remove the ?add-to-cart url parameter.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_add_bid_to_cart(): void {
+		add_filter(
+			'woocommerce_add_to_cart_redirect',
+			function ( string $url, ?\WC_Product $product = null ): string {
+				if ( ! $product ) {
+					return $url;
+				}
+
+				if ( 'bids' !== goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+					return $url;
+				}
+
+				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+					return $url;
+				}
+
+				return wc_get_checkout_url();
 			},
 			10,
 			2
