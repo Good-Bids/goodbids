@@ -38,6 +38,9 @@ class Bids {
 
 		// Bump Auction Bid Product Price when an Order is completed.
 		$this->update_bid_product_on_order_complete();
+
+		// Prevent access to Bid product.
+		$this->prevent_access_to_bid_product();
 	}
 
 	/**
@@ -186,6 +189,40 @@ class Bids {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Disable access to Bid product singular product page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function prevent_access_to_bid_product(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! is_singular( 'product' ) ) {
+					return;
+				}
+
+				$product_id = get_the_ID();
+
+				if ( 'bids' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_auction_id( $product_id );
+
+				if ( ! $auction_id ) {
+					wp_safe_redirect( home_url() );
+					exit;
+				}
+
+				wp_safe_redirect( get_permalink( $auction_id ), 301 );
+				exit;
+			}
 		);
 	}
 }
