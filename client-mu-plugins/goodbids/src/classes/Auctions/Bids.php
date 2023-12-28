@@ -184,6 +184,7 @@ class Bids {
 				$bid_product = wc_get_product( $bid_product_id );
 				$bid_price   = intval( $bid_product->get_regular_price( 'edit' ) );
 
+				$bid_product->set_stock_quantity( 1 );
 				$bid_product->set_regular_price( $bid_price + $increment );
 				$bid_product->save();
 			},
