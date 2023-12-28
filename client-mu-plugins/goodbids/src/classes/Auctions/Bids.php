@@ -90,6 +90,10 @@ class Bids {
 				$bid_product->set_regular_price( $starting_bid );
 				$bid_product->set_category_ids( [ $this->get_bids_category_id() ] );
 				$bid_product->set_status( 'publish' );
+				$bid_product->set_manage_stock( true );
+				$bid_product->set_stock_quantity( 1 );
+				$bid_product->set_sold_individually( true );
+				$bid_product->set_virtual( true );
 
 				try {
 					$bid_product->set_sku( 'BID-' . $post_id );
