@@ -84,6 +84,18 @@ class Patterns {
 					'keywords'   => [ 'banner', 'call-to-action', 'featured', 'hero' ],
 					'source'     => 'plugin',
 					'inserter'   => true,
+
+				];
+
+				$charity_interest_form = [
+					'name'        => 'charity-interest-form',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/charity-interest-form.php',
+					'title'       => __( 'Charity Interest Form', 'goodbids' ),
+					'description' => _x( 'Charity Interest Form using Jetpack forms', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'goodbids' ],
+					'keywords'    => [ 'non-profit', 'form' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
 				];
 
 				$this->patterns = apply_filters(
@@ -92,6 +104,7 @@ class Patterns {
 						$auction_archive,
 						$template_auction,
 						$hero_banner,
+						$charity_interest_form,
 					]
 				);
 
