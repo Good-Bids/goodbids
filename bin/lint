@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# bin/lint: Check for linting errors
+#
+# When to use:
+#  - When you want to check for linting errors
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+npm run lint

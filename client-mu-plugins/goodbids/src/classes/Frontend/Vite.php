@@ -72,6 +72,7 @@ class Vite {
 		$this->entries['default'] = 'main.tsx';
 		$this->entries['admin']   = 'admin.tsx';
 		$this->entries['editor']  = 'editor.tsx';
+		$this->entries['bidding-block'] = 'bidding-block.tsx';
 
 		add_action( 'wp_head', [ $this, 'init' ] );
 

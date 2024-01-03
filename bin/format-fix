@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# bin/format-fix: Fix formatting errors
+#
+# When to use:
+#  - When you want to fix for formatting errors
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+npm run format:fix
