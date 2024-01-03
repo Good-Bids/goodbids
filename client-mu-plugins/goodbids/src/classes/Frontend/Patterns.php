@@ -97,6 +97,21 @@ class Patterns {
 					'inserter'    => true,
 				];
 
+				$template_about = [
+					'name'          => 'goodbids-np/about-nonprofit',
+					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php',
+					'title'         => __( 'About GoodBids', 'goodbids-nonprofit' ),
+					'description'   => _x( 'Template for About Page', 'Block pattern description', 'goodbids-nonprofit' ),
+					'categories'    => [ 'about','page', 'goodbids-np' ],
+					'keywords'      => [ 'non-profit', 'starter', 'page' ],
+					'blockTypes'    => [ 'core/post-content', 'core/group', 'core/paragraph' ],
+					'postTypes'     => [ 'page', 'wp_template' ],
+					'templateTypes' => [ 'front-page', 'home', 'page' ],
+					'source'        => 'plugin',
+					'inserter'      => true,
+
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
@@ -104,6 +119,7 @@ class Patterns {
 						$template_auction,
 						$hero_banner,
 						$nonprofit_interest_form,
+						$template_about,
 					]
 				);
 

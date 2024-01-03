@@ -52,6 +52,7 @@ class Sites {
 		$this->set_default_posts_per_page();
 		$this->lock_block_editor();
 		$this->disable_blocks_for_nonprofits();
+		$this->create_about_page();
 	}
 
 	/**
@@ -484,6 +485,38 @@ class Sites {
 
 				return array_values( array_diff( $blocks, $blacklist ) );
 			},
+		);
+	}
+
+	/**
+	 * Sets a pattern template for the page post type
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function create_about_page(): void {
+		add_filter(
+			'goodbids_init_site',
+			static function (): void {
+				ob_start();
+				include GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php';
+				$content = ob_get_clean();
+
+				// Create post object
+				$my_post = array(
+					'post_title'   => __( 'About GOODBIDS' ),
+					'post_content' => $content,
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+				);
+
+				// Insert the post into the database
+				wp_insert_post( $my_post );
+			},
+			20,
+			2
 		);
 	}
 }

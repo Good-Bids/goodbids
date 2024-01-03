@@ -63,19 +63,6 @@ add_filter(
 				'source'        => 'theme',
 				'inserter'      => true,
 			],
-			[
-				'name'          => 'goodbids-np/about-nonprofit',
-				'path'          => get_stylesheet_directory() . '/patterns/about-nonprofit.php',
-				'title'         => __( 'About GoodBids', 'goodbids-nonprofit' ),
-				'description'   => _x( 'Template for About Page', 'Block pattern description', 'goodbids-nonprofit' ),
-				'categories'    => [ 'about','page', 'goodbids-np' ],
-				'keywords'      => [ 'non-profit', 'starter', 'page' ],
-				'blockTypes'    => [ 'core/post-content', 'core/group', 'core/paragraph' ],
-				'postTypes'     => [ 'page', 'wp_template' ],
-				'templateTypes' => [ 'front-page', 'home', 'page' ],
-				'source'        => 'theme',
-				'inserter'      => true,
-			],
 		];
 
 		return array_merge( $patterns, $theme_patterns );
