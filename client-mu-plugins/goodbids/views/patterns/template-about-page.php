@@ -62,18 +62,15 @@
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'A GOODBIDS positive auction has a great prize, and you can submit bids, but the big difference is that every bid is a non-refundable donation to a charity you care about.', 'goodbids' ); ?>
-					</p>
+					<p><?php esc_html_e( 'A GOODBIDS positive auction has a great prize, and you can submit bids, but the big difference is that every bid is a non-refundable donation to a charity you care about.', 'goodbids' ); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'That means that great prizes end up going for really low bids. And charities end up raising more money at the same time.', 'goodbids' ); ?>
-					</p>
+					<p><?php esc_html_e( 'That means that great prizes end up going for really low bids. And charities end up raising more money at the same time.', 'goodbids' ); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'All you need to do is find an auction you like and place a bid. The money goes directly to the charity and you’ll get a receipt for your tax deductible donation.', 'goodbids' ); ?>
-					</p>
+					<p><?php esc_html_e( 'All you need to do is find an auction you like and place a bid. The money goes directly to the charity and you’ll get a receipt for your tax deductible donation.', 'goodbids' ); ?></p>
 					<!-- /wp:paragraph -->
 				</div>
 				<!-- /wp:group -->
@@ -98,7 +95,7 @@
 			<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"left"}} -->
 			<div class="wp-block-buttons">
 				<!-- wp:button {"className":"is-style-outline"} -->
-				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Visit goodbids.org', 'goodbids' ); ?></a></div>
+				<div class="wp-block-button is-style-outline"><a href="<?php echo esc_url( network_site_url() ); ?>" class="wp-block-button__link wp-element-button"><?php esc_html_e( 'Visit goodbids.org', 'goodbids' ); ?></a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->

@@ -98,18 +98,17 @@ class Patterns {
 				];
 
 				$template_about = [
-					'name'          => 'goodbids-np/about-nonprofit',
+					'name'          => 'template-about-page',
 					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php',
-					'title'         => __( 'About GoodBids', 'goodbids-nonprofit' ),
-					'description'   => _x( 'Template for About Page', 'Block pattern description', 'goodbids-nonprofit' ),
-					'categories'    => [ 'about','page', 'goodbids-np' ],
+					'title'         => __( 'About GoodBids', 'goodbids' ),
+					'description'   => _x( 'Template for About Page', 'Block pattern description', 'goodbids' ),
+					'categories'    => [ 'about','page', 'goodbids' ],
 					'keywords'      => [ 'non-profit', 'starter', 'page' ],
 					'blockTypes'    => [ 'core/post-content', 'core/group', 'core/paragraph' ],
 					'postTypes'     => [ 'page', 'wp_template' ],
 					'templateTypes' => [ 'front-page', 'home', 'page' ],
 					'source'        => 'plugin',
 					'inserter'      => true,
-
 				];
 
 				$this->patterns = apply_filters(

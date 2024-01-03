@@ -496,27 +496,28 @@ class Sites {
 	 * @return void
 	 */
 	private function create_about_page(): void {
-		add_filter(
+		add_action(
 			'goodbids_init_site',
-			static function (): void {
+			function (): void {
 				ob_start();
 				include GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php';
-				$content = ob_get_clean();
 
-				// Create post object
-				$my_post = array(
-					'post_title'   => __( 'About GOODBIDS' ),
-					'post_content' => $content,
+				$about = [
+					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+					'post_content' => ob_get_clean(),
 					'post_type'    => 'page',
 					'post_status'  => 'publish',
 					'post_author'  => 1,
-				);
+					'post_name'    => 'about',
+				];
 
-				// Insert the post into the database
-				wp_insert_post( $my_post );
+				$about_id = wp_insert_post( $about );
+
+				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
+					// Use the $site_id to update post meta to track which $about_id is the About page.
+				}
 			},
-			20,
-			2
+			20
 		);
 	}
 }
