@@ -1,15 +1,16 @@
 {
-	"name": "reward-product-gallery",
-	"title": "Reward Product Gallery",
-	"description": "Displays the reward product gallery images",
-	"icon": "format-gallery",
-	"category": "goodbids",
-	"textdomain": "goodbids",
-	"keywords": ["custom", "gallery", "product", "reward", "auction"],
-	"acf": {
-		"mode": "preview"
-	},
-	"supports": {
-		"jsx": false
-	}
+  "name": "reward-product-gallery",
+  "title": "Reward Product Gallery",
+  "description": "Displays the reward product gallery images",
+  "icon": "format-gallery",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["custom", "gallery", "product", "reward", "auction"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  },
+  "style": ["file:./block.css"]
 }

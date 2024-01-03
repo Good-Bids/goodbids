@@ -59,9 +59,5 @@ vendor
 # PhpStorm
 .idea/
 
-# Pre-compiled files
-src/index.js
-src/components
-
 # Credentials
 auth.json
