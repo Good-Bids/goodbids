@@ -29,6 +29,6 @@
 		</div>
 		<!-- /wp:buttons -->
 	</div>
-	<figure class="wp-block-media-text__media"><img src="" alt="<?php esc_attr__( 'Short description of the image', 'goodbids' ); ?>" class="wp-image-61 size-full" /></figure>
+	<figure class="wp-block-media-text__media"><img src="" alt="<?php esc_attr_e( 'Short description of the image', 'goodbids' ); ?>" class="size-full" /></figure>
 </div>
 <!-- /wp:media-text -->
