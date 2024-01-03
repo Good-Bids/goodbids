@@ -27,13 +27,19 @@ class SiteDirectory {
 		$all_nonprofit_ids = [];
 
 		foreach ( get_sites() as $nonprofit ) {
-			$nonprofit_id = get_object_vars( $nonprofit )['blog_id'];
+			$nonprofit_id       = get_object_vars( $nonprofit )['blog_id'];
+			$nonprofit_siteurl  = get_blog_details( $nonprofit_id )->siteurl;
+			$nonprofit_blogname = get_blog_details( $nonprofit_id )->blogname;
 
 			// TODO: filter list by site status and/or other items
 
-			array_push( $all_nonprofit_ids, $nonprofit_id );
-		}
+			$all_nonprofit_ids[] =
+				[
+					'blogname' => $nonprofit_blogname,
+					'siteurl'  => $nonprofit_siteurl,
+				];
 
+		}
 
 		return $all_nonprofit_ids;
 	}
