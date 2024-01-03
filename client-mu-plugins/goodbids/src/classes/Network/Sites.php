@@ -51,6 +51,7 @@ class Sites {
 		$this->default_child_theme_logo();
 		$this->set_default_posts_per_page();
 		$this->lock_block_editor();
+		$this->hide_blocks();
 	}
 
 	/**
@@ -453,6 +454,36 @@ class Sites {
 					$settings['canLockBlocks'] = false;
 				}
 				return $settings;
+			},
+			10,
+			2
+		);
+	}
+
+
+	/**
+	 * Hide blocks on nonprofits sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function hide_blocks(): void {
+		add_filter(
+			'allowed_block_types_all',
+			static function ( $allowed_block_types ) {
+				if ( ! is_main_site() ) {
+					$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+
+					$blacklist = [
+						'acf/site-directory',
+					];
+
+					return array_values( array_diff( $blocks, $blacklist ) );
+				}
+
+
+				return $allowed_block_types;
 			},
 			10,
 			2
