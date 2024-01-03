@@ -86,18 +86,6 @@ class Vite {
 			}
 		);
 
-		add_action(
-			'admin_enqueue_scripts',
-			function () {
-				wp_enqueue_style(
-					'goodbids-admin',
-					GOODBIDS_PLUGIN_URL . 'assets/css/admin.css',
-					[],
-					goodbids()->get_version()
-				);
-			}
-		);
-
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_assets' ], 15 );
 
 		add_filter( 'script_loader_tag', [ $this, 'script_loader' ], 10, 3 );
