@@ -18,12 +18,12 @@ jobs:
     steps:
       - checkout
 
-      # @TODO: Build React apps
-
       - run: echo "Building..."
       - run: echo "${ACF_DEVELOP}" >> ./client-mu-plugins/goodbids/auth.json
       - run: echo "$(< ./client-mu-plugins/goodbids/auth.json)"
       - run: cd client-mu-plugins/goodbids && composer install --verbose
+      - run: cd client-mu-plugins/goodbids && npm install
+      - run: cd client-mu-plugins/goodbids && npm run build
 
       # @TODO: Add tests
       # - run:
