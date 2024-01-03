@@ -84,14 +84,13 @@ class Patterns {
 					'keywords'   => [ 'banner', 'call-to-action', 'featured', 'hero' ],
 					'source'     => 'plugin',
 					'inserter'   => true,
-
 				];
 
-				$charity_interest_form = [
-					'name'        => 'charity-interest-form',
-					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/charity-interest-form.php',
-					'title'       => __( 'Charity Interest Form', 'goodbids' ),
-					'description' => _x( 'Charity Interest Form using Jetpack forms', 'Block pattern description', 'goodbids' ),
+				$nonprofit_interest_form = [
+					'name'        => 'nonprofit-interest-form',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/nonprofit-interest-form.php',
+					'title'       => __( 'Nonprofit Interest Form', 'goodbids' ),
+					'description' => _x( 'Nonprofit Interest Form using Jetpack forms', 'Block pattern description', 'goodbids' ),
 					'categories'  => [ 'goodbids' ],
 					'keywords'    => [ 'non-profit', 'form' ],
 					'source'      => 'plugin',
@@ -104,7 +103,7 @@ class Patterns {
 						$auction_archive,
 						$template_auction,
 						$hero_banner,
-						$charity_interest_form,
+						$nonprofit_interest_form,
 					]
 				);
 
