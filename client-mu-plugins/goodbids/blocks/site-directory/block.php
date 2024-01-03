@@ -26,16 +26,15 @@ class SiteDirectory {
 	public function get_site_ids(): array {
 		$all_nonprofit_ids = [];
 
-		foreach (get_sites() as $nonprofit){
-			$nonprofit_id = get_object_vars($nonprofit)["blog_id"];
+		foreach ( get_sites() as $nonprofit ) {
+			$nonprofit_id = get_object_vars( $nonprofit )['blog_id'];
 
-			//TODO: filter list by site status and/or other items
+			// TODO: filter list by site status and/or other items
 
-			array_push($all_nonprofit_ids, $nonprofit_id);
+			array_push( $all_nonprofit_ids, $nonprofit_id );
 		}
 
 
 		return $all_nonprofit_ids;
 	}
-
 }
