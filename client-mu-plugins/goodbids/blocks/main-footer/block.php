@@ -34,16 +34,27 @@ class MainFooter {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( is_multisite() ) {
-			$page_id = get_blog_option( get_main_site_id(), 'wp_page_for_privacy_policy' );
+		$this->setup_privacy_policy();
+	}
 
-			switch_to_blog( get_main_site_id() );
-
-			$this->privacy_policy_title = get_the_title( $page_id );
-			$this->privacy_policy_url   = get_privacy_policy_url( $page_id );
-
-			restore_current_blog();
+	/**
+	 * Gets the title and url of the privacy policy page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_privacy_policy(): void {
+		if ( ! is_multisite() ) {
+			return;
 		}
+
+		switch_to_blog( get_main_site_id() );
+
+		$page_id = get_option( 'wp_page_for_privacy_policy' );
+		$this->privacy_policy_title = get_the_title( $page_id );
+		$this->privacy_policy_url   = get_privacy_policy_url( $page_id );
+		restore_current_blog();
 	}
 
 	/**
@@ -56,18 +67,15 @@ class MainFooter {
 	public function get_sitename_text(): string {
 		$sitename_text = __( 'GOODBIDS Positive Auctions', 'goodbids' );
 
-		if ( is_multisite() ) {
-			$blogname      = get_blog_option( get_main_site_id(), 'blogname' );
-			$tagline       = get_blog_option( get_main_site_id(), 'blogdescription' );
-			$sitename_text = sprintf(
-				/** translators: %s: GOODBIDS Positive Auctions */
-				__( '%1$s %2$s', 'goodbids' ),
-				wp_kses_post( $blogname ),
-				wp_kses_post( $tagline )
-			);
+		if ( ! is_multisite() ) {
+			return $sitename_text;
 		}
 
-		return $sitename_text;
+		return sprintf(
+			'%s %s',
+			get_blog_option( get_main_site_id(), 'blogname' ),
+			get_blog_option( get_main_site_id(), 'blogdescription' )
+		);
 	}
 
 	/**
@@ -78,7 +86,7 @@ class MainFooter {
 	 * @return string
 	 */
 	public function get_privacy_policy_title(): string {
-		return wp_kses_post( $this->privacy_policy_title );
+		return $this->privacy_policy_title;
 	}
 
 	/**
@@ -89,6 +97,6 @@ class MainFooter {
 	 * @return string
 	 */
 	public function get_privacy_policy_url(): string {
-		return wp_kses_post( $this->privacy_policy_url );
+		return $this->privacy_policy_url;
 	}
 }
