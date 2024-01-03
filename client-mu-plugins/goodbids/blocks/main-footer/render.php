@@ -24,7 +24,7 @@ $main_footer = new GoodBids\Blocks\MainFooter();
 					'<p><a href="%s">%s</a></p>',
 					esc_url( '#', 'goodbids' ),
 					// translators: %1$s represents an & symbol.
-					sprintf( 'Terms %1$s Conditions', 'goodbids' )
+					sprintf( __( 'Terms %1$s Conditions', 'goodbids' ), '&' )
 				);
 				?>
 
