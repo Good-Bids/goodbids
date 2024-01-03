@@ -15,7 +15,7 @@ export default defineConfig(({ command }) => ({
   plugins: [
     react(),
     liveReload([
-      resolve(__dirname, './src/assets/**/*'),
+      resolve(__dirname, './src/**/*'),
       resolve(__dirname, './blocks/**/*'),
       resolve(__dirname, './views/**/*'),
     ]),
@@ -34,7 +34,8 @@ export default defineConfig(({ command }) => ({
         main: resolve(__dirname, 'src/main.tsx'),
         admin: resolve(__dirname, 'src/admin.tsx'),
         editor: resolve(__dirname, 'src/editor.tsx'),
-      }
+        'bidding-block': resolve(__dirname, 'src/bidding-block.tsx'),
+      },
     },
   },
   server: {
@@ -45,6 +46,6 @@ export default defineConfig(({ command }) => ({
     port: 5173,
     hmr: {
       overlay: false,
-    }
+    },
   },
 }));

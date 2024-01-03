@@ -1,1 +1,1 @@
-import './assets/css/editor.css'
+import './assets/css/editor.css';
