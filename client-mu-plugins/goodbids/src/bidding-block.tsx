@@ -14,19 +14,19 @@ const initialUserBids = root?.getAttribute('initial-user-bids');
 const initialLastBidder = root?.getAttribute('initial-last-bidder');
 
 ReactDOM.createRoot(root!).render(
-  <React.StrictMode>
-    <div className="p-8">
-      <span>Hello World. Here are some default values.</span>
-      <ul>
-        <li>{auctionId}</li>
-        <li>{initialBids}</li>
-        <li>{initialRaised}</li>
-        <li>{initialLastBid}</li>
-        <li>{initialEndTime}</li>
-        <li>{initialFreeBids}</li>
-        <li>{initialUserBids}</li>
-        <li>{initialLastBidder}</li>
-      </ul>
-    </div>
-  </React.StrictMode>,
+	<React.StrictMode>
+		<div className="p-8">
+			<span>Hello World. Here are some default values.</span>
+			<ul>
+				<li>{auctionId}</li>
+				<li>{initialBids}</li>
+				<li>{initialRaised}</li>
+				<li>{initialLastBid}</li>
+				<li>{initialEndTime}</li>
+				<li>{initialFreeBids}</li>
+				<li>{initialUserBids}</li>
+				<li>{initialLastBidder}</li>
+			</ul>
+		</div>
+	</React.StrictMode>,
 );
