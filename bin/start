@@ -10,3 +10,4 @@ set -e
 cd "$(dirname "$0")/.."
 
 vip dev-env --slug=goodbids start
+echo "Don't forget to run bin/start-vite to start the Vite dev server"
