@@ -33,5 +33,5 @@ endif;
 	initial-free-bids="3"
 	initial-user-bids="500"
 	initial-last-bidder="user-id"
->I should be a react app</div>
+></div>
 

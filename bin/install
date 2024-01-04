@@ -11,8 +11,8 @@ cd "$(dirname "$0")/.."
 
 # Install composer dev dependencies
 composer install
-npm install
 
 # Install must-use plugin dependencies
 cd client-mu-plugins/goodbids
 composer install
+npm install

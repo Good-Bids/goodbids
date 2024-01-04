@@ -23,16 +23,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: cd client-mu-plugins/goodbids && npm ci
 
       - name: Lint
-        run: npm run lint
+        run: cd client-mu-plugins/goodbids && npm run lint
 
       - name: Format
-        run: npm run format
+        run: cd client-mu-plugins/goodbids && npm run format
 
       - name: Compile
         run: cd client-mu-plugins/goodbids && npm run compile
