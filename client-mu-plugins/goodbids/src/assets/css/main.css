@@ -6,8 +6,8 @@
 @tailwind utilities;
 
 @layer components {
-  #vip-non-prod-bar,
-  #a8c-debug-flag {
-    @apply hidden;
-  }
+	#vip-non-prod-bar,
+	#a8c-debug-flag {
+		@apply hidden;
+	}
 }

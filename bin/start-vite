@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# bin/start-vite: Start local Vite dev server
+#
+# When to use:
+#  - After running `bin/start` to start the WP server
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+npm run dev

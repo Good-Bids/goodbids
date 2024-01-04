@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "compile": "tsc",
+    "dev": "cd ./client-mu-plugins/goodbids && npm run dev",
     "format": "prettier --check ./client-mu-plugins/goodbids/src/**/*.{css,ts,tsx}",
     "format:fix": "prettier --write ./client-mu-plugins/goodbids/src/**/*.{css,ts,tsx}",
     "lint": "eslint ./client-mu-plugins/goodbids/src/**/*.{ts,tsx}",
