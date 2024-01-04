@@ -4,14 +4,14 @@ export default {
 		preflight: false,
 	},
 	content: [
-		"./src/assets/**/*.{css,js,jsx,tsx}",
-		"./blocks/**/*.{php,css,js}",
-		"./views/**/**/*.{php,html}",
+		'./src/**/*.{css,js,jsx,tsx}',
+		'./blocks/**/*.{php,css,js}',
+		'./views/**/**/*.{php,html}',
 	],
 	theme: {
 		borderRadius: {
 			DEFAULT: '30px',
-		}
+		},
 	},
 	plugins: [],
-}
+};

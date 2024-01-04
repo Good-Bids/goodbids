@@ -15,14 +15,6 @@ if ( ! $bid_now->display() ) :
 	return;
 endif;
 ?>
-<div <?php block_attr( $block, $bid_now->get_block_classes() ); ?>>
-	<a
-		href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
-		class="wp-block-button__link wp-element-button w-full block text-center"
-	>
-		<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
-	</a>
-</div>
 <div
 	id="bidding-block"
 	data-auction-id="auction-id"
@@ -34,4 +26,12 @@ endif;
 	initial-user-bids="500"
 	initial-last-bidder="user-id"
 ></div>
+<div <?php block_attr( $block, $bid_now->get_block_classes() ); ?>>
+	<a
+		href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
+		class="wp-block-button__link wp-element-button w-full block text-center"
+	>
+		<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
+	</a>
+</div>
 
