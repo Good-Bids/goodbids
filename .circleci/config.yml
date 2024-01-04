@@ -21,17 +21,7 @@ jobs:
       - run: echo "Building..."
       - run: echo "${ACF_DEVELOP}" >> ./client-mu-plugins/goodbids/auth.json
       - run: echo "$(< ./client-mu-plugins/goodbids/auth.json)"
-      - restore_cache:
-          name: Restore NPM Cache
-          keys:
-            - npm-deps-{{ checksum "package-lock.json" }}
-      - run: npm ci
-      - save_cache:
-          name: Save NPM Cache
-          key: npm-deps-{{ checksum "package-lock.json" }}
-          paths:
-            - package-lock.json
-            - node_modules
+      - run: cd client-mu-plugins/goodbids && npm ci
       - run: cd client-mu-plugins/goodbids && npm run build
       - run: cd client-mu-plugins/goodbids && composer install --verbose
 
@@ -47,7 +37,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - '6f:3b:07:c2:f1:23:5a:5d:9d:3a:b0:2d:b2:00:9d:0a'
+            - "6f:3b:07:c2:f1:23:5a:5d:9d:3a:b0:2d:b2:00:9d:0a"
 
       - run:
           name: Deploy -built branch to github
