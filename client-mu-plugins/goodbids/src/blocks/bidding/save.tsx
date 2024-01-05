@@ -1,6 +1,7 @@
 /**
  * WordPress Dependencies
  */
+import React from 'react';
 import { useBlockProps } from '@wordpress/block-editor';
 
 const Save = ({ attributes }) => {
