@@ -53,6 +53,7 @@ class Sites {
 		$this->lock_block_editor();
 		$this->disable_blocks_for_nonprofits();
 		$this->create_about_page();
+		$this->lock_block_editor();
 	}
 
 	/**
@@ -370,7 +371,7 @@ class Sites {
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( $site_id ) {
+			function ( int $site_id ) {
 				$stylesheet = 'goodbids-nonprofit';
 
 				// Check if the Goodbids child theme exists first.
@@ -416,7 +417,7 @@ class Sites {
 				return sprintf(
 					'<a href="%1$s" class="custom-logo-link" rel="home" itemprop="url"><img src="%2$s" class="custom-logo" itemprop="logo" alt="GoodBids"></a>',
 					esc_url( home_url( '/' ) ),
-					esc_attr( GOODBIDS_PLUGIN_URL . 'assets/images/goodbids-logo.png' ),
+					esc_attr( GOODBIDS_PLUGIN_URL . 'src/assets/images/goodbids-logo.png' ),
 				);
 			},
 			10,
@@ -498,7 +499,7 @@ class Sites {
 	private function create_about_page(): void {
 		add_action(
 			'goodbids_init_site',
-			function (): void {
+			function ( int $site_id ): void {
 				ob_start();
 				include GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php';
 
