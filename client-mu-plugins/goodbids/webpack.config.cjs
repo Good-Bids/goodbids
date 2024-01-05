@@ -4,11 +4,12 @@ const defaults = import('@wordpress/scripts/config/webpack.config.js');
 module.exports = {
 	...defaults,
 	entry: {
-		scripts: path.resolve( process.cwd(), 'src', 'index.tsx' )
+		scripts: path.resolve(process.cwd(), 'src', 'index.tsx'),
+		view: path.resolve(process.cwd(), 'src', 'view.tsx'),
 	},
 	output: {
 		filename: '[name].js',
-		path: path.resolve( process.cwd(), 'blocks/react' ),
+		path: path.resolve(process.cwd(), 'blocks/react'),
 	},
 	module: {
 		...defaults.module,
@@ -22,13 +23,19 @@ module.exports = {
 						options: {
 							configFile: 'tsconfig.json',
 							transpileOnly: true,
-						}
-					}
-				]
-			}
-		]
+						},
+					},
+				],
+			},
+		],
 	},
 	resolve: {
-		extensions: [ '.ts', '.tsx', ...(defaults.resolve ? defaults.resolve.extensions || ['.js', '.jsx'] : [])]
-	}
+		extensions: [
+			'.ts',
+			'.tsx',
+			...(defaults.resolve
+				? defaults.resolve.extensions || ['.js', '.jsx']
+				: []),
+		],
+	},
 };

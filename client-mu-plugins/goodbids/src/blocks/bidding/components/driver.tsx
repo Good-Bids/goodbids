@@ -1,12 +1,13 @@
 import React from 'react';
 import { getInitialState } from '../utils/get-initial-state';
+import { CountdownTimer } from './countdown-timer';
 import { Metrics } from './metrics';
 
 export function Driver() {
 	const initialState = getInitialState();
 
 	return (
-		<div className="w-full">
+		<div className="w-full text-base">
 			<Metrics
 				blocks={[
 					{ type: 'bids', value: initialState.bids },
@@ -14,6 +15,7 @@ export function Driver() {
 					{ type: 'last-bid', value: initialState.lastBid },
 				]}
 			/>
+			<CountdownTimer />
 		</div>
 	);
 }
