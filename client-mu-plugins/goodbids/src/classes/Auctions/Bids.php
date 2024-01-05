@@ -47,6 +47,9 @@ class Bids {
 
 		// Delete the Bid product when an Auction is deleted.
 		$this->delete_bid_product_on_auction_delete();
+
+		// Prevent access to Bid product.
+		$this->prevent_access_to_bid_product();
 	}
 
 	/**
@@ -99,6 +102,10 @@ class Bids {
 				$bid_product->set_regular_price( $starting_bid );
 				$bid_product->set_category_ids( [ $this->get_bids_category_id() ] );
 				$bid_product->set_status( 'publish' );
+				$bid_product->set_manage_stock( true );
+				$bid_product->set_stock_quantity( 1 );
+				$bid_product->set_sold_individually( true );
+				$bid_product->set_virtual( true );
 
 				try {
 					$bid_product->set_sku( 'BID-' . $post_id );
@@ -186,6 +193,7 @@ class Bids {
 				$bid_product = wc_get_product( $bid_product_id );
 				$bid_price   = intval( $bid_product->get_regular_price( 'edit' ) );
 
+				$bid_product->set_stock_quantity( 1 );
 				$bid_product->set_regular_price( $bid_price + $increment );
 				$bid_product->save();
 			},
@@ -274,6 +282,40 @@ class Bids {
 
 				// Delete the Bid product.
 				wp_delete_post( $bid_product_id, true );
+			}
+		);
+	}
+
+	/**
+	 * Disable access to Bid product singular product page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function prevent_access_to_bid_product(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! is_singular( 'product' ) ) {
+					return;
+				}
+
+				$product_id = get_the_ID();
+
+				if ( 'bids' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_auction_id( $product_id );
+
+				if ( ! $auction_id ) {
+					wp_safe_redirect( home_url() );
+					exit;
+				}
+
+				wp_safe_redirect( get_permalink( $auction_id ), 301 );
+				exit;
 			}
 		);
 	}
