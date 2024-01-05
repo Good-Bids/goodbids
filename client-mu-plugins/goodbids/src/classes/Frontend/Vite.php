@@ -98,17 +98,6 @@ class Vite {
 	}
 
 	/**
-	 * Checks if current environment is development.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool
-	 */
-	public function is_dev_env(): bool {
-		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
-	}
-
-	/**
 	 * Initialize
 	 *
 	 * @since 1.0.0
@@ -180,8 +169,8 @@ class Vite {
 	 *
 	 * @return string
 	 */
-	public function vite( string $entry ) {
-		if ( $this->is_dev_env() ) {
+	public function vite( string $entry ): string {
+		if ( goodbids()->is_dev_env() ) {
 			$scripts = [
 				"<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>",
 				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>",
@@ -479,7 +468,7 @@ class Vite {
 
 		$script_url = $this->get_asset_url( $file );
 
-		if ( $this->is_dev_env() ) {
+		if ( goodbids()->is_dev_env() ) {
 			$vite_client = $this->dev_server . '/@vite/client';
 			$vite_entry  = $this->dev_server . '/' . $entry;
 

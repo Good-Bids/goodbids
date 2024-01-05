@@ -209,6 +209,17 @@ class Core {
 	}
 
 	/**
+	 * Checks if current environment is development.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_dev_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
+	}
+
+	/**
 	 * Load 3rd Party Plugins.
 	 *
 	 * @since 1.0.0
@@ -227,6 +238,21 @@ class Core {
 		}
 
 		foreach ( $plugins as $plugin ) {
+			if ( $this->is_dev_env() ) {
+				$plugin_slug = str_contains( $plugin, '/' ) ? $plugin : $plugin . '/' . $plugin . '.php';
+				$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_slug;
+				if ( ! file_exists( $plugin_path ) ) {
+					error_log(
+						sprintf(
+							'[GB] Attempted to load plugin %s but the file %s was not found in the plugin directory.',
+							$plugin,
+							$plugin_slug
+						)
+					);
+					continue;
+				}
+			}
+
 			wpcom_vip_load_plugin( $plugin );
 		}
 	}
