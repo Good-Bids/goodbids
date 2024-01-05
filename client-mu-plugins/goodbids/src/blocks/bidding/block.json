@@ -1,0 +1,13 @@
+{
+  "apiVersion": 3,
+  "title": "Sample: Bidding",
+  "name": "goodbids/bidding",
+  "category": "widgets",
+  "icon": "universal-access-alt",
+  "editorScript": "file:./index.js",
+  "attributes": {
+    "auctionId": {
+      "type": "integer"
+    }
+  }
+}

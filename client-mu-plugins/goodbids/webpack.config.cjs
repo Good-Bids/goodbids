@@ -1,0 +1,34 @@
+const path = import('path');
+const defaults = import('@wordpress/scripts/config/webpack.config.js');
+
+module.exports = {
+	...defaults,
+	entry: {
+		scripts: path.resolve( process.cwd(), 'src', 'index.tsx' )
+	},
+	output: {
+		filename: '[name].js',
+		path: path.resolve( process.cwd(), 'blocks/react' ),
+	},
+	module: {
+		...defaults.module,
+		rules: [
+			...defaults.module.rules,
+			{
+				test: /\.tsx?$/,
+				use: [
+					{
+						loader: 'ts-loader',
+						options: {
+							configFile: 'tsconfig.json',
+							transpileOnly: true,
+						}
+					}
+				]
+			}
+		]
+	},
+	resolve: {
+		extensions: [ '.ts', '.tsx', ...(defaults.resolve ? defaults.resolve.extensions || ['.js', '.jsx'] : [])]
+	}
+};
