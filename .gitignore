@@ -27,6 +27,7 @@ node_modules
 /plugins/user-switching/
 /plugins/woocommerce/
 /plugins/woocommerce-gateway-stripe/
+/plugins/woocommerce-services/
 
 # Uploads directory
 /uploads/
