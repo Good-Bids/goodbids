@@ -171,6 +171,25 @@ class Core {
 	 * @return mixed
 	 */
 	public function get_config( string $key ): mixed {
+		if ( empty( $this->config[ $key ] ) ) {
+			return null;
+		}
+
+		if ( str_contains( $key, '.' ) ) {
+			$keys  = explode( '.', $key );
+			$value = $this->config;
+
+			foreach ( $keys as $key ) {
+				if ( ! isset( $value[ $key ] ) ) {
+					return null;
+				}
+
+				$value = $value[ $key ];
+			}
+
+			return $value;
+		}
+
 		return $this->config[ $key ] ?? null;
 	}
 
