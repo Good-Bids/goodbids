@@ -10,17 +10,17 @@
 
 ?>
 
-<!-- wp:group {"align":"full","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"accent-2","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull has-accent-2-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
+<!-- wp:group {"tagName":"main","align":"wide","layout":{"type":"constrained"}} -->
+<main class="wp-block-group alignwide">
 	<!-- wp:columns {"align":"wide"} -->
 	<div class="wp-block-columns alignwide">
-		<!-- wp:column {"width":""} -->
+		<!-- wp:column -->
 		<div class="wp-block-column">
 			<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","data":{},"mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column {"width":""} -->
+		<!-- wp:column -->
 		<div class="wp-block-column">
 			<!-- wp:post-title /-->
 
@@ -33,5 +33,5 @@
 		<!-- /wp:column -->
 	</div>
 	<!-- /wp:columns -->
-</div>
+</main>
 <!-- /wp:group -->
