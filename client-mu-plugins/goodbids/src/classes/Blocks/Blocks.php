@@ -76,14 +76,21 @@ class Blocks {
 						continue;
 					}
 
+					// Restrict blocks to specific post types.
 					add_filter(
-						'allowed_block_types',
-						function ( $allowed_block_types, $post ) use ( $block, $config ) {
-							if ( in_array( $post->post_type, $config['post_type'], true ) ) {
+						'allowed_block_types_all',
+						function ( $allowed_block_types, $context ) use ( $block, $config ) {
+							if ( in_array( get_post_type(), $config['post_type'], true ) ) {
 								return $allowed_block_types;
 							}
 
-							return [ $this->namespace . '/' . $block ];
+							if ( is_array( $allowed_block_types ) ) {
+								// Remove the block from the allowed blocks.
+								return array_diff( $allowed_block_types, [ $this->namespace . '/' . $block ] );
+							}
+
+							// This probably is wrong, and needs to be an array of ALL blocks EXCEPT the one we want to remove.
+							return $allowed_block_types;
 						},
 						10,
 						2
