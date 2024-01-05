@@ -133,6 +133,9 @@ class Auctioneer {
 			]
 		);
 
+		// TODO: Log Response.
+		$this->last_response = $response;
+
 		if ( $this->is_invalid_response( $response ) ) {
 			return null;
 		}
@@ -148,6 +151,7 @@ class Auctioneer {
 	 * @return mixed
 	 */
 	public function get_last_response(): mixed {
+		// TODO: Maybe refactor, or remove once we begin logging the requests/responses.
 		return $this->last_response;
 	}
 
@@ -161,9 +165,6 @@ class Auctioneer {
 	 * @return bool
 	 */
 	public function is_invalid_response( mixed $response ): bool {
-		// TODO: Log Response.
-		$this->last_response = $response;
-
 		if ( is_wp_error( $response ) ) {
 			// TODO: Log error.
 			error_log( '[GB] ' . $response->get_error_message() );
