@@ -4,6 +4,7 @@
 import React from 'react';
 import { useSelect } from '@wordpress/data';
 import { ClockIcon } from './components/clock-icon';
+import { WaveIcon } from './components/wave-icon';
 
 const Edit = ({ setAttributes }) => {
 	const auctionId = useSelect((select) => {
@@ -53,6 +54,22 @@ const Edit = ({ setAttributes }) => {
 					Watch this auction to be notified when bidding starts.
 				</p>
 				<p className="m-0 text-center">Every GOODBID is a donation.</p>
+			</div>
+			<div className="flex items-start gap-4 bg-gray-100 rounded p-4">
+				<WaveIcon />
+				<div className="flex flex-col gap-3">
+					<p className="m-0">
+						<b>Earn free bids:</b>
+					</p>
+					<p className="m-0">
+						Place one of the first five <b>paid bids</b> in this
+						auction or{' '}
+						<div className="font-bold underline">
+							share GOODBIDS with a friend
+						</div>{' '}
+						to <b>earn a free bid</b>!
+					</p>
+				</div>
 			</div>
 		</div>
 	);

@@ -2,6 +2,7 @@ import React from 'react';
 import { getInitialState } from '../utils/get-initial-state';
 import { BidButton } from './bid-button';
 import { CountdownTimer } from './countdown-timer';
+import { EarnFreeBids } from './earn-free-bids';
 import { FreeBidButton } from './free-bid-button';
 import { Metrics } from './metrics';
 import { Participation } from './participation';
@@ -22,6 +23,7 @@ export function Driver() {
 			<BidButton />
 			<FreeBidButton />
 			<Participation />
+			<EarnFreeBids />
 		</div>
 	);
 }
