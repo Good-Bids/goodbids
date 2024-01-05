@@ -60,6 +60,7 @@ add_filter(
 	}
 );
 ```
+
 ### goodbids_block_patterns
 
 Registers custom block patterns.
@@ -79,5 +80,23 @@ add_filter(
 		];
 
 		return array_merge( $patterns, $theme_patterns );
+	}
+```
+
+### goodbids_auction_setting
+
+Allows Auction Settings to be overridden.
+
+```php
+add_filter(
+	'goodbids_auction_setting',
+	function ( mixed $value, string $meta_key, int $auction_id ): array {
+		if ( 'my-custom-key' !== $meta_key ) {
+			return $value;
+		}
+		
+		$value = 'my-custom-value';
+
+		return $value;
 	}
 ```

@@ -51,6 +51,9 @@ class WooCommerce {
 //		$this->authentication_redirect();
 //		$this->prevent_wp_login_access();
 
+		$this->auto_empty_cart();
+		$this->validate_bid();
+
 		$this->store_auction_id_in_cart();
 		$this->store_auction_id_on_checkout();
 		$this->redirect_after_bid_checkout();
@@ -340,33 +343,17 @@ class WooCommerce {
 		add_action(
 			'woocommerce_payment_complete',
 			function ( int $order_id ) {
-				$order      = wc_get_order( $order_id );
-				$auction_id = false;
-				$order_type = false;
+				$info = $this->get_order_auction_info( $order_id );
 
-				// Find order items with Auction Meta.
-				foreach ( $order->get_items() as $item ) {
-					try {
-						$auction_id = wc_get_order_item_meta( $item->get_id(), self::AUCTION_META_KEY );
-						$order_type = wc_get_order_item_meta( $item->get_id(), self::TYPE_META_KEY );
-					} catch (\Exception $e) {
-						continue;
-					}
-
-					if ( $auction_id && $order_type ) {
-						break;
-					}
-				}
-
-				if ( ! $auction_id || ! $order_type ) {
+				if ( ! $info ) {
 					// TODO: Log warning.
 					return;
 				}
 
-				update_post_meta( $order_id, self::AUCTION_META_KEY, $auction_id );
-				update_post_meta( $order_id, self::TYPE_META_KEY, $order_type );
+				update_post_meta( $order_id, self::AUCTION_META_KEY, $info['auction_id'] );
+				update_post_meta( $order_id, self::TYPE_META_KEY, $info['order_type'] );
 
-				do_action( 'goodbids_order_payment_complete', $order_id, $auction_id );
+				do_action( 'goodbids_order_payment_complete', $order_id, $info['auction_id'] );
 			}
 		);
 	}
@@ -492,11 +479,11 @@ class WooCommerce {
 	 *
 	 * @param int $order_id
 	 *
-	 * @return string
+	 * @return ?string
 	 */
-	public function get_order_type( int $order_id ): string {
+	public function get_order_type( int $order_id ): ?string {
 		$type = get_post_meta( $order_id, self::TYPE_META_KEY, true );
-		return $type ?: 'unknown';
+		return $type ?: null;
 	}
 
 	/**
@@ -523,5 +510,110 @@ class WooCommerce {
 	 */
 	public function is_reward_order( int $order_id ): bool {
 		return 'rewards' === $this->get_order_type( $order_id );
+	}
+
+	/**
+	 * Validate Bids during checkout
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function validate_bid(): void {
+		add_action(
+			'woocommerce_store_api_checkout_update_order_from_request',
+			function( $order, $request = [] ) {
+				if ( empty( $request ) ) {
+					return;
+				}
+
+				$info = $this->get_order_auction_info( $order->get_id() );
+
+				if ( ! $info ) {
+					// TODO: Log warning.
+					return;
+				}
+
+				if ( ! goodbids()->auctions->has_started( $info['auction_id'] ) ) {
+					// TODO: Move error to Settings Page.
+					wc_add_notice( __( 'Auction has not started yet.', 'goodbids' ), 'error' );
+				} elseif ( goodbids()->auctions->has_ended( $info['auction_id'] ) ) {
+					// TODO: Move error to Settings Page.
+					wc_add_notice( __( 'Auction has already ended.', 'goodbids' ), 'error' );
+				}
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Get the Auction info from the Order.
+	 *
+	 * @param int $order_id
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?array
+	 */
+	public function get_order_auction_info( int $order_id ): ?array {
+		$order      = wc_get_order( $order_id );
+		$auction_id = $this->get_order_auction_id( $order_id );
+		$order_type = $this->get_order_type( $order_id );
+
+		// Return early if we already have this info.
+		if ( $auction_id && $order_type ) {
+			return [
+				'auction_id' => $auction_id,
+				'order_type' => $order_type,
+			];
+		}
+
+		// Find order items with Auction Meta.
+		foreach ( $order->get_items() as $item ) {
+			try {
+				$auction_id = wc_get_order_item_meta( $item->get_id(), self::AUCTION_META_KEY );
+				$order_type = wc_get_order_item_meta( $item->get_id(), self::TYPE_META_KEY );
+			} catch (\Exception $e) {
+				continue;
+			}
+
+			if ( $auction_id && $order_type ) {
+				break;
+			}
+		}
+
+		if ( ! $auction_id || ! $order_type ) {
+			// TODO: Log warning.
+			return null;
+		}
+
+		return [
+			'auction_id' => $auction_id,
+			'order_type' => $order_type,
+		];
+	}
+
+	/**
+	 * Empty cart before adding a Bid or Reward product.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function auto_empty_cart(): void {
+		add_filter(
+			'woocommerce_add_to_cart_handler',
+			function ( $handler, $product ) {
+				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+					return $handler;
+				}
+
+				WC()->cart->empty_cart();
+
+				return $handler;
+			},
+			10,
+			2
+		);
 	}
 }

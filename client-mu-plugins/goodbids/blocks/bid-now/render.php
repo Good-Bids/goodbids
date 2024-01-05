@@ -10,8 +10,14 @@
 
 $bid_now = new GoodBids\Blocks\BidNow( $block );
 
-// Bail early if we're not inside an Auction post type.
+// Bail early if initial requirements are not met.
 if ( ! $bid_now->display() ) :
+	return;
+endif;
+
+// Make sure the auction is active.
+if ( ! $bid_now->is_auction_active() ) :
+	$bid_now->render_auction_not_active();
 	return;
 endif;
 ?>

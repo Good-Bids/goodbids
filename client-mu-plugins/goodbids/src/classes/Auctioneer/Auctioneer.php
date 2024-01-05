@@ -36,6 +36,22 @@ class Auctioneer {
 	private bool $initialized = false;
 
 	/**
+	 * Store the last response
+	 *
+	 * @since 1.0.0
+	 * @var ?mixed
+	 */
+	private mixed $last_response = null;
+
+	/**
+	 * Auctions Endpoint
+	 *
+	 * @since 1.0.0
+	 * @var ?Auctions
+	 */
+	public ?Auctions $auctions = null;
+
+	/**
 	 * Initialize Auctioneer
 	 *
 	 * @since 1.0.0
@@ -89,6 +105,9 @@ class Auctioneer {
 	 * @return void
 	 */
 	private function init(): void {
+		// Init Auctions Endpoint.
+		$this->auctions = new Auctions();
+
 		$this->initialized = true;
 	}
 
@@ -103,7 +122,11 @@ class Auctioneer {
 	 *
 	 * @return ?array
 	 */
-	private function request( string $endpoint, array $params = [], string $method = 'GET' ): ?array {
+	public function request( string $endpoint, array $params = [], string $method = 'GET' ): ?array {
+		if ( ! $this->initialized ) {
+			return null;
+		}
+
 		$url      = trailingslashit( $this->url ) . $endpoint;
 		$response = wp_remote_request(
 			$url,
@@ -116,7 +139,10 @@ class Auctioneer {
 			]
 		);
 
-		if ( ! is_array( $response ) ) {
+		// TODO: Log Response.
+		$this->last_response = $response;
+
+		if ( $this->is_invalid_response( $response ) ) {
 			return null;
 		}
 
@@ -124,43 +150,45 @@ class Auctioneer {
 	}
 
 	/**
-	 * Trigger an Auction Start event for an Auction
+	 * Get the last response.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
-	 *
-	 * @return array|bool
+	 * @return mixed
 	 */
-	public function auction_start( int $auction_id ): array|bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
+	public function get_last_response(): mixed {
+		// TODO: Maybe refactor, or remove once we begin logging the requests/responses.
+		return $this->last_response;
+	}
 
-		if ( ! $guid ) {
+	/**
+	 * Check if the response if valid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $response
+	 *
+	 * @return bool
+	 */
+	public function is_invalid_response( mixed $response ): bool {
+		if ( is_wp_error( $response ) ) {
 			// TODO: Log error.
-			return false;
+			error_log( '[GB] ' . $response->get_error_message() );
+			return true;
 		}
 
-		$endpoint    = sprintf( 'auctions/%s/start', $guid );
-		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
-
-		// TODO: Refactor using individual Response classes.
-		$payload = [
-			'id'          => $guid,
-			'startTime'   => goodbids()->auctions->get_start_date_time( $auction_id, 'c' ),
-			'endTime'     => goodbids()->auctions->get_end_date_time( $auction_id, 'c' ),
-			'currentBid'  => floatval( $bid_product?->get_price( 'edit' ) ),
-			'requestTime' => current_datetime()->format( 'c' ),
-		];
-
-		$response = $this->request( $endpoint, $payload, 'POST' );
+		if ( ! is_array( $response ) || empty( $response ) ) {
+			// TODO: Log error.
+			return true;
+		}
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			// TODO: Log Response
+			// TODO: Log Errors.
 			error_log( '[GB] ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
-			return $response;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
