@@ -13,6 +13,9 @@ export function getInitialState() {
 	const initialFreeBids = root?.getAttribute('data-initial-free-bids');
 	const initialUserBids = root?.getAttribute('data-initial-user-bids');
 	const initialLastBidder = root?.getAttribute('data-initial-last-bidder');
+	const bidUrl = root?.getAttribute('data-bid-url');
+	const prizeUrl = root?.getAttribute('data-prize-url');
+	const nextBid = root?.getAttribute('data-next-bid');
 
 	return {
 		auctionId,
@@ -24,6 +27,9 @@ export function getInitialState() {
 		freeBids: initialFreeBids ? parseInt(initialFreeBids, 10) : 0,
 		userBids: initialUserBids ? parseInt(initialUserBids, 10) : 0,
 		lastBidder: initialLastBidder || '',
+		bidUrl: bidUrl || '',
+		prizeUrl: prizeUrl || '',
+		nextBid: nextBid ? parseInt(nextBid, 10) : 0,
 	};
 }
 
