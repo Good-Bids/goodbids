@@ -22,9 +22,10 @@ if ( ! $bid_now->is_auction_active() ) :
 endif;
 ?>
 <div <?php block_attr( $block, $bid_now->get_block_classes() ); ?>>
-	<div class="wp-block-button has-custom-width wp-block-button__width-100">
-		<a href="<?php echo esc_url( $bid_now->get_button_url() ); ?>" class="wp-block-button__link wp-element-button">
-			<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
-		</a>
-	</div>
+	<a
+		href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
+		class="wp-block-button__link wp-element-button w-full block text-center"
+	>
+		<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
+	</a>
 </div>

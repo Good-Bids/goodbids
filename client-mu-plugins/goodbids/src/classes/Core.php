@@ -12,6 +12,7 @@ use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Patterns;
+use GoodBids\Frontend\Vite;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
@@ -171,6 +172,25 @@ class Core {
 	 * @return mixed
 	 */
 	public function get_config( string $key ): mixed {
+		if ( empty( $this->config[ $key ] ) ) {
+			return null;
+		}
+
+		if ( str_contains( $key, '.' ) ) {
+			$keys  = explode( '.', $key );
+			$value = $this->config;
+
+			foreach ( $keys as $key ) {
+				if ( ! isset( $value[ $key ] ) ) {
+					return null;
+				}
+
+				$value = $value[ $key ];
+			}
+
+			return $value;
+		}
+
 		return $this->config[ $key ] ?? null;
 	}
 
@@ -181,8 +201,11 @@ class Core {
 	 *
 	 * @return void
 	 */
-	private function load_dependencies() : void {
+	private function load_dependencies(): void {
 		require_once GOODBIDS_PLUGIN_PATH . '/src/helpers.php';
+
+		// Init vite.
+		new Vite();
 	}
 
 	/**
