@@ -20,8 +20,8 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["assets"],
+  "include": ["assets", "blocks"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

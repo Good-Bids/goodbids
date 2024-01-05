@@ -9,6 +9,7 @@ import Save from './save';
 const { name } = json;
 
 // Register the block
+// @ts-expect-error Seems like a type error in the @wordpress/blocks package
 registerBlockType(name, {
 	...json,
 	edit: Edit,
