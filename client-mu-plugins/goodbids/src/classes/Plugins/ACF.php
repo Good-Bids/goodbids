@@ -42,6 +42,7 @@ class ACF {
 		// Initialize Submodules.
 		$this->blocks = new Blocks();
 
+		$this->define_license_key();
 		$this->disable_admin();
 		$this->discourage_the_field_usage();
 		$this->modify_save_directory();
@@ -57,6 +58,21 @@ class ACF {
 	 */
 	public function blocks() : Blocks {
 		return $this->blocks;
+	}
+
+	/**
+	 * Define the ACF License key if the environment variable is present.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function define_license_key(): void {
+		$license_key = vip_get_env_var( 'GOODBIDS_ACF_LICENSE_KEY' );
+		if ( ! $license_key ) {
+			return;
+		}
+
+		defined( 'ACF_PRO_LICENSE' ) || define( 'ACF_PRO_LICENSE', $license_key );
 	}
 
 	/**
