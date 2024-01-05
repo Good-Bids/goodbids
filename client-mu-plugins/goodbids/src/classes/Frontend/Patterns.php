@@ -86,12 +86,24 @@ class Patterns {
 					'inserter'   => true,
 				];
 
+				$nonprofit_interest_form = [
+					'name'        => 'nonprofit-interest-form',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/nonprofit-interest-form.php',
+					'title'       => __( 'Nonprofit Interest Form', 'goodbids' ),
+					'description' => _x( 'Nonprofit Interest Form using Jetpack forms', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'goodbids' ],
+					'keywords'    => [ 'non-profit', 'form' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
 						$auction_archive,
 						$template_auction,
 						$hero_banner,
+						$nonprofit_interest_form,
 					]
 				);
 
