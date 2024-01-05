@@ -23,15 +23,3 @@ endif;
 		<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
 	</a>
 </div>
-<div
-	id="bidding-block"
-	data-auction-id="auction-id"
-	data-initial-bids="0"
-	data-initial-raised="0"
-	data-initial-last-bid="0"
-	initial-end-time="no-op"
-	initial-free-bids="3"
-	initial-user-bids="500"
-	initial-last-bidder="user-id"
-></div>
-
