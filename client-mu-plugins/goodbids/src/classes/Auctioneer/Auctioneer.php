@@ -61,20 +61,7 @@ class Auctioneer {
 			return;
 		}
 
-		// Abort if missing environment variable.
-		if ( ! $this->url ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-							<p>%s</p>
-						</div>',
-						esc_html__( 'Missing Auctioneer environment variables.', 'goodbids' )
-					);
-				}
-			);
-
+		if ( ! $this->confirm_credentials() ) {
 			return;
 		}
 
@@ -89,7 +76,7 @@ class Auctioneer {
 	 * @return bool
 	 */
 	private function configure_url(): bool {
-		$environments = goodbids()->get_config( 'vip-constants.auctioneer' );
+		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
 		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
 			add_action(
@@ -99,7 +86,7 @@ class Auctioneer {
 						'<div class="notice notice-error is-dismissible">
 						<p>%s</p>
 					</div>',
-						esc_html__( 'Missing Auctioneer constants config.', 'goodbids' )
+						esc_html__( 'Missing Auctioneer URL constants config.', 'goodbids' )
 					);
 				}
 			);
@@ -108,6 +95,71 @@ class Auctioneer {
 		}
 
 		$this->url = vip_get_env_var( $environments[ $this->environment ], null );
+
+		// Abort if missing environment variable.
+		if ( ! $this->url ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf(
+						'<div class="notice notice-error is-dismissible">
+							<p>%s</p>
+						</div>',
+						esc_html__( 'Missing Auctioneer environment variables.', 'goodbids' )
+					);
+				}
+			);
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Confirm we have credentials for our API.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function confirm_credentials(): bool {
+		$credentials = goodbids()->get_config( 'vip-constants.auctioneer.credentials' );
+
+		if ( ! $credentials || empty( $credentials[ $this->environment . '-key' ] ) || empty( $credentials[ $this->environment . '-secret' ] ) ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf(
+						'<div class="notice notice-error is-dismissible">
+						<p>%s</p>
+					</div>',
+						esc_html__( 'Missing Auctioneer API Credentials constants config.', 'goodbids' )
+					);
+				}
+			);
+
+			return false;
+		}
+
+		$key    = vip_get_env_var( $credentials[ $this->environment . '-key' ], null );
+		$secret = vip_get_env_var( $credentials[ $this->environment . '-secret' ], null );
+
+		if ( ! $key || ! $secret ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf(
+						'<div class="notice notice-error is-dismissible">
+							<p>%s</p>
+						</div>',
+						esc_html__( 'Missing Auctioneer API Credentials variables.', 'goodbids' )
+					);
+				}
+			);
+
+			return false;
+		}
 
 		return true;
 	}
