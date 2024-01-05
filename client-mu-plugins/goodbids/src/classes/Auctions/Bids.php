@@ -38,6 +38,15 @@ class Bids {
 
 		// Bump Auction Bid Product Price when an Order is completed.
 		$this->update_bid_product_on_order_complete();
+
+		// Trash the Bid product when an Auction is trashed.
+		$this->trash_bid_product_on_auction_trash();
+
+		// Restore the Bid product when an Auction is restored from trash.
+		$this->restore_bid_product_on_auction_restore();
+
+		// Delete the Bid product when an Auction is deleted.
+		$this->delete_bid_product_on_auction_delete();
 	}
 
 	/**
@@ -182,6 +191,90 @@ class Bids {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Trash the Bid product when an Auction is trashed.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function trash_bid_product_on_auction_trash(): void {
+		add_action(
+			'trashed_post',
+			function ( int $post_id ): void {
+				// Bail if not an Auction.
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+
+				// Bail if the Auction doesn't have a Bid product.
+				if ( ! $bid_product_id ) {
+					return;
+				}
+
+				// Trash the Bid product.
+				wp_trash_post( $bid_product_id );
+			}
+		);
+	}
+
+	/**
+	 * Restore the Bid product when an Auction is restored from trash.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function restore_bid_product_on_auction_restore(): void {
+		add_action(
+			'untrashed_post',
+			function ( int $post_id ): void {
+				// Bail if not an Auction.
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+
+				// Bail if the Auction doesn't have a Bid product.
+				if ( ! $bid_product_id ) {
+					return;
+				}
+
+				// Restore the Bid product.
+				wp_untrash_post( $bid_product_id );
+			}
+		);
+	}
+
+	/**
+	 * Delete the Bid product when an Auction is deleted.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function delete_bid_product_on_auction_delete(): void {
+		add_action(
+			'before_delete_post',
+			function ( int $post_id ): void {
+				// Bail if not an Auction.
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+
+				// Bail if the Auction doesn't have a Bid product.
+				if ( ! $bid_product_id ) {
+					return;
+				}
+
+				// Delete the Bid product.
+				wp_delete_post( $bid_product_id, true );
+			}
 		);
 	}
 }
