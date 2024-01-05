@@ -12,6 +12,7 @@ use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Patterns;
+use GoodBids\Frontend\Vite;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
@@ -200,8 +201,11 @@ class Core {
 	 *
 	 * @return void
 	 */
-	private function load_dependencies() : void {
+	private function load_dependencies(): void {
 		require_once GOODBIDS_PLUGIN_PATH . '/src/helpers.php';
+
+		// Init vite.
+		new Vite();
 	}
 
 	/**

@@ -59,10 +59,6 @@ vendor
 # PhpStorm
 .idea/
 
-# Pre-compiled files
-src/index.js
-src/components
-
 # Sensitive data
 auth.json
 client-mu-plugins/vip-env-vars.local.php
