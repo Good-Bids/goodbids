@@ -16,6 +16,18 @@ namespace GoodBids\Blocks;
 class Blocks {
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private string $base_dir = 'build/blocks';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private string $namespace = 'goodbids';
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.0.0
@@ -44,16 +56,16 @@ class Blocks {
 				];
 
 				foreach ( $blocks as $block => $config ) {
-					register_block_type( GOODBIDS_PLUGIN_PATH . 'build/blocks/' . $block );
+					register_block_type( GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block );
 
 					add_action(
 						'wp_enqueue_scripts',
 						function () use ( $block ): void {
-							$script_args = include GOODBIDS_PLUGIN_PATH . 'build/blocks/' . $block . '/index.asset.php';
+							$script_args = include GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block . '/index.asset.php';
 
 							wp_enqueue_script(
-								'goodbids-block-' . $block,
-								GOODBIDS_PLUGIN_URL . 'build/blocks/' . $block . '/index.js',
+								$this->namespace . '-block-' . $block,
+								GOODBIDS_PLUGIN_URL . $this->base_dir . '/' . $block . '/index.js',
 								$script_args['dependencies'],
 								$script_args['version']
 							);
@@ -71,7 +83,7 @@ class Blocks {
 								return $allowed_block_types;
 							}
 
-							return [ 'goodbids/' . $block ];
+							return [ $this->namespace . '/' . $block ];
 						},
 						10,
 						2
