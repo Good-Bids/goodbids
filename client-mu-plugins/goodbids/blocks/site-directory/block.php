@@ -9,12 +9,14 @@
 
 namespace GoodBids\Blocks;
 
+use GoodBids\Plugins\ACF\ACFBlock;
+
 /**
  * Class for Site Directory Block
  *
  * @since 1.0.0
  */
-class SiteDirectory {
+class SiteDirectory extends ACFBlock {
 
 	/**
 	 * Returns a list of all the Nonprofits Sites
@@ -23,7 +25,7 @@ class SiteDirectory {
 	 *
 	 * @return array
 	 */
-	public function get_site_ids(): array {
+	public function get_sites(): array {
 		$all_nonprofit_ids = [];
 
 		foreach ( get_sites() as $nonprofit ) {
@@ -35,6 +37,7 @@ class SiteDirectory {
 
 			$all_nonprofit_ids[] =
 				[
+					'site_id'  => $nonprofit_id,
 					'blogname' => $nonprofit_blogname,
 					'siteurl'  => $nonprofit_siteurl,
 				];

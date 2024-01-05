@@ -471,22 +471,20 @@ class Sites {
 	private function hide_blocks(): void {
 		add_filter(
 			'allowed_block_types_all',
-			static function ( $allowed_block_types ) {
-				if ( ! is_main_site() ) {
-					$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
-
-					$blacklist = [
-						'acf/site-directory',
-					];
-
-					return array_values( array_diff( $blocks, $blacklist ) );
+			function ( $allowed_block_types ) {
+				if ( is_main_site() ) {
+					return $allowed_block_types;
 				}
 
+				$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
 
-				return $allowed_block_types;
+				$blacklist = [
+					'acf/site-directory',
+				];
+
+				return array_values( array_diff( $blocks, $blacklist ) );
+
 			},
-			10,
-			2
 		);
 	}
 }
