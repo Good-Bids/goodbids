@@ -12,11 +12,11 @@
 
 <!-- wp:group {"tagName":"main","align":"wide","layout":{"type":"constrained"}} -->
 <main class="wp-block-group alignwide">
-	<!-- wp:columns {"align":"wide"} -->
+	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|30"}}}} -->
 	<div class="wp-block-columns alignwide">
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","data":{},"mode":"preview"} /-->
+			<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
 
