@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use WC_Order;
+use WC_Product;
 use WP_Query;
 
 /**
@@ -322,6 +323,25 @@ class Auctions {
 	}
 
 	/**
+	 * Retrieves the Bid product ID for an Auction.
+	 *
+	 * @param int $auction_id
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_bid_product( int $auction_id ): ?WC_Product {
+		$bid_product_id = $this->get_bid_product_id( $auction_id );
+
+		if ( ! $bid_product_id ) {
+			return null;
+		}
+
+		return wc_get_product( $bid_product_id );
+	}
+
+	/**
 	 * Sets the Bid product ID for an Auction.
 	 *
 	 * @since 1.0.0
@@ -368,6 +388,25 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction Reward Product object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_reward_product( int $auction_id = null ): ?WC_Product {
+		$reward_product_id = $this->get_reward_product_id( $auction_id );
+
+		if ( ! $reward_product_id ) {
+			return null;
+		}
+
+		return wc_get_product( $reward_product_id );
+	}
+
+	/**
 	 * Get the Auction Reward Estimated Value.
 	 *
 	 * @since 1.0.0
@@ -386,17 +425,18 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $auction_id
+	 * @param string $format
 	 *
 	 * @return string
 	 */
-	public function get_start_date_time( int $auction_id = null ): string {
+	public function get_start_date_time( int $auction_id = null, string $format = '' ): string {
 		$start = $this->get_setting( 'auction_start', $auction_id );
 
 		if ( ! $start ) {
 			return '';
 		}
 
-		return $start;
+		return $this->format_date_time( $start, $format );
 	}
 
 	/**
@@ -405,17 +445,44 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $auction_id
+	 * @param string $format
 	 *
 	 * @return string
 	 */
-	public function get_end_date_time( int $auction_id = null ): string {
+	public function get_end_date_time( int $auction_id = null, string $format = '' ): string {
 		$end = $this->get_setting( 'auction_end', $auction_id );
 
 		if ( ! $end ) {
 			return '';
 		}
 
-		return $end;
+		return $this->format_date_time( $end, $format );
+	}
+
+	/**
+	 * Format a date/time string.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $datetime
+	 * @param string $format
+	 *
+	 * @return string
+	 */
+	private function format_date_time( string $datetime, string $format ): string {
+		if ( ! $format ) {
+			return $datetime;
+		}
+
+		$formatted = $datetime;
+
+		try {
+			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
+		} catch ( \Exception $e ) {
+			// TODO: Log error.
+		}
+
+		return $formatted;
 	}
 
 	/**
@@ -959,7 +1026,11 @@ class Auctions {
 				$reward_id = $this->get_reward_product_id( $post_id );
 				$product   = wc_get_product( $reward_id );
 
-				return $product->get_image();
+				if ( ! $reward ) {
+					return $html;
+				}
+
+				return $reward->get_image();
 			},
 			10,
 			2
@@ -1083,10 +1154,10 @@ class Auctions {
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
-					// TODO: Tell Node first.
-					// TODO: Wrap in condition based on Node API response.
-					// Update the Auction meta to indicate it has started.
-					update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+					if ( $this->trigger_auction_start( $auction_id ) ) {
+						// Update the Auction meta to indicate it has started.
+						update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+					}
 				}
 			}
 		);
@@ -1122,5 +1193,24 @@ class Auctions {
 		];
 
 		return new WP_Query( $args );
+	}
+
+	/**
+	 * Trigger to Node the start of an auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function trigger_auction_start( int $auction_id ): bool {
+		$result = goodbids()->auctioneer->auction_start( $auction_id );
+
+		if ( true !== $result ) {
+			return false;
+		}
+
+		return true;
 	}
 }

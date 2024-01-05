@@ -9,6 +9,7 @@
 namespace GoodBids;
 
 use GoodBids\Admin\Admin;
+use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
@@ -23,7 +24,7 @@ class Core {
 
 	/**
 	 * @since 1.0.0
-	 * @var Core|null
+	 * @var ?Core
 	 */
 	private static ?Core $instance = null;
 
@@ -56,6 +57,12 @@ class Core {
 	 * @var Admin
 	 */
 	public Admin $admin;
+
+	/**
+	 * @since 1.0.0
+	 * @var Auctioneer
+	 */
+	public Auctioneer $auctioneer;
 
 	/**
 	 * @since 1.0.0
@@ -165,6 +172,25 @@ class Core {
 	 * @return mixed
 	 */
 	public function get_config( string $key ): mixed {
+		if ( empty( $this->config[ $key ] ) ) {
+			return null;
+		}
+
+		if ( str_contains( $key, '.' ) ) {
+			$keys  = explode( '.', $key );
+			$value = $this->config;
+
+			foreach ( $keys as $key ) {
+				if ( ! isset( $value[ $key ] ) ) {
+					return null;
+				}
+
+				$value = $value[ $key ];
+			}
+
+			return $value;
+		}
+
 		return $this->config[ $key ] ?? null;
 	}
 
@@ -231,11 +257,12 @@ class Core {
 			'mu_plugin_loaded',
 			function () {
 				$this->acf         = new ACF();
-				$this->sites       = new Sites();
 				$this->admin       = new Admin();
+				$this->auctioneer  = new Auctioneer();
 				$this->auctions    = new Auctions();
-				$this->woocommerce = new WooCommerce();
 				$this->patterns    = new Patterns();
+				$this->sites       = new Sites();
+				$this->woocommerce = new WooCommerce();
 			}
 		);
 	}

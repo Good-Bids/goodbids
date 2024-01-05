@@ -59,5 +59,6 @@ vendor
 # PhpStorm
 .idea/
 
-# Credentials
+# Sensitive data
 auth.json
+client-mu-plugins/vip-env-vars.local.php
