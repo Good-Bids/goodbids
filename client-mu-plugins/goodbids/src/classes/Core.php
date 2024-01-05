@@ -165,17 +165,13 @@ class Core {
 	}
 
 	/**
-	 * Get a config value.
+	 * Get a config value. You can use dot notation to get nested values.
 	 *
 	 * @param string $key Config Key.
 	 *
 	 * @return mixed
 	 */
 	public function get_config( string $key ): mixed {
-		if ( empty( $this->config[ $key ] ) ) {
-			return null;
-		}
-
 		if ( str_contains( $key, '.' ) ) {
 			$keys  = explode( '.', $key );
 			$value = $this->config;
