@@ -1,10 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 import { initialState } from '../utils/get-initial-state';
+import { DEMO_DATA } from '../utils/demo-data';
 
 export function BidButton() {
 	const disabled =
-		initialState.lastBidder === 'fake-user' &&
+		initialState.lastBidder === DEMO_DATA.userId &&
 		new Date(initialState.endTime) > new Date();
 
 	const classes = clsx(
@@ -20,7 +21,7 @@ export function BidButton() {
 	}
 
 	if (new Date(initialState.endTime) < new Date()) {
-		if (initialState.lastBidder === 'fake-user') {
+		if (initialState.lastBidder === DEMO_DATA.userId) {
 			return (
 				<a href={initialState.prizeUrl} className={classes}>
 					Claim Your Reward

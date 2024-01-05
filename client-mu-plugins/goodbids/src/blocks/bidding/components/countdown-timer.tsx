@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ClockIcon } from './clock-icon';
 import { initialState } from '../utils/get-initial-state';
+import { DEMO_DATA } from '../utils/demo-data';
 
 type TimeStatus = 'not-started' | 'in-progress' | 'ended';
 
@@ -139,7 +140,7 @@ export function CountdownTimer() {
 			<ClockIcon />
 
 			{getTimeRemaining(
-				'no-user',
+				DEMO_DATA.userId,
 				initialState.lastBidder,
 				timeRemaining,
 				initialState.userBids,
