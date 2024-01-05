@@ -16,18 +16,6 @@ namespace GoodBids\Auctioneer;
 class Auctioneer {
 
 	/**
-	 * Defines the environment variables for each URL.
-	 *
-	 * @since 1.0.0
-	 * @var string[]
-	 */
-	const ENVIRONMENTS = [
-		'local'      => 'GOODBIDS_AUCTIONEER_URL_LOCAL',
-		'develop'    => 'GOODBIDS_AUCTIONEER_URL_DEVELOP',
-		'production' => 'GOODBIDS_AUCTIONEER_URL_PRODUCTION',
-	];
-
-	/**
 	 * Defines the environment to use.
 	 *
 	 * @since 1.0.0
@@ -69,21 +57,39 @@ class Auctioneer {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->url = vip_get_env_var( self::ENVIRONMENTS[ $this->environment ], null );
+		$environments = goodbids()->get_config( 'vip-constants.auctioneer' );
 
-		// Abort if missing environment variable.
-		if ( ! $this->url ) {
-			// TODO: Log error.
+		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
 			add_action(
 				'admin_notices',
 				function() {
-				printf(
-					'<div class="notice notice-error is-dismissible">
+					printf(
+						'<div class="notice notice-error is-dismissible">
 						<p>%s</p>
 					</div>',
-					esc_html__( 'Missing Auctioneer environment variables.', 'goodbids' )
-				);
-			});
+						esc_html__( 'Missing Auctioneer constants config.', 'goodbids' )
+					);
+				}
+			);
+
+			return;
+		}
+
+		$this->url = vip_get_env_var( $environments[ $this->environment ], null );
+
+		// Abort if missing environment variable.
+		if ( ! $this->url ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf(
+						'<div class="notice notice-error is-dismissible">
+							<p>%s</p>
+						</div>',
+						esc_html__( 'Missing Auctioneer environment variables.', 'goodbids' )
+					);
+				}
+			);
 
 			return;
 		}
@@ -133,6 +139,9 @@ class Auctioneer {
 			]
 		);
 
+		// TODO: Log Response.
+		$this->last_response = $response;
+
 		if ( $this->is_invalid_response( $response ) ) {
 			return null;
 		}
@@ -148,6 +157,7 @@ class Auctioneer {
 	 * @return mixed
 	 */
 	public function get_last_response(): mixed {
+		// TODO: Maybe refactor, or remove once we begin logging the requests/responses.
 		return $this->last_response;
 	}
 
@@ -161,9 +171,6 @@ class Auctioneer {
 	 * @return bool
 	 */
 	public function is_invalid_response( mixed $response ): bool {
-		// TODO: Log Response.
-		$this->last_response = $response;
-
 		if ( is_wp_error( $response ) ) {
 			// TODO: Log error.
 			error_log( '[GB] ' . $response->get_error_message() );

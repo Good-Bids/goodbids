@@ -1,0 +1,20 @@
+@layer components {
+	.woocommerce div.product div.images {
+		@apply w-full;
+	}
+
+	.woocommerce .flex-viewport {
+		@apply mb-2;
+	}
+
+	.woocommerce div.product div.images .flex-control-thumbs {
+		@apply flex gap-2;
+	}
+
+	.woocommerce .woocommerce-product-gallery__image.flex-active-slide,
+	.woocommerce .flex-viewport,
+	.woocommerce div.product div.images img,
+	.woocommerce div.product div.images .flex-control-thumbs li img {
+		@apply rounded;
+	}
+}

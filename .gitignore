@@ -27,6 +27,7 @@ node_modules
 /plugins/user-switching/
 /plugins/woocommerce/
 /plugins/woocommerce-gateway-stripe/
+/plugins/woocommerce-services/
 
 # Uploads directory
 /uploads/
@@ -58,10 +59,6 @@ vendor
 
 # PhpStorm
 .idea/
-
-# Pre-compiled files
-src/index.js
-src/components
 
 # Sensitive data
 auth.json

@@ -40,7 +40,7 @@ class Auctions {
 			return false;
 		}
 
-		$endpoint = sprintf( '%s/%s/start', $this->endpoint, $guid );
+		$endpoint = "{$this->endpoint}/$guid/start";
 		$payload  = $this->get_payload( $auction_id, 'start' );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -68,7 +68,7 @@ class Auctions {
 			return false;
 		}
 
-		$endpoint = sprintf( '%s/%s/end', $this->endpoint, $guid );
+		$endpoint = "{$this->endpoint}/$guid/end";
 		$payload  = $this->get_payload( $auction_id, 'end' );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -97,7 +97,7 @@ class Auctions {
 			return false;
 		}
 
-		$endpoint = sprintf( '%s/%s/update', $this->endpoint, $guid );
+		$endpoint = "{$this->endpoint}/$guid/update";
 		$payload  = $this->get_payload( $auction_id, 'update:' . $context );
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
 

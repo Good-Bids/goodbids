@@ -4,8 +4,16 @@
 		"advanced-custom-fields-pro/acf.php",
 		"woocommerce",
 		"woocommerce-gateway-stripe",
+		"woocommerce-services",
 		"accessibility-checker",
 		"svg-support",
 		"user-switching"
-	]
+	],
+	"vip-constants": {
+		"auctioneer": {
+			"local": "GOODBIDS_AUCTIONEER_URL_LOCAL",
+			"develop": "GOODBIDS_AUCTIONEER_URL_DEVELOP",
+			"production": "GOODBIDS_AUCTIONEER_URL_PRODUCTION"
+		}
+	}
 }

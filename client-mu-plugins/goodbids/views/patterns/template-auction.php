@@ -9,19 +9,18 @@
  */
 
 ?>
-<!-- wp:group {"tagName":"main","align":"wide"} -->
-<main class="wp-block-group alignwide">
-	<!-- wp:columns -->
-	<div class="wp-block-columns">
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:post-featured-image {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
 
-			<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","mode":"preview"} /-->
+<!-- wp:group {"align":"full","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"accent-2","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull has-accent-2-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
+	<!-- wp:columns {"align":"wide"} -->
+	<div class="wp-block-columns alignwide">
+		<!-- wp:column {"width":""} -->
+		<div class="wp-block-column">
+			<!-- wp:acf/reward-product-gallery {"name":"acf/reward-product-gallery","data":{},"mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column -->
+		<!-- wp:column {"width":""} -->
 		<div class="wp-block-column">
 			<!-- wp:post-title /-->
 
@@ -29,10 +28,10 @@
 
 			<!-- wp:acf/auction-metrics-general {"name":"acf/auction-metrics-general","mode":"preview"} /-->
 
-			<!-- wp:acf/bid-now {"name":"acf/bid-now","data":{},"mode":"preview"} /-->
+			<!-- wp:acf/bid-now {"name":"acf/bid-now","mode":"preview"} /-->
 		</div>
 		<!-- /wp:column -->
 	</div>
 	<!-- /wp:columns -->
-</main>
+</div>
 <!-- /wp:group -->

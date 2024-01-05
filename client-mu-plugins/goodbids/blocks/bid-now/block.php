@@ -73,13 +73,13 @@ class BidNow {
 	 * @return string
 	 */
 	public function get_button_text(): string {
-		$button_text = __( 'Bid Now', 'goodbids' );
+		$button_text = __( 'GOODBID Now', 'goodbids' );
 
 		if ( $this->bid_product_id && ! is_admin() ) {
 			$bid_product = wc_get_product( $this->bid_product_id );
 			$button_text = sprintf(
 			/* translators: %s: Bid Price */
-				__( 'Bid %s Now', 'goodbids' ),
+				__( 'GOODBID %s Now', 'goodbids' ),
 				wc_price( $bid_product->get_regular_price() )
 			);
 		}
