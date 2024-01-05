@@ -4,6 +4,7 @@
 import React from 'react';
 import { useBlockProps } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
+import { Driver } from './components/driver';
 
 const Edit = ({ setAttributes }) => {
 	const auctionId = useSelect((select) => {
@@ -19,12 +20,7 @@ const Edit = ({ setAttributes }) => {
 
 	return (
 		<div {...blockProps}>
-			<span>Hello World!</span>
-			{auctionId && (
-				<ul>
-					<li>Auction ID: {auctionId}</li>
-				</ul>
-			)}
+			<Driver />
 		</div>
 	);
 };

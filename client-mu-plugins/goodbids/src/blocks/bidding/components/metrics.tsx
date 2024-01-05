@@ -1,3 +1,5 @@
+import React from 'react';
+
 type MetricType = 'bids' | 'raised' | 'last-bid' | 'winning-bid';
 
 const metricTypes: Record<MetricType, string> = {

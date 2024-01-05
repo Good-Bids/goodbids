@@ -1,3 +1,4 @@
+import React from 'react';
 import { getInitialState } from '../utils/get-initial-state';
 import { Metrics } from './metrics';
 

@@ -3,18 +3,15 @@
  */
 import React from 'react';
 import { useBlockProps } from '@wordpress/block-editor';
+import { Driver } from './components/driver';
 
 const Save = ({ attributes }) => {
 	const blockProps = useBlockProps.save();
+	console.log(attributes);
 
 	return (
 		<div {...blockProps}>
-			<span>Hello World!</span>
-			{attributes.auctionId && (
-				<ul>
-					<li>Auction ID: {attributes.auctionId}</li>
-				</ul>
-			)}
+			<Driver />
 		</div>
 	);
 };
