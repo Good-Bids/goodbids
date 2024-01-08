@@ -1,11 +1,13 @@
+import React from 'react';
 import { DEMO_DATA } from '../utils/demo-data';
-import { initialState } from '../utils/get-initial-state';
 import { WaveIcon } from './wave-icon';
+import { useAuction } from '../utils/auction-store';
+import { attributes } from '../utils/get-data-attributes';
 
 function FreeBidsContent() {
-	const { startTime, nextBid, freeBids } = initialState;
+	const { auctionStatus, currentBid, freeBidsAvailable } = useAuction();
 
-	if (new Date(startTime) > new Date()) {
+	if (auctionStatus === 'in-progress') {
 		if (DEMO_DATA.userId) {
 			return (
 				<p className="m-0">
@@ -13,7 +15,7 @@ function FreeBidsContent() {
 					or{' '}
 					<a
 						className="font-bold underline"
-						href={initialState.shareUrl}
+						href={attributes.shareUrl}
 					>
 						share GOODBIDS with a friend
 					</a>{' '}
@@ -24,13 +26,13 @@ function FreeBidsContent() {
 	}
 
 	if (DEMO_DATA.userId) {
-		if (freeBids) {
+		if (freeBidsAvailable) {
 			return (
 				<p className="m-0">
-					GOODBID <b>${nextBid}</b> now or{' '}
+					GOODBID <b>${currentBid}</b> now or{' '}
 					<a
 						className="font-bold underline"
-						href={initialState.shareUrl}
+						href={attributes.shareUrl}
 					>
 						share GOODBIDS with a friend
 					</a>{' '}
@@ -41,7 +43,7 @@ function FreeBidsContent() {
 
 		return (
 			<p className="m-0">
-				<a className="font-bold underline" href={initialState.shareUrl}>
+				<a className="font-bold underline" href={attributes.shareUrl}>
 					Share GOODBIDS with a friend
 				</a>{' '}
 				to <b>earn a free bid</b>!
@@ -53,7 +55,7 @@ function FreeBidsContent() {
 		<p className="m-0">
 			GOODBIDS users earn <b>free bids</b> when they place one of the{' '}
 			<b>first five paid bids</b> in an auction or{' '}
-			<a className="font-bold underline" href={initialState.shareUrl}>
+			<a className="font-bold underline" href={attributes.shareUrl}>
 				share GOODBIDS with a friend
 			</a>{' '}
 			to <b>earn a free bid</b>!
@@ -62,9 +64,9 @@ function FreeBidsContent() {
 }
 
 export function EarnFreeBids() {
-	const { endTime } = initialState;
+	const { endTime } = useAuction();
 
-	if (new Date(endTime) < new Date()) {
+	if (endTime < new Date()) {
 		return null;
 	}
 
