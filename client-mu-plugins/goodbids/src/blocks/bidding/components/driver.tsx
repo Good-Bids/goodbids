@@ -1,24 +1,17 @@
 import React from 'react';
-import { getInitialState } from '../utils/get-initial-state';
 import { BidButton } from './bid-button';
 import { CountdownTimer } from './countdown-timer';
 import { EarnFreeBids } from './earn-free-bids';
 import { FreeBidButton } from './free-bid-button';
 import { Metrics } from './metrics';
 import { Participation } from './participation';
+import { Socket } from './socket';
 
 export function Driver() {
-	const initialState = getInitialState();
-
 	return (
 		<div className="w-full text-lg flex flex-col gap-4">
-			<Metrics
-				blocks={[
-					{ type: 'bids', value: initialState.bids },
-					{ type: 'raised', value: initialState.raised },
-					{ type: 'last-bid', value: initialState.lastBid },
-				]}
-			/>
+			<Socket />
+			<Metrics />
 			<CountdownTimer />
 			<BidButton />
 			<FreeBidButton />
