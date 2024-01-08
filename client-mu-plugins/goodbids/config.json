@@ -15,10 +15,6 @@
 				"local": "GOODBIDS_AUCTIONEER_URL_LOCAL",
 				"develop": "GOODBIDS_AUCTIONEER_URL_DEVELOP",
 				"production": "GOODBIDS_AUCTIONEER_URL_PRODUCTION"
-			},
-			"credentials": {
-				"develop-key": "GOODBIDS_AUCTIONEER_API_KEY_DEVELOP",
-				"develop-secret": "GOODBIDS_AUCTIONEER_API_SECRET_DEVELOP"
 			}
 		}
 	}
