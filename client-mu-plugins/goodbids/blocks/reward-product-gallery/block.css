@@ -17,4 +17,8 @@
 	.woocommerce div.product div.images .flex-control-thumbs li img {
 		@apply rounded;
 	}
+
+	.woocommerce-product-gallery.woocommerce-product-gallery--with-images.woocommerce-product-gallery--columns-4.images {
+		@apply !opacity-100;
+	}
 }
