@@ -112,11 +112,9 @@ class Credentials extends WC_REST_Controller {
 
 		$keys_id = $this->lookup_credentials( $site_id );
 
-		if ( $keys_id ) {
-			if ( ! $this->delete_credentials( $site_id, $keys_id ) ) {
-				// TODO: Log Error
-				return new WP_Error( 'goodbids_credentials_malfunction', __( 'There was a problem generating the site credentials.', 'goodbids' ) );
-			}
+		if ( $keys_id && ! $this->delete_credentials( $site_id, $keys_id ) ) {
+			// TODO: Log Error
+			return new WP_Error( 'goodbids_credentials_malfunction', __( 'There was a problem revoking the previous site credentials.', 'goodbids' ) );
 		}
 
 		$data = $this->generate_credentials( $site_id );
