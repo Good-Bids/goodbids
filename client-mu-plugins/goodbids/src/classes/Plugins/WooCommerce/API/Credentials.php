@@ -57,8 +57,8 @@ class Credentials extends WC_REST_Controller {
 			$this->namespace, '/' . $this->rest_base, [
 				[
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'post_credentials' ),
-					'permission_callback' => array( $this, 'get_credentials_permissions_check' ),
+					'callback'            => [ $this, 'post_credentials' ],
+					'permission_callback' => [ $this, 'get_credentials_permissions_check' ],
 				],
 				'schema' => [ $this, 'get_public_item_schema' ],
 			]
@@ -74,7 +74,11 @@ class Credentials extends WC_REST_Controller {
 	 */
 	public function get_credentials_permissions_check( WP_REST_Request $request ) : WP_Error|bool {
 		if ( ! wc_rest_check_manager_permissions( 'settings', 'read' ) ) {
-			return new WP_Error( 'woocommerce_rest_cannot_view', __( 'Sorry, you cannot list credentials.', 'goodbids' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error(
+				'woocommerce_rest_cannot_view',
+				__( 'Sorry, you cannot list credentials.', 'goodbids' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
 		}
 
 		return true;
@@ -243,26 +247,26 @@ class Credentials extends WC_REST_Controller {
 		$description     = $this->default_description;
 		$permissions     = 'read_write';
 
-		$data = array(
+		$data = [
 			'user_id'         => $user_id,
 			'description'     => $description,
 			'permissions'     => $permissions,
 			'consumer_key'    => wc_api_hash( $consumer_key ),
 			'consumer_secret' => $consumer_secret,
 			'truncated_key'   => substr( $consumer_key, -7 ),
-		);
+		];
 
 		$wpdb->insert(
 			$wpdb->prefix . 'woocommerce_api_keys',
 			$data,
-			array(
+			[
 				'%d',
 				'%s',
 				'%s',
 				'%s',
 				'%s',
 				'%s',
-			)
+			]
 		);
 
 		$insert_id = $wpdb->insert_id;
