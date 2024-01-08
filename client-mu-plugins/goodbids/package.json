@@ -30,6 +30,7 @@
     "@hotwired/stimulus": "^3.1.1",
     "@wordpress/core-data": "^6.25.0",
     "classnames": "^2.3.2",
+    "clsx": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "vite-plugin-svgr": "^4.2.0"
