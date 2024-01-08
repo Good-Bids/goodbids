@@ -71,12 +71,10 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function setup_api_endpoints() {
+	private function setup_api_endpoints(): void {
 		add_filter(
 			'woocommerce_rest_api_get_rest_namespaces',
 			function ( $controllers ): array {
-				$this->preload_controllers();
-
 				$v3_controllers       = $controllers['wc/v3'] ?? [];
 				$controllers['wc/v3'] = array_merge( $v3_controllers, $this->get_v3_controllers() );
 
@@ -85,13 +83,16 @@ class WooCommerce {
 		);
 	}
 
-	private function preload_controllers(): void {
-		require_once GOODBIDS_PLUGIN_PATH . 'src/classes/Plugins/WooCommerce/API/Credentials.php';
-	}
-
+	/**
+	 * Returns the WooCommerce v3 API Controllers.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string[]
+	 */
 	private function get_v3_controllers(): array {
 		return [
-			'credentials' => '\\GoodBids\\WooCommerce\\API\\Credentials',
+			'credentials' => 'GoodBids\Plugins\WooCommerce\API\Credentials',
 		];
 	}
 
