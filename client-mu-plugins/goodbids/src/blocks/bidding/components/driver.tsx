@@ -4,6 +4,7 @@ import { BidButton } from './bid-button';
 import { CountdownTimer } from './countdown-timer';
 import { FreeBidButton } from './free-bid-button';
 import { Metrics } from './metrics';
+import { Participation } from './participation';
 
 export function Driver() {
 	const initialState = getInitialState();
@@ -20,6 +21,7 @@ export function Driver() {
 			<CountdownTimer />
 			<BidButton />
 			<FreeBidButton />
+			<Participation />
 		</div>
 	);
 }
