@@ -7,7 +7,7 @@ export function Driver() {
 	const initialState = getInitialState();
 
 	return (
-		<div className="w-full text-base">
+		<div className="w-full text-lg">
 			<Metrics
 				blocks={[
 					{ type: 'bids', value: initialState.bids },

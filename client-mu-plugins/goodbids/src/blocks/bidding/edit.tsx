@@ -14,7 +14,7 @@ const Edit = ({ setAttributes }) => {
 	setAttributes({ auctionId });
 
 	return (
-		<div>
+		<div className="w-full">
 			<div className="grid grid-cols-3 gap-5 my-4">
 				<div className="flex flex-col text-center">
 					<p className="m-0 font-thin uppercase has-x-small-font-size">
@@ -38,7 +38,7 @@ const Edit = ({ setAttributes }) => {
 			<div className="flex items-center gap-3 px-4">
 				<ClockIcon />
 
-				<span>
+				<span className="text-lg">
 					<b>Auction has closed.</b>
 				</span>
 			</div>

@@ -67,3 +67,4 @@ client-mu-plugins/vip-env-vars.local.php
 
 # Vite
 dist
+build
