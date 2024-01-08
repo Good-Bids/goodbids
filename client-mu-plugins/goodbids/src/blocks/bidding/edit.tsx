@@ -45,6 +45,9 @@ const Edit = ({ setAttributes }) => {
 			<div className="bg-base rounded text-white py-2 w-full block text-center no-underline text-lg">
 				GOODBID $0 Now
 			</div>
+			<div className="bg-base rounded text-white py-2 w-full block text-center no-underline text-lg">
+				Place free bid
+			</div>
 		</div>
 	);
 };
