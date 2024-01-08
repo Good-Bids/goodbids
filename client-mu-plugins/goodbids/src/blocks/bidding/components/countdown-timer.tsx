@@ -132,7 +132,7 @@ export function CountdownTimer() {
 		}, 1000);
 
 		return () => clearInterval(interval);
-	});
+	}, []);
 
 	return (
 		<div className="flex items-center gap-3 px-4">
