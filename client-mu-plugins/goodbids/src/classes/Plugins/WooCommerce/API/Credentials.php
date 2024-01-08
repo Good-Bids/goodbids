@@ -149,6 +149,12 @@ class Credentials extends WC_REST_Controller {
 			return false;
 		}
 
+		// Do not generate credentials for the main site.
+		if ( $site_id === get_main_site_id() ) {
+			// TODO: Log Error.
+			return false;
+		}
+
 		return $site_id;
 	}
 
