@@ -48,6 +48,12 @@ const Edit = ({ setAttributes }) => {
 			<div className="bg-base rounded text-white py-2 w-full block text-center no-underline text-lg">
 				Place free bid
 			</div>
+			<div className="flex flex-col items-center gap-2">
+				<p className="m-0 text-center">
+					Watch this auction to be notified when bidding starts.
+				</p>
+				<p className="m-0 text-center">Every GOODBID is a donation.</p>
+			</div>
 		</div>
 	);
 };
