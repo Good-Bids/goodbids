@@ -33,7 +33,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?string
 	 */
-	private ?string $context;
+	private ?string $context = null;
 
 	/**
 	 * Items to include in the Payload
@@ -49,7 +49,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id;
+	private ?int $auction_id = null;
 
 	/**
 	 * The Bid Product
@@ -57,7 +57,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?WC_Product
 	 */
-	private ?WC_Product $bid_product;
+	private ?WC_Product $bid_product = null;
 
 	/**
 	 * The Last Bid Order
@@ -65,7 +65,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?WC_Order
 	 */
-	private ?WC_Order $last_bid;
+	private ?WC_Order $last_bid = null;
 
 	/**
 	 * The Last Bidder User object
@@ -73,7 +73,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?WP_User
 	 */
-	private ?WP_User $last_bidder;
+	private ?WP_User $last_bidder = null;
 
 	/**
 	 * Initialize a new Payload
