@@ -140,7 +140,7 @@ export function CountdownTimer() {
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, []);
+	}, [endTime, setAuctionStatus, startTime, timeRemaining.status]);
 
 	return (
 		<div className="flex items-center gap-3 px-4">
