@@ -100,6 +100,12 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const CONTEXT_NEW_BID = 'new_bid';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -178,6 +184,9 @@ class Auctions {
 
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
+
+		// Tell Auctioneer about new Bid Order.
+		$this->update_auctioneer_on_order_complete();
 	}
 
 	/**
@@ -1577,5 +1586,22 @@ class Auctions {
 		goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_EXTENSION );
 
 		return true;
+	}
+
+	/**
+	 * Update the Auctioneer when a Bid is placed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_auctioneer_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				// Trigger Node to update the Auction.
+				goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_NEW_BID );
+			}
+		);
 	}
 }

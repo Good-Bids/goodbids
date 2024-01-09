@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctioneer;
 
+use GoodBids\Auctioneer\Endpoints\Auctions;
+
 /**
  * Class for Auctioneer, our Node.js server
  *
