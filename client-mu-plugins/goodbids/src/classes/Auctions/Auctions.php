@@ -1601,7 +1601,9 @@ class Auctions {
 			function ( int $order_id, int $auction_id ) {
 				// Trigger Node to update the Auction.
 				goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_NEW_BID );
-			}
+			},
+			10,
+			2
 		);
 	}
 }
