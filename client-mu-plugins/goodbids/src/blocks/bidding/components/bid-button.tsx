@@ -1,12 +1,14 @@
 import React from 'react';
 import clsx from 'clsx';
-import { initialState } from '../utils/get-initial-state';
 import { DEMO_DATA } from '../utils/demo-data';
+import { useAuction } from '../utils/auction-store';
+import { attributes } from '../utils/get-data-attributes';
 
 export function BidButton() {
+	const { lastBidder, auctionStatus, currentBid } = useAuction();
+
 	const disabled =
-		initialState.lastBidder === DEMO_DATA.userId &&
-		new Date(initialState.endTime) > new Date();
+		lastBidder !== DEMO_DATA.userId && auctionStatus === 'ended';
 
 	const classes = clsx(
 		'bg-base rounded text-white py-2 w-full block text-center no-underline text-lg',
@@ -16,14 +18,14 @@ export function BidButton() {
 		},
 	);
 
-	if (new Date(initialState.startTime) > new Date()) {
+	if (auctionStatus === 'not-started') {
 		return null;
 	}
 
-	if (new Date(initialState.endTime) < new Date()) {
-		if (initialState.lastBidder === DEMO_DATA.userId) {
+	if (auctionStatus === 'ended') {
+		if (lastBidder === DEMO_DATA.userId) {
 			return (
-				<a href={initialState.prizeUrl} className={classes}>
+				<a href={attributes.rewardUrl} className={classes}>
 					Claim Your Reward
 				</a>
 			);
@@ -33,8 +35,8 @@ export function BidButton() {
 	}
 
 	return (
-		<a href={initialState.bidUrl} className={classes}>
-			GOODBID ${initialState.nextBid} Now
+		<a href={attributes.bidUrl} className={classes}>
+			GOODBID ${currentBid} Now
 		</a>
 	);
 }

@@ -7,6 +7,7 @@ export function WaveIcon() {
 			height="24"
 			width="24"
 			viewBox="0 0 24 24"
+			aria-hidden
 		>
 			<path
 				fill="currentColor"

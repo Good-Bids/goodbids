@@ -33,7 +33,10 @@
     "clsx": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vite-plugin-svgr": "^4.2.0"
+    "react-use-websocket": "^4.5.0",
+    "vite-plugin-svgr": "^4.2.0",
+    "zod": "^3.22.4",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

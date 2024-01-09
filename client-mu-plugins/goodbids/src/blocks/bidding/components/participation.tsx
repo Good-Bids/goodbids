@@ -1,11 +1,11 @@
 import React from 'react';
 import { DEMO_DATA } from '../utils/demo-data';
-import { initialState } from '../utils/get-initial-state';
+import { useAuction } from '../utils/auction-store';
 
 function ParticipationContent() {
-	const { startTime, endTime } = initialState;
+	const { auctionStatus } = useAuction();
 
-	if (new Date(startTime) > new Date()) {
+	if (auctionStatus === 'not-started') {
 		if (DEMO_DATA.userId) {
 			return (
 				<p className="m-0 text-center">
@@ -21,7 +21,7 @@ function ParticipationContent() {
 		);
 	}
 
-	if (new Date(endTime) < new Date()) {
+	if (auctionStatus === 'ended') {
 		if (DEMO_DATA.bids > 0 && DEMO_DATA.amountBid > 0) {
 			return (
 				<p className="m-0 text-center">

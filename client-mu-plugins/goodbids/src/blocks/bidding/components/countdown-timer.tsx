@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ClockIcon } from './clock-icon';
-import { initialState } from '../utils/get-initial-state';
 import { DEMO_DATA } from '../utils/demo-data';
+import { useAuction } from '../utils/auction-store';
 
 type TimeStatus = 'not-started' | 'in-progress' | 'ended';
 
@@ -48,9 +48,9 @@ function formatTimeRemaining(timeRemaining: number) {
 
 function getTimeRemaining(
 	user: string,
-	lastBidder: string,
 	{ status, timeRemaining }: TimeRemainingType,
 	userBids: number,
+	lastBidder?: string,
 ) {
 	if (status === 'not-started') {
 		return (
@@ -102,11 +102,11 @@ function getTimeRemaining(
 }
 
 function getCountdownTime(
-	startTimeString: string,
-	endTimeString: string,
+	startTimeString: Date,
+	endTimeString: Date,
 ): TimeRemainingType {
-	const startTime = new Date(startTimeString).getTime();
-	const endTime = new Date(endTimeString).getTime();
+	const startTime = startTimeString.getTime();
+	const endTime = endTimeString.getTime();
 	const now = new Date().getTime();
 
 	if (now < startTime) {
@@ -121,19 +121,26 @@ function getCountdownTime(
 }
 
 export function CountdownTimer() {
+	const { startTime, endTime, lastBidder, setAuctionStatus } = useAuction();
+	const startingTimeRemaining = getCountdownTime(startTime, endTime);
+
 	const [timeRemaining, setTimeRemaining] = useState<TimeRemainingType>(
-		getCountdownTime(initialState.startTime, initialState.endTime),
+		startingTimeRemaining,
 	);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			setTimeRemaining(
-				getCountdownTime(initialState.startTime, initialState.endTime),
-			);
+			const newRemainingTime = getCountdownTime(startTime, endTime);
+
+			if (timeRemaining.status !== newRemainingTime.status) {
+				setAuctionStatus(newRemainingTime.status);
+			}
+
+			setTimeRemaining(newRemainingTime);
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, []);
+	}, [endTime, setAuctionStatus, startTime, timeRemaining.status]);
 
 	return (
 		<div className="flex items-center gap-3 px-4">
@@ -141,9 +148,9 @@ export function CountdownTimer() {
 
 			{getTimeRemaining(
 				DEMO_DATA.userId,
-				initialState.lastBidder,
 				timeRemaining,
-				initialState.userBids,
+				DEMO_DATA.bids,
+				lastBidder,
 			)}
 		</div>
 	);

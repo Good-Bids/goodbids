@@ -12,7 +12,17 @@ const Edit = ({ setAttributes }) => {
 		return select('core/editor').getCurrentPostId();
 	}, []);
 
-	setAttributes({ auctionId });
+	setAttributes({
+		auctionId,
+		socketUrl: 'wss://goodbids-node-develop.go-vip.net/_ws/connect', // This should come from an environment variable
+		shareUrl: '', // This might not be a link ultimately
+		rewardUrl: '', // If this is not something we can statically generate, we can fetch it from the API
+		bidUrl: '',
+		freeBidUrl: '', // If this can be constructed from the bidUrl, we can remove it
+		createAccountUrl: '',
+		logInUrl: '',
+		startTime: '', // Start time of the auction
+	});
 
 	return (
 		<div className="w-full text-lg flex flex-col gap-4">

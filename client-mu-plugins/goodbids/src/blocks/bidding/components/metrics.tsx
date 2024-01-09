@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuction } from '../utils/auction-store';
 
 type MetricType = 'bids' | 'raised' | 'last-bid' | 'winning-bid';
 
@@ -27,16 +28,17 @@ function MetricBlock({ type, value }: MetricBlockProps) {
 	);
 }
 
-type MetricsProps = {
-	blocks: MetricBlockProps[];
-};
+export function Metrics() {
+	const { totalBids, lastBid, totalRaised, auctionStatus } = useAuction();
 
-export function Metrics({ blocks }: MetricsProps) {
 	return (
 		<div className="grid grid-cols-3 gap-5 my-4">
-			{blocks.map((block) => (
-				<MetricBlock key={block.type} {...block} />
-			))}
+			<MetricBlock type="bids" value={totalBids} />
+			<MetricBlock type="raised" value={totalRaised} />
+			<MetricBlock
+				type={auctionStatus === 'ended' ? 'winning-bid' : 'last-bid'}
+				value={lastBid}
+			/>
 		</div>
 	);
 }
