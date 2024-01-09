@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins;
 
+use GoodBids\Plugins\WooCommerce\API\Credentials;
+
 /**
  * Class for WooCommerce
  *
@@ -92,7 +94,7 @@ class WooCommerce {
 	 */
 	private function get_v3_controllers(): array {
 		return [
-			'credentials' => 'GoodBids\Plugins\WooCommerce\API\Credentials',
+			'credentials' => Credentials::class,
 		];
 	}
 

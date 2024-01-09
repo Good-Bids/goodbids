@@ -7,8 +7,7 @@
  */
 
 ?>
-
-<!-- wp:media-text {"align":"wide","mediaPosition":"right","mediaId":61,"mediaLink":"http://goodbids.vipdev.lndo.site/sample-page/e-commerce-logistics-_-present-gift-box-package-delivery-shipping-giveaway/","mediaType":"image","mediaSizeSlug":"full","verticalAlignment":"top","imageFill":false,"style":{"spacing":{"margin":{"bottom":"80px"},"padding":{"top":"0","bottom":"0"}}}} -->
+<!-- wp:media-text {"align":"wide","mediaPosition":"right","mediaSizeSlug":"full","verticalAlignment":"top","imageFill":false,"style":{"spacing":{"margin":{"bottom":"80px"},"padding":{"top":"0","bottom":"0"}}}} -->
 <div class="wp-block-media-text alignwide has-media-on-the-right is-stacked-on-mobile is-vertically-aligned-top" style="margin-bottom:80px;padding-top:0;padding-bottom:0">
 	<div class="wp-block-media-text__content">
 		<!-- wp:heading {"level":1} -->
@@ -29,6 +28,6 @@
 		</div>
 		<!-- /wp:buttons -->
 	</div>
-	<figure class="wp-block-media-text__media"><img src="" alt="<?php esc_attr_e( 'Short description of the image', 'goodbids' ); ?>" class="size-full" /></figure>
+	<figure class="wp-block-media-text__media"></figure>
 </div>
 <!-- /wp:media-text -->
