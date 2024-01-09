@@ -14,7 +14,7 @@ const Edit = ({ setAttributes }) => {
 
 	setAttributes({
 		auctionId,
-		socketUrl: 'ws://localhost:3000/_ws/connect', // This should come from an environment variable
+		socketUrl: 'wss://goodbids-node-develop.go-vip.net/_ws/connect', // This should come from an environment variable
 		shareUrl: '', // This might not be a link ultimately
 		rewardUrl: '', // If this is not something we can statically generate, we can fetch it from the API
 		bidUrl: '',
