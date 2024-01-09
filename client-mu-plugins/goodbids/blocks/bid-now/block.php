@@ -9,12 +9,14 @@
 
 namespace GoodBids\Blocks;
 
+use GoodBids\Plugins\ACF\ACFBlock;
+
 /**
  * Class for Bid Now Block
  *
  * @since 1.0.0
  */
-class BidNow {
+class BidNow extends ACFBlock {
 
 	/**
 	 * @since 1.0.0
