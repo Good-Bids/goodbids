@@ -14,3 +14,11 @@
 
 * [Actions](hooks/actions.md)
 * [Filters](hooks/filters.md)
+
+## REST API
+
+* [Endpoints](rest-api/endpoints.md)
+
+## GoodBids API
+
+* [GoodBids API](api/index.md)

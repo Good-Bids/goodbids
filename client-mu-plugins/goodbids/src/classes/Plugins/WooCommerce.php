@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins;
 
+use GoodBids\Plugins\WooCommerce\API\Credentials;
+
 /**
  * Class for WooCommerce
  *
@@ -43,6 +45,8 @@ class WooCommerce {
 			return;
 		}
 
+		$this->setup_api_endpoints();
+
 		$this->configure_new_site();
 		$this->create_auth_page();
 		$this->add_auth_page_setting();
@@ -60,6 +64,38 @@ class WooCommerce {
 		$this->redirect_after_bid_checkout();
 
 		$this->add_auction_meta_box();
+	}
+
+	/**
+	 * Register WooCommerce API Custom endpoints.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_api_endpoints(): void {
+		add_filter(
+			'woocommerce_rest_api_get_rest_namespaces',
+			function ( $controllers ): array {
+				$v3_controllers       = $controllers['wc/v3'] ?? [];
+				$controllers['wc/v3'] = array_merge( $v3_controllers, $this->get_v3_controllers() );
+
+				return $controllers;
+			}
+		);
+	}
+
+	/**
+	 * Returns the WooCommerce v3 API Controllers.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string[]
+	 */
+	private function get_v3_controllers(): array {
+		return [
+			'credentials' => Credentials::class,
+		];
 	}
 
 	/**

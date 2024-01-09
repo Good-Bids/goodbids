@@ -57,7 +57,22 @@ class Auctioneer {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$environments = goodbids()->get_config( 'vip-constants.auctioneer' );
+		if ( ! $this->configure_url() ) {
+			return;
+		}
+
+		$this->init();
+	}
+
+	/**
+	 * Set up the URL to use for the API.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function configure_url(): bool {
+		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
 		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
 			add_action(
@@ -67,12 +82,12 @@ class Auctioneer {
 						'<div class="notice notice-error is-dismissible">
 						<p>%s</p>
 					</div>',
-						esc_html__( 'Missing Auctioneer constants config.', 'goodbids' )
+						esc_html__( 'Missing Auctioneer URL constants config.', 'goodbids' )
 					);
 				}
 			);
 
-			return;
+			return false;
 		}
 
 		$this->url = vip_get_env_var( $environments[ $this->environment ], null );
@@ -91,10 +106,10 @@ class Auctioneer {
 				}
 			);
 
-			return;
+			return false;
 		}
 
-		$this->init();
+		return true;
 	}
 
 	/**
