@@ -17,6 +17,7 @@ export function getInitialState() {
 	const prizeUrl = root?.getAttribute('data-prize-url');
 	const nextBid = root?.getAttribute('data-next-bid');
 	const freeBidUrl = root?.getAttribute('data-free-bid-url');
+	const shareUrl = root?.getAttribute('data-share-url');
 
 	return {
 		auctionId,
@@ -32,6 +33,7 @@ export function getInitialState() {
 		prizeUrl: prizeUrl || '',
 		nextBid: nextBid ? parseInt(nextBid, 10) : 0,
 		freeBidUrl: freeBidUrl || '',
+		shareUrl: shareUrl || '',
 	};
 }
 
