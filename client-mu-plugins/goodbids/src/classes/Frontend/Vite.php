@@ -172,6 +172,13 @@ class Vite {
 	public function vite( string $entry ): string {
 		if ( goodbids()->is_dev_env() ) {
 			$scripts = [
+				"<script type=\"module\">
+					import RefreshRuntime from 'http://localhost:5173/@react-refresh'
+					RefreshRuntime.injectIntoGlobalHook(window)
+					window.$RefreshReg$ = () => {}
+					window.$RefreshSig$ = () => (type) => type
+					window.__vite_plugin_react_preamble_installed__ = true
+			  	</script>",
 				"<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>",
 				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>",
 			];

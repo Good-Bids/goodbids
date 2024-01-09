@@ -10,7 +10,28 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 jobs:
-  to-do:
+  react-ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      HUSKY: 0
     steps:
-      - run: echo "CI goes here"
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: cd client-mu-plugins/goodbids && npm ci
+
+      - name: Lint
+        run: cd client-mu-plugins/goodbids && npm run lint
+
+      - name: Format
+        run: cd client-mu-plugins/goodbids && npm run format
+
+      - name: Compile
+        run: cd client-mu-plugins/goodbids && npm run compile
