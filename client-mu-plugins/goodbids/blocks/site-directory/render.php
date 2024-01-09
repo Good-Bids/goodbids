@@ -9,7 +9,7 @@
  */
 
 if ( ! is_main_site() ) :
-    return;
+	return;
 endif;
 
 $site_directory = new GoodBids\Blocks\SiteDirectory( $block );

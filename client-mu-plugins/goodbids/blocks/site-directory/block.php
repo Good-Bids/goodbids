@@ -26,7 +26,7 @@ class SiteDirectory extends ACFBlock {
 	 * @return array
 	 */
 	public function get_sites(): array {
-		$all_nonprofit_ids = [];
+		$sites = [];
 
 		foreach ( get_sites() as $nonprofit ) {
 			$nonprofit_id       = get_object_vars( $nonprofit )['blog_id'];
@@ -35,7 +35,7 @@ class SiteDirectory extends ACFBlock {
 
 			// TODO: filter list by site status and/or other items
 
-			$all_nonprofit_ids[] =
+			$sites[] =
 				[
 					'site_id'  => $nonprofit_id,
 					'blogname' => $nonprofit_blogname,
@@ -44,6 +44,6 @@ class SiteDirectory extends ACFBlock {
 
 		}
 
-		return $all_nonprofit_ids;
+		return $sites;
 	}
 }

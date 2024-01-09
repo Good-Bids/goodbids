@@ -51,7 +51,7 @@ class Sites {
 		$this->default_child_theme_logo();
 		$this->set_default_posts_per_page();
 		$this->lock_block_editor();
-		$this->hide_blocks();
+		$this->disable_blocks_for_nonprofits();
 	}
 
 	/**
@@ -468,7 +468,7 @@ class Sites {
 	 *
 	 * @return void
 	 */
-	private function hide_blocks(): void {
+	private function disable_blocks_for_nonprofits(): void {
 		add_filter(
 			'allowed_block_types_all',
 			function ( $allowed_block_types ) {
@@ -483,7 +483,6 @@ class Sites {
 				];
 
 				return array_values( array_diff( $blocks, $blacklist ) );
-
 			},
 		);
 	}
