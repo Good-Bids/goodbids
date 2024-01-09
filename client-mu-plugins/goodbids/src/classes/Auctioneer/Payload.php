@@ -114,6 +114,7 @@ class Payload {
 			$this->payload = [
 				'currentBid',
 				'endTime',
+				'freeBidsAvailable',
 			];
 		} elseif ( 'end' === $this->endpoint ) {
 			$this->payload = [
@@ -169,14 +170,15 @@ class Payload {
 	 */
 	private function get_payload_item( string $item ): mixed {
 		return match ( $item ) {
-			'currentBid'  => $this->get_current_bid(),
-			'endTime'     => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
-			'lastBid'     => $this->get_last_bid(),
-			'lastBidder'  => $this->get_last_bidder(),
-			'startTime'   => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
-			'totalBids'   => goodbids()->auctions->get_bid_count( $this->auction_id ),
-			'totalRaised' => goodbids()->auctions->get_total_raised( $this->auction_id ),
-			default       => null,
+			'currentBid'        => $this->get_current_bid(),
+			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
+			'freeBidsAvailable' => false,
+			'lastBid'           => $this->get_last_bid(),
+			'lastBidder'        => $this->get_last_bidder(),
+			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
+			'totalBids'         => goodbids()->auctions->get_bid_count( $this->auction_id ),
+			'totalRaised'       => goodbids()->auctions->get_total_raised( $this->auction_id ),
+			default             => null,
 		};
 	}
 
