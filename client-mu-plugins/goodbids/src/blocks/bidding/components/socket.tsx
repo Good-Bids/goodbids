@@ -27,6 +27,12 @@ export function Socket() {
 
 	const { readyState, lastJsonMessage } = useWebSocket<Message>(
 		`${socketUrl}/${auctionId}`,
+		{
+			onError: (event) => {
+				// TODO: On error, swap to polling
+				console.error(event);
+			},
+		},
 	);
 
 	useEffect(() => {
