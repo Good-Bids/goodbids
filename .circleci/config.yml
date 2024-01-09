@@ -21,9 +21,10 @@ jobs:
       - run: echo "Building..."
       - run: echo "${ACF_DEVELOP}" >> ./client-mu-plugins/goodbids/auth.json
       - run: echo "$(< ./client-mu-plugins/goodbids/auth.json)"
-      - run: cd client-mu-plugins/goodbids && composer install --verbose
+      - run: cd client-mu-plugins/goodbids && rm package-lock.json
       - run: cd client-mu-plugins/goodbids && npm install
       - run: cd client-mu-plugins/goodbids && npm run build
+      - run: cd client-mu-plugins/goodbids && composer install --verbose
 
       # @TODO: Add tests
       # - run:

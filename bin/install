@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# bin/install: Install dependencies
+#
+# When to use:
+#  - When you want to install dependencies
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Install composer dev dependencies
+composer install
+
+# Install must-use plugin dependencies
+cd client-mu-plugins/goodbids
+composer install
+npm install

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# bin/start: Stop local dev with VIP CLI
+#
+# When to use:
+#  - When you want to stop the WP server
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+vip dev-env --slug=goodbids stop
