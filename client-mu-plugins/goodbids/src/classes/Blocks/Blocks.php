@@ -85,26 +85,22 @@ class Blocks {
 					// Restrict blocks to specific post types.
 					add_filter(
 						'allowed_block_types_all',
-						function ( $allowed_block_types, $context ) use ( $block, $config ) {
+						function ( $allowed_block_types ) use ( $block, $config ) {
 							if ( in_array( get_post_type(), $config['post_type'], true ) ) {
 								return $allowed_block_types;
 							}
 
-							if ( is_array( $allowed_block_types ) ) {
-								// Remove the block from the allowed blocks.
-								return array_diff( $allowed_block_types, [ $this->namespace . '/' . $block ] );
-							}
-
-							$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
-
-							$blacklist = [
+							$disabled = [
 								$block->name,
 							];
 
-							return array_values( array_diff( $blocks, $blacklist ) );
-						},
-						10,
-						2
+							if ( ! is_array( $allowed_block_types ) ) {
+								$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+							}
+
+							// Remove the block from the allowed blocks.
+							return array_values( array_diff( $allowed_block_types, $disabled ) );
+						}
 					);
 				}
 			}

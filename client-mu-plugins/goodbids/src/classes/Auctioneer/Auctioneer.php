@@ -31,6 +31,12 @@ class Auctioneer {
 
 	/**
 	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $api_key = null;
+
+	/**
+	 * @since 1.0.0
 	 * @var bool
 	 */
 	private bool $initialized = false;
@@ -61,6 +67,10 @@ class Auctioneer {
 			return;
 		}
 
+		if ( ! $this->configure_api_key() ) {
+			return;
+		}
+
 		$this->init();
 	}
 
@@ -75,18 +85,7 @@ class Auctioneer {
 		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
 		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-						<p>%s</p>
-					</div>',
-						esc_html__( 'Missing Auctioneer URL constants config.', 'goodbids' )
-					);
-				}
-			);
-
+			$this->display_admin_error( __( 'Missing Auctioneer URL constants config.', 'goodbids' ) );
 			return false;
 		}
 
@@ -94,22 +93,60 @@ class Auctioneer {
 
 		// Abort if missing environment variable.
 		if ( ! $this->url ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-							<p>%s</p>
-						</div>',
-						esc_html__( 'Missing Auctioneer environment variables.', 'goodbids' )
-					);
-				}
-			);
-
+			$this->display_admin_error( __( 'Missing Auctioneer URL environment variables.', 'goodbids' ) );
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Sets the API Key to be used with requests to the Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function configure_api_key(): bool {
+		$env_var = goodbids()->get_config( 'vip-constants.auctioneer.api-key' );
+
+		if ( ! $env_var ) {
+			$this->display_admin_error( __( 'Missing Auctioneer API Key constants config.', 'goodbids' ) );
+			return false;
+		}
+
+		$this->api_key = vip_get_env_var( $env_var, null );
+
+		// Abort if missing environment variable.
+		if ( ! $this->api_key ) {
+			$this->display_admin_error( __( 'Missing Auctioneer API Key environment variable.', 'goodbids' ) );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Displays an Admin Error Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 *
+	 * @return void
+	 */
+	private function display_admin_error( string $message ): void {
+		add_action(
+			'admin_notices',
+			function() use ( $message ) {
+				printf(
+					'<div class="notice notice-error is-dismissible">
+							<p>%s</p>
+						</div>',
+					esc_html( $message )
+				);
+			}
+		);
 	}
 
 	/**
@@ -148,7 +185,8 @@ class Auctioneer {
 			[
 				'method'  => $method,
 				'headers' => [
-					'Content-Type' => 'application/json',
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $this->api_key,
 				],
 				'body'    => wp_json_encode( $params ),
 			]
