@@ -1,6 +1,7 @@
 /* Import any CSS from blocks before tailwind */
 @import '../../../blocks/reward-product-gallery/block.css';
 @import 'patterns/nonprofit-interest-form.css';
+@import 'patterns/header.css';
 
 @tailwind base;
 @tailwind components;
