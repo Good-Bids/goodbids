@@ -28,4 +28,31 @@ The response will contain the WooCommerce API credentials that can be used for t
 
 ## GoodBids
 
-Coming soon!
+### GET `/wp/v2/auction/<id>/details`
+
+Retrieves the Auction details for the given Auction ID.
+
+#### Parameters
+
+None.
+
+#### Response
+
+The response will contain the details shown below.
+```json
+{
+  "socketUrl": "string",
+  "bidUrl": "string",
+  "rewardUrl": "string",
+  "accountUrl": "string",
+  "shareUrl": "string", 
+  "startTime": "string",
+  "endTime": "string",
+  "totalBids": "number",
+  "totalRaised": "float",
+  "currentBid": "float",
+  "lastBid": "number",
+  "lastBidder": "number",
+  "freeBidsAvailable": "boolean"
+}
+```

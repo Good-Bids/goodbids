@@ -23,6 +23,9 @@ Returns the Auction's Bid Product object. If `$auction_id` is not provided, the 
 `goodbids()->auctions->set_bid_product_id( int $auction_id, int $bid_product_id )`  
 Associates the Bid Product with the Auction and the Auction with the Bid Product.
 
+`goodbids()->auctions->get_place_bid_url( int $auction_id )`  
+Returns the URL to place a bid on the Auction. If `$auction_id` is not provided, the current post ID will be used.
+
 `goodbids()->auctions->get_reward_product_id( int $auction_id )`  
 Returns the Auction's Reward Product ID. If `$auction_id` is not provided, the current post ID will be used.
 

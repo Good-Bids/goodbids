@@ -20,6 +20,9 @@ Retrieves the formatted response message from the API response body.
 `goodbids()->auctioneer->get_response_message_raw( array $response )`  
 Retrieves the raw response message from the API response body.
 
+`goodbids()->auctioneer->get_url()`  
+Returns the URL to Auctioneer.
+
 ## Auction (Endpoint) Methods
 
 `goodbids()->auctioneer->auctions->start( int $auction_id )`
