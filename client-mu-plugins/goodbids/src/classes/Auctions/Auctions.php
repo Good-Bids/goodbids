@@ -134,6 +134,9 @@ class Auctions {
 		// Register Post Type.
 		$this->register_post_type();
 
+		// Register REST API Endpoints.
+		$this->setup_api_endpoints();
+
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
@@ -253,6 +256,22 @@ class Auctions {
 				];
 
 				register_post_type( $this->get_post_type(), $args );
+			}
+		);
+	}
+
+	/**
+	 * Register Auction REST API Endpoints
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_api_endpoints(): void {
+		add_action(
+			'rest_api_init',
+			function () {
+				( new API\Details() )->register_routes();
 			}
 		);
 	}
