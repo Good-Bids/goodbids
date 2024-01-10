@@ -66,7 +66,7 @@ class Blocks {
 
 					add_action(
 						'wp_enqueue_scripts',
-						function () use ( $block, $block_dir, $block_path ): void {
+						function () use ( $block_dir, $block_path ): void {
 							$script_args = include $block_path . '/index.asset.php';
 
 							wp_enqueue_script(
