@@ -52,6 +52,8 @@ class Sites {
 		$this->set_default_posts_per_page();
 		$this->lock_block_editor();
 		$this->disable_blocks_for_nonprofits();
+		$this->create_about_page();
+		$this->lock_block_editor();
 	}
 
 	/**
@@ -369,7 +371,7 @@ class Sites {
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( $site_id ) {
+			function ( int $site_id ) {
 				$stylesheet = 'goodbids-nonprofit';
 
 				// Check if the Goodbids child theme exists first.
@@ -415,7 +417,7 @@ class Sites {
 				return sprintf(
 					'<a href="%1$s" class="custom-logo-link" rel="home" itemprop="url"><img src="%2$s" class="custom-logo" itemprop="logo" alt="GoodBids"></a>',
 					esc_url( home_url( '/' ) ),
-					esc_attr( GOODBIDS_PLUGIN_URL . 'assets/images/goodbids-logo.png' ),
+					esc_attr( GOODBIDS_PLUGIN_URL . 'src/assets/images/goodbids-logo.png' ),
 				);
 			},
 			10,
@@ -484,6 +486,39 @@ class Sites {
 
 				return array_values( array_diff( $blocks, $blacklist ) );
 			},
+		);
+	}
+
+	/**
+	 * Sets a pattern template for the page post type
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function create_about_page(): void {
+		add_action(
+			'goodbids_init_site',
+			function ( int $site_id ): void {
+				ob_start();
+				include GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php';
+
+				$about = [
+					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+					'post_content' => ob_get_clean(),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => 'about',
+				];
+
+				$about_id = wp_insert_post( $about );
+
+				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
+					// Use the $site_id to update post meta to track which $about_id is the About page.
+				}
+			},
+			20
 		);
 	}
 }
