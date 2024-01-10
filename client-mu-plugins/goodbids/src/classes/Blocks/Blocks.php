@@ -56,12 +56,18 @@ class Blocks {
 				];
 
 				foreach ( $blocks as $block => $config ) {
-					register_block_type( GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block );
+					$block_path = GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block;
+
+					if ( ! file_exists( $block_path ) ) {
+						continue;
+					}
+
+					register_block_type( $block_path );
 
 					add_action(
 						'wp_enqueue_scripts',
-						function () use ( $block ): void {
-							$script_args = include GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block . '/index.asset.php';
+						function () use ( $block, $block_path ): void {
+							$script_args = include $block_path . '/index.asset.php';
 
 							wp_enqueue_script(
 								$this->namespace . '-block-' . $block,
