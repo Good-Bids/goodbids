@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import { DEMO_DATA } from '../utils/demo-data';
 import { useAuction } from '../utils/auction-store';
-import { attributes } from '../utils/get-data-attributes';
 
 export function FreeBidButton() {
 	const { lastBidder, freeBidsAvailable, auctionStatus } = useAuction();
@@ -19,7 +18,7 @@ export function FreeBidButton() {
 
 	if (freeBidsAvailable && auctionStatus === 'in-progress') {
 		return (
-			<a href={attributes.freeBidUrl} className={classes}>
+			<a href={DEMO_DATA.freeBidUrl} className={classes}>
 				{`Place free bid ${
 					DEMO_DATA.freeBids
 						? `(${DEMO_DATA.freeBids} available)`

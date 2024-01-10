@@ -2,7 +2,6 @@ import React from 'react';
 import { DEMO_DATA } from '../utils/demo-data';
 import { WaveIcon } from './wave-icon';
 import { useAuction } from '../utils/auction-store';
-import { attributes } from '../utils/get-data-attributes';
 
 function FreeBidsContent() {
 	const { auctionStatus, currentBid, freeBidsAvailable } = useAuction();
@@ -15,7 +14,7 @@ function FreeBidsContent() {
 					or{' '}
 					<a
 						className="font-bold underline"
-						href={attributes.shareUrl}
+						href={DEMO_DATA.shareUrl}
 					>
 						share GOODBIDS with a friend
 					</a>{' '}
@@ -32,7 +31,7 @@ function FreeBidsContent() {
 					GOODBID <b>${currentBid}</b> now or{' '}
 					<a
 						className="font-bold underline"
-						href={attributes.shareUrl}
+						href={DEMO_DATA.shareUrl}
 					>
 						share GOODBIDS with a friend
 					</a>{' '}
@@ -43,7 +42,7 @@ function FreeBidsContent() {
 
 		return (
 			<p className="m-0">
-				<a className="font-bold underline" href={attributes.shareUrl}>
+				<a className="font-bold underline" href={DEMO_DATA.shareUrl}>
 					Share GOODBIDS with a friend
 				</a>{' '}
 				to <b>earn a free bid</b>!
@@ -55,7 +54,7 @@ function FreeBidsContent() {
 		<p className="m-0">
 			GOODBIDS users earn <b>free bids</b> when they place one of the{' '}
 			<b>first five paid bids</b> in an auction or{' '}
-			<a className="font-bold underline" href={attributes.shareUrl}>
+			<a className="font-bold underline" href={DEMO_DATA.shareUrl}>
 				share GOODBIDS with a friend
 			</a>{' '}
 			to <b>earn a free bid</b>!

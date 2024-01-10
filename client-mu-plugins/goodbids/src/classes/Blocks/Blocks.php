@@ -55,23 +55,23 @@ class Blocks {
 					],
 				];
 
-				foreach ( $blocks as $block => $config ) {
-					$block_path = GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block;
+				foreach ( $blocks as $block_dir => $config ) {
+					$block_path = GOODBIDS_PLUGIN_PATH . $this->base_dir . '/' . $block_dir;
 
 					if ( ! file_exists( $block_path ) ) {
 						continue;
 					}
 
-					register_block_type( $block_path );
+					$block = register_block_type( $block_path );
 
 					add_action(
 						'wp_enqueue_scripts',
-						function () use ( $block, $block_path ): void {
+						function () use ( $block_dir, $block_path ): void {
 							$script_args = include $block_path . '/index.asset.php';
 
 							wp_enqueue_script(
-								$this->namespace . '-block-' . $block,
-								GOODBIDS_PLUGIN_URL . $this->base_dir . '/' . $block . '/index.js',
+								$this->namespace . '-block-' . $block_dir,
+								GOODBIDS_PLUGIN_URL . $this->base_dir . '/' . $block_dir . '/index.js',
 								$script_args['dependencies'],
 								$script_args['version']
 							);
@@ -95,8 +95,13 @@ class Blocks {
 								return array_diff( $allowed_block_types, [ $this->namespace . '/' . $block ] );
 							}
 
-							// This probably is wrong, and needs to be an array of ALL blocks EXCEPT the one we want to remove.
-							return $allowed_block_types;
+							$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+
+							$blacklist = [
+								$block->name,
+							];
+
+							return array_values( array_diff( $blocks, $blacklist ) );
 						},
 						10,
 						2

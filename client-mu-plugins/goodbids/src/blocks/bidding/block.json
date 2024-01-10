@@ -13,30 +13,6 @@
   "attributes": {
     "auctionId": {
       "type": "number"
-    },
-    "socketUrl": {
-      "type": "string"
-    },
-    "shareUrl": {
-      "type": "string"
-    },
-    "rewardUrl": {
-      "type": "string"
-    },
-    "bidUrl": {
-      "type": "string"
-    },
-    "freeBidUrl": {
-      "type": "string"
-    },
-    "createAccountUrl": {
-      "type": "string"
-    },
-    "logInUrl": {
-      "type": "string"
-    },
-    "startTime": {
-      "type": "string"
     }
   },
   "editorScript": "file:./index.js",

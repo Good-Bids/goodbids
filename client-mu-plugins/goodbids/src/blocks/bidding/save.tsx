@@ -1,13 +1,19 @@
 /**
  * WordPress Dependencies
  */
-import React from 'react';
+import { useBlockProps } from '@wordpress/block-editor';
+
+/**
+ * Internal Dependencies
+ */
+import * as React from 'react';
 
 const Save = ({ attributes }) => {
 	return (
 		<div
 			id="goodbids-bidding"
-			data-gutenberg-attributes={JSON.stringify(attributes)}
+			data-block-attributes={JSON.stringify(attributes)}
+			{...useBlockProps.save()}
 		></div>
 	);
 };
