@@ -1,0 +1,15 @@
+@layer components {
+	.nonprofit-interest-form {
+		.contact-form__input-error {
+			@apply bg-base-2 p-2;
+		}
+
+		.contact-form-submission {
+			@apply w-auto border-base-2;
+
+			.go-back-message .link {
+				@apply btn-fill-secondary border-solid hover:border hover:border-base-2 focus:border focus:border-base-2;
+			}
+		}
+	}
+}
