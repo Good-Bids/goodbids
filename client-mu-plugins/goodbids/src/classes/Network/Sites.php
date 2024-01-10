@@ -478,11 +478,16 @@ class Sites {
 					return $allowed_block_types;
 				}
 
-				$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
-
 				$blacklist = [
 					'acf/site-directory',
 				];
+
+				if ( is_array( $allowed_block_types ) ) {
+					// Remove the block from the allowed blocks.
+					return array_diff( $allowed_block_types, $blacklist );
+				}
+
+				$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
 
 				return array_values( array_diff( $blocks, $blacklist ) );
 			},
