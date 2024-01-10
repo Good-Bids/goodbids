@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctioneer;
 
+use GoodBids\Auctioneer\Endpoints\Auctions;
+
 /**
  * Class for Auctioneer, our Node.js server
  *
@@ -179,6 +181,7 @@ class Auctioneer {
 			return null;
 		}
 
+		$params   = $this->convert_dates_to_gmt( $params );
 		$url      = trailingslashit( $this->url ) . $endpoint;
 		$response = wp_remote_request(
 			$url,
@@ -315,6 +318,34 @@ class Auctioneer {
 
 		if ( ! $data ) {
 			return null;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Convert all dates to GMT before sending to Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $data
+	 * @param string $format
+	 *
+	 * @return array
+	 */
+	private function convert_dates_to_gmt( array $data, string $format = 'c' ): array {
+		$dates = [
+			'startTime',
+			'endTime',
+			'requestTime',
+		];
+
+		foreach ( $dates as $date ) {
+			if ( empty( $data[ $date ] ) ) {
+				continue;
+			}
+
+			$data[ $date ] = get_gmt_from_date( $data[ $date ], $format );
 		}
 
 		return $data;
