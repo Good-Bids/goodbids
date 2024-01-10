@@ -8,12 +8,19 @@
 
 namespace GoodBids\Auctioneer;
 
+use Firebase\JWT\JWT;
+
 /**
  * Class for Auctioneer, our Node.js server
  *
  * @since 1.0.0
  */
 class Auctioneer {
+
+	/**
+	 * @since 1.0.0
+	 */
+	const AUCTIONEER_COOKIE = 'goodbids_auctioneer_session';
 
 	/**
 	 * Defines the environment to use.
@@ -159,6 +166,9 @@ class Auctioneer {
 	private function init(): void {
 		// Init Auctions Endpoint.
 		$this->auctions = new Auctions();
+
+		// Create a custom session cookie readable by Auctioneer.
+		$this->create_session_cookie();
 
 		$this->initialized = true;
 	}
@@ -318,5 +328,48 @@ class Auctioneer {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Generate a User cookie readable by Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function create_session_cookie(): void {
+		add_action(
+			'set_logged_in_cookie',
+			function( $cookie, $expire, $expiration, $user_id ) {
+				setcookie(
+					self::AUCTIONEER_COOKIE,
+					$this->generate_auctioneer_cookie( $user_id ),
+					$expire,
+					COOKIEPATH,
+					COOKIE_DOMAIN,
+					true,
+					false
+				);
+			},
+			10,
+			4
+		);
+	}
+
+	/**
+	 * Generates an encrypted cookie for Auctioneer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return string
+	 */
+	private function generate_auctioneer_cookie( int $user_id ): string {
+		$payload = [
+			'userId' => $user_id,
+		];
+
+		return JWT::encode( $payload, $this->api_key, 'HS256' );
 	}
 }
