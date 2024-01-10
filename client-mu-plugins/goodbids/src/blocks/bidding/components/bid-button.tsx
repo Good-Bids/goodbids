@@ -1,8 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
-import { DEMO_DATA } from '../utils/demo-data';
 import { useAuction } from '../utils/auction-store';
-import { attributes } from '../utils/get-data-attributes';
+import { DEMO_DATA } from '../utils/demo-data';
 
 export function BidButton() {
 	const { lastBidder, auctionStatus, currentBid } = useAuction();
@@ -25,7 +24,7 @@ export function BidButton() {
 	if (auctionStatus === 'ended') {
 		if (lastBidder === DEMO_DATA.userId) {
 			return (
-				<a href={attributes.rewardUrl} className={classes}>
+				<a href={DEMO_DATA.rewardUrl} className={classes}>
 					Claim Your Reward
 				</a>
 			);
@@ -35,7 +34,7 @@ export function BidButton() {
 	}
 
 	return (
-		<a href={attributes.bidUrl} className={classes}>
+		<a href={DEMO_DATA.bidUrl} className={classes}>
 			GOODBID ${currentBid} Now
 		</a>
 	);

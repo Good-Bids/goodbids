@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { attributes } from '../utils/get-data-attributes';
 import { useAuction } from '../utils/auction-store';
+import { DEMO_DATA } from '../utils/demo-data';
 
 type MessageType = 'start' | 'update' | 'end';
 
@@ -22,7 +23,8 @@ export type Message = {
 };
 
 export function Socket() {
-	const { auctionId, socketUrl } = attributes;
+	const { auctionId } = attributes;
+	const { socketUrl } = DEMO_DATA;
 	const { setAuctionState } = useAuction();
 
 	const { readyState, lastJsonMessage } = useWebSocket<Message>(
