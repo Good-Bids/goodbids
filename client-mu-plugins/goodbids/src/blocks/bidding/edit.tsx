@@ -1,8 +1,13 @@
 /**
  * WordPress Dependencies
  */
-import React from 'react';
 import { useSelect } from '@wordpress/data';
+import { useBlockProps } from '@wordpress/block-editor';
+
+/**
+ * Internal dependencies
+ */
+import * as React from 'react';
 import { ClockIcon } from './components/clock-icon';
 import { WaveIcon } from './components/wave-icon';
 
@@ -14,18 +19,10 @@ const Edit = ({ setAttributes }) => {
 
 	setAttributes({
 		auctionId,
-		socketUrl: 'wss://goodbids-node-develop.go-vip.net/_ws/connect', // This should come from an environment variable
-		shareUrl: '', // This might not be a link ultimately
-		rewardUrl: '', // If this is not something we can statically generate, we can fetch it from the API
-		bidUrl: '',
-		freeBidUrl: '', // If this can be constructed from the bidUrl, we can remove it
-		createAccountUrl: '',
-		logInUrl: '',
-		startTime: '', // Start time of the auction
 	});
 
 	return (
-		<div className="w-full text-lg flex flex-col gap-4">
+		<div {...useBlockProps()}>
 			<div className="grid grid-cols-3 gap-5 my-4">
 				<div className="flex flex-col text-center">
 					<p className="m-0 font-thin uppercase has-x-small-font-size">
