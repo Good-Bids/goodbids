@@ -85,18 +85,7 @@ class Auctioneer {
 		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
 		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-						<p>%s</p>
-					</div>',
-						esc_html__( 'Missing Auctioneer URL constants config.', 'goodbids' )
-					);
-				}
-			);
-
+			$this->display_admin_error( __( 'Missing Auctioneer URL constants config.', 'goodbids' ) );
 			return false;
 		}
 
@@ -104,18 +93,7 @@ class Auctioneer {
 
 		// Abort if missing environment variable.
 		if ( ! $this->url ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-							<p>%s</p>
-						</div>',
-						esc_html__( 'Missing Auctioneer URL environment variables.', 'goodbids' )
-					);
-				}
-			);
-
+			$this->display_admin_error( __( 'Missing Auctioneer URL environment variables.', 'goodbids' ) );
 			return false;
 		}
 
@@ -133,18 +111,7 @@ class Auctioneer {
 		$env_var = goodbids()->get_config( 'vip-constants.auctioneer.api-key' );
 
 		if ( ! $env_var ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-						<p>%s</p>
-					</div>',
-						esc_html__( 'Missing Auctioneer API Key constants config.', 'goodbids' )
-					);
-				}
-			);
-
+			$this->display_admin_error( __( 'Missing Auctioneer API Key constants config.', 'goodbids' ) );
 			return false;
 		}
 
@@ -152,22 +119,34 @@ class Auctioneer {
 
 		// Abort if missing environment variable.
 		if ( ! $this->api_key ) {
-			add_action(
-				'admin_notices',
-				function() {
-					printf(
-						'<div class="notice notice-error is-dismissible">
-							<p>%s</p>
-						</div>',
-						esc_html__( 'Missing Auctioneer API Key environment variable.', 'goodbids' )
-					);
-				}
-			);
-
+			$this->display_admin_error( __( 'Missing Auctioneer API Key environment variable.', 'goodbids' ) );
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Displays an Admin Error Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 *
+	 * @return void
+	 */
+	private function display_admin_error( string $message ): void {
+		add_action(
+			'admin_notices',
+			function() use ( $message ) {
+				printf(
+					'<div class="notice notice-error is-dismissible">
+							<p>%s</p>
+						</div>',
+					esc_html( $message )
+				);
+			}
+		);
 	}
 
 	/**
