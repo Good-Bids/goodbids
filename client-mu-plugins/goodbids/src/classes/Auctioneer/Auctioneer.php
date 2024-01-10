@@ -185,7 +185,8 @@ class Auctioneer {
 			[
 				'method'  => $method,
 				'headers' => [
-					'Content-Type' => 'application/json',
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $this->api_key,
 				],
 				'body'    => wp_json_encode( $params ),
 			]
