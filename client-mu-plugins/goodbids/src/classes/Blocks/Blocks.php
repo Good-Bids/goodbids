@@ -92,7 +92,7 @@ class Blocks {
 
 							if ( is_array( $allowed_block_types ) ) {
 								// Remove the block from the allowed blocks.
-								return array_diff( $allowed_block_types, [ $this->namespace . '/' . $block ] );
+								return array_diff( $allowed_block_types, [ $block->name ] );
 							}
 
 							$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
