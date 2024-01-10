@@ -478,7 +478,7 @@ class Sites {
 					return $allowed_block_types;
 				}
 
-				$blacklist = [
+				$disabled = [
 					'acf/site-directory',
 				];
 
@@ -487,7 +487,7 @@ class Sites {
 				}
 
 				// Remove the block from the allowed blocks.
-				return array_diff( $allowed_block_types, $blacklist );
+				return array_values( array_diff( $allowed_block_types, $disabled ) );
 			},
 		);
 	}

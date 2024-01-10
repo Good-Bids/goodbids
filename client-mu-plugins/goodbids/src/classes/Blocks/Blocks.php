@@ -85,12 +85,12 @@ class Blocks {
 					// Restrict blocks to specific post types.
 					add_filter(
 						'allowed_block_types_all',
-						function ( $allowed_block_types, $context ) use ( $block, $config ) {
+						function ( $allowed_block_types ) use ( $block, $config ) {
 							if ( in_array( get_post_type(), $config['post_type'], true ) ) {
 								return $allowed_block_types;
 							}
 
-							$blacklist = [
+							$disabled = [
 								$block->name,
 							];
 
@@ -99,10 +99,8 @@ class Blocks {
 							}
 
 							// Remove the block from the allowed blocks.
-							return array_diff( $allowed_block_types, $blacklist );
-						},
-						10,
-						2
+							return array_values( array_diff( $allowed_block_types, $disabled ) );
+						}
 					);
 				}
 			}
