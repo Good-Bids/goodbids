@@ -23,7 +23,9 @@ add_action(
 	function ( int $order_id, int $auction_id ): void {
 		$bid_count = get_post_meta( $auction_id, '_bid_count', true );
 		update_post_meta( $auction_id, '_bid_count', $bid_count + 1 );
-	}
+	},
+	10,
+	2
 );
 ```
 ### goodbids_auction_start_event

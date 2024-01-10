@@ -6,7 +6,9 @@
  * @package GoodBids
  */
 
-namespace GoodBids\Auctioneer;
+namespace GoodBids\Auctioneer\Endpoints;
+
+use GoodBids\Auctioneer\Payload;
 
 /**
  * Class for Auctioneer Auctions
@@ -119,39 +121,7 @@ class Auctions {
 	 * @return array
 	 */
 	private function get_payload( int $auction_id, string $context ): array {
-		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
-
-		$payload = [
-			'id'          => goodbids()->auctions->get_guid( $auction_id ),
-			'requestTime' => current_datetime()->format( 'c' ),
-		];
-
-		// TODO: Maybe refactor using individual Response or Payload classes.
-		if ( 'start' === $context ) {
-
-			$payload['startTime']  = goodbids()->auctions->get_start_date_time( $auction_id, 'c' );
-			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
-			$payload['currentBid'] = floatval( $bid_product?->get_price( 'edit' ) );
-
-
-		} elseif ( 'update:' . \GoodBids\Auctions\Auctions::CONTEXT_EXTENSION === $context ) {
-
-			$payload['currentBid'] = floatval( $bid_product?->get_price( 'edit' ) );
-			$payload['endTime']    = goodbids()->auctions->get_end_date_time( $auction_id, 'c' );
-
-
-		} elseif ( 'end' === $context ) {
-
-			$last_bid    = goodbids()->auctions->get_last_bid( $auction_id );
-			$last_bidder = goodbids()->auctions->get_last_bidder( $auction_id );
-
-			$payload['totalBids']   = goodbids()->auctions->get_bid_count( $auction_id );
-			$payload['totalRaised'] = goodbids()->auctions->get_total_raised( $auction_id );
-			$payload['lastBid']     = $last_bid?->get_total( 'edit' );
-			$payload['lastBidder']  = $last_bidder?->ID;
-		}
-
-		return $payload;
+		return ( new Payload( $auction_id, $context ) )->get_data();
 	}
 
 }
