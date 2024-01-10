@@ -31,6 +31,12 @@ class Auctioneer {
 
 	/**
 	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $api_key = null;
+
+	/**
+	 * @since 1.0.0
 	 * @var bool
 	 */
 	private bool $initialized = false;
@@ -58,6 +64,10 @@ class Auctioneer {
 	 */
 	public function __construct() {
 		if ( ! $this->configure_url() ) {
+			return;
+		}
+
+		if ( ! $this->configure_api_key() ) {
 			return;
 		}
 
@@ -101,7 +111,55 @@ class Auctioneer {
 						'<div class="notice notice-error is-dismissible">
 							<p>%s</p>
 						</div>',
-						esc_html__( 'Missing Auctioneer environment variables.', 'goodbids' )
+						esc_html__( 'Missing Auctioneer URL environment variables.', 'goodbids' )
+					);
+				}
+			);
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Sets the API Key to be used with requests to the Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function configure_api_key(): bool {
+		$env_var = goodbids()->get_config( 'vip-constants.auctioneer.api-key' );
+
+		if ( ! $env_var ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf(
+						'<div class="notice notice-error is-dismissible">
+						<p>%s</p>
+					</div>',
+						esc_html__( 'Missing Auctioneer API Key constants config.', 'goodbids' )
+					);
+				}
+			);
+
+			return false;
+		}
+
+		$this->api_key = vip_get_env_var( $env_var, null );
+
+		// Abort if missing environment variable.
+		if ( ! $this->api_key ) {
+			add_action(
+				'admin_notices',
+				function() {
+					printf(
+						'<div class="notice notice-error is-dismissible">
+							<p>%s</p>
+						</div>',
+						esc_html__( 'Missing Auctioneer API Key environment variable.', 'goodbids' )
 					);
 				}
 			);
