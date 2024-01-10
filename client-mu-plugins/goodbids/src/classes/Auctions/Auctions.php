@@ -416,6 +416,25 @@ class Auctions {
 	}
 
 	/**
+	 * Returns the URL to place a bid on an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url( int $auction_id ): string {
+		$bid_product_id = $this->get_bid_product_id( $auction_id );
+
+		if ( ! $bid_product_id ) {
+			return '';
+		}
+
+		return add_query_arg( 'add-to-cart', $bid_product_id, wc_get_checkout_url() );
+	}
+
+	/**
 	 * Sets the Bid product ID for an Auction.
 	 *
 	 * @since 1.0.0

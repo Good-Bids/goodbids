@@ -81,8 +81,54 @@ class Details extends WC_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function get_details( WP_REST_Request $request ): WP_Error|WP_REST_Response {
-		$data = [ 'test' => true ];
+		$data = [
+			'socketUrl'         => $this->get_socket_url(),
+			'bidUrl'            => goodbids()->auctions->get_place_bid_url( $request['id'] ),
+			'rewardUrl'         => '', // TBD.
+			'accountUrl'        => $this->get_auth_url(),
+			'shareUrl'          => '', // TBD.
+			'startTime'         => '',
+			'endTime'           => '',
+			'totalBids'         => '',
+			'totalRaised'       => '',
+			'currentBid'        => '',
+			'lastBid'           => '',
+			'lastBidder'        => '',
+			'freeBidsAvailable' => false, // TBD.
+		];
+
 		return rest_ensure_response( $data );
 	}
 
+	/**
+	 * Returns the Websocket URL to the Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_socket_url(): string {
+		$auctioneer_url = goodbids()->auctioneer->get_url();
+		$socket_url     = trailingslashit( str_replace( 'https://', 'wss://', $auctioneer_url ) );
+		$socket_url    .= '_ws/connect';
+
+		return $socket_url;
+	}
+
+	/**
+	 * Returns the URL to the My Account page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_auth_url(): string {
+		$auth_page_id = wc_get_page_id( 'authentication' );
+
+		if ( ! $auth_page_id ) {
+			return '';
+		}
+
+		return get_permalink( $auth_page_id );
+	}
 }
