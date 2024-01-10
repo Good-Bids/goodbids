@@ -94,14 +94,12 @@ class Blocks {
 								$block->name,
 							];
 
-							if ( is_array( $allowed_block_types ) ) {
-								// Remove the block from the allowed blocks.
-								return array_diff( $allowed_block_types, $blacklist );
+							if ( ! is_array( $allowed_block_types ) ) {
+								$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
 							}
 
-							$blocks = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
-
-							return array_values( array_diff( $blocks, $blacklist ) );
+							// Remove the block from the allowed blocks.
+							return array_diff( $allowed_block_types, $blacklist );
 						},
 						10,
 						2
