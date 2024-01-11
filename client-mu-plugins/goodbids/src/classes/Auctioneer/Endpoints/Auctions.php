@@ -45,6 +45,7 @@ class Auctions {
 
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
+			$guid,
 			[
 				'startTime',
 				'endTime',
@@ -84,6 +85,7 @@ class Auctions {
 
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
+			$guid,
 			[
 				'totalBids',
 				'totalRaised',
@@ -124,6 +126,7 @@ class Auctions {
 
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
+			$guid,
 			[
 				'currentBid',
 				'endTime',
@@ -148,14 +151,21 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param string $auction_guid
 	 * @param array $payload_data
 	 * @param array $extra_data
 	 *
 	 * @return array
 	 */
-	private function setup_payload_data( array $payload_data, array $extra_data = [] ): array {
+	private function setup_payload_data( string $auction_guid, array $payload_data, array $extra_data = [] ): array {
+		$defaults = [
+			'id'          => $auction_guid,
+			'requestTime' => current_datetime()->format( 'c' ),
+		];
+
 		return array_filter(
 			array_merge(
+				$defaults,
 				$payload_data,
 				$extra_data
 			)
