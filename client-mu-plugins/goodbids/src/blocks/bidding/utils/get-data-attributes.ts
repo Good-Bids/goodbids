@@ -6,8 +6,12 @@ const attributesSchema = z.object({
 
 function getDataAttributes() {
 	const root = document.getElementById('goodbids-bidding');
+	const auctionId = root?.getAttribute('data-auction-id');
+
 	return attributesSchema.parse(
-		JSON.parse(root?.getAttribute('data-block-attributes') || '{}'),
+		{
+			"auctionId": auctionId ? parseInt(auctionId) : 0,
+		},
 	);
 }
 
