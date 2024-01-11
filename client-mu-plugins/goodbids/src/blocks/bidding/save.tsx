@@ -9,7 +9,7 @@ import { useBlockProps } from '@wordpress/block-editor';
 import * as React from 'react';
 
 const Save = ({ attributes }) => {
-	const {auctionId} = attributes;
+	const { auctionId } = attributes;
 	return (
 		<div
 			id="goodbids-bidding"
