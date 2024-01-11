@@ -6,9 +6,11 @@ const attributesSchema = z.object({
 
 function getDataAttributes() {
 	const root = document.getElementById('goodbids-bidding');
-	return attributesSchema.parse(
-		JSON.parse(root?.getAttribute('data-block-attributes') || '{}'),
-	);
+	const auctionId = root?.getAttribute('data-auction-id');
+
+	return attributesSchema.parse({
+		auctionId: auctionId ? parseInt(auctionId) : 0,
+	});
 }
 
 export const attributes = getDataAttributes();
