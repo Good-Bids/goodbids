@@ -18,6 +18,10 @@
 		@apply rounded;
 	}
 
+	.woocommerce div.product div.images .flex-control-thumbs li img {
+		@apply h-full object-cover;
+	}
+
 	.woocommerce-product-gallery.woocommerce-product-gallery--with-images.woocommerce-product-gallery--columns-4.images {
 		@apply !opacity-100;
 	}

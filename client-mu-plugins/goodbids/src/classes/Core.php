@@ -15,6 +15,7 @@ use GoodBids\Blocks\Blocks;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
 use GoodBids\Network\Sites;
+use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
 
@@ -76,6 +77,12 @@ class Core {
 	 * @var WooCommerce
 	 */
 	public WooCommerce $woocommerce;
+
+	/**
+	 * @since 1.0.0
+	 * @var Partners
+	 */
+	public Partners $partners;
 
 	/**
 	 * @since 1.0.0
@@ -289,6 +296,7 @@ class Core {
 				$this->admin       = new Admin();
 				$this->auctioneer  = new Auctioneer();
 				$this->auctions    = new Auctions();
+				$this->partners    = new Partners();
 				$this->patterns    = new Patterns();
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
