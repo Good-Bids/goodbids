@@ -150,6 +150,7 @@ class Core {
 		$this->load_dependencies();
 		$this->load_plugins();
 		$this->load_modules();
+		$this->restrict_rest_api_access();
 
 		$this->initialized = true;
 	}
@@ -301,6 +302,43 @@ class Core {
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
 				$this->blocks      = new Blocks();
+			}
+		);
+	}
+
+	/**
+	 * Only allow authenticated users with specific roles to access parts of the REST API.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function restrict_rest_api_access(): void {
+		add_filter(
+			'rest_endpoints',
+			function ( $endpoints ) {
+				$restricted = [
+					'/wp/v2/users',
+					'/wp/v2/users/(?P<id>[\d]+)',
+				];
+
+				if ( is_user_logged_in() ) {
+					$user  = wp_get_current_user();
+					$roles = [ 'editor', 'administrator', 'author' ];
+
+					// Allow access to the secure REST API endpoints for the roles specified above.
+					if ( array_intersect( $roles, $user->roles ) ) {
+						return $endpoints;
+					}
+				}
+
+				foreach ( $restricted as $endpoint ) {
+					if ( isset( $endpoints[ $endpoint ] ) ) {
+						unset( $endpoints[ $endpoint ] );
+					}
+				}
+
+				return $endpoints;
 			}
 		);
 	}
