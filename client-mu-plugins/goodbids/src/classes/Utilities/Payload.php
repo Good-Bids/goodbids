@@ -115,7 +115,7 @@ class Payload {
 	private function get_payload_item( string $item ): mixed {
 		return match ( $item ) {
 			'accountUrl'        => $this->get_auth_url(),
-			'auctionStatus'     => goodbids()->auctions->get_status( $this->auction_id ),
+			'auctionStatus'     => strtolower( goodbids()->auctions->get_status( $this->auction_id ) ),
 			'bidUrl'            => goodbids()->auctions->get_place_bid_url( $this->auction_id ),
 			'currentBid'        => $this->get_current_bid(),
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),

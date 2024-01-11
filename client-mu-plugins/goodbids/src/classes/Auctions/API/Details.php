@@ -83,20 +83,40 @@ class Details extends WC_REST_Controller {
 	 */
 	public function get_details( WP_REST_Request $request ): WP_Error|WP_REST_Response {
 		$payload_data = [
+			'auctionStatus',
 			'socketUrl',
-			'bidUrl',
-			'rewardUrl',
 			'accountUrl',
-			'shareUrl',
-			'startTime',
 			'endTime',
-			'totalBids',
-			'totalRaised',
-			'currentBid',
-			'lastBid',
-			'lastBidder',
-			'freeBidsAvailable',
 		];
+
+		$status = strtolower( goodbids()->auctions->get_status( $request['id'] ) );
+
+		if ( strtolower( Auctions::STATUS_UPCOMING ) === $status ) {
+			$payload_data[] = 'startTime';
+		} elseif ( strtolower( Auctions::STATUS_LIVE ) === $status ) {
+			$payload_data = array_merge(
+				$payload_data,
+				[
+					'startTime',
+					'endTime',
+					'totalBids',
+					'totalRaised',
+					'currentBid',
+					'lastBid',
+				]
+			);
+		} elseif ( strtolower( Auctions::STATUS_CLOSED === $status ) ) {
+			$payload_data = array_merge(
+				$payload_data,
+				[
+					'endTime',
+					'totalBids',
+					'totalRaised',
+					'currentBid',
+					'lastBid',
+				]
+			);
+		}
 
 		$data = ( new Payload( $request['id'], $payload_data ) )->get_data();
 

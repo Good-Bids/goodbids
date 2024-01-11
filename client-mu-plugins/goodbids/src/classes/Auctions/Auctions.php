@@ -94,6 +94,26 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 */
+	const STATUS_DRAFT = 'Draft';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_UPCOMING = 'Upcoming';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_LIVE = 'Live';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_CLOSED = 'Closed';
+
+	/**
+	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -1058,17 +1078,17 @@ class Auctions {
 	 */
 	public function get_status( int $auction_id ): string {
 		if ( 'publish' !== get_post_status( $auction_id ) ) {
-			return __( 'Draft', 'goodbids' );
+			return self::STATUS_DRAFT;;
 		}
 
-		$status = __( 'Upcoming', 'goodbids' );
+		$status = self::STATUS_UPCOMING;
 
 		if ( $this->has_started( $auction_id ) ) {
-			$status = __( 'Live', 'goodbids' );
+			$status = self::STATUS_LIVE;
 		}
 
 		if ( $this->has_ended( $auction_id ) ) {
-			$status = __( 'Closed', 'goodbids' );
+			$status = self::STATUS_CLOSED;;
 		}
 
 		return $status;
