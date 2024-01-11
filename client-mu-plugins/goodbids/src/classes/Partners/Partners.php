@@ -31,7 +31,7 @@ class Partners {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const SINGULAR_SLUG = 'partners';
+	const SINGULAR_SLUG = 'partner';
 
 
 	/**
@@ -99,7 +99,7 @@ class Partners {
 					'label'               => __( 'Partner', 'goodbids' ),
 					'description'         => __( 'GoodBids Partner Custom Post Type', 'goodbids' ),
 					'labels'              => $labels,
-					'supports'            => [ 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'revisions' ],
+					'supports'            => [ 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ],
 					'hierarchical'        => false,
 					'public'              => true,
 					'show_ui'             => true,
