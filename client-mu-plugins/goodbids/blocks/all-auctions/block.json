@@ -1,0 +1,15 @@
+{
+	"name": "all-auctions",
+	"title": "All Auctions",
+	"description": "Displays all GoodBids Auctions.",
+	"icon": "awards",
+	"category": "goodbids",
+	"textdomain": "goodbids",
+	"keywords": ["all auctions", "auctions", "listing", "archive", "index"],
+	"acf": {
+		"mode": "preview"
+	},
+	"supports": {
+		"jsx": false
+	}
+}
