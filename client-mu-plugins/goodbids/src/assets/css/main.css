@@ -3,6 +3,9 @@
 @import 'patterns/nonprofit-interest-form.css';
 @import 'patterns/header.css';
 
+/* WooCommerce overrides */
+@import 'woocommerce/my-account.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
