@@ -20,22 +20,6 @@ use WP_User;
 class Payload {
 
 	/**
-	 * Endpoint used for Request.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private string $endpoint;
-
-	/**
-	 * Additional context, if any.
-	 *
-	 * @since 1.0.0
-	 * @var ?string
-	 */
-	private ?string $context = null;
-
-	/**
 	 * Items to include in the Payload
 	 *
 	 * @since 1.0.0
@@ -49,7 +33,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id = null;
+	private ?int $auction_id;
 
 	/**
 	 * The Bid Product
@@ -81,19 +65,11 @@ class Payload {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
-	 * @param string $context
+	 * @param array $data
 	 */
-	public function __construct( int $auction_id, string $context ) {
+	public function __construct( int $auction_id, array $data = [] ) {
 		$this->auction_id = $auction_id;
-
-		if ( str_contains( $context, ':' ) ) {
-			$this->endpoint = substr( $context, 0, strpos( $context, ':' ) );
-			$this->context  = substr( $context, strpos( $context, ':' ) + 1 );
-		} else {
-			$this->endpoint = $context;
-		}
-
-		$this->set_payload();
+		$this->set_payload_data( $data );
 	}
 
 	/**
@@ -101,41 +77,12 @@ class Payload {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param array $data
+	 *
 	 * @return void
 	 */
-	private function set_payload(): void {
-		if ( 'start' === $this->endpoint ) {
-			$this->payload = [
-				'startTime',
-				'endTime',
-				'currentBid',
-			];
-		} elseif ( 'update' === $this->endpoint ) {
-			$this->payload = [
-				'currentBid',
-				'endTime',
-				'freeBidsAvailable',
-			];
-		} elseif ( 'end' === $this->endpoint ) {
-			$this->payload = [
-				'totalBids',
-				'totalRaised',
-				'lastBid',
-				'lastBidder',
-			];
-		}
-
-		if ( \GoodBids\Auctions\Auctions::CONTEXT_NEW_BID === $this->context ) {
-			$this->payload = array_merge(
-				$this->payload,
-				[
-					'totalBids',
-					'totalRaised',
-					'lastBid',
-					'lastBidder',
-				]
-			);
-		}
+	public function set_payload_data( array $data ): void {
+		$this->payload = array_merge( $this->payload, $data );
 	}
 
 	/**

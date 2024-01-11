@@ -94,18 +94,6 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
-	 */
-	const CONTEXT_EXTENSION = 'extension';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const CONTEXT_NEW_BID = 'new_bid';
-
-	/**
-	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
@@ -1621,7 +1609,7 @@ class Auctions {
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_EXTENSION );
+		goodbids()->auctioneer->auctions->update( $auction_id );
 
 		return true;
 	}
@@ -1638,7 +1626,14 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Trigger Node to update the Auction.
-				goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_NEW_BID );
+				$extra_data = [
+					'totalBids',
+					'totalRaised',
+					'lastBid',
+					'lastBidder',
+				];
+
+				goodbids()->auctioneer->auctions->update( $auction_id, $extra_data );
 			},
 			10,
 			2
