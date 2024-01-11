@@ -5,6 +5,7 @@
   "title": "Bidding",
   "category": "widgets",
   "description": "Display bidding widget",
+  "icon": "money-alt",
   "supports": {
     "html": false,
     "renaming": false
