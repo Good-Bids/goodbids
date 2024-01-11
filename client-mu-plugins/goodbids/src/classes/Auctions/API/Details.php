@@ -98,7 +98,6 @@ class Details extends WC_REST_Controller {
 				$payload_data,
 				[
 					'startTime',
-					'endTime',
 					'totalBids',
 					'totalRaised',
 					'currentBid',
@@ -109,7 +108,6 @@ class Details extends WC_REST_Controller {
 			$payload_data = array_merge(
 				$payload_data,
 				[
-					'endTime',
 					'totalBids',
 					'totalRaised',
 					'currentBid',
