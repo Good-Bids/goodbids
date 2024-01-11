@@ -41,18 +41,15 @@ None.
 The response will contain the details shown below.
 ```json
 {
+  "auctionStatus": "string",
   "socketUrl": "string",
   "bidUrl": "string",
-  "rewardUrl": "string",
-  "accountUrl": "string",
-  "shareUrl": "string", 
+  "accountUrl": "string", 
   "startTime": "string",
   "endTime": "string",
   "totalBids": "number",
   "totalRaised": "float",
   "currentBid": "float",
-  "lastBid": "number",
-  "lastBidder": "number",
-  "freeBidsAvailable": "boolean"
+  "lastBid": "number"
 }
 ```
