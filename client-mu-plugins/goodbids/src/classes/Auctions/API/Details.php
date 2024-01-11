@@ -105,7 +105,7 @@ class Details extends WC_REST_Controller {
 					'lastBid',
 				]
 			);
-		} elseif ( strtolower( Auctions::STATUS_CLOSED === $status ) ) {
+		} elseif ( strtolower( Auctions::STATUS_CLOSED ) === $status ) {
 			$payload_data = array_merge(
 				$payload_data,
 				[
