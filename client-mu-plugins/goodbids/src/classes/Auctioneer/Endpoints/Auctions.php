@@ -8,7 +8,7 @@
 
 namespace GoodBids\Auctioneer\Endpoints;
 
-use GoodBids\Auctioneer\Payload;
+use GoodBids\Utilities\Payload;
 
 /**
  * Class for Auctioneer Auctions

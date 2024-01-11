@@ -6,7 +6,7 @@
  * @package GoodBids
  */
 
-namespace GoodBids\Auctioneer;
+namespace GoodBids\Utilities;
 
 use WC_Order;
 use WC_Product;
