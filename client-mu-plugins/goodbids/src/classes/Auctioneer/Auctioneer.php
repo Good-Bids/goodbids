@@ -171,6 +171,9 @@ class Auctioneer {
 		// Create a custom session cookie readable by Auctioneer.
 		$this->create_session_cookie();
 
+		// Destroy session cookie on log out.
+		$this->destroy_session_cookie();
+
 		$this->initialized = true;
 	}
 
@@ -370,16 +373,13 @@ class Auctioneer {
 	private function create_session_cookie(): void {
 		add_action(
 			'set_logged_in_cookie',
-			function( $cookie, $expire, $expiration, $user_id ) {
-				setcookie(
-					self::AUCTIONEER_COOKIE,
-					$this->generate_auctioneer_cookie( $user_id ),
-					$expire,
-					COOKIEPATH,
-					COOKIE_DOMAIN,
-					true,
-					false
-				);
+			function ( $cookie, $expire, $expiration, $user_id ) {
+				$session_cookie = $this->generate_auctioneer_cookie( $user_id );
+				setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, false );
+
+				if ( COOKIEPATH != SITECOOKIEPATH ) {
+					setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, true, false );
+				}
 			},
 			10,
 			4
@@ -401,5 +401,22 @@ class Auctioneer {
 		];
 
 		return JWT::encode( $payload, $this->api_key, 'HS256' );
+	}
+
+	/**
+	 * Destroy session cookie on log out.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function destroy_session_cookie(): void {
+		add_action(
+			'clear_auth_cookie',
+			function() {
+				setcookie( self::AUCTIONEER_COOKIE, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+				setcookie( self::AUCTIONEER_COOKIE, ' ', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN );
+			}
+		);
 	}
 }
