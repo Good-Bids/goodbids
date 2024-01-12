@@ -463,7 +463,7 @@ class Auctions {
 					// Always use the latest date value.
 					if ( $close > $value ) {
 						$value = $close;
-					} elseif ( $this->is_extension_window( $auction_id ) ) {
+					} else {
 						update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $value );
 					}
 				} elseif ( $value ) {
