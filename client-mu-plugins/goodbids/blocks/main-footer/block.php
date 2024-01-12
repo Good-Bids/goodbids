@@ -104,9 +104,9 @@ class MainFooter {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return mixed
+	 * @return ?string
 	 */
-	public function get_privacy_policy_title(): mixed {
+	public function get_privacy_policy_title(): ?string {
 		return $this->privacy_policy_title;
 	}
 
@@ -115,9 +115,9 @@ class MainFooter {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return mixed
+	 * @return ?string
 	 */
-	public function get_privacy_policy_url(): mixed {
+	public function get_privacy_policy_url(): ?string {
 		return $this->privacy_policy_url;
 	}
 
@@ -126,9 +126,9 @@ class MainFooter {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return mixed
+	 * @return ?string
 	 */
-	public function get_terms_conditions_title(): mixed {
+	public function get_terms_conditions_title(): ?string {
 		return $this->terms_conditions_title;
 	}
 
@@ -137,9 +137,9 @@ class MainFooter {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return mixed
+	 * @return ?string
 	 */
-	public function get_terms_conditions_url(): mixed {
+	public function get_terms_conditions_url(): ?string {
 		return $this->terms_conditions_url;
 	}
 }

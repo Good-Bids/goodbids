@@ -19,18 +19,18 @@ $main_footer = new GoodBids\Blocks\MainFooter();
 			<p><?php echo wp_kses_post( $main_footer->get_sitename_text() ); ?></p>
 
 			<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-layout-29 wp-block-group-is-layout-flex">
-				<?php if ( ! is_null( $main_footer->get_terms_conditions_url() ) ) : ?>
+				<?php if ( ! $main_footer->get_terms_conditions_url() ) : ?>
 					<p>
 						<a href="<?php echo esc_url( $main_footer->get_terms_conditions_url() ); ?>">
-							<?php esc_html_e( $main_footer->get_terms_conditions_title() ); ?>
+							<?php echo esc_html( $main_footer->get_terms_conditions_title() ); ?>
 						</a>
 					</p>
 				<?php endif; ?>
 
-				<?php if ( ! is_null( $main_footer->get_privacy_policy_url() ) ) : ?>
+				<?php if ( ! $main_footer->get_privacy_policy_url() ) : ?>
 					<p>
 						<a href="<?php echo esc_url( $main_footer->get_privacy_policy_url() ); ?>">
-							<?php esc_html_e( $main_footer->get_privacy_policy_title() ); ?>
+							<?php echo esc_html( $main_footer->get_privacy_policy_title() ); ?>
 						</a>
 					</p>
 				<?php endif; ?>
