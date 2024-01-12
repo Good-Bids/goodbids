@@ -11,6 +11,7 @@
 			@apply rounded border-contrast border-solid;
 		}
 
+		/* Login form */
 		&.login {
 			@apply border-0 bg-contrast rounded text-base-2;
 

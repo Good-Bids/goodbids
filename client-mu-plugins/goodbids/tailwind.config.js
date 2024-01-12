@@ -44,17 +44,17 @@ export default {
 				//set up btn classes
 				'.btn-fill': {
 					...buttonBase,
-					'@apply bg-contrast text-base-2 hover:bg-contrast-4 hover:text-base-2 hover:!no-underline focus:bg-contrast-4 focus:text-base-2':
+					'@apply bg-contrast text-base-2 hover:bg-contrast-3 hover:text-base-2 hover:!no-underline focus:bg-contrast-3 focus:text-base-2':
 						{},
 				},
 				'.btn-fill-secondary': {
 					...buttonBase,
-					'@apply bg-contrast-4 text-contrast hover:bg-base-2 focus:bg-contrast focus:text-base-2':
+					'@apply bg-contrast-3 text-contrast hover:bg-base focus:bg-base focus:text-base-2':
 						{},
 				},
 				'.btn-outline': {
 					...buttonBase,
-					'@apply bg-transparent text-contrast border-contrast hover:bg-contrast hover:border-contrast hover:text-contrast-4 focus:bg-contrast focus:border-contrast focus:text-contrast-4':
+					'@apply bg-transparent text-contrast border-contrast hover:bg-contrast hover:border-contrast hover:text-contrast-3 focus:bg-contrast focus:border-contrast focus:text-contrast-3':
 						{},
 				},
 			});
