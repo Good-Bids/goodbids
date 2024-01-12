@@ -25,7 +25,7 @@ export default {
 			transparent: 'transparent',
 		},
 		borderRadius: {
-			DEFAULT: '30px',
+			DEFAULT: 'var(--wp--preset--spacing--20)',
 		},
 		borderWidth: {
 			DEFAULT: '1px',
@@ -36,7 +36,7 @@ export default {
 		({ addComponents }) => {
 			//set up btn classes
 			const buttonBase = {
-				'@apply rounded py-3 px-5 border border-solid border-transparent no-underline':
+				'@apply rounded py-2 px-6 border border-solid border-transparent no-underline':
 					{},
 			};
 
@@ -49,7 +49,7 @@ export default {
 				},
 				'.btn-fill-secondary': {
 					...buttonBase,
-					'@apply bg-base-2 text-contrast hover:bg-contrast hover:text-base-2 focus:bg-contrast focus:text-base-2':
+					'@apply bg-contrast-4 text-contrast hover:bg-base-2 focus:bg-contrast focus:text-base-2':
 						{},
 				},
 				'.btn-outline': {

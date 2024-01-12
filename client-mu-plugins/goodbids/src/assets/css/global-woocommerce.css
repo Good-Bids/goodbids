@@ -1,0 +1,26 @@
+@layer components {
+	.woocommerce form {
+		.form-row {
+			input.input-text,
+			textarea {
+				@apply rounded border-base border-solid;
+			}
+		}
+
+		fieldset {
+			@apply rounded border-contrast border-solid;
+		}
+
+		&.login {
+			@apply border-0 bg-contrast rounded text-base-2;
+
+			.wp-element-button {
+				@apply btn-fill-secondary;
+			}
+
+			a:where(:not(.wp-element-button)) {
+				@apply text-base-2;
+			}
+		}
+	}
+}
