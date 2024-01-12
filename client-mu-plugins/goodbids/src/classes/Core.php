@@ -317,20 +317,17 @@ class Core {
 		add_filter(
 			'rest_endpoints',
 			function ( $endpoints ) {
+				if ( is_user_logged_in() ) {
+					// Allow access to the secure REST API endpoints for the roles specified above.
+					if ( current_user_can( 'edit_posts' ) ) {
+						return $endpoints;
+					}
+				}
+
 				$restricted = [
 					'/wp/v2/users',
 					'/wp/v2/users/(?P<id>[\d]+)',
 				];
-
-				if ( is_user_logged_in() ) {
-					$user  = wp_get_current_user();
-					$roles = [ 'editor', 'administrator', 'author' ];
-
-					// Allow access to the secure REST API endpoints for the roles specified above.
-					if ( array_intersect( $roles, $user->roles ) ) {
-						return $endpoints;
-					}
-				}
 
 				foreach ( $restricted as $endpoint ) {
 					if ( isset( $endpoints[ $endpoint ] ) ) {
