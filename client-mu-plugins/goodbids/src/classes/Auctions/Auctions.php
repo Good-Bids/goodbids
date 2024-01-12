@@ -187,6 +187,9 @@ class Auctions {
 
 		// Tell Auctioneer about new Bid Order.
 		$this->update_auctioneer_on_order_complete();
+
+		// Allow admins to force update the close date to the Auction End Date.
+		$this->force_update_close_date();
 	}
 
 	/**
@@ -460,7 +463,7 @@ class Auctions {
 					// Always use the latest date value.
 					if ( $close > $value ) {
 						$value = $close;
-					} else {
+					} elseif ( $this->is_extension_window( $auction_id ) ) {
 						update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $value );
 					}
 				} elseif ( $value ) {
@@ -505,6 +508,25 @@ class Auctions {
 		}
 
 		return wc_get_product( $reward_product_id );
+	}
+
+	/**
+	 * Returns the Add to Cart URL for the Reward Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int|null $auction_id
+	 *
+	 * @return ?string
+	 */
+	public function get_claim_reward_url( int $auction_id = null ): ?string {
+		$reward_product_id = $this->get_reward_product_id( $auction_id );
+
+		if ( ! $reward_product_id ) {
+			return null;
+		}
+
+		return add_query_arg( 'add-to-cart', $reward_product_id, wc_get_checkout_url() );
 	}
 
 	/**
@@ -1019,6 +1041,37 @@ class Auctions {
 	public function get_last_bidder( int $auction_id ): ?WP_User {
 		$last_bid = $this->get_last_bid( $auction_id );
 		return $last_bid?->get_user();
+	}
+
+	/**
+	 * Get the Auction's winning bidder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return ?WP_User
+	 */
+	public function get_winning_bidder( int $auction_id ): ?WP_User {
+		if ( ! $this->has_ended( $auction_id ) ) {
+			return null;
+		}
+
+		return $this->get_last_bidder( $auction_id );
+	}
+
+	/**
+	 * Checks if the current user is the winning bidder of an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_current_user_winner( int $auction_id ): bool {
+		$winning_bidder = $this->get_winning_bidder( $auction_id );
+		return $winning_bidder?->ID === get_current_user_id();
 	}
 
 	/**
@@ -1604,6 +1657,42 @@ class Auctions {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Admin AJAX Action from the Auction Edit screen to force update the Auction Close Date/Time.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function force_update_close_date(): void {
+		add_action(
+			'wp_ajax_goodbids_force_auction_close_date',
+			function () {
+				$nonce = ! empty( $_REQUEST['gb_nonce'] ) ? sanitize_text_field( $_REQUEST['gb_nonce'] ) : '';
+
+				if ( ! wp_verify_nonce( $nonce, 'gb-force-update-close-date' ) ) {
+					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
+				}
+
+				$auction_id = isset( $_POST['auction_id'] ) ? intval( $_POST['auction_id'] ) : 0;
+
+				if ( ! $auction_id ) {
+					wp_send_json_error( __( 'Invalid Auction ID.', 'goodbids' ) );
+				}
+
+				// Get raw End Date/Time.
+				$end_date = get_field( 'auction_end', $auction_id );
+				update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $end_date );
+
+				wp_send_json_success(
+					[
+						'closeDate' => $this->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
+					]
+				);
+			}
 		);
 	}
 }

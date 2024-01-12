@@ -409,17 +409,23 @@ class Vite {
 	 *
 	 * @return void
 	 */
-	public function admin_assets( $entry = '' ): void {
-		if ( ! $entry ) {
-			$entry = 'admin';
-		}
+	public function admin_assets(): void {
+		$entry = 'admin';
+
 		if ( ! $this->get_entry( $entry ) ) {
 			return;
 		}
+
 		$i = 0;
 		foreach ( $this->get_css( $this->get_entry( $entry ) ) as $url ) {
 			++$i;
 			wp_enqueue_style( 'goodbids-style-admin-' . $i, $url, [], goodbids()->get_version() );
+		}
+
+		$url = $this->get_asset_url( $this->get_entry( $entry ) );
+
+		if ( $url ) {
+			wp_enqueue_script( 'goodbids-script-admin', $url, [ 'jquery' ], goodbids()->get_version(), true );
 		}
 	}
 

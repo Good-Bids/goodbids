@@ -43,7 +43,11 @@ printf(
 );
 
 printf(
-	'<p><strong>%s</strong><br>%s</p>',
+	'<p><strong>%s</strong> <a href="%s" data-auction-id="%s" data-nonce="%s">%s</a><br><span id="gb-close-date">%s</span></p>',
 	esc_html__( 'Close Date/Time', 'goodbids' ),
+	'#gb-force-update-close-date',
+	esc_attr( $auction_id ),
+	esc_attr( wp_create_nonce( 'gb-force-update-close-date' ) ),
+	esc_html__( 'Force Update', 'goodbids' ),
 	esc_html( $this->get_end_date_time( $auction_id, 'n/j/Y g:i:s a' ) )
 );
