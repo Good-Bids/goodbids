@@ -55,8 +55,11 @@ class WooCommerce {
 //		$this->authentication_redirect();
 //		$this->prevent_wp_login_access();
 
+		$this->restrict_reward_product();
+		$this->redirect_after_login();
+
 		$this->auto_empty_cart();
-		$this->redirect_after_add_bid_to_cart();
+		$this->redirect_after_add_to_cart();
 		$this->validate_bid();
 
 		$this->store_auction_id_in_cart();
@@ -655,13 +658,13 @@ class WooCommerce {
 	}
 
 	/**
-	 * Redirect after adding bids to cart to remove the ?add-to-cart url parameter.
+	 * Redirect after adding bids and reward products to cart to remove the ?add-to-cart url parameter.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function redirect_after_add_bid_to_cart(): void {
+	private function redirect_after_add_to_cart(): void {
 		add_filter(
 			'woocommerce_add_to_cart_redirect',
 			function ( string $url, ?\WC_Product $product = null ): string {
@@ -669,7 +672,7 @@ class WooCommerce {
 					return $url;
 				}
 
-				if ( 'bids' !== goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
 					return $url;
 				}
 
@@ -681,6 +684,88 @@ class WooCommerce {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Restrict Reward products to authenticated users who won the auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function restrict_reward_product(): void {
+		add_filter(
+			'woocommerce_add_to_cart_validation',
+			function ( $passed, $product_id ) {
+				if ( 'rewards' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+					return $passed;
+				}
+
+				$auth_url = wc_get_page_permalink( 'myaccount' );
+
+				if ( ! is_user_logged_in() ) {
+					// Redirect to login page with Add to Cart as the redirect.
+					$checkout_url = wc_get_page_permalink( 'checkout' );
+					$redirect_to  = add_query_arg( 'add-to-cart', $product_id, $checkout_url );
+
+					$args     = [
+						'redirect-to' => urlencode( $redirect_to ),
+						'gb-notice'   => 'not-authenticated-reward',
+					];
+					$redirect = add_query_arg( $args, $auth_url );
+
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $product_id );
+
+				if ( ! $auction_id ) {
+					$redirect = add_query_arg( 'gb-notice', 'auction-not-found', $auth_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				$auction_url = get_permalink( $auction_id );
+
+				if ( ! goodbids()->auctions->has_ended( $auction_id ) ) {
+					$redirect = add_query_arg( 'gb-notice', 'auction-not-ended', $auction_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
+					$redirect = add_query_arg( 'gb-notice', 'not-auction-winner', $auction_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				return $passed;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Handle post-login redirect.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_login(): void {
+		add_filter(
+			'woocommerce_login_redirect',
+			function ( $redirect ) {
+				if ( empty( $_REQUEST['redirect-to'] ) ) { // phpcs:ignore
+					return $redirect;
+				}
+
+				return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
+			},
+			5
 		);
 	}
 }

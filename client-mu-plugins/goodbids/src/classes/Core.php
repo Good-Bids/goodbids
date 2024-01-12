@@ -12,6 +12,7 @@ use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Blocks\Blocks;
+use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
 use GoodBids\Network\Sites;
@@ -95,6 +96,12 @@ class Core {
 	 * @var Blocks
 	 */
 	public Blocks $blocks;
+
+	/**
+	 * @since 1.0.0
+	 * @var Notices
+	 */
+	public Notices $notices;
 
 	/**
 	 * Constructor
@@ -301,6 +308,7 @@ class Core {
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
 				$this->blocks      = new Blocks();
+				$this->notices     = new Notices();
 			}
 		);
 	}

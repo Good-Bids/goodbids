@@ -60,6 +60,12 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const REWARD_AUCTION_META_KEY = '_gb_auction_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const CRON_AUCTION_START_HOOK = 'goodbids_auction_start_event';
 
 	/**
@@ -154,6 +160,9 @@ class Auctions {
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
+
+		// Update Bid Product when Auction is updated.
+		$this->connect_reward_product_on_auction_save();
 
 		// Clear metric transients on new Bid Order.
 		$this->maybe_clear_metric_transients();
@@ -872,6 +881,47 @@ class Auctions {
 				}
 			}
 		);
+	}
+
+	/**
+	 * Update the Reward Product when an Auction is save.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function connect_reward_product_on_auction_save(): void {
+		add_action(
+			'save_post',
+			function ( int $post_id ) {
+				// Bail if not an Auction and not published.
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				$reward_id = $this->get_reward_product_id( $post_id );
+
+				if ( ! $reward_id ) {
+					// TODO: Log error.
+					return;
+				}
+
+				update_post_meta( $reward_id, self::REWARD_AUCTION_META_KEY, $post_id );
+			}
+		);
+	}
+
+	/**
+	 * Get the Auction ID from the Reward Product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $reward_product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id_from_reward_product_id( int $reward_product_id ): ?int {
+		return intval( get_post_meta( $reward_product_id, self::REWARD_AUCTION_META_KEY, true ) );
 	}
 
 	/**
