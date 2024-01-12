@@ -20,12 +20,6 @@ class BidNow extends ACFBlock {
 
 	/**
 	 * @since 1.0.0
-	 * @var array
-	 */
-	private array $block = [];
-
-	/**
-	 * @since 1.0.0
 	 * @var ?int
 	 */
 	private ?int $auction_id = null;
@@ -44,7 +38,8 @@ class BidNow extends ACFBlock {
 	 * @param array $block
 	 */
 	public function __construct( array $block ) {
-		$this->block      = $block;
+		parent::__construct( $block );
+
 		$this->auction_id = goodbids()->auctions->get_auction_id();
 
 		if ( $this->auction_id ) {
@@ -97,6 +92,12 @@ class BidNow extends ACFBlock {
 	 * @return string
 	 */
 	public function get_button_url(): string {
+		if ( is_admin() ) {
+			return '#';
+		}
+
+
+
 		return $this->bid_product_id && ! is_admin() ? add_query_arg( 'add-to-cart', $this->bid_product_id, wc_get_checkout_url() ) : '#';
 	}
 
