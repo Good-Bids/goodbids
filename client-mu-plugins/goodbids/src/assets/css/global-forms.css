@@ -1,4 +1,24 @@
 @layer components {
+	.wp-block-jetpack-contact-form-container {
+		@apply bg-contrast rounded p-4;
+
+		label,
+		legend,
+		.grunion-field-radio-wrap input.radio {
+			@apply text-base;
+		}
+
+		.contact-form-dropdown__button.ui-button,
+		input,
+		textarea {
+			@apply bg-contrast rounded border-base border-solid text-base-2 placeholder:text-base focus:outline-contrast-3;
+		}
+
+		.wp-block-button__link {
+			@apply btn-fill-secondary;
+		}
+	}
+
 	.woocommerce form {
 		.form-row {
 			input.input-text,

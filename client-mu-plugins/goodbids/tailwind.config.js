@@ -36,7 +36,7 @@ export default {
 		({ addComponents }) => {
 			//set up btn classes
 			const buttonBase = {
-				'@apply rounded py-2 px-6 border border-solid border-transparent no-underline':
+				'@apply rounded py-2 px-6 border border-solid border-transparent no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2':
 					{},
 			};
 
