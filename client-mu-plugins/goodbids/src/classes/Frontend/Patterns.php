@@ -64,18 +64,6 @@ class Patterns {
 					'inserter'   => true,
 				];
 
-				$template_auction = [
-					'name'        => 'template-auction',
-					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-auction.php',
-					'title'       => __( 'Auction', 'goodbids' ),
-					'description' => _x( 'Template for GoodBids Auction Page', 'Block pattern description', 'goodbids' ),
-					'categories'  => [ 'page', 'goodbids' ],
-					'keywords'    => [ 'non-profit', 'auction' ],
-					'postTypes'   => [ 'gb-auction', 'wp_template' ],
-					'source'      => 'plugin',
-					'inserter'    => false,
-				];
-
 				$hero_banner = [
 					'name'       => 'goodbids-banner-hero',
 					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/banner-hero.php',
@@ -97,6 +85,19 @@ class Patterns {
 					'inserter'    => true,
 				];
 
+				$section_sidebar_chapters = [
+					'name'          => 'section-sidebar-chapters',
+					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/section-sidebar-chapters.php',
+					'title'         => __( 'Section with Sidebar and Chapters', 'goodbids' ),
+					'description'   => _x( 'Template for Terms and Conditions or any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
+					'categories'    => [ 'page', 'goodbids' ],
+					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'     => [ 'page', 'wp_template' ],
+					'templateTypes' => [ 'page' ],
+					'source'        => 'plugin',
+					'inserter'      => true,
+				];
+
 				$template_about = [
 					'name'          => 'template-about-page',
 					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php',
@@ -111,14 +112,27 @@ class Patterns {
 					'inserter'      => true,
 				];
 
+				$template_auction = [
+					'name'        => 'template-auction',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-auction.php',
+					'title'       => __( 'Auction', 'goodbids' ),
+					'description' => _x( 'Template for GoodBids Auction Page', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids' ],
+					'keywords'    => [ 'non-profit', 'auction' ],
+					'postTypes'   => [ 'gb-auction', 'wp_template' ],
+					'source'      => 'plugin',
+					'inserter'    => false,
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
 						$auction_archive,
-						$template_auction,
 						$hero_banner,
 						$nonprofit_interest_form,
+						$section_sidebar_chapters,
 						$template_about,
+						$template_auction,
 					]
 				);
 

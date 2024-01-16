@@ -1,0 +1,9 @@
+@layer components {
+	#customer_login {
+		@apply flex flex-col;
+
+		& > div[class^='u-column'] {
+			@apply w-full max-w-md;
+		}
+	}
+}
