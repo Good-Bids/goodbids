@@ -44,7 +44,7 @@ export default {
 				//set up btn classes
 				'.btn-fill': {
 					...buttonBase,
-					'@apply bg-contrast text-base-2 hover:bg-contrast-3 hover:text-base-2 hover:!no-underline focus:bg-contrast-3 focus:text-base-2':
+					'@apply bg-contrast text-base-2 hover:bg-contrast-3 hover:text-contrast hover:border-transparent hover:!no-underline focus:bg-contrast-3 focus:text-contrast':
 						{},
 				},
 				'.btn-fill-secondary': {

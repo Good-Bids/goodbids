@@ -22,7 +22,9 @@
 		@apply hidden;
 	}
 
-	.wp-button-custom > a {
+	.wp-button-custom > a,
+	.wp-element-button,
+	.wp-block-button__link {
 		@apply btn-fill;
 	}
 
