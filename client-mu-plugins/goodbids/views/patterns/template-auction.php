@@ -29,6 +29,11 @@
 			<!-- wp:acf/auction-metrics-general {"name":"acf/auction-metrics-general","mode":"preview"} /-->
 
 			<!-- wp:acf/bid-now {"name":"acf/bid-now","mode":"preview"} /-->
+
+			<!-- wp:goodbids/bidding {"auctionId":0} -->
+				<div id="goodbids-bidding" data-auction-id="0" class="wp-block-goodbids-bidding"></div>
+			<!-- /wp:goodbids/bidding -->
+
 		</div>
 		<!-- /wp:column -->
 	</div>

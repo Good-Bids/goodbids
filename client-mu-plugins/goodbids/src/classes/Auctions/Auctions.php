@@ -100,15 +100,23 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
 	 */
-	const CONTEXT_EXTENSION = 'extension';
+	const STATUS_DRAFT = 'Draft';
 
 	/**
 	 * @since 1.0.0
-	 * @var string
 	 */
-	const CONTEXT_NEW_BID = 'new_bid';
+	const STATUS_UPCOMING = 'Upcoming';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_LIVE = 'Live';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_CLOSED = 'Closed';
 
 	/**
 	 * @since 1.0.0
@@ -145,6 +153,9 @@ class Auctions {
 
 		// Register Post Type.
 		$this->register_post_type();
+
+		// Register REST API Endpoints.
+		$this->setup_api_endpoints();
 
 		// Init Rewards Category.
 		$this->init_rewards_category();
@@ -274,6 +285,22 @@ class Auctions {
 				];
 
 				register_post_type( $this->get_post_type(), $args );
+			}
+		);
+	}
+
+	/**
+	 * Register Auction REST API Endpoints
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_api_endpoints(): void {
+		add_action(
+			'rest_api_init',
+			function () {
+				( new API\Details() )->register_routes();
 			}
 		);
 	}
@@ -415,6 +442,25 @@ class Auctions {
 		}
 
 		return wc_get_product( $bid_product_id );
+	}
+
+	/**
+	 * Returns the URL to place a bid on an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url( int $auction_id ): string {
+		$bid_product_id = $this->get_bid_product_id( $auction_id );
+
+		if ( ! $bid_product_id ) {
+			return '';
+		}
+
+		return add_query_arg( 'add-to-cart', $bid_product_id, wc_get_checkout_url() );
 	}
 
 	/**
@@ -1135,17 +1181,17 @@ class Auctions {
 	 */
 	public function get_status( int $auction_id ): string {
 		if ( 'publish' !== get_post_status( $auction_id ) ) {
-			return __( 'Draft', 'goodbids' );
+			return self::STATUS_DRAFT;;
 		}
 
-		$status = __( 'Upcoming', 'goodbids' );
+		$status = self::STATUS_UPCOMING;
 
 		if ( $this->has_started( $auction_id ) ) {
-			$status = __( 'Live', 'goodbids' );
+			$status = self::STATUS_LIVE;
 		}
 
 		if ( $this->has_ended( $auction_id ) ) {
-			$status = __( 'Closed', 'goodbids' );
+			$status = self::STATUS_CLOSED;;
 		}
 
 		return $status;
@@ -1686,7 +1732,7 @@ class Auctions {
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_EXTENSION );
+		goodbids()->auctioneer->auctions->update( $auction_id );
 
 		return true;
 	}
@@ -1703,7 +1749,14 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Trigger Node to update the Auction.
-				goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_NEW_BID );
+				$extra_data = [
+					'totalBids',
+					'totalRaised',
+					'lastBid',
+					'lastBidder',
+				];
+
+				goodbids()->auctioneer->auctions->update( $auction_id, $extra_data );
 			},
 			10,
 			2

@@ -6,7 +6,7 @@
  * @package GoodBids
  */
 
-namespace GoodBids\Auctioneer;
+namespace GoodBids\Utilities;
 
 use WC_Order;
 use WC_Product;
@@ -18,22 +18,6 @@ use WP_User;
  * @since 1.0.0
  */
 class Payload {
-
-	/**
-	 * Endpoint used for Request.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private string $endpoint;
-
-	/**
-	 * Additional context, if any.
-	 *
-	 * @since 1.0.0
-	 * @var ?string
-	 */
-	private ?string $context = null;
 
 	/**
 	 * Items to include in the Payload
@@ -49,7 +33,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id = null;
+	private ?int $auction_id;
 
 	/**
 	 * The Bid Product
@@ -81,19 +65,11 @@ class Payload {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
-	 * @param string $context
+	 * @param array $data
 	 */
-	public function __construct( int $auction_id, string $context ) {
+	public function __construct( int $auction_id, array $data = [] ) {
 		$this->auction_id = $auction_id;
-
-		if ( str_contains( $context, ':' ) ) {
-			$this->endpoint = substr( $context, 0, strpos( $context, ':' ) );
-			$this->context  = substr( $context, strpos( $context, ':' ) + 1 );
-		} else {
-			$this->endpoint = $context;
-		}
-
-		$this->set_payload();
+		$this->set_payload_data( $data );
 	}
 
 	/**
@@ -101,41 +77,12 @@ class Payload {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param array $data
+	 *
 	 * @return void
 	 */
-	private function set_payload(): void {
-		if ( 'start' === $this->endpoint ) {
-			$this->payload = [
-				'startTime',
-				'endTime',
-				'currentBid',
-			];
-		} elseif ( 'update' === $this->endpoint ) {
-			$this->payload = [
-				'currentBid',
-				'endTime',
-				'freeBidsAvailable',
-			];
-		} elseif ( 'end' === $this->endpoint ) {
-			$this->payload = [
-				'totalBids',
-				'totalRaised',
-				'lastBid',
-				'lastBidder',
-			];
-		}
-
-		if ( \GoodBids\Auctions\Auctions::CONTEXT_NEW_BID === $this->context ) {
-			$this->payload = array_merge(
-				$this->payload,
-				[
-					'totalBids',
-					'totalRaised',
-					'lastBid',
-					'lastBidder',
-				]
-			);
-		}
+	public function set_payload_data( array $data ): void {
+		$this->payload = array_merge( $this->payload, $data );
 	}
 
 	/**
@@ -147,10 +94,7 @@ class Payload {
 	 */
 	public function get_data(): array {
 		// Payload Defaults.
-		$data = [
-			'id'          => goodbids()->auctions->get_guid( $this->auction_id ),
-			'requestTime' => current_datetime()->format( 'c' ),
-		];
+		$data = [];
 
 		foreach ( $this->payload as $item ) {
 			$data[ $item ] = $this->get_payload_item( $item );
@@ -170,11 +114,17 @@ class Payload {
 	 */
 	private function get_payload_item( string $item ): mixed {
 		return match ( $item ) {
+			'accountUrl'        => $this->get_auth_url(),
+			'auctionStatus'     => strtolower( goodbids()->auctions->get_status( $this->auction_id ) ),
+			'bidUrl'            => goodbids()->auctions->get_place_bid_url( $this->auction_id ),
 			'currentBid'        => $this->get_current_bid(),
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
 			'freeBidsAvailable' => false,
 			'lastBid'           => $this->get_last_bid(),
 			'lastBidder'        => $this->get_last_bidder(),
+			'rewardUrl'         => '', // TBD.
+			'shareUrl'          => '', // TBD.
+			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
 			'totalBids'         => goodbids()->auctions->get_bid_count( $this->auction_id ),
 			'totalRaised'       => goodbids()->auctions->get_total_raised( $this->auction_id ),
@@ -225,5 +175,37 @@ class Payload {
 		}
 
 		return $this->last_bidder?->ID;
+	}
+
+	/**
+	 * Returns the Websocket URL to the Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_socket_url(): string {
+		$auctioneer_url = goodbids()->auctioneer->get_url();
+		$socket_url     = trailingslashit( str_replace( 'https://', 'wss://', $auctioneer_url ) );
+		$socket_url    .= '_ws/connect';
+
+		return $socket_url;
+	}
+
+	/**
+	 * Returns the URL to the My Account page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_auth_url(): string {
+		$auth_page_id = wc_get_page_id( 'authentication' );
+
+		if ( ! $auth_page_id ) {
+			return '';
+		}
+
+		return get_permalink( $auth_page_id );
 	}
 }
