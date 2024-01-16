@@ -75,6 +75,8 @@ class WooCommerce {
 		$this->store_auction_id_on_checkout();
 		$this->redirect_after_bid_checkout();
 
+		$this->mark_reward_as_redeemed();
+
 		$this->add_auction_meta_box();
 	}
 
@@ -415,6 +417,35 @@ class WooCommerce {
 	 * @return void
 	 */
 	private function redirect_after_bid_checkout(): void {
+		add_action(
+			'woocommerce_thankyou',
+			function ( int $order_id ): void {
+				if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+					return;
+				}
+
+				if ( ! $this->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_order_auction_id( $order_id );
+
+				// TODO: Check if Auction has ended.
+
+				wp_safe_redirect( get_permalink( $auction_id ) );
+				exit;
+			}
+		);
+	}
+
+	/**
+	 * Mark the reward product for an Auction as redeemed after Checkout.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function mark_reward_as_redeemed(): void {
 		add_action(
 			'woocommerce_thankyou',
 			function ( int $order_id ): void {
@@ -942,6 +973,7 @@ class WooCommerce {
 		// Restrictions.
 		$coupon->set_individual_use( true );
 		$coupon->set_usage_limit_per_user( 1 );
+		$coupon->set_usage_limit( 1 );
 		$coupon->set_limit_usage_to_x_items( 1 ); // Limit to 1 item.
 		$coupon->set_email_restrictions( $this->get_user_emails() ); // Restrict by user email(s).
 		$coupon->set_product_ids( [ $reward_id ] ); // Restrict to this Reward Product.
