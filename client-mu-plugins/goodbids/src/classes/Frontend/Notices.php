@@ -72,6 +72,10 @@ class Notices {
 					wc_add_notice( __( 'You are not the winner of this auction.', 'goodbids' ), 'error' );
 				} elseif ( 'auction-not-found' === $this->notice_id ) {
 					wc_add_notice( __( 'This reward is not associated with an auction.', 'goodbids' ), 'error' );
+				} elseif ( 'get-reward-coupon-error' === $this->notice_id ) {
+					wc_add_notice( __( 'There was a problem generating the Reward Coupon Code. Please contact support for further assistance.', 'goodbids' ), 'error' );
+				} elseif ( 'apply-reward-coupon-error' === $this->notice_id ) {
+					wc_add_notice( __( 'There was a problem applying the Reward Coupon Code. Please contact support for further assistance.', 'goodbids' ), 'error' );
 				}
 			}
 		);

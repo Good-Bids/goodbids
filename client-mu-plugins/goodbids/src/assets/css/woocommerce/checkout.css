@@ -1,0 +1,5 @@
+@layer components {
+	.wc-block-components-totals-discount__coupon-list-item .wc-block-components-chip__text {
+		@apply text-ellipsis overflow-hidden uppercase;
+	}
+}
