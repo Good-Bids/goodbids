@@ -16,7 +16,7 @@ function ParticipationContent() {
 
 		return (
 			<p className="m-0 text-center">
-				Create an Account or Login to bid when the auction starts.
+				<a href="">Join GoodBids</a> to bid when the auction starts.
 			</p>
 		);
 	}
@@ -53,7 +53,7 @@ function ParticipationContent() {
 
 	return (
 		<p className="m-0 text-center">
-			Create an Account or Login to bid in this auction.
+			<a href="">Join GoodBids</a> to bid in this auction.
 		</p>
 	);
 }

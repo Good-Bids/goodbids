@@ -24,7 +24,7 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 	lastBid: 0,
 	lastBidder: undefined,
 	startTime: new Date(),
-	endTime: new Date(),
+	endTime: new Date(new Date().getTime() + 1000 * 60 * 60 * 24),
 	freeBidsAvailable: false,
 	currentBid: 0,
 	auctionStatus: 'not-started',
