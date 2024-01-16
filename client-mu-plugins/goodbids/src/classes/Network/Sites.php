@@ -50,7 +50,6 @@ class Sites {
 		$this->activate_child_theme_on_new_site();
 		$this->default_child_theme_logo();
 		$this->set_default_posts_per_page();
-		$this->lock_block_editor();
 		$this->disable_blocks_for_nonprofits();
 		$this->create_about_page();
 		$this->lock_block_editor();
