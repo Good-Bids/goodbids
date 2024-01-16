@@ -419,4 +419,15 @@ class Auctioneer {
 			}
 		);
 	}
+
+	/**
+	 * Gets the URL for the Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_url(): string {
+		return $this->url;
+	}
 }
