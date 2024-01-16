@@ -3,7 +3,11 @@ import { render } from '@wordpress/element';
 import { Driver } from './components/Driver';
 
 function renderReact() {
-	render(<Driver />, document.getElementById('goodbids-bidding'));
+	const root = document.getElementById('goodbids-bidding');
+
+	if (root) {
+		render(<Driver />, root);
+	}
 }
 
 if (document.readyState === 'loading') {
