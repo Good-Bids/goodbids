@@ -30,7 +30,7 @@
 
 			<!-- wp:acf/bid-now {"name":"acf/bid-now","mode":"preview"} /-->
 
-			<!-- wp:goodbids/bidding {"auctionId":0} -->
+			<!-- wp:goodbids/bidding {"auctionId":0,"lock":{"move":false,"remove":true}} -->
 				<div id="goodbids-bidding" data-auction-id="0" class="wp-block-goodbids-bidding"></div>
 			<!-- /wp:goodbids/bidding -->
 
