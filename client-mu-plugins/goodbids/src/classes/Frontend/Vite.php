@@ -561,8 +561,13 @@ class Vite {
 	 */
 	private function get_color_palette(): array {
 		$config  = $this->get_tailwind_config();
-		$colors  = $config['theme']['editorColors'] ?? $config['theme']['colors'];
 		$palette = [];
+
+		if ( ! $config || empty( $config['theme'] ) ) {
+			return apply_filters( 'theme_palette', $palette );
+		}
+
+		$colors = $config['theme']['editorColors'] ?? $config['theme']['colors'];
 
 		foreach ( $colors as $slug => $color ) {
 			$name = ucwords( $slug );
