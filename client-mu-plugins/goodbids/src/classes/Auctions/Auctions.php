@@ -172,7 +172,7 @@ class Auctions {
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
 
-		// Update Bid Product when Auction is updated.
+		// Connect Reward product to Auctions.
 		$this->connect_reward_product_on_auction_save();
 
 		// Clear metric transients on new Bid Order.
