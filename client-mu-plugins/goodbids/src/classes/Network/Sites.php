@@ -523,4 +523,63 @@ class Sites {
 			20
 		);
 	}
+
+
+	/**
+	 * Get the privacy policy link for the site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_privacy_policy_link(): ?string {
+		if ( ! is_multisite() ) {
+			return '';
+		}
+		$privacy_policy_link = '';
+
+		switch_to_blog( get_main_site_id() );
+		$privacy_policy_id = get_option( 'wp_page_for_privacy_policy' );
+
+		if ( $privacy_policy_id ) {
+			$privacy_policy_link = sprintf(
+				'<a href="%s">%s</a>',
+				get_privacy_policy_url(),
+				get_the_title( $privacy_policy_id ),
+			);
+		}
+
+		restore_current_blog();
+
+		return $privacy_policy_link;
+	}
+
+	/**
+	 * Get the terms and conditions link for the site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_terms_conditions_link(): ?string {
+		if ( ! is_multisite() ) {
+			return '';
+		}
+		$terms_conditions_link = '';
+
+		switch_to_blog( get_main_site_id() );
+		$terms_conditions_id = wc_terms_and_conditions_page_id();
+
+		if ( $terms_conditions_id ) {
+			$terms_conditions_link = sprintf(
+				'<a href="%s">%s</a>',
+				get_page_link( $terms_conditions_id ),
+				get_the_title( $terms_conditions_id ),
+			);
+		}
+
+		restore_current_blog();
+
+		return $terms_conditions_link;
+	}
 }

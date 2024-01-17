@@ -62,8 +62,8 @@ class WooCommerce {
 		$this->add_auth_page_setting();
 		$this->display_post_states();
 
-//		$this->authentication_redirect();
-//		$this->prevent_wp_login_access();
+		// $this->authentication_redirect();
+		// $this->prevent_wp_login_access();
 
 		$this->restrict_reward_product();
 		$this->redirect_after_login();
@@ -140,6 +140,17 @@ class WooCommerce {
 				// Allow for personal data removal.
 				update_option( 'woocommerce_erasure_request_removes_order_data', 'yes' );
 				update_option( 'woocommerce_allow_bulk_remove_personal_data', 'yes' );
+
+				// Update email base color.
+				update_option( 'woocommerce_email_base_color', '#0A3624' );
+
+				// Update email footer text.
+				$email_footer_text = sprintf(
+					'GoodBids for <a href="{site_url}">{site_title}</a>  —  %s | %s',
+					goodbids()->sites->get_terms_conditions_link(),
+					goodbids()->sites->get_privacy_policy_link()
+				);
+				update_option( 'woocommerce_email_footer_text', $email_footer_text );
 			},
 			5
 		);
@@ -603,7 +614,7 @@ class WooCommerce {
 	private function validate_bid(): void {
 		add_action(
 			'woocommerce_store_api_checkout_update_order_from_request',
-			function( $order, $request = [] ) {
+			function ( $order, $request = [] ) {
 				if ( empty( $request ) ) {
 					return;
 				}
@@ -655,7 +666,7 @@ class WooCommerce {
 			try {
 				$auction_id = wc_get_order_item_meta( $item->get_id(), self::AUCTION_META_KEY );
 				$order_type = wc_get_order_item_meta( $item->get_id(), self::TYPE_META_KEY );
-			} catch (\Exception $e) {
+			} catch ( \Exception $e ) {
 				continue;
 			}
 

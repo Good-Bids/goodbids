@@ -18,19 +18,15 @@ $main_footer = new GoodBids\Blocks\MainFooter( $block );
 
 			<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-layout-29 wp-block-group-is-layout-flex">
 
-				<?php if ( $main_footer->get_terms_conditions_url() ) : ?>
+				<?php if ( goodbids()->sites->get_terms_conditions_link() ) : ?>
 					<p>
-						<a href="<?php echo esc_url( $main_footer->get_terms_conditions_url() ); ?>">
-							<?php echo esc_html( $main_footer->get_terms_conditions_title() ); ?>
-						</a>
+						<?php echo wp_kses_post( goodbids()->sites->get_terms_conditions_link() ); ?>
 					</p>
 				<?php endif; ?>
 
-				<?php if ( $main_footer->get_privacy_policy_url() ) : ?>
+				<?php if ( goodbids()->sites->get_privacy_policy_link() ) : ?>
 					<p>
-						<a href="<?php echo esc_url( $main_footer->get_privacy_policy_url() ); ?>">
-							<?php echo esc_html( $main_footer->get_privacy_policy_title() ); ?>
-						</a>
+						<?php echo wp_kses_post( goodbids()->sites->get_privacy_policy_link() ); ?>
 					</p>
 				<?php endif; ?>
 			</div>
