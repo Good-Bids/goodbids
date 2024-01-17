@@ -572,13 +572,13 @@ class Auctions {
 	 *
 	 * @param ?int|null $auction_id
 	 *
-	 * @return ?string
+	 * @return string
 	 */
-	public function get_claim_reward_url( int $auction_id = null ): ?string {
+	public function get_claim_reward_url( int $auction_id = null ): string {
 		$reward_product_id = $this->get_reward_product_id( $auction_id );
 
 		if ( ! $reward_product_id ) {
-			return null;
+			return '';
 		}
 
 		return add_query_arg( 'add-to-cart', $reward_product_id, wc_get_checkout_url() );
