@@ -74,6 +74,17 @@ class Patterns {
 					'inserter'   => true,
 				];
 
+				$logo_grid = [
+					'name'        => 'logo-grid',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/logo-grid.php',
+					'title'       => __( 'Logo Grid', 'goodbids' ),
+					'description' => _x( 'Grid of image for logos', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids', 'gallery' ],
+					'keywords'    => [ 'image', 'logo', 'grid' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
+				];
+
 				$nonprofit_interest_form = [
 					'name'        => 'nonprofit-interest-form',
 					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/nonprofit-interest-form.php',
@@ -129,6 +140,7 @@ class Patterns {
 					[
 						$auction_archive,
 						$hero_banner,
+						$logo_grid,
 						$nonprofit_interest_form,
 						$section_sidebar_chapters,
 						$template_about,
