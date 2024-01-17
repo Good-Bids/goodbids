@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { ClockIcon } from './clock-icon';
 import { DEMO_DATA } from '../utils/demo-data';
 import { useAuction } from '../utils/auction-store';
-
-type TimeStatus = 'not-started' | 'in-progress' | 'ended';
+import { AuctionStatus } from '../utils/types';
 
 type TimeRemainingType = {
-	status: TimeStatus;
+	status: AuctionStatus;
 	timeRemaining: number;
 };
 
@@ -52,7 +51,7 @@ function getTimeRemaining(
 	userBids: number,
 	lastBidder?: string,
 ) {
-	if (status === 'not-started') {
+	if (status === 'upcoming') {
 		return (
 			<span>
 				<b>Bidding starts in {formatTimeRemaining(timeRemaining)}</b>
@@ -60,7 +59,7 @@ function getTimeRemaining(
 		);
 	}
 
-	if (status === 'in-progress') {
+	if (status === 'live') {
 		if (user === lastBidder) {
 			return (
 				<span>
@@ -110,29 +109,29 @@ function getCountdownTime(
 	const now = new Date().getTime();
 
 	if (now < startTime) {
-		return { status: 'not-started', timeRemaining: startTime - now };
+		return { status: 'upcoming', timeRemaining: startTime - now };
 	}
 
 	if (now < endTime) {
-		return { status: 'in-progress', timeRemaining: endTime - now };
+		return { status: 'live', timeRemaining: endTime - now };
 	}
 
-	return { status: 'ended', timeRemaining: 0 };
+	return { status: 'closed', timeRemaining: 0 };
 }
 
 export function CountdownTimer() {
-	const { startTime, endTime, lastBidder, setAuctionStatus } = useAuction();
-	const startingTimeRemaining = getCountdownTime(startTime, endTime);
+	const { startTime, endTime, lastBidder, setAuctionStatus, auctionStatus } =
+		useAuction();
 
 	const [timeRemaining, setTimeRemaining] = useState<TimeRemainingType>(
-		startingTimeRemaining,
+		getCountdownTime(startTime, endTime),
 	);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const newRemainingTime = getCountdownTime(startTime, endTime);
 
-			if (timeRemaining.status !== newRemainingTime.status) {
+			if (auctionStatus !== newRemainingTime.status) {
 				setAuctionStatus(newRemainingTime.status);
 			}
 
@@ -140,7 +139,8 @@ export function CountdownTimer() {
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, [endTime, setAuctionStatus, startTime, timeRemaining.status]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<div className="flex items-center gap-3 px-4">

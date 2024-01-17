@@ -16,7 +16,7 @@ export function FreeBidButton() {
 		},
 	);
 
-	if (freeBidsAvailable && auctionStatus === 'in-progress') {
+	if (freeBidsAvailable && auctionStatus === 'live') {
 		return (
 			<a href={DEMO_DATA.freeBidUrl} className={classes}>
 				{`Place free bid ${

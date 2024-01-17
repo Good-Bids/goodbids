@@ -36,7 +36,7 @@ export function Metrics() {
 			<MetricBlock type="bids" value={totalBids} />
 			<MetricBlock type="raised" value={totalRaised} />
 			<MetricBlock
-				type={auctionStatus === 'ended' ? 'winning-bid' : 'last-bid'}
+				type={auctionStatus === 'closed' ? 'winning-bid' : 'last-bid'}
 				value={lastBid}
 			/>
 		</div>

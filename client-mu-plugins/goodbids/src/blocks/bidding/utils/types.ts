@@ -1,4 +1,4 @@
-export type AuctionStatus = 'not-started' | 'in-progress' | 'ended';
+export type AuctionStatus = 'upcoming' | 'live' | 'closed';
 
 type MessageType = 'start' | 'update' | 'end';
 
