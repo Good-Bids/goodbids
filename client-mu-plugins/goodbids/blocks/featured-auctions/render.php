@@ -1,6 +1,6 @@
 <?php
 /**
- * Block: All Auctions
+ * Block: Featured Auctions
  *
  * @global array $block
  *
@@ -8,7 +8,8 @@
  * @package GoodBids
  */
 
-$auctions = goodbids()->auctions->get_all_site_auctions();
+$featured_auctions = new GoodBids\Blocks\FeaturedAuctions( $block );
+$auctions          = $featured_auctions->get_featured_auctions();
 
 if ( ! count( $auctions ) ) :
 	if ( is_admin() ) :
