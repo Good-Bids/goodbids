@@ -15,7 +15,7 @@ if ( ! count( $auctions ) ) :
 	if ( is_admin() ) :
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'No auctions found.', 'goodbids' )
+			esc_html__( 'No featured auctions found.', 'goodbids' )
 		);
 	endif;
 

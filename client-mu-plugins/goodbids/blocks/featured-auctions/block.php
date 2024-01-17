@@ -22,9 +22,18 @@ class FeaturedAuctions extends ACFBlock {
 	/**
 	 * Featured Auctions
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return array
 	 */
 	public function get_featured_auctions(): array {
-		return goodbids()->auctions->get_all_site_auctions();
+		$auctions = goodbids()->auctions->get_all_site_auctions();
+
+		// Sort auctions by highest bid count and then by highest total raised.
+		return collect( $auctions )
+				->sortByDesc( 'bid_count' )
+				->slice( 0, 3 )
+				->sortByDesc( 'total_raised' )
+				->values()->all();
 	}
 }

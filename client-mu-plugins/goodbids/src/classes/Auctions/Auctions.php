@@ -381,8 +381,10 @@ class Auctions {
 		return collect( $auctions->posts )->map(
 			function ( $post_id ) use ( $site_id ) {
 				return [
-					'post_id' => $post_id,
-					'site_id' => $site_id,
+					'post_id'      => $post_id,
+					'site_id'      => $site_id,
+					'bid_count'    => $this->get_bid_count( $post_id ),
+					'total_raised' => $this->get_total_raised( $post_id ),
 				];
 			}
 		)->all();
