@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "13ded711b28ff9e186d458c414818df4",
+    "content-hash": "b47f1cdbf38233e23ad5e6ea7b0fe490",
     "packages": [
         {
             "name": "composer/installers",
@@ -1143,15 +1143,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce",
-            "version": "8.4.0",
+            "version": "8.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce/",
-                "reference": "tags/8.4.0"
+                "reference": "tags/8.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.4.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.5.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1161,15 +1161,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce-gateway-stripe",
-            "version": "7.8.0",
+            "version": "7.9.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce-gateway-stripe/",
-                "reference": "tags/7.8.0"
+                "reference": "tags/7.9.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.7.8.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.7.9.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1197,10 +1197,10 @@
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",
-            "version": "6.2.4",
+            "version": "6.2.5",
             "dist": {
                 "type": "zip",
-                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.4"
+                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.5"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
