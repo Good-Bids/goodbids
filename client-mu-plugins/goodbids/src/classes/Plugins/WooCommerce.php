@@ -146,7 +146,8 @@ class WooCommerce {
 
 				// Update email footer text.
 				$email_footer_text = sprintf(
-					'GoodBids for <a href="{site_url}">{site_title}</a>  —  %s | %s',
+					'%s <p>GoodBids for <a href="{site_url}">{site_title}</a>  —  %s | %s</p>',
+					get_custom_logo( get_main_site_id() ),
 					goodbids()->sites->get_terms_conditions_link(),
 					goodbids()->sites->get_privacy_policy_link()
 				);

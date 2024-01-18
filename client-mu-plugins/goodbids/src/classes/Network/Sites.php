@@ -408,19 +408,13 @@ class Sites {
 	private function default_child_theme_logo(): void {
 		add_filter(
 			'get_custom_logo',
-			function ( string $html, int $blog_id ) {
+			function ( string $html ) {
 				if ( $html ) {
 					return $html;
 				}
 
-				return sprintf(
-					'<a href="%1$s" class="custom-logo-link" rel="home" itemprop="url"><img src="%2$s" class="custom-logo" itemprop="logo" alt="GoodBids"></a>',
-					esc_url( home_url( '/' ) ),
-					esc_attr( GOODBIDS_PLUGIN_URL . 'src/assets/images/goodbids-logo.png' ),
-				);
-			},
-			10,
-			2
+				return get_custom_logo( get_main_site_id() );
+			}
 		);
 	}
 
@@ -534,11 +528,13 @@ class Sites {
 	 */
 	public function get_privacy_policy_link(): ?string {
 		if ( ! is_multisite() ) {
-			return '';
+			return false;
 		}
-		$privacy_policy_link = '';
 
 		switch_to_blog( get_main_site_id() );
+
+		$privacy_policy_link = '';
+
 		$privacy_policy_id = get_option( 'wp_page_for_privacy_policy' );
 
 		if ( $privacy_policy_id ) {
@@ -563,11 +559,13 @@ class Sites {
 	 */
 	public function get_terms_conditions_link(): ?string {
 		if ( ! is_multisite() ) {
-			return '';
+			return false;
 		}
-		$terms_conditions_link = '';
 
 		switch_to_blog( get_main_site_id() );
+
+		$terms_conditions_link = '';
+
 		$terms_conditions_id = wc_terms_and_conditions_page_id();
 
 		if ( $terms_conditions_id ) {
