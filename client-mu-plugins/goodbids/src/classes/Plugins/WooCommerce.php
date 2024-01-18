@@ -11,6 +11,8 @@ namespace GoodBids\Plugins;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\API\Credentials;
+use GoodBids\Plugins\WooCommerce\EmailNotifications\{AuctionLiveWatchers};
+
 use WC_Coupon;
 use WC_Product;
 
@@ -82,6 +84,9 @@ class WooCommerce {
 		$this->load_woocommerce_templates();
 		$this->add_free_bids_account_tab();
 		$this->add_auction_meta_box();
+
+		// Custom Email Notifications
+		$this->add_woocommerce_email_notifications();
 	}
 
 	/**
@@ -1168,6 +1173,25 @@ class WooCommerce {
 			function () use ( $slug ) {
 				$free_bids = goodbids()->users->get_free_bids();
 				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
+			}
+		);
+	}
+
+	/*
+		Add a custom email to the list of emails WooCommerce
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function add_woocommerce_email_notifications(): void {
+		add_filter(
+			'woocommerce_email_classes',
+			function ( $email_classes ): array {
+
+				// add the email class to the list of email classes that WooCommerce loads
+				$email_classes['AuctionLiveWatchers'] = new AuctionLiveWatchers();
+
+				return $email_classes;
 			}
 		);
 	}
