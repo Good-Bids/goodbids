@@ -83,10 +83,10 @@ class User extends WC_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function post_user( WP_REST_Request $request ): WP_Error|WP_REST_Response {
-		$cookie = $request->get_param( 'user_cookie' );
+		$cookie = $request->get_param( 'cookie' );
 
 		if ( ! $cookie ) {
-			return new WP_Error( 'goodbids_missing_required_parameters', __( 'The required `user_cookie` parameter was not found.', 'goodbids' ) );
+			return new WP_Error( 'goodbids_missing_required_parameters', __( 'The required `cookie` parameter was not found.', 'goodbids' ) );
 		}
 
 		$user_id = goodbids()->auctioneer->decrypt_auctioneer_cookie( $cookie );
