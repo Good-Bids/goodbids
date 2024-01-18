@@ -8,7 +8,11 @@
 
 namespace GoodBids\Plugins;
 
+use GoodBids\Auctions\Auctions;
+use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\API\Credentials;
+use WC_Coupon;
+use WC_Product;
 
 /**
  * Class for WooCommerce
@@ -28,6 +32,12 @@ class WooCommerce {
 	 * @var string
 	 */
 	const TYPE_META_KEY = '_goodbids_product_type';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const REWARD_COUPON_META_KEY = '_goodbids_reward_coupon_id';
 
 	/**
 	 * @since 1.0.0
@@ -55,13 +65,19 @@ class WooCommerce {
 //		$this->authentication_redirect();
 //		$this->prevent_wp_login_access();
 
+		$this->restrict_reward_product();
+		$this->redirect_after_login();
+
 		$this->auto_empty_cart();
-		$this->redirect_after_add_bid_to_cart();
+		$this->apply_cart_coupons();
+		$this->redirect_after_add_to_cart();
 		$this->validate_bid();
 
 		$this->store_auction_id_in_cart();
 		$this->store_auction_id_on_checkout();
 		$this->redirect_after_bid_checkout();
+
+		$this->mark_reward_as_redeemed();
 
 		$this->add_auction_meta_box();
 	}
@@ -105,10 +121,10 @@ class WooCommerce {
 	 *
 	 * @return void
 	 */
-	private function configure_new_site() : void {
+	private function configure_new_site(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( int $site_id ) : void {
+			function ( int $site_id ): void {
 				// Disable Guest Checkout.
 				update_option( 'woocommerce_enable_guest_checkout', 'no' );
 
@@ -139,7 +155,7 @@ class WooCommerce {
 	private function create_auth_page(): void {
 		add_action(
 			'woocommerce_page_created',
-			function ( int $page_id, array $page_data ) : void {
+			function ( int $page_id, array $page_data ): void {
 				if ( empty( $page_data['post_name'] ) || 'my-account' !== $page_data['post_name'] ) {
 					return;
 				}
@@ -180,7 +196,7 @@ class WooCommerce {
 	private function add_auth_page_setting(): void {
 		add_filter(
 			'woocommerce_settings_pages',
-			function ( array $settings ) : array {
+			function ( array $settings ): array {
 				$auth_setting = [
 					'title'    => __( 'Authentication', 'goodbids' ),
 					'desc'     => __( 'Page contents: GoodBids Authentication Block.', 'goodbids' ),
@@ -406,7 +422,7 @@ class WooCommerce {
 		add_action(
 			'woocommerce_thankyou',
 			function ( int $order_id ): void {
-				if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+				if ( is_admin() || wp_doing_ajax() || headers_sent() ) {
 					return;
 				}
 
@@ -416,7 +432,35 @@ class WooCommerce {
 
 				$auction_id = $this->get_order_auction_id( $order_id );
 
-				// TODO: Check if Auction has ended.
+				wp_safe_redirect( get_permalink( $auction_id ) );
+				exit;
+			}
+		);
+	}
+
+	/**
+	 * Mark the reward product for an Auction as redeemed after Checkout.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function mark_reward_as_redeemed(): void {
+		add_action(
+			'woocommerce_thankyou',
+			function ( int $order_id ): void {
+				if ( is_admin() ) {
+					return;
+				}
+
+				if ( ! $this->is_reward_order( $order_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_order_auction_id( $order_id );
+				$product_id = goodbids()->auctions->get_reward_product_id( $auction_id );
+
+				update_post_meta( $product_id, Auctions::REWARD_REDEEMED_META_KEY, 1 );
 
 				wp_safe_redirect( get_permalink( $auction_id ) );
 				exit;
@@ -655,32 +699,333 @@ class WooCommerce {
 	}
 
 	/**
-	 * Redirect after adding bids to cart to remove the ?add-to-cart url parameter.
+	 * Retrieve the current add-to-cart product.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?WC_Product $product
+	 *
+	 * @return ?WC_Product
+	 */
+	private function get_add_to_cart_product( ?WC_Product $product = null ): ?WC_Product {
+		// Sometimes this filter does not pass a product.
+		if ( ! $product && ! empty( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+			$product = wc_get_product( intval( sanitize_text_field( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ); // phpcs:ignore
+		}
+
+		if ( ! $product instanceof WC_Product ) {
+			return null;
+		}
+
+		return $product;
+	}
+
+	/**
+	 * Apply Reward Coupon to cart, if applicable.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function apply_cart_coupons(): void {
+		add_filter(
+			'woocommerce_add_to_cart_redirect',
+			function ( string $url, ?WC_Product $product ) {
+				$product = $this->get_add_to_cart_product( $product );
+
+				if ( ! $product ) {
+					return $url;
+				}
+
+				$product_type = goodbids()->auctions->get_product_type( $product->get_id() );
+				$redirect_url = wc_get_page_permalink( 'myaccount' );
+				$coupon_code  = false;
+
+				if ( ! $product_type ) {
+					return $url;
+				}
+
+				if ( 'rewards' === $product_type ) {
+					$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $product->get_id() );
+
+					if ( ! $auction_id ) {
+						return $url;
+					}
+
+					$redirect_url = get_permalink( $auction_id );
+
+					if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
+						WC()->cart->empty_cart();
+						return $url;
+					}
+
+					$coupon_code = $this->get_reward_coupon_code( $auction_id, $product->get_id() );
+
+					if ( ! $coupon_code ) {
+						return add_query_arg( 'gb-notice', Notices::GET_REWARD_COUPON_ERROR, $redirect_url );
+					}
+				}
+
+				// Only apply Coupon once.
+				if ( $coupon_code && ! WC()->cart->has_discount( $coupon_code ) ) {
+					// Apply Reward Coupon.
+					if ( ! WC()->cart->add_discount( $coupon_code ) ) {
+						// TODO: Log Error.
+						return add_query_arg( 'gb-notice', Notices::APPLY_REWARD_COUPON_ERROR, $redirect_url );
+					}
+				}
+
+				return $url;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Redirect after adding bids and reward products to cart to remove the ?add-to-cart url parameter.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function redirect_after_add_bid_to_cart(): void {
+	private function redirect_after_add_to_cart(): void {
 		add_filter(
 			'woocommerce_add_to_cart_redirect',
-			function ( string $url, ?\WC_Product $product = null ): string {
+			function ( string $url, ?WC_Product $product ): string {
+				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+					return $url;
+				}
+
+				// No need to redirect.
+				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+					return $url;
+				}
+
+				$product = $this->get_add_to_cart_product( $product );
+
 				if ( ! $product ) {
 					return $url;
 				}
 
-				if ( 'bids' !== goodbids()->auctions->get_product_type( $product->get_id() ) ) {
-					return $url;
-				}
-
-				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
 					return $url;
 				}
 
 				return wc_get_checkout_url();
 			},
+			15,
+			2
+		);
+
+		// Fallback for when the above filter does not work.
+		add_action(
+			'template_redirect',
+			function (): void {
+				// No need to redirect.
+				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+					return;
+				}
+
+				$product = $this->get_add_to_cart_product();
+
+				if ( ! $product ) {
+					return;
+				}
+
+				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+					return;
+				}
+
+				wp_safe_redirect( wc_get_checkout_url() );
+				exit;
+			},
+			15,
+			2
+		);
+	}
+
+	/**
+	 * Restrict Reward products to authenticated users who won the auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function restrict_reward_product(): void {
+		add_filter(
+			'woocommerce_add_to_cart_validation',
+			function ( $passed, $product_id ) {
+				if ( 'rewards' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+					return $passed;
+				}
+
+				$auth_url = wc_get_page_permalink( 'myaccount' );
+
+				if ( ! is_user_logged_in() ) {
+					// Redirect to login page with Add to Cart as the redirect.
+					$checkout_url = wc_get_page_permalink( 'checkout' );
+					$redirect_to  = add_query_arg( 'add-to-cart', $product_id, $checkout_url );
+
+					$args     = [
+						'redirect-to' => urlencode( $redirect_to ),
+						'gb-notice'   => Notices::NOT_AUTHENTICATED_REWARD,
+					];
+					$redirect = add_query_arg( $args, $auth_url );
+
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $product_id );
+
+				if ( ! $auction_id ) {
+					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $auth_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				$auction_url = get_permalink( $auction_id );
+
+				if ( ! goodbids()->auctions->has_ended( $auction_id ) ) {
+					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_ENDED, $auction_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
+					$redirect = add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $auction_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( goodbids()->auctions->is_reward_redeemed( $auction_id ) ) {
+					$redirect = add_query_arg( 'gb-notice', Notices::REWARD_ALREADY_REDEEMED, $auction_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				return $passed;
+			},
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Handle post-login redirect.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_login(): void {
+		add_filter(
+			'woocommerce_login_redirect',
+			function ( $redirect ) {
+				if ( empty( $_REQUEST['redirect-to'] ) ) { // phpcs:ignore
+					return $redirect;
+				}
+
+				return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
+			},
+			5
+		);
+	}
+
+	/**
+	 * Generate or retrieve the Reward Coupon Code for this Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $reward_id
+	 *
+	 * @return ?string
+	 */
+	private function get_reward_coupon_code( int $auction_id, int $reward_id ): ?string {
+		$reward = goodbids()->auctions->get_reward_product( $auction_id );
+
+		if ( ! $reward ) {
+			return null;
+		}
+
+		if ( $reward->get_id() !== $reward_id ) {
+			// Reward ID does not match the Auction Reward ID.
+			return null;
+		}
+
+		$existing = get_post_meta( $reward_id, self::REWARD_COUPON_META_KEY, true );
+
+		if ( $existing ) {
+			// Make sure it's still valid.
+			if ( wc_get_coupon_id_by_code( $existing ) ) {
+				return $existing;
+			}
+		}
+
+		$coupon_code  = 'GB_REWARD_' . strtoupper( wc_rand_hash() );
+		$reward_price = $reward->get_price( 'edit' );
+		$description  = sprintf(
+			'%s: %d (%s: %d)',
+			__( 'Autogenerated Coupon Code for Auction ID', 'goodbids' ),
+			esc_html( $auction_id ),
+			__( 'Product ID', 'goodbids' ),
+			esc_html( $reward_id )
+		);
+
+		$coupon = new WC_Coupon();
+		$coupon->set_code( $coupon_code ); // Coupon code.
+		$coupon->set_description( $description );
+
+		// Restrictions.
+		$coupon->set_individual_use( true );
+		$coupon->set_usage_limit_per_user( 1 );
+		$coupon->set_usage_limit( 1 );
+		$coupon->set_limit_usage_to_x_items( 1 ); // Limit to 1 item.
+		$coupon->set_email_restrictions( $this->get_user_emails() ); // Restrict by user email(s).
+		$coupon->set_product_ids( [ $reward_id ] ); // Restrict to this Reward Product.
+
+		// Amount.
+		$coupon->set_discount_type( 'percent' );
+		$coupon->set_amount( 100 ); // 100% Discount.
+		$coupon->set_maximum_amount( $reward_price ); // Additional price restriction.
+
+		$coupon->save();
+
+		update_post_meta( $reward_id, self::REWARD_COUPON_META_KEY, $coupon_code );
+
+		return $coupon_code;
+	}
+
+	/**
+	 * Get User Email Addresses. If no user_id is provided, the current user is used.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_emails( int $user_id = null ): array {
+		$emails = [];
+
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$user = get_user_by( 'id', $user_id );
+
+		if ( ! $user ) {
+			return $emails;
+		}
+
+		$emails[] = $user->user_email;
+
+		$billing_email = get_user_meta( $user_id, 'billing_email', true );
+		if ( $billing_email ) {
+			$emails[] = $billing_email;
+		}
+
+		return $emails;
 	}
 }

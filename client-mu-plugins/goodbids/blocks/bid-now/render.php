@@ -15,9 +15,9 @@ if ( ! $bid_now->display() ) :
 	return;
 endif;
 
-// Make sure the auction is active.
-if ( ! $bid_now->is_auction_active() ) :
-	$bid_now->render_auction_not_active();
+// Make sure the auction has started.
+if ( ! $bid_now->has_auction_started() ) :
+	$bid_now->render_auction_not_started();
 	return;
 endif;
 ?>

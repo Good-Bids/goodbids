@@ -1,6 +1,6 @@
 <?php
 /**
- * ACF Block
+ * ACF Block Base Class
  *
  * @since 1.0.0
  * @package GoodBids
@@ -20,7 +20,7 @@ class ACFBlock {
 	 *
 	 * @var array
 	 */
-	private array $block = [];
+	protected array $block = [];
 
 	/**
 	 * Initialize the block.
