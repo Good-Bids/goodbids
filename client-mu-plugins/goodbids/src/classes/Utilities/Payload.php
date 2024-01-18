@@ -171,10 +171,10 @@ class Payload {
 			'currentBid'        => $this->get_current_bid(),
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
 			'freeBidsAvailable' => false,
-			'isLastBidder'      => goodbids()->auctions->is_user_last_bidder( $this->auction_id, $this->get_user_id() ),
+			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid(),
 			'lastBidder'        => $this->get_last_bidder(),
-			'rewardUrl'         => goodbids()->auctions->get_claim_reward_url(), // TBD.
+			'rewardUrl'         => goodbids()->auctions->get_claim_reward_url( $this->auction_id ), // TBD.
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
@@ -231,6 +231,23 @@ class Payload {
 		}
 
 		return $this->last_bidder?->ID;
+	}
+
+	/**
+	 * Checks if the last bidder matches the provided user ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return bool
+	 */
+	private function is_user_last_bidder( int $user_id ): bool {
+		if ( ! $this->last_bidder ) {
+			$this->last_bidder = goodbids()->auctions->get_last_bidder( $this->auction_id );
+		}
+
+		return $this->last_bidder?->ID === $user_id;
 	}
 
 	/**

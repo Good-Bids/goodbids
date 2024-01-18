@@ -106,6 +106,18 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const ORDER_TYPE_BID = 'bids';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const ORDER_TYPE_REWARD = 'rewards';
+
+	/**
+	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -390,7 +402,7 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_rewards_category_id(): ?int {
-		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
+		$rewards_category = get_term_by( 'slug', self::ORDER_TYPE_REWARD, 'product_cat' );
 
 		if ( ! $rewards_category ) {
 			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
@@ -1001,7 +1013,7 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
-		$valid      = [ 'bids', 'rewards' ];
+		$valid      = [ self::ORDER_TYPE_BID, self::ORDER_TYPE_REWARD ];
 		$categories = get_the_terms( $product_id, 'product_cat' );
 
 		if ( ! is_array( $categories ) ) {
@@ -1228,21 +1240,6 @@ class Auctions {
 	}
 
 	/**
-	 * Checks if the provided user ID is the last bidder.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 * @param int $user_id
-	 *
-	 * @return bool
-	 */
-	public function is_user_last_bidder( int $auction_id, int $user_id ): bool {
-		$last_bidder = $this->get_last_bidder( $auction_id );
-		return $last_bidder?->ID === $user_id;
-	}
-
-	/**
 	 * Get the status of an Auction.
 	 *
 	 * @since 1.0.0
@@ -1253,7 +1250,7 @@ class Auctions {
 	 */
 	public function get_status( int $auction_id ): string {
 		if ( 'publish' !== get_post_status( $auction_id ) ) {
-			return self::STATUS_DRAFT;;
+			return self::STATUS_DRAFT;
 		}
 
 		$status = self::STATUS_UPCOMING;

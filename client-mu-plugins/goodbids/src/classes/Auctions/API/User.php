@@ -58,9 +58,10 @@ class User extends WC_REST_Controller {
 		register_rest_route(
 			$this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/' . $this->rest_endpoint, [
 				[
-					'methods'  => WP_REST_Server::CREATABLE,
-					'callback' => [ $this, 'post_user' ],
-					'args'     => [
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => [ $this, 'post_user' ],
+					'permission_callback' => [ $this, 'get_credentials_permissions_check' ],
+					'args'                => [
 						'id' => [
 							'description' => __( 'Unique identifier for the resource (Auction ID).', 'goodbids' ),
 							'type'        => 'integer',
@@ -106,5 +107,26 @@ class User extends WC_REST_Controller {
 		$payload->set_user_id( $user_id );
 
 		return rest_ensure_response( $payload->get_data() );
+	}
+
+	/**
+	 * Check whether a given request has permission to read Auction User data.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 *
+	 * @return WP_Error|boolean
+	 */
+	public function get_credentials_permissions_check( WP_REST_Request $request ) : WP_Error|bool {
+		if ( ! wc_rest_check_post_permissions( goodbids()->auctions->get_post_type(), 'read', $request['id'] ) ) {
+			return new WP_Error(
+				'woocommerce_rest_cannot_view',
+				__( 'Sorry, you cannot view this Auction.', 'goodbids' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+
+		return true;
 	}
 }
