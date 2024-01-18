@@ -945,6 +945,48 @@ class Auctions {
 	}
 
 	/**
+	 * Update the Free Bids count for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $free_bids
+	 *
+	 * @return void
+	 */
+	public function update_free_bids( int $auction_id, int $free_bids ) {
+		update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+	}
+
+	/**
+	 * Maybe Award a Free Bid, if available
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @param ?int $user_id
+	 *
+	 * @return bool
+	 */
+	public function maybe_award_free_bids( ?int $auction_id = null, ?int $user_id = null ): bool {
+		if ( ! $this->are_free_bids_allowed( $auction_id ) ) {
+			return false;
+		}
+
+		$free_bids = $this->get_free_bids_available( $auction_id );
+		if ( null === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( goodbids()->users->award_free_bid( $user_id, $auction_id ) ) {
+			$free_bids--;
+			$this->update_free_bids( $auction_id, $free_bids );
+		}
+
+		return false;
+	}
+
+	/**
 	 * Update Auction with some initial data when created.
 	 *
 	 * @since 1.0.0

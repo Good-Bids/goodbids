@@ -430,8 +430,16 @@ class WooCommerce {
 				}
 
 				$auction_id = $this->get_order_auction_id( $order_id );
+				$redirect   = get_permalink( $auction_id );
 
-				wp_safe_redirect( get_permalink( $auction_id ) );
+				if ( ! $this->is_free_bid_order( $order_id ) ) {
+					if ( goodbids()->auctions->maybe_award_free_bids( $auction_id, get_current_user_id() ) ) {
+						// TODO: Let the user know they earned a free bid.
+						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
+					}
+				}
+
+				wp_safe_redirect( $redirect );
 				exit;
 			}
 		);

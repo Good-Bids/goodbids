@@ -60,7 +60,9 @@ class FreeBid {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {
+	public function __construct( int $auction_id_earned ) {
+		$this->auction_id_earned = $auction_id_earned;
+		$this->earned_date       = current_time( 'Y-m-d H:i:s' );
 		return $this;
 	}
 

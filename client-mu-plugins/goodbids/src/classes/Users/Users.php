@@ -97,4 +97,35 @@ class Users {
 	public function get_available_free_bid_count( ?int $user_id = null ): int {
 		return count( $this->get_free_bids( $user_id, self::FREE_BID_STATUS_UNUSED ) );
 	}
+
+	/**
+	 * Award a Free Bid to a User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function award_free_bid( int $user_id, int $auction_id ): bool {
+		$free_bid    = new FreeBid( $auction_id );
+		$free_bids   = $this->get_free_bids( $user_id );
+		$free_bids[] = $free_bid;
+		return $this->save_free_bids( $free_bids, $user_id );
+	}
+
+	/**
+	 * Save Free Bids array to User Meta
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $free_bids
+	 * @param int $user_id
+	 *
+	 * @return bool
+	 */
+	private function save_free_bids( array $free_bids, int $user_id ): bool {
+		return boolval( update_user_meta( $user_id, self::FREE_BIDS_META_KEY, $free_bids ) );
+	}
 }
