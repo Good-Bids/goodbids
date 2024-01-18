@@ -12,3 +12,4 @@ Call the API using the `goodbids()` function.
 * [ACF Block Methods](acf-block-methods.md)
 * [WooCommerce Methods](woocommerce-methods.md)
 * [Auctioneer Methods](auctioneer-methods.md)
+* [User Methods](user-methods.md)
