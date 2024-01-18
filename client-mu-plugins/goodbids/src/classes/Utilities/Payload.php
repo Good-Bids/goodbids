@@ -170,6 +170,7 @@ class Payload {
 			'bidUrl'            => goodbids()->auctions->get_place_bid_url( $this->auction_id ),
 			'currentBid'        => $this->get_current_bid(),
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
+			'freeBidsAvailable' => goodbids()->auctions->get_free_bids_available( $this->auction_id ),
 			'freeBidsAllowed'   => goodbids()->auctions->are_free_bids_allowed( $this->auction_id ),
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid(),

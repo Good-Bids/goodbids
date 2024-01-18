@@ -108,6 +108,12 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const ORDER_TYPE_BID = 'bids';
 
 	/**
@@ -898,6 +904,10 @@ class Auctions {
 	 * @return bool
 	 */
 	public function are_free_bids_allowed( ?int $auction_id = null ): bool {
+		if ( ! $this->get_free_bids_available( $auction_id ) ) {
+			return false;
+		}
+
 		$all_bids  = count( $this->get_bid_order_ids( $auction_id ) );
 		$free_bids = count( $this->get_free_bid_order_ids( $auction_id ) );
 
@@ -907,6 +917,31 @@ class Auctions {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets the number of Available Free Bids for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_free_bids_available( ?int $auction_id = null ): int {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
+		$free_bids = get_post_meta( $auction_id, self::FREE_BIDS_META_KEY, true );
+
+		// Return the default value if we have no value.
+		if ( ! $free_bids && 0 !== $free_bids && '0' !== $free_bids ) {
+			$free_bids = goodbids()->get_config( 'auctions.default-free-bids' );
+			update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+		}
+
+		return intval( $free_bids );
 	}
 
 	/**
