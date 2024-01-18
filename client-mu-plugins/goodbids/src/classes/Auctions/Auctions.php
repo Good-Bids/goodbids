@@ -904,10 +904,6 @@ class Auctions {
 	 * @return bool
 	 */
 	public function are_free_bids_allowed( ?int $auction_id = null ): bool {
-		if ( ! $this->get_free_bids_available( $auction_id ) ) {
-			return false;
-		}
-
 		$all_bids  = count( $this->get_bid_order_ids( $auction_id ) );
 		$free_bids = count( $this->get_free_bid_order_ids( $auction_id ) );
 
@@ -954,7 +950,7 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	public function update_free_bids( int $auction_id, int $free_bids ) {
+	public function update_free_bids( int $auction_id, int $free_bids ): void {
 		update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
 	}
 
