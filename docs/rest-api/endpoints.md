@@ -53,3 +53,28 @@ The response will contain the details shown below.
   "lastBid": "number"
 }
 ```
+
+### GET `/wp/v2/auction/<id>/user`
+
+Retrieves the User-related details for the given Auction ID.
+
+#### Parameters
+
+#### Parameters
+
+| Parameter | Type   | Description                              |
+|-----------|--------|------------------------------------------|
+| cookie    | string | The Session Cookie for the desired user. |
+
+#### Response
+
+The response will contain the details shown below.
+```json
+{
+  "isLastBidder": "bool",
+  "rewardUrl": "string",
+  "userFreeBids": "number",
+  "userTotalBids": "number", 
+  "userTotalDonated": "number"
+}
+```
