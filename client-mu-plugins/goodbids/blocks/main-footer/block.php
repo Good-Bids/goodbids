@@ -9,12 +9,14 @@
 
 namespace GoodBids\Blocks;
 
+use GoodBids\Plugins\ACF\ACFBlock;
+
 /**
  * Class for Main Footer Block
  *
  * @since 1.0.0
  */
-class MainFooter {
+class MainFooter extends ACFBlock {
 
 	/**
 	 * @since 1.0.0
@@ -45,7 +47,8 @@ class MainFooter {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {
+	public function __construct( array $block ) {
+		parent::__construct( $block );
 		$this->setup_footer_links();
 	}
 
