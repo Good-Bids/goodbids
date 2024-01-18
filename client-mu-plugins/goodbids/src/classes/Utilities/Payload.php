@@ -36,6 +36,14 @@ class Payload {
 	private ?int $auction_id;
 
 	/**
+	 * The User ID.
+	 *
+	 * @since 1.0.0
+	 * @var ?int
+	 */
+	private ?int $user_id = null;
+
+	/**
 	 * The Bid Product
 	 *
 	 * @since 1.0.0
@@ -66,10 +74,52 @@ class Payload {
 	 *
 	 * @param int $auction_id
 	 * @param array $data
+	 *
+	 * @return Payload
 	 */
 	public function __construct( int $auction_id, array $data = [] ) {
-		$this->auction_id = $auction_id;
+		$this->set_auction_id( $auction_id );
 		$this->set_payload_data( $data );
+		return $this;
+	}
+
+	/**
+	 * Sets the Auction ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return Payload
+	 */
+	public function set_auction_id( int $auction_id ): Payload {
+		$this->auction_id = $auction_id;
+		return $this;
+	}
+
+	/**
+	 * Sets the User ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return Payload
+	 */
+	public function set_user_id( int $user_id ): Payload {
+		$this->user_id = $user_id;
+		return $this;
+	}
+
+	/**
+	 * Returns the User ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_user_id(): int {
+		return $this->user_id;
 	}
 
 	/**
@@ -79,10 +129,11 @@ class Payload {
 	 *
 	 * @param array $data
 	 *
-	 * @return void
+	 * @return Payload
 	 */
-	public function set_payload_data( array $data ): void {
+	public function set_payload_data( array $data ): Payload {
 		$this->payload = array_merge( $this->payload, $data );
+		return $this;
 	}
 
 	/**
@@ -120,14 +171,19 @@ class Payload {
 			'currentBid'        => $this->get_current_bid(),
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
 			'freeBidsAvailable' => false,
+			'isLastBidder'      => goodbids()->auctions->is_user_last_bidder( $this->auction_id, $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid(),
 			'lastBidder'        => $this->get_last_bidder(),
-			'rewardUrl'         => '', // TBD.
+			'rewardUrl'         => goodbids()->auctions->get_reward_url(), // TBD.
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
 			'totalBids'         => goodbids()->auctions->get_bid_count( $this->auction_id ),
 			'totalRaised'       => goodbids()->auctions->get_total_raised( $this->auction_id ),
+			'userId'            => $this->get_user_id(),
+			'userFreeBids'      => 0, // TBD.
+			'userTotalBids'     => goodbids()->auctions->get_user_bid_count( $this->auction_id, $this->get_user_id() ),
+			'userTotalDonated'  => goodbids()->auctions->get_user_total_donated( $this->auction_id, $this->get_user_id() ),
 			default             => null,
 		};
 	}
