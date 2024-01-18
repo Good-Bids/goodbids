@@ -60,8 +60,6 @@ Retrieves the User-related details for the given Auction ID.
 
 #### Parameters
 
-#### Parameters
-
 | Parameter | Type   | Description                              |
 |-----------|--------|------------------------------------------|
 | cookie    | string | The Session Cookie for the desired user. |

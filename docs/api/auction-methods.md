@@ -107,5 +107,11 @@ Checks if the current user is the winner of the Auction.
 `goodbids()->auctions->get_bid_count( int $auction_id )`  
 Get the number of bids for the given Auction ID.
 
+`goodbids()->auctions->get_user_bid_count( int $auction_id, int $user_id )`  
+Get the number of bids by the given User for the given Auction ID.
+
+`goodbids()->auctions->get_user_total_donated( int $auction_id, int $user_id )`  
+Get the total amount donated by the given User for the given Auction ID.
+
 `goodbids()->auctions->get_status( int $auction_id )`  
 Returns the status of the Auction. Possible values are: "Upcoming", "Live", and "Closed". If the Auction has not yet been published, it will return "Draft".
