@@ -28,7 +28,7 @@ Returns the URL to place a bid on the Auction. If `$auction_id` is not provided,
 
 `goodbids()->auctions->get_reward_product_id( int $auction_id )`  
 Returns the Auction's Reward Product ID. If `$auction_id` is not provided, the current post ID will be used.
-
+ 
 `goodbids()->auctions->get_reward_product( int $auction_id )`  
 Returns the Auction's Reward Product object. If `$auction_id` is not provided, the current post ID will be used.
 

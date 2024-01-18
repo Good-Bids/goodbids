@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins;
 
+use GoodBids\Auctions\Auctions;
+use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\API\Credentials;
 use WC_Coupon;
 use WC_Product;
@@ -420,7 +422,7 @@ class WooCommerce {
 		add_action(
 			'woocommerce_thankyou',
 			function ( int $order_id ): void {
-				if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+				if ( is_admin() || wp_doing_ajax() || headers_sent() ) {
 					return;
 				}
 
@@ -429,8 +431,6 @@ class WooCommerce {
 				}
 
 				$auction_id = $this->get_order_auction_id( $order_id );
-
-				// TODO: Check if Auction has ended.
 
 				wp_safe_redirect( get_permalink( $auction_id ) );
 				exit;
@@ -449,17 +449,18 @@ class WooCommerce {
 		add_action(
 			'woocommerce_thankyou',
 			function ( int $order_id ): void {
-				if ( is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || headers_sent() ) {
+				if ( is_admin() ) {
 					return;
 				}
 
-				if ( ! $this->is_bid_order( $order_id ) ) {
+				if ( ! $this->is_reward_order( $order_id ) ) {
 					return;
 				}
 
 				$auction_id = $this->get_order_auction_id( $order_id );
+				$product_id = goodbids()->auctions->get_reward_product_id( $auction_id );
 
-				// TODO: Check if Auction has ended.
+				update_post_meta( $product_id, Auctions::REWARD_REDEEMED_META_KEY, 1 );
 
 				wp_safe_redirect( get_permalink( $auction_id ) );
 				exit;
@@ -760,7 +761,7 @@ class WooCommerce {
 					$coupon_code = $this->get_reward_coupon_code( $auction_id, $product->get_id() );
 
 					if ( ! $coupon_code ) {
-						return add_query_arg( 'gb-notice', 'get-reward-coupon-error', $redirect_url );
+						return add_query_arg( 'gb-notice', Notices::GET_REWARD_COUPON_ERROR, $redirect_url );
 					}
 				}
 
@@ -769,7 +770,7 @@ class WooCommerce {
 					// Apply Reward Coupon.
 					if ( ! WC()->cart->add_discount( $coupon_code ) ) {
 						// TODO: Log Error.
-						return add_query_arg( 'gb-notice', 'apply-reward-coupon-error', $redirect_url );
+						return add_query_arg( 'gb-notice', Notices::APPLY_REWARD_COUPON_ERROR, $redirect_url );
 					}
 				}
 
@@ -867,7 +868,7 @@ class WooCommerce {
 
 					$args     = [
 						'redirect-to' => urlencode( $redirect_to ),
-						'gb-notice'   => 'not-authenticated-reward',
+						'gb-notice'   => Notices::NOT_AUTHENTICATED_REWARD,
 					];
 					$redirect = add_query_arg( $args, $auth_url );
 
@@ -878,7 +879,7 @@ class WooCommerce {
 				$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $product_id );
 
 				if ( ! $auction_id ) {
-					$redirect = add_query_arg( 'gb-notice', 'auction-not-found', $auth_url );
+					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $auth_url );
 					wp_safe_redirect( $redirect );
 					exit;
 				}
@@ -886,13 +887,19 @@ class WooCommerce {
 				$auction_url = get_permalink( $auction_id );
 
 				if ( ! goodbids()->auctions->has_ended( $auction_id ) ) {
-					$redirect = add_query_arg( 'gb-notice', 'auction-not-ended', $auction_url );
+					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_ENDED, $auction_url );
 					wp_safe_redirect( $redirect );
 					exit;
 				}
 
 				if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
-					$redirect = add_query_arg( 'gb-notice', 'not-auction-winner', $auction_url );
+					$redirect = add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $auction_url );
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( goodbids()->auctions->is_reward_redeemed( $auction_id ) ) {
+					$redirect = add_query_arg( 'gb-notice', Notices::REWARD_ALREADY_REDEEMED, $auction_url );
 					wp_safe_redirect( $redirect );
 					exit;
 				}

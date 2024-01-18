@@ -100,6 +100,12 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const REWARD_REDEEMED_META_KEY = '_goodbids_reward_redeemed';
+
+	/**
+	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -563,6 +569,20 @@ class Auctions {
 		}
 
 		return wc_get_product( $reward_product_id );
+	}
+
+	/**
+	 * Check if reward for an Auction has been redeemed
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_reward_redeemed( ?int $auction_id = null ): bool {
+		$reward_id = $this->get_reward_product_id( $auction_id );
+		return boolval( get_post_meta( $reward_id, self::REWARD_REDEEMED_META_KEY, true ) );
 	}
 
 	/**
