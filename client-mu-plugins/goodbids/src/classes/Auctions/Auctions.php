@@ -889,6 +889,27 @@ class Auctions {
 	}
 
 	/**
+	 * Checks if Free Bids are allowed on Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function are_free_bids_allowed( ?int $auction_id = null ): bool {
+		$all_bids  = count( $this->get_bid_order_ids( $auction_id ) );
+		$free_bids = count( $this->get_free_bid_order_ids( $auction_id ) );
+
+		// Free orders must be less than 50% of all orders.
+		if ( round( $free_bids / $all_bids, 2 ) > 0.5 ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Update Auction with some initial data when created.
 	 *
 	 * @since 1.0.0
@@ -1034,13 +1055,17 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
+	 * @param ?int $auction_id
 	 * @param int $limit
 	 * @param ?int $user_id
 	 *
 	 * @return int[]
 	 */
-	public function get_bid_order_ids( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
+	public function get_bid_order_ids( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
 		$args = [
 			'limit'   => $limit,
 			'status'  => [ 'processing', 'completed' ],
@@ -1076,6 +1101,48 @@ class Auctions {
 	}
 
 	/**
+	 * Get Order IDs that have been placed using a Free Bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @param int $limit
+	 * @param ?int $user_id
+	 *
+	 * @return int[]
+	 */
+	public function get_free_bid_order_ids( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		$orders = $this->get_bid_order_ids( $auction_id, $limit, $user_id );
+		$return = [];
+
+		foreach ( $orders as $order_id ) {
+			if ( ! goodbids()->woocommerce->is_free_bid_order( $order_id ) ) {
+				continue;
+			}
+
+			$return[] = $order_id;
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Get Order Objects that have been placed using a Free Bid.
+	 *
+	 * @param ?int $auction_id
+	 * @param int $limit
+	 * @param ?int $user_id
+	 *
+	 * @return WC_Order[]
+	 */
+	public function get_free_bid_orders( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		return array_map(
+			fn ( $order ) => wc_get_order( $order ),
+			$this->get_free_bid_order_ids( $auction_id, $limit, $user_id )
+		);
+	}
+
+	/**
 	 * Get Bid Order objects for an Auction
 	 *
 	 * @since 1.0.0
@@ -1087,11 +1154,9 @@ class Auctions {
 	 * @return WC_Order[]
 	 */
 	public function get_bid_orders( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
-		$orders = $this->get_bid_order_ids( $auction_id, $limit, $user_id );
-
 		return array_map(
 			fn ( $order ) => wc_get_order( $order ),
-			$orders
+			$this->get_bid_order_ids( $auction_id, $limit, $user_id )
 		);
 	}
 
@@ -1585,6 +1650,7 @@ class Auctions {
 			self::CRON_AUCTION_START_HOOK,
 			function (): void {
 				$auctions = $this->get_starting_auctions();
+				$starts   = 0;
 
 				if ( ! $auctions->have_posts() ) {
 					return;
@@ -1592,9 +1658,12 @@ class Auctions {
 
 				foreach ( $auctions->posts as $auction_id ) {
 					if ( $this->trigger_auction_start( $auction_id ) ) {
-						// Update the Auction meta to indicate it has started.
-						update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+						$starts++;
 					}
+				}
+
+				if ( count( $auctions->posts ) !== $starts ) {
+					// TODO: Log error.
 				}
 			}
 		);
@@ -1705,6 +1774,12 @@ class Auctions {
 		if ( true !== $result ) {
 			return false;
 		}
+
+		// Update the Auction meta to indicate it has started.
+		// This is used for the sole purposes of filtering started auctions from get_starting_auctions() method.
+		update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+
+		do_action( 'goodbids_auction_start', $auction_id );
 
 		return true;
 	}

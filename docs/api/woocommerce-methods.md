@@ -16,3 +16,6 @@ Checks if the given order ID is a Bid Order.
 
 `goodbids()->woocommerce->is_reward_order( int $order_id )`  
 Checks if the given order ID is a Reward Order.
+
+`goodbids()->woocommerce->is_free_bid_order( int $order_id )`  
+Checks if the given order ID was paid using a Free Bid.
