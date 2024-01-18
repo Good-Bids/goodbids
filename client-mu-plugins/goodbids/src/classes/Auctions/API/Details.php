@@ -58,9 +58,10 @@ class Details extends WC_REST_Controller {
 		register_rest_route(
 			$this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/' . $this->rest_endpoint, [
 				[
-					'methods'  => WP_REST_Server::READABLE,
-					'callback' => [ $this, 'get_details' ],
-					'args'     => [
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => [ $this, 'get_details' ],
+					'permission_callback' => [ $this, 'get_credentials_permissions_check' ],
+					'args'                => [
 						'id' => [
 							'description' => __( 'Unique identifier for the resource (Auction ID).', 'goodbids' ),
 							'type'        => 'integer',
@@ -82,6 +83,20 @@ class Details extends WC_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function get_details( WP_REST_Request $request ): WP_Error|WP_REST_Response {
+		$auction_id = $request['id'];
+
+		if ( ! $auction_id || ! is_numeric( $auction_id ) ) {
+			return new WP_Error( 'missing_id', __( 'Missing valid resource ID.', 'goodbids' ) );
+		}
+
+		if ( goodbids()->auctions->get_post_type() !== get_post_type( $auction_id ) ) {
+			return new WP_Error( 'not_auction_type', __( 'The provided resource ID is not a valid Auction post type.', 'goodbids' ) );
+		}
+
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			return new WP_Error( 'auction_not_published', __( 'The provided Auction ID does not have a published status.', 'goodbids' ) );
+		}
+
 		$payload_data = [
 			'auctionStatus',
 			'socketUrl',
@@ -89,7 +104,7 @@ class Details extends WC_REST_Controller {
 			'endTime',
 		];
 
-		$status = strtolower( goodbids()->auctions->get_status( $request['id'] ) );
+		$status = strtolower( goodbids()->auctions->get_status( $auction_id ) );
 
 		if ( strtolower( Auctions::STATUS_UPCOMING ) === $status ) {
 			$payload_data[] = 'startTime';
@@ -121,5 +136,26 @@ class Details extends WC_REST_Controller {
 		$data = ( new Payload( $request['id'], $payload_data ) )->get_data();
 
 		return rest_ensure_response( $data );
+	}
+
+	/**
+	 * Check whether a given request has permission to read Auction data.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 *
+	 * @return WP_Error|boolean
+	 */
+	public function get_credentials_permissions_check( WP_REST_Request $request ) : WP_Error|bool {
+		if ( ! wc_rest_check_post_permissions( goodbids()->auctions->get_post_type(), 'read', $request['id'] ) ) {
+			return new WP_Error(
+				'woocommerce_rest_cannot_view',
+				__( 'Sorry, you cannot view this Auction.', 'goodbids' ),
+				[ 'status' => rest_authorization_required_code() ]
+			);
+		}
+
+		return true;
 	}
 }

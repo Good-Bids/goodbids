@@ -20,12 +20,6 @@ class BidNow extends ACFBlock {
 
 	/**
 	 * @since 1.0.0
-	 * @var array
-	 */
-	private array $block = [];
-
-	/**
-	 * @since 1.0.0
 	 * @var ?int
 	 */
 	private ?int $auction_id = null;
@@ -44,7 +38,8 @@ class BidNow extends ACFBlock {
 	 * @param array $block
 	 */
 	public function __construct( array $block ) {
-		$this->block      = $block;
+		parent::__construct( $block );
+
 		$this->auction_id = goodbids()->auctions->get_auction_id();
 
 		if ( $this->auction_id ) {
@@ -77,10 +72,21 @@ class BidNow extends ACFBlock {
 	public function get_button_text(): string {
 		$button_text = __( 'GOODBID Now', 'goodbids' );
 
+		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
+			$claim_text = __( 'Claim Your Reward', 'goodbids' );
+
+			if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
+				return $claim_text;
+			}
+
+			// TODO: This is temporary for testing, but should be changed.
+			return $claim_text;
+		}
+
 		if ( $this->bid_product_id && ! is_admin() ) {
 			$bid_product = wc_get_product( $this->bid_product_id );
 			$button_text = sprintf(
-			/* translators: %s: Bid Price */
+				/* translators: %s: Bid Price */
 				__( 'GOODBID %s Now', 'goodbids' ),
 				wc_price( $bid_product->get_regular_price() )
 			);
@@ -97,7 +103,22 @@ class BidNow extends ACFBlock {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return $this->bid_product_id && ! is_admin() ? add_query_arg( 'add-to-cart', $this->bid_product_id, wc_get_checkout_url() ) : '#';
+		if ( is_admin() ) {
+			return '#';
+		}
+
+		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
+			$reward_url = goodbids()->auctions->get_claim_reward_url( $this->auction_id );
+
+			if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
+				return $reward_url;
+			}
+
+			// TODO: This is temporary for testing, but should be removed or changed.
+			return $reward_url;
+		}
+
+		return $this->bid_product_id ? add_query_arg( 'add-to-cart', $this->bid_product_id, wc_get_checkout_url() ) : '#';
 	}
 
 	/**
@@ -112,18 +133,14 @@ class BidNow extends ACFBlock {
 	}
 
 	/**
-	 * Determine if Auction is active.
+	 * Determine if Auction has started.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
-	public function is_auction_active(): bool {
+	public function has_auction_started(): bool {
 		if ( ! goodbids()->auctions->has_started( $this->auction_id ) ) {
-			return false;
-		}
-
-		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
 			return false;
 		}
 
@@ -131,15 +148,15 @@ class BidNow extends ACFBlock {
 	}
 
 	/**
-	 * Display a message when auction is not active.
+	 * Display a message when auction isn't live yet.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function render_auction_not_active(): void {
+	public function render_auction_not_started(): void {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Auction is currently not active.', 'goodbids' )
+			esc_html__( 'Auction has not started.', 'goodbids' )
 		);
 	}
 }

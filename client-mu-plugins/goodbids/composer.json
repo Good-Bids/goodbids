@@ -55,8 +55,8 @@
 		"wpackagist-plugin/accessibility-checker": "^1.7",
 		"wpackagist-plugin/svg-support": "^2.5",
 		"wpackagist-plugin/user-switching": "^1.7",
-		"wpackagist-plugin/woocommerce": "^8.4",
-		"wpackagist-plugin/woocommerce-gateway-stripe": "^7.8",
+		"wpackagist-plugin/woocommerce": "^8.5",
+		"wpackagist-plugin/woocommerce-gateway-stripe": "^7.9",
 		"wpackagist-plugin/woocommerce-services": "^2.4",
 		"wpengine/advanced-custom-fields-pro": "*"
 	},

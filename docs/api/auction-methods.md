@@ -28,9 +28,15 @@ Returns the URL to place a bid on the Auction. If `$auction_id` is not provided,
 
 `goodbids()->auctions->get_reward_product_id( int $auction_id )`  
 Returns the Auction's Reward Product ID. If `$auction_id` is not provided, the current post ID will be used.
-
+ 
 `goodbids()->auctions->get_reward_product( int $auction_id )`  
 Returns the Auction's Reward Product object. If `$auction_id` is not provided, the current post ID will be used.
+
+`goodbids()->auctions->get_auction_id_from_reward_product_id( int $reward_id )`  
+Returns the associated Auction's ID for the given Reward Product ID.
+
+`goodbids()->auctions->get_claim_reward_url( int $auction_id )`  
+Returns the URL where the winner can claim the Reward product.
 
 `goodbids()->auctions->get_product_type( int $product_id )`  
 Returns the type of the given product ID. Possible types are: "bids", "rewards", or null.
@@ -91,6 +97,12 @@ Returns the Bid Order object of the last bid for the given Auction ID.
 
 `goodbids()->auctions->get_last_bidder( int $auction_id )`  
 Returns the User object that placed the last bid.
+
+`goodbids()->auctions->get_winning_bidder( int $auction_id )`  
+Returns the User object of the winning bidder. Returns null if Auction has not ended.
+
+`goodbids()->auctions->is_current_user_winner( int $auction_id )`  
+Checks if the current user is the winner of the Auction.
 
 `goodbids()->auctions->get_bid_count( int $auction_id )`  
 Get the number of bids for the given Auction ID.

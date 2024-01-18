@@ -174,7 +174,7 @@ class Payload {
 			'isLastBidder'      => goodbids()->auctions->is_user_last_bidder( $this->auction_id, $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid(),
 			'lastBidder'        => $this->get_last_bidder(),
-			'rewardUrl'         => goodbids()->auctions->get_reward_url(), // TBD.
+			'rewardUrl'         => goodbids()->auctions->get_claim_reward_url(), // TBD.
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),

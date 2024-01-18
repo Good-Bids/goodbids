@@ -9,43 +9,46 @@
 
 namespace GoodBids\Blocks;
 
+use GoodBids\Plugins\ACF\ACFBlock;
+
 /**
  * Class for Main Footer Block
  *
  * @since 1.0.0
  */
-class MainFooter {
+class MainFooter extends ACFBlock {
 
 	/**
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $terms_conditions_title = null;
+	private string $terms_conditions_title = '';
 
 	/**
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $terms_conditions_url = null;
+	private string $terms_conditions_url = '';
 
 	/**
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $privacy_policy_title = null;
+	private string $privacy_policy_title = '';
 
 	/**
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $privacy_policy_url = null;
+	private string $privacy_policy_url = '';
 
 	/**
 	 * Initialize the block.
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {
+	public function __construct( array $block ) {
+		parent::__construct( $block );
 		$this->setup_footer_links();
 	}
 
@@ -67,7 +70,7 @@ class MainFooter {
 
 		if ( $privacy_policy_id ) {
 			$this->privacy_policy_title = get_the_title( $privacy_policy_id );
-			$this->privacy_policy_url   = get_privacy_policy_url( $privacy_policy_id );
+			$this->privacy_policy_url   = get_privacy_policy_url();
 		}
 
 		if ( $terms_conditions_id ) {
