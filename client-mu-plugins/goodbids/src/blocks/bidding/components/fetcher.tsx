@@ -10,10 +10,12 @@ export function Fetcher() {
 	// TODO: If auctioneer fails, we should swap this to retry every minute or so.
 	const refetchInterval: number | undefined = undefined;
 
-	const { isSuccess: auctionSuccess, data: auctionData } = useGetAuction(
-		auctionId,
-		refetchInterval,
-	);
+	const {
+		isSuccess: auctionSuccess,
+		data: auctionData,
+		isFetching: auctionLoading,
+		isError: auctionError,
+	} = useGetAuction(auctionId, refetchInterval);
 
 	useEffect(() => {
 		if (auctionSuccess) {
@@ -23,6 +25,15 @@ export function Fetcher() {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [auctionSuccess]);
+
+	// TODO: Add reasonable loading and error states.
+	if (auctionLoading) {
+		return <div>Loading...</div>;
+	}
+
+	if (auctionError) {
+		return <div>Error loading auction.</div>;
+	}
 
 	return null;
 }

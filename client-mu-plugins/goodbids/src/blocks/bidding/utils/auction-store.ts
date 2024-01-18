@@ -1,8 +1,14 @@
 import { create } from 'zustand';
-import { AuctionStatus, Message } from './types';
-import { AuctionUpcomingResponse } from './get-auction';
+import { AuctionStatus, SocketMessage } from './types';
+import {
+	AuctionClosedResponse,
+	AuctionLiveResponse,
+	AuctionUpcomingResponse,
+} from './get-auction';
+import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 type AuctionState = {
+	socketUrl: string;
 	totalBids: number;
 	totalRaised: number;
 	lastBid: number;
@@ -14,15 +20,20 @@ type AuctionState = {
 	auctionStatus: AuctionStatus;
 	initialFetchCompleted: boolean;
 	useSocket: boolean;
+	usePolling: boolean;
 };
 
 interface AuctionActions {
-	setAuctionState: (state: Message) => void;
+	handleSocketUpdate: (state: SocketMessage) => void;
 	setAuctionStatus: (status: AuctionStatus) => void;
 	setUpcomingAuction: (data: AuctionUpcomingResponse) => void;
+	setLiveAuction: (data: AuctionLiveResponse) => void;
+	setClosedAuction: (data: AuctionClosedResponse) => void;
+	setUsePolling: (usePolling: boolean) => void;
 }
 
 const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
+	socketUrl: '',
 	totalBids: 0,
 	totalRaised: 0,
 	lastBid: 0,
@@ -34,16 +45,21 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 	auctionStatus: 'upcoming',
 	initialFetchCompleted: false,
 	useSocket: false,
-	setAuctionState: (state: Message) => {
+	usePolling: false,
+	handleSocketUpdate: (state: SocketMessage) => {
+		if (state.type === 'not-found') {
+			set({ usePolling: true });
+			return;
+		}
+
 		set({
 			totalBids: state.payload.totalBids,
 			totalRaised: state.payload.totalRaised,
 			lastBid: state.payload.lastBid,
-			lastBidder: state.payload.lastBidder,
 			startTime: new Date(state.payload.startTime),
 			endTime: new Date(state.payload.endTime),
-			freeBidsAvailable: state.payload.freeBidsAvailable,
 			currentBid: state.payload.currentBid,
+			auctionStatus: state.payload.auctionStatus,
 		});
 	},
 	setAuctionStatus: (status: AuctionStatus) => {
@@ -55,9 +71,32 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
 			initialFetchCompleted: true,
+			useSocket: false,
 		});
 	},
+	setLiveAuction: (data: AuctionLiveResponse) => {
+		set({
+			...data,
+			startTime: new Date(data.startTime),
+			endTime: new Date(data.endTime),
+			initialFetchCompleted: true,
+			useSocket: true,
+		});
+	},
+	setClosedAuction: (data: AuctionClosedResponse) => {
+		set({
+			...data,
+			endTime: new Date(data.endTime),
+			initialFetchCompleted: true,
+			useSocket: false,
+		});
+	},
+	setUsePolling: (usePolling: boolean) => {
+		set({ usePolling });
+	},
 }));
+
+mountStoreDevtool('Auction', useAuctionStore);
 
 export const useAuction = () => {
 	return useAuctionStore((state) => state);

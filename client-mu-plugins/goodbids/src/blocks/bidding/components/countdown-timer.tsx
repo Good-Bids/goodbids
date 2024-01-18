@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ClockIcon } from './clock-icon';
 import { DEMO_DATA } from '../utils/demo-data';
 import { useAuction } from '../utils/auction-store';
@@ -140,7 +140,7 @@ export function CountdownTimer() {
 
 		return () => clearInterval(interval);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [startTime, endTime]);
 
 	return (
 		<div className="flex items-center gap-3 px-4">

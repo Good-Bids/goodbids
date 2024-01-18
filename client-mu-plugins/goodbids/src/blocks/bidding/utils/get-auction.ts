@@ -49,6 +49,7 @@ function auctionOptions(auctionId: number, refetchInterval?: number) {
 		queryKey: ['auction', auctionId],
 		queryFn: async () => getAuction(auctionId),
 		refetchInterval: refetchInterval,
+		refetchOnWindowFocus: false,
 	});
 }
 

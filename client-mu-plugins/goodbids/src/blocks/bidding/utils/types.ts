@@ -9,11 +9,17 @@ type AuctionType = {
 	totalRaised: number;
 	currentBid: number;
 	lastBid: number;
-	lastBidder: string;
-	freeBidsAvailable: boolean;
+	auctionStatus: AuctionStatus;
 };
 
-export type Message = {
+type SocketSuccessMessage = {
 	type: MessageType;
 	payload: AuctionType;
 };
+
+type SocketErrorMessage = {
+	type: 'not-found';
+	payload: string;
+};
+
+export type SocketMessage = SocketSuccessMessage | SocketErrorMessage;

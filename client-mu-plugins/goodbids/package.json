@@ -41,6 +41,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@types/node": "^20.11.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/wordpress__block-editor": "^11.5.9",
@@ -64,6 +65,7 @@
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
     "rollup": "^4.9.4",
+    "simple-zustand-devtools": "^1.1.0",
     "tailwindcss": "^3.4.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.2.2",

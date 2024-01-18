@@ -1,4 +1,3 @@
-import React from 'react';
 import { DEMO_DATA } from '../utils/demo-data';
 import { useAuction } from '../utils/auction-store';
 

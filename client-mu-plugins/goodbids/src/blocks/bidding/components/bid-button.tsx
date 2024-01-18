@@ -1,4 +1,3 @@
-import React from 'react';
 import clsx from 'clsx';
 import { useAuction } from '../utils/auction-store';
 import { DEMO_DATA } from '../utils/demo-data';

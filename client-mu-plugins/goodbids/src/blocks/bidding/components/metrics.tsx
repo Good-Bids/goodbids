@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAuction } from '../utils/auction-store';
 
 type MetricType = 'bids' | 'raised' | 'last-bid' | 'winning-bid';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BidButton } from './bid-button';
 import { CountdownTimer } from './countdown-timer';
 import { EarnFreeBids } from './earn-free-bids';
@@ -13,16 +13,16 @@ import { useAuction } from '../utils/auction-store';
 
 export function Driver() {
 	const [queryClient] = useState(() => client);
-	const { initialFetchCompleted } = useAuction();
+	const { initialFetchCompleted, usePolling } = useAuction();
 
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="w-full text-lg flex flex-col gap-4">
 				<Fetcher />
-				<Socket />
 
 				{initialFetchCompleted && (
 					<>
+						{!usePolling && <Socket />}
 						<Metrics />
 						<CountdownTimer />
 						<BidButton />
