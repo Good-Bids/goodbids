@@ -33,7 +33,7 @@ export function Fetcher() {
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [auctionSuccess]);
+	}, [auctionSuccess, auctionData]);
 
 	// TODO: Add reasonable loading and error states.
 	if (auctionLoading) {
