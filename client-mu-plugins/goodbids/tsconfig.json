@@ -16,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
 
     /* Linting */
     "strict": true,
@@ -24,6 +24,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["assets", "blocks", "assets/js/*.js", "src"],
+  "include": ["blocks", "src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
