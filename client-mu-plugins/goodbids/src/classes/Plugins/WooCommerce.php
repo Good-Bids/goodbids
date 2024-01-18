@@ -593,6 +593,31 @@ class WooCommerce {
 	}
 
 	/**
+	 * Check if an Order was placed using a Free Bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function is_free_bid_order( int $order_id ): bool {
+		// Not a Bid Order.
+		if ( Auctions::ORDER_TYPE_BID !== $this->get_order_type( $order_id ) ) {
+			return false;
+		}
+
+		$order = wc_get_order( $order_id );
+
+		// TODO: Temporary Solution until Free Bids are implemented.
+		if ( 0 < $order->get_total( 'edit' ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Validate Bids during checkout
 	 *
 	 * @since 1.0.0

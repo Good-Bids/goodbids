@@ -83,14 +83,20 @@ Returns the Auction's Expected High Bid value. If `$auction_id` is not provided,
 `goodbids()->auctions->get_guid( int $auction_id )`  
 Returns the Auction's Unique GUID. If `$auction_id` is not provided, the current post ID will be used.
 
-`goodbids()->auctions->get_bid_order_ids( int $auction_id, int $limit )`  
-Returns an array of Bid Order IDs for the given Auction ID. `$limit` can be specified to return a set number of orders.
+`goodbids()->auctions->get_bid_order_ids( int $auction_id, int $limit, int $user_id )`  
+Returns an array of Bid Order IDs for the given Auction ID. `$limit` can be specified to return a set number of orders. `$user_id` can be specified to return orders for a specific user.
 
-`goodbids()->auctions->get_bid_orders( int $auction_id, int $limit )`  
-Returns an array of Bid Orders for the given Auction ID. `$limit` can be specified to return a set number of orders.
+`goodbids()->auctions->get_bid_orders( int $auction_id, int $limit, int $user_id )`  
+Returns an array of Bid Order Objects for the given Auction ID. `$limit` can be specified to return a set number of orders. `$user_id` can be specified to return orders for a specific user.
 
-`goodbids()->auctions->get_bid_order( int $auction_id, int $limit )`  
-Returns an array of Bid Order objects for the given Auction ID. `$limit` can be specified to return a set number of orders.
+`goodbids()->auctions->get_free_bid_order_ids( int $auction_id, int $limit, int $user_id )`  
+Returns an array of Bid Order IDs for the given Auction ID. `$limit` can be specified to return a set number of orders. `$user_id` can be specified to return free bid orders for a specific user.
+
+`goodbids()->auctions->get_free_bid_orders( int $auction_id, int $limit, int $user_id )`  
+Returns an array of Bid Order Objects for the given Auction ID. `$limit` can be specified to return a set number of orders. `$user_id` can be specified to return free bid orders for a specific user.
+
+`goodbids()->auctions->are_free_bids_allowed( int $auction_id )`  
+Checks if Free Bids are allowed for the given Auction ID.
 
 `goodbids()->auctions->get_last_bid( int $auction_id )`  
 Returns the Bid Order object of the last bid for the given Auction ID.

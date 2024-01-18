@@ -42,3 +42,16 @@ add_action(
 	}
 );
 ```
+
+### goodbids_auction_start
+
+Fired when an auction start has been successfully triggered.
+
+```php
+add_action(
+	'goodbids_auction_start',
+	function ( int $auction_id ): void {
+		// Maybe update some post meta?
+	}
+);
+```
