@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAuction } from '../utils/auction-store';
 
 type MetricType = 'bids' | 'raised' | 'last-bid' | 'winning-bid';
@@ -36,7 +35,7 @@ export function Metrics() {
 			<MetricBlock type="bids" value={totalBids} />
 			<MetricBlock type="raised" value={totalRaised} />
 			<MetricBlock
-				type={auctionStatus === 'ended' ? 'winning-bid' : 'last-bid'}
+				type={auctionStatus === 'closed' ? 'winning-bid' : 'last-bid'}
 				value={lastBid}
 			/>
 		</div>

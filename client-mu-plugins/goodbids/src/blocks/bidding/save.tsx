@@ -6,9 +6,14 @@ import { useBlockProps } from '@wordpress/block-editor';
 /**
  * Internal Dependencies
  */
-import * as React from 'react';
 
-const Save = ({ attributes }) => {
+type SaveProps = {
+	attributes: {
+		auctionId: number;
+	};
+};
+
+const Save = ({ attributes }: SaveProps) => {
 	const { auctionId } = attributes;
 	return (
 		<div
