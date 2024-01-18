@@ -6,7 +6,6 @@ import { registerBlockType } from '@wordpress/blocks';
 /**
  * Block metadata
  */
-// @ts-expect-error No issues loading json file.
 import metadata from './block.json';
 
 /**
@@ -24,4 +23,5 @@ const settings = {
 };
 
 // Register the block
+// @ts-expect-error @wordpress/blocks just does not type well
 registerBlockType(metadata, settings);

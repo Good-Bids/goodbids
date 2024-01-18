@@ -96,7 +96,9 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 	},
 }));
 
-mountStoreDevtool('Auction', useAuctionStore);
+if (process.env.NODE_ENV === 'development') {
+	mountStoreDevtool('Auction', useAuctionStore);
+}
 
 export const useAuction = () => {
 	return useAuctionStore((state) => state);

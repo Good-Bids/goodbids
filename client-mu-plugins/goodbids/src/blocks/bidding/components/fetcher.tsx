@@ -5,7 +5,8 @@ import { useAuction } from '../utils/auction-store';
 
 export function Fetcher() {
 	const { auctionId } = attributes;
-	const { setUpcomingAuction } = useAuction();
+	const { setUpcomingAuction, setLiveAuction, setClosedAuction } =
+		useAuction();
 
 	// TODO: If auctioneer fails, we should swap this to retry every minute or so.
 	const refetchInterval: number | undefined = undefined;
@@ -21,6 +22,14 @@ export function Fetcher() {
 		if (auctionSuccess) {
 			if (auctionData.auctionStatus === 'upcoming') {
 				setUpcomingAuction(auctionData);
+			}
+
+			if (auctionData.auctionStatus === 'live') {
+				setLiveAuction(auctionData);
+			}
+
+			if (auctionData.auctionStatus === 'closed') {
+				setClosedAuction(auctionData);
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
