@@ -25,7 +25,7 @@ class Bids {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const BID_AUCTION_META_KEY = 'gb_auction_id';
+	const BID_AUCTION_META_KEY = Auctions::PRODUCT_AUCTION_META_KEY;
 
 	/**
 	 * Initialize Bids
@@ -135,7 +135,7 @@ class Bids {
 	 * @return ?int
 	 */
 	public function get_bids_category_id(): ?int {
-		$bids_category = get_term_by( 'slug', 'bids', 'product_cat' );
+		$bids_category = get_term_by( 'slug', Auctions::ORDER_TYPE_BID, 'product_cat' );
 
 		if ( ! $bids_category ) {
 			$bids_category = wp_insert_term( 'Bids', 'product_cat' );
@@ -303,7 +303,7 @@ class Bids {
 
 				$product_id = get_the_ID();
 
-				if ( 'bids' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( Auctions::ORDER_TYPE_BID !== goodbids()->auctions->get_product_type( $product_id ) ) {
 					return;
 				}
 

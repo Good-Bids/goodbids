@@ -187,15 +187,23 @@ class BidNow extends ACFBlock {
 	 * @return bool
 	 */
 	public function show_free_bid_button(): bool {
+		// Make sure the auction hasn't ended.
 		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
 			return false;
 		}
 
+		// Make sure the user is logged in.
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
 
+		// Make sure the user has free bids.
 		if ( ! goodbids()->users->get_available_free_bid_count() ) {
+			return false;
+		}
+
+		// Make sure free bids are allowed.
+		if ( ! goodbids()->auctions->are_free_bids_allowed( $this->auction_id ) ) {
 			return false;
 		}
 

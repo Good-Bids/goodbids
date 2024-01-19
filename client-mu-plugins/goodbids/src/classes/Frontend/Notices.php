@@ -63,7 +63,13 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const APPLY_REWARD_COUPON_ERROR = 'apply-reward-coupon-error';
+	const GET_FREE_BID_COUPON_ERROR = 'get-free-bid-coupon-error';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const APPLY_COUPON_ERROR = 'apply-coupon-error';
 
 	/**
 	 * @since 1.0.0
@@ -76,6 +82,18 @@ class Notices {
 	 * @var string
 	 */
 	const EARNED_FREE_BID = 'earned-free-bid';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BIDS_NOT_ELIGIBLE = 'free-bids-not-eligible';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const NO_AVAILABLE_FREE_BIDS = 'no-available-free-bids';
 
 	/**
 	 * Initialize the class.
@@ -139,8 +157,13 @@ class Notices {
 					'type'    => 'error',
 				],
 
-				self::APPLY_REWARD_COUPON_ERROR => [
-					'message' => __( 'There was a problem applying the Reward Coupon Code. Please contact support for further assistance.', 'goodbids' ),
+				self::GET_FREE_BID_COUPON_ERROR => [
+					'message' => __( 'There was a problem generating the Free Bid Coupon Code. Please contact support for further assistance.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::APPLY_COUPON_ERROR => [
+					'message' => __( 'There was a problem applying your Coupon Code. Please contact support for further assistance.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -152,6 +175,16 @@ class Notices {
 				self::EARNED_FREE_BID           => [
 					'message' => __( 'Congratulations! You have earned a Free Bid!', 'goodbids' ),
 					'type'    => 'success',
+				],
+
+				self::FREE_BIDS_NOT_ELIGIBLE    => [
+					'message' => __( 'Sorry, this Auction is currently not eligible to use Free Bids. Please try again later.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::NO_AVAILABLE_FREE_BIDS    => [
+					'message' => __( 'Sorry, you do not have any available free bids.', 'goodbids' ),
+					'type'    => 'error',
 				],
 			]
 		);
