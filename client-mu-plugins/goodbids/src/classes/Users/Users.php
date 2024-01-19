@@ -66,7 +66,7 @@ class Users {
 		/** @var FreeBid[] $free_bids */
 		$free_bids = get_user_meta( $user_id, self::FREE_BIDS_META_KEY, true );
 
-		if ( ! $free_bids || ! is_array( $free_bids ) || 0 <= count( $free_bids ) ) {
+		if ( ! $free_bids || ! is_array( $free_bids ) || 0 >= count( $free_bids ) ) {
 			return [];
 		}
 
@@ -105,11 +105,14 @@ class Users {
 	 *
 	 * @param int $user_id
 	 * @param int $auction_id
+	 * @param string $description
 	 *
 	 * @return bool
 	 */
-	public function award_free_bid( int $user_id, int $auction_id ): bool {
-		$free_bid    = new FreeBid( $auction_id );
+	public function award_free_bid( int $user_id, int $auction_id, string $description = '' ): bool {
+		$free_bid = new FreeBid( $auction_id );
+		$free_bid->set_description( $description );
+
 		$free_bids   = $this->get_free_bids( $user_id );
 		$free_bids[] = $free_bid;
 		return $this->save_free_bids( $free_bids, $user_id );

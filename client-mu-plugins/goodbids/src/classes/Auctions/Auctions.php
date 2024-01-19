@@ -989,10 +989,11 @@ class Auctions {
 	 *
 	 * @param ?int $auction_id
 	 * @param ?int $user_id
+	 * @param string $description
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null ): bool {
+	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null, string $description = ''): bool {
 		$free_bids = $this->get_free_bids_available( $auction_id );
 		if ( ! $free_bids ) {
 			return false;
@@ -1002,7 +1003,7 @@ class Auctions {
 			$user_id = get_current_user_id();
 		}
 
-		if ( goodbids()->users->award_free_bid( $user_id, $auction_id ) ) {
+		if ( goodbids()->users->award_free_bid( $user_id, $auction_id, $description ) ) {
 			$free_bids--;
 			$this->update_free_bids( $auction_id, $free_bids );
 			return true;

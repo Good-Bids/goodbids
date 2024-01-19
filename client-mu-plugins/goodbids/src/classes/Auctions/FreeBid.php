@@ -18,6 +18,14 @@ use GoodBids\Users\Users;
 class FreeBid {
 
 	/**
+	 * Unique Identifier.
+	 *
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	public ?string $id = null;
+
+	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
@@ -38,6 +46,14 @@ class FreeBid {
 	 * @var ?string
 	 */
 	public ?string $earned_date = null;
+
+	/**
+	 * Description of the Free Earned Bid
+	 *
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	public ?string $description = null;
 
 	/**
 	 * ID of the Auction Free Bid was Used
@@ -61,8 +77,10 @@ class FreeBid {
 	 * @since 1.0.0
 	 */
 	public function __construct( int $auction_id_earned ) {
+		$this->id                = uniqid( 'GBFB-' );
 		$this->auction_id_earned = $auction_id_earned;
 		$this->earned_date       = current_time( 'Y-m-d H:i:s' );
+
 		return $this;
 	}
 
@@ -89,5 +107,19 @@ class FreeBid {
 	 */
 	public function get_status(): string {
 		return $this->status;
+	}
+
+	/**
+	 * Sets the Description for the Free Earned Bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $description
+	 *
+	 * @return FreeBid
+	 */
+	public function set_description( string $description ): FreeBid {
+		$this->description = $description;
+		return $this;
 	}
 }

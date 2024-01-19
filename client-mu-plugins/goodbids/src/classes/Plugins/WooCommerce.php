@@ -436,7 +436,8 @@ class WooCommerce {
 
 				// Do not award free bids if this order contains a free bid.
 				if ( ! $this->is_free_bid_order( $order_id ) ) {
-					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id ) ) {
+					$description = __( 'Placed nth Paid Bid on Auction.', 'goodbids' );
+					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id, null, $description ) ) {
 						// TODO: Let the user know they earned a free bid.
 						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
 					}
@@ -1140,9 +1141,9 @@ class WooCommerce {
 
 		add_action(
 			'woocommerce_account_' . $slug . '_endpoint',
-			function () {
+			function () use ( $slug ) {
 				$free_bids = goodbids()->users->get_free_bids();
-				wc_get_template( 'myaccount/free-bids.php', [ 'free_bids' => $free_bids ] );
+				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
 			}
 		);
 	}
