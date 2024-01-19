@@ -8,8 +8,6 @@
 
 namespace GoodBids\Auctions;
 
-use Illuminate\Support\Collection;
-
 use WC_Order;
 use WC_Product;
 use WP_Query;
@@ -335,24 +333,6 @@ class Auctions {
 		);
 	}
 
-	/**
-	 * Returns an array of all active auctions across all sites
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_all_site_auctions(): array {
-		return Collection::make( get_sites() )
-			->flatMap(
-				function ( $site ) {
-					$site_id = get_object_vars( $site )['blog_id'];
-					return $this->get_site_auctions( $site_id );
-				}
-			)
-			->filter()
-			->all();
-	}
 
 	/**
 	 * Returns an array of all active auctions for a given site
@@ -363,7 +343,7 @@ class Auctions {
 	 *
 	 * @return array
 	 */
-	private function get_site_auctions( int $site_id ): array {
+	public function get_all( int $site_id ): array {
 		// Start by switching to blog and get all auctions
 		switch_to_blog( $site_id );
 		$args     = [

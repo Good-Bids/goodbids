@@ -27,7 +27,7 @@ class FeaturedAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_featured_auctions(): array {
-		$auctions = goodbids()->auctions->get_all_site_auctions();
+		$auctions = goodbids()->sites->get_all_auctions();
 
 		// Sort auctions by highest bid count and then by highest total raised.
 		return collect( $auctions )

@@ -8,7 +8,7 @@
  * @package GoodBids
  */
 
-$auctions = goodbids()->auctions->get_all_site_auctions();
+$auctions = goodbids()->sites->get_all_auctions();
 
 if ( ! count( $auctions ) ) :
 	if ( is_admin() ) :
