@@ -434,8 +434,9 @@ class WooCommerce {
 				$auction_id = $this->get_order_auction_id( $order_id );
 				$redirect   = get_permalink( $auction_id );
 
+				// Do not award free bids if this order contains a free bid.
 				if ( ! $this->is_free_bid_order( $order_id ) ) {
-					if ( goodbids()->auctions->maybe_award_free_bids( $auction_id, get_current_user_id() ) ) {
+					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id ) ) {
 						// TODO: Let the user know they earned a free bid.
 						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
 					}
@@ -1074,6 +1075,7 @@ class WooCommerce {
 		add_filter(
 			'woocommerce_locate_template',
 			function ( $template, $template_name, $template_path ): string {
+				// Only override templates coming from WooCommerce.
 				if ( 'woocommerce' !== trim( $template_path, '/' ) ) {
 					return $template;
 				}

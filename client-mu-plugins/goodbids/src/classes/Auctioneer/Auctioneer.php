@@ -242,7 +242,7 @@ class Auctioneer {
 	public function is_invalid_response( mixed $response ): bool {
 		if ( is_wp_error( $response ) ) {
 			// TODO: Log error.
-			error_log( '[GB] ' . $response->get_error_message() );
+			error_log( '[GB Auctioneer] Invalid Response: ' . $response->get_error_message() );
 			return true;
 		}
 
@@ -253,7 +253,7 @@ class Auctioneer {
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			// TODO: Log Errors.
-			error_log( '[GB] ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
+			error_log( '[GB Auctioneer] Bad Response: ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
 			return true;
 		}
 

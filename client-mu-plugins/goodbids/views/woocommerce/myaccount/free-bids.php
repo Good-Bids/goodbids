@@ -14,6 +14,8 @@
 	<?php if ( ! count( $free_bids ) ) : ?>
 		<p><?php esc_html_e( 'You have not earned any free bids yet.', 'goodbids' ); ?></p>
 	<?php else : ?>
-		<?php var_dump( $free_bids ); ?>
+		<pre>
+			<?php var_dump( $free_bids ); ?>
+		</pre>
 	<?php endif; ?>
 </div>

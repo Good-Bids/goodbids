@@ -964,12 +964,12 @@ class Auctions {
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bids( ?int $auction_id = null, ?int $user_id = null ): bool {
-		if ( ! $this->are_free_bids_allowed( $auction_id ) ) {
+	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null ): bool {
+		$free_bids = $this->get_free_bids_available( $auction_id );
+		if ( ! $free_bids ) {
 			return false;
 		}
 
-		$free_bids = $this->get_free_bids_available( $auction_id );
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -977,6 +977,7 @@ class Auctions {
 		if ( goodbids()->users->award_free_bid( $user_id, $auction_id ) ) {
 			$free_bids--;
 			$this->update_free_bids( $auction_id, $free_bids );
+			return true;
 		}
 
 		return false;
