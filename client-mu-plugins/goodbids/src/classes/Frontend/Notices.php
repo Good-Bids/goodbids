@@ -45,6 +45,18 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const AUCTION_HAS_ENDED = 'auction-has-ended';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_NOT_STARTED = 'auction-not-started';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const NOT_AUCTION_WINNER = 'not-auction-winner';
 
 	/**
@@ -107,18 +119,20 @@ class Notices {
 	}
 
 	/**
-	 * Grab the notice id from the query arg.
+	 * Grab the notice id from the query arg and return it.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void
+	 * @return ?string
 	 */
-	private function get_notice_id(): void {
+	private function get_notice_id(): ?string {
 		if ( empty( $_REQUEST['gb-notice'] ) ) { // phpcs:ignore
-			return;
+			return null;
 		}
 
 		$this->notice_id = trim( sanitize_text_field( wp_unslash( $_REQUEST['gb-notice'] ) ) ); // phpcs:ignore
+
+		return $this->notice_id;
 	}
 
 	/**
@@ -137,8 +151,18 @@ class Notices {
 					'type'    => 'error',
 				],
 
+				self::AUCTION_NOT_STARTED       => [
+					'message' => __( 'This Auction has not started yet.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
 				self::AUCTION_NOT_ENDED         => [
-					'message' => __( 'This auction has not ended.', 'goodbids' ),
+					'message' => __( 'This Auction has not ended.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::AUCTION_HAS_ENDED         => [
+					'message' => __( 'This Auction has already ended.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -205,14 +229,36 @@ class Notices {
 					return;
 				}
 
-				if ( empty( $this->notices[ $this->notice_id ] ) ) {
-					// TODO: Log error.
+				$notice = $this->get_notice();
+
+				if ( ! $notice ) {
 					return;
 				}
 
-				$notice = $this->notices[ $this->notice_id ];
 				wc_add_notice( $notice['message'], $notice['type'] );
 			}
 		);
+	}
+
+	/**
+	 * Get the notice by Notice ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?string $notice_id
+	 *
+	 * @return ?array
+	 */
+	public function get_notice( string $notice_id = null ): ?array {
+		if ( ! $notice_id ) {
+			$notice_id = $this->get_notice_id();
+		}
+
+		if ( empty( $this->notices[ $notice_id ] ) ) {
+			// TODO: Log error.
+			return null;
+		}
+
+		return $this->notices[ $notice_id ];
 	}
 }

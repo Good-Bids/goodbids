@@ -669,12 +669,25 @@ class WooCommerce {
 					return;
 				}
 
+				// Make sure Auction has started and has not ended.
 				if ( ! goodbids()->auctions->has_started( $info['auction_id'] ) ) {
-					// TODO: Move error to Settings Page.
-					wc_add_notice( __( 'Auction has not started yet.', 'goodbids' ), 'error' );
+					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
+					wc_add_notice( $notice['message'], $notice['type'] );
 				} elseif ( goodbids()->auctions->has_ended( $info['auction_id'] ) ) {
-					// TODO: Move error to Settings Page.
-					wc_add_notice( __( 'Auction has already ended.', 'goodbids' ), 'error' );
+					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
+					wc_add_notice( $notice['message'], $notice['type'] );
+				}
+
+				if ( $this->is_free_bid_order( $order->get_id() ) ) {
+					if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
+						$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+						wc_add_notice( $notice['message'], $notice['type'] );
+					}
+
+					if ( ! goodbids()->users->get_available_free_bid_count() ) {
+						$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+						wc_add_notice( $notice['message'], $notice['type'] );
+					}
 				}
 			},
 			10,
@@ -692,15 +705,17 @@ class WooCommerce {
 	 * @return ?array
 	 */
 	public function get_order_auction_info( int $order_id ): ?array {
-		$order      = wc_get_order( $order_id );
-		$auction_id = $this->get_order_auction_id( $order_id );
-		$order_type = $this->get_order_type( $order_id );
+		$order         = wc_get_order( $order_id );
+		$auction_id    = $this->get_order_auction_id( $order_id );
+		$order_type    = $this->get_order_type( $order_id );
+		$uses_free_bid = $this->is_free_bid_order( $order_id );
 
 		// Return early if we already have this info.
 		if ( $auction_id && $order_type ) {
 			return [
-				'auction_id' => $auction_id,
-				'order_type' => $order_type,
+				'auction_id'    => $auction_id,
+				'order_type'    => $order_type,
+				'uses_free_bid' => $uses_free_bid,
 			];
 		}
 
@@ -724,8 +739,9 @@ class WooCommerce {
 		}
 
 		return [
-			'auction_id' => $auction_id,
-			'order_type' => $order_type,
+			'auction_id'    => $auction_id,
+			'order_type'    => $order_type,
+			'uses_free_bid' => $uses_free_bid,
 		];
 	}
 
@@ -869,7 +885,7 @@ class WooCommerce {
 		add_filter(
 			'woocommerce_add_to_cart_redirect',
 			function ( string $url, ?WC_Product $product ): string {
-				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				if ( wp_doing_ajax() ) {
 					return $url;
 				}
 
@@ -899,7 +915,7 @@ class WooCommerce {
 			'template_redirect',
 			function (): void {
 				// No need to redirect.
-				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+				if ( ! isset( $_REQUEST['add-to-cart'] ) && ! isset( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
 					return;
 				}
 
