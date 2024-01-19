@@ -50,6 +50,7 @@ class Auctions {
 				'currentBid',
 				'endTime',
 				'freeBidsAllowed',
+				'freeBidsAvailable',
 				'startTime',
 			],
 			$extra_data
@@ -132,6 +133,7 @@ class Auctions {
 				'currentBid',
 				'endTime',
 				'freeBidsAllowed',
+				'freeBidsAvailable',
 			],
 			$extra_data
 		);
