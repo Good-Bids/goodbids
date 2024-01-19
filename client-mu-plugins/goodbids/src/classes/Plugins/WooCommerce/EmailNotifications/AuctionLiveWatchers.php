@@ -123,6 +123,7 @@ class AuctionLiveWatchers extends WC_Email {
 			'recipient'          => [
 				'title'       => __( 'Recipient(s)', 'goodbids' ),
 				'type'        => 'text',
+				'desc_tip'    => true,
 				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( get_option( 'admin_email' ) ) ),
 				'placeholder' => '',
 				'default'     => '',
@@ -130,6 +131,7 @@ class AuctionLiveWatchers extends WC_Email {
 			'subject'            => [
 				'title'       => __( 'Subject', 'goodbids' ),
 				'type'        => 'text',
+				'desc_tip'    => true,
 				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->subject ),
 				'placeholder' => '',
 				'default'     => '',
@@ -137,6 +139,7 @@ class AuctionLiveWatchers extends WC_Email {
 			'heading'            => [
 				'title'       => __( 'Email Heading', 'goodbids' ),
 				'type'        => 'text',
+				'desc_tip'    => true,
 				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->heading ),
 				'placeholder' => '',
 				'default'     => '',
