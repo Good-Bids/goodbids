@@ -6,18 +6,17 @@
  * @package GoodBids
  */
 
-namespace GoodBids\Plugins\WooCommerce\EmailNotifications;
+namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
 
 use WC_Email;
 
-
 /**
  * Auction live for watchers custom WooCommerce email class
  *
  * @since 1.0.0
- * @extends \WC_Email
+ * @extends WC_Email
  */
 class AuctionLiveWatchers extends WC_Email {
 
@@ -27,19 +26,15 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'wc_auction_live_watchers';
+		$this->id             = 'goodbids_auction_live_watchers';
 		$this->title          = __( 'Auction Live Watchers', 'goodbids' );
-		$this->description    = __( 'Auction Live Watchers Notification emails is sent when an auction is live.', 'goodbids' );
+		$this->description    = __( 'Auction Live Watchers Notification emails is sent when an auction goes live.', 'goodbids' );
 		$this->heading        = __( 'Auction Live Watchers', 'goodbids' );
 		$this->subject        = __( 'Auction Live Watchers', 'goodbids' );
 		$this->template_html  = 'emails/admin-new-order.php';
 		$this->template_plain = 'emails/plain/admin-new-order.php';
 
-		// Trigger on 'wc_auction_live_watchers'
-		add_action( 'woocommerce_order_status_pending_to_processing_notification', [ $this, 'trigger' ] );
-		add_action( 'woocommerce_order_status_failed_to_processing_notification', [ $this, 'trigger' ] );
-
-		// Call parent constructor to load any other defaults not explicity defined here
+		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
 
 		// this sets the recipient to the settings defined below in init_form_fields()
@@ -55,10 +50,9 @@ class AuctionLiveWatchers extends WC_Email {
 	 * Determine if the email should actually be sent and setup email merge variables
 	 *
 	 * @since 1.0.0
-	 * @param int $order_id
 	 * @return void
 	 */
-	public function trigger( $order_id ): void {
+	public function trigger(): void {
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
 			return;
