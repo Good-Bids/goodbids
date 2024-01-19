@@ -1,11 +1,16 @@
 /* Import any CSS from blocks before tailwind */
 @import '../../../blocks/reward-product-gallery/block.css';
+
+@import 'global-forms.css';
+
+/* Patterns */
 @import 'patterns/nonprofit-interest-form.css';
 @import 'patterns/header.css';
 
 /* WooCommerce overrides */
-@import 'woocommerce/my-account.css';
 @import 'woocommerce/checkout.css';
+@import 'woocommerce/global-woocommerce.css';
+@import 'woocommerce/my-account.css';
 
 @tailwind base;
 @tailwind components;
@@ -15,5 +20,18 @@
 	#vip-non-prod-bar,
 	#a8c-debug-flag {
 		@apply hidden;
+	}
+
+	.wp-button-custom > a,
+	.wp-element-button,
+	.wp-block-button__link {
+		@apply btn-fill;
+	}
+
+	.wp-block-button.is-style-outline
+		> .wp-block-button__link:not(.has-text-color, .has-background):hover,
+	.wp-block-button.is-style-outline
+		> .wp-block-button__link:not(.has-text-color, .has-background):focus {
+		@apply bg-contrast-3 text-contrast border-contrast-3;
 	}
 }
