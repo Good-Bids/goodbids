@@ -22,10 +22,23 @@ if ( ! $bid_now->has_auction_started() ) :
 endif;
 ?>
 <div <?php block_attr( $block, $bid_now->get_block_classes() ); ?>>
-	<a
-		href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
-		class="wp-block-button__link wp-element-button w-full block text-center"
-	>
-		<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
-	</a>
+	<div>
+		<a
+			href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
+			class="wp-block-button__link wp-element-button w-full block text-center"
+		>
+			<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
+		</a>
+	</div>
+
+	<?php if ( $bid_now->show_free_bid_button() ) : ?>
+		<div>
+			<a
+				href="<?php echo esc_url( $bid_now->get_button_url( true ) ); ?>"
+				class="wp-block-button__link wp-element-button w-full block text-center"
+			>
+				<?php echo wp_kses_post( $bid_now->get_button_text( true ) ); ?>
+			</a>
+		</div>
+	<?php endif; ?>
 </div>
