@@ -79,6 +79,8 @@ class WooCommerce {
 
 		$this->mark_reward_as_redeemed();
 
+		$this->load_woocommerce_templates();
+		$this->add_free_bids_account_tab();
 		$this->add_auction_meta_box();
 	}
 
@@ -1059,5 +1061,87 @@ class WooCommerce {
 		}
 
 		return $emails;
+	}
+
+	/**
+	 * Load WooCommerce Templates from the GoodBids Views folder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function load_woocommerce_templates(): void {
+		add_filter(
+			'woocommerce_locate_template',
+			function ( $template, $template_name, $template_path ): string {
+				if ( 'woocommerce' !== trim( $template_path, '/' ) ) {
+					return $template;
+				}
+
+				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
+				if ( file_exists( $goodbids_path ) ) {
+					return $goodbids_path;
+				}
+
+				return $template;
+			},
+			8,
+			3
+		);
+	}
+
+	/**
+	 * Create a new Free Bids tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_free_bids_account_tab(): void {
+		$slug = 'free-bids';
+
+		add_action(
+			'init',
+			function () use ( $slug ): void {
+				add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES );
+			}
+		);
+
+		add_filter(
+			'query_vars',
+			function ( $vars ) use ( $slug ): array {
+				if ( ! in_array( $slug, $vars, true ) ) {
+					$vars[] = $slug;
+				}
+				return $vars;
+			}
+		);
+
+		add_filter(
+			'woocommerce_account_menu_items',
+			function ( $items ) use ( $slug ): array {
+				if ( array_key_exists( $slug, $items ) ) {
+					return $items;
+				}
+
+				$new_items = [];
+				foreach ( $items as $id => $item ) {
+					$new_items[ $id ] = $item;
+					if ( 'orders' === $id ) {
+						$new_items[ $slug ] = __( 'Free Bids', 'goodbids' );
+					}
+				}
+
+				return $new_items;
+			}
+		);
+
+		add_action(
+			'woocommerce_account_' . $slug . '_endpoint',
+			function () {
+				$free_bids = goodbids()->users->get_free_bids();
+				wc_get_template( 'myaccount/free-bids.php', [ 'free_bids' => $free_bids ] );
+			}
+		);
 	}
 }
