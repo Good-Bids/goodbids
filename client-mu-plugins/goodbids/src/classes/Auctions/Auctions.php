@@ -181,6 +181,9 @@ class Auctions {
 		// Register REST API Endpoints.
 		$this->setup_api_endpoints();
 
+		// Register the Auction Single and Archive templates.
+		$this->set_templates();
+
 		// Init Rewards Category.
 		$this->init_rewards_category();
 
@@ -305,7 +308,7 @@ class Auctions {
 					'capability_type'     => 'page',
 					'show_in_rest'        => true,
 					'rest_base'           => self::SINGULAR_SLUG,
-					'template'            => $this->get_template(),
+					'template'            => $this->get_block_template(),
 				];
 
 				register_post_type( $this->get_post_type(), $args );
@@ -337,9 +340,9 @@ class Auctions {
 	 *
 	 * @return array
 	 */
-	private function get_template(): array {
+	private function get_block_template(): array {
 		return apply_filters(
-			'woocommerce_auction_default_template',
+			'goodbids_auction_block_template',
 			[
 				[
 					'core/pattern',
@@ -348,6 +351,31 @@ class Auctions {
 					],
 				],
 			]
+		);
+	}
+
+	/**
+	 * Specify templates used for Auctions with Nice names.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_templates(): void {
+		add_filter(
+			'default_template_types',
+			function ( $template_types ): array {
+				$template_types[ 'single-' . $this->get_post_type() ] = array(
+					'title'       => _x( 'Single Auction', 'Template Name', 'goodbids' ),
+					'description' => __( 'Displays a single Auction post.', 'goodbids' ),
+				);
+				$template_types[ 'archive-' . $this->get_post_type() ] = array(
+					'title'       => _x( 'Archive: Auction', 'Template Name', 'goodbids' ),
+					'description' => __( 'Displays a the Auctions Archive.', 'goodbids' ),
+				);
+
+				return $template_types;
+			}
 		);
 	}
 
