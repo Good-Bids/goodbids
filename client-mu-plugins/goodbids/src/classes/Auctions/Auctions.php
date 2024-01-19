@@ -681,7 +681,7 @@ class Auctions {
 			return '';
 		}
 
-		return $this->format_date_time( $start, $format );
+		return goodbids()->utilities->format_date_time( $start, $format );
 	}
 
 	/**
@@ -701,33 +701,7 @@ class Auctions {
 			return '';
 		}
 
-		return $this->format_date_time( $end, $format );
-	}
-
-	/**
-	 * Format a date/time string.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $datetime
-	 * @param string $format
-	 *
-	 * @return string
-	 */
-	private function format_date_time( string $datetime, string $format ): string {
-		if ( ! $format ) {
-			return $datetime;
-		}
-
-		$formatted = $datetime;
-
-		try {
-			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
-		} catch ( \Exception $e ) {
-			// TODO: Log error.
-		}
-
-		return $formatted;
+		return goodbids()->utilities->format_date_time( $end, $format );
 	}
 
 	/**
@@ -2039,7 +2013,7 @@ class Auctions {
 
 				wp_send_json_success(
 					[
-						'closeDate' => $this->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
+						'closeDate' => goodbids()->utilities->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
 					]
 				);
 			}

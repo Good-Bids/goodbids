@@ -56,7 +56,7 @@ class Users {
 	 * @param ?int $user_id
 	 * @param string $status
 	 *
-	 * @return array
+	 * @return FreeBid[]
 	 */
 	public function get_free_bids( ?int $user_id = null, string $status = self::FREE_BID_STATUS_ALL ): array {
 		if ( null === $user_id ) {
@@ -115,7 +115,7 @@ class Users {
 
 		$free_bids   = $this->get_free_bids( $user_id );
 		$free_bids[] = $free_bid;
-		return $this->save_free_bids( $free_bids, $user_id );
+		return $this->save_free_bids( $user_id, $free_bids );
 	}
 
 	/**
@@ -123,12 +123,12 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $free_bids
 	 * @param int $user_id
+	 * @param FreeBid[] $free_bids
 	 *
 	 * @return bool
 	 */
-	private function save_free_bids( array $free_bids, int $user_id ): bool {
+	private function save_free_bids( int $user_id, array $free_bids ): bool {
 		return boolval( update_user_meta( $user_id, self::FREE_BIDS_META_KEY, $free_bids ) );
 	}
 }

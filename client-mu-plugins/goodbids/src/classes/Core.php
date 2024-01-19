@@ -20,6 +20,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Users;
+use GoodBids\Utilities\Utilities;
 
 /**
  * Core Class
@@ -43,6 +44,12 @@ class Core {
 	 * @var array
 	 */
 	private array $config = [];
+
+	/**
+	 * @since 1.0.0
+	 * @var Utilities
+	 */
+	public Utilities $utilities;
 
 	/**
 	 * @since 1.0.0
@@ -307,6 +314,7 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
+				$this->utilities   = new Utilities();
 				$this->acf         = new ACF();
 				$this->admin       = new Admin();
 				$this->auctioneer  = new Auctioneer();

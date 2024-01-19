@@ -436,7 +436,19 @@ class WooCommerce {
 
 				// Do not award free bids if this order contains a free bid.
 				if ( ! $this->is_free_bid_order( $order_id ) ) {
-					$description = __( 'Placed nth Paid Bid on Auction.', 'goodbids' );
+					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
+					$remaining_free_bids = goodbids()->auctions->get_free_bids_available( $auction_id );
+					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
+					$bid_order           = wc_get_order( $order_id );
+
+					$description = sprintf(
+						// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
+						goodbids()->utilities->get_ordinal( $nth_bid ),
+						$bid_order->get_total( 'edit' ),
+						$auction_id
+					);
+
 					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id, null, $description ) ) {
 						// TODO: Let the user know they earned a free bid.
 						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );

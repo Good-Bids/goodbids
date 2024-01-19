@@ -17,35 +17,35 @@
 		<table class="goodbids-free-bids-table woocommerce-MyAccount-free-bids shop_table shop_table_responsive my_account_free_bids account-free-bids-table">
 			<thead>
 				<tr>
-					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-id"><span class="nobr"><?php esc_html_e( 'ID', 'goodbids' ); ?></span></th>
-					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-earned-date"><span class="nobr"><?php esc_html_e( 'Earned Date', 'goodbids' ); ?></span></th>
-					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-auction-earned"><span class="nobr"><?php esc_html_e( 'Auction Earned', 'goodbids' ); ?></span></th>
+					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-id"><span class="nobr">#</span></th>
+					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-earned"><span class="nobr"><?php esc_html_e( 'Earned', 'goodbids' ); ?></span></th>
 					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-status"><span class="nobr"><?php esc_html_e( 'Status', 'goodbids' ); ?></span></th>
-					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-auction-used"><span class="nobr"><?php esc_html_e( 'Auction Used', 'goodbids' ); ?></span></th>
-					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-used-date"><span class="nobr"><?php esc_html_e( 'Used Date', 'goodbids' ); ?></span></th>
+					<th class="goodbids-free-bids-table__header goodbids-free-bids-table__header-used"><span class="nobr"><?php esc_html_e( 'Used', 'goodbids' ); ?></span></th>
 				</tr>
 			</thead>
 
 			<tbody>
-				<?php foreach ( $free_bids as $free_bid ) : ?>
+				<?php foreach ( $free_bids as $index => $free_bid ) : ?>
 					<tr class="goodbids-free-bids-table__row goodbids-free-bids-table__row--status-<?php echo esc_attr( $free_bid->get_status() ); ?> free-bid">
-						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-id" data-title="<?php esc_attr_e( 'ID', 'goodbids' ); ?>">
-							<span><?php echo esc_html( $free_bid->id ); ?></span>
+						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-id" data-title="<?php esc_attr_e( 'Free Bid #', 'goodbids' ); ?>">
+							<span><?php echo esc_html( $index + 1 ); ?></span>
 						</td>
-						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-earned-date" data-title="<?php esc_attr_e( 'Earned Date', 'goodbids' ); ?>">
-							<span><?php echo esc_html( $free_bid->earned_date ); ?></span>
-						</td>
-						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-auction-earned" data-title="<?php esc_attr_e( 'Auction Earned', 'goodbids' ); ?>">
-							<span><?php echo esc_html( $free_bid->auction_id_earned ); ?></span>
+						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-earned" data-title="<?php esc_attr_e( 'Earned', 'goodbids' ); ?>">
+							<div title="<?php echo esc_attr( $free_bid->description ); ?>">
+								<span><?php $free_bid->display_auction_link( $free_bid->auction_id_earned, $free_bid->description ); ?></span>
+								<?php esc_html_e( 'on', 'goodbids' ); ?>
+								<span><?php $free_bid->display_earned_date(); ?></span>
+							</div>
 						</td>
 						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
-							<span><?php echo esc_html( $free_bid->get_status() ); ?></span>
+							<span><?php $free_bid->display_status(); ?></span>
 						</td>
-						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-auction-used" data-title="<?php esc_attr_e( 'Auction Used', 'goodbids' ); ?>">
-							<span><?php echo esc_html( $free_bid->auction_id_used ); ?></span>
-						</td>
-						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-used-date" data-title="<?php esc_attr_e( 'Used Date', 'goodbids' ); ?>">
-							<span><?php echo esc_html( $free_bid->used_date ); ?></span>
+						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-used" data-title="<?php esc_attr_e( 'Used', 'goodbids' ); ?>">
+							<span><?php $free_bid->display_auction_link( $free_bid->auction_id_used ); ?></span>
+							<?php if ( $free_bid->used_date ) : ?>
+								<?php esc_html_e( 'on', 'goodbids' ); ?>
+								<span><?php $free_bid->display_used_date(); ?></span>
+							<?php endif; ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>
