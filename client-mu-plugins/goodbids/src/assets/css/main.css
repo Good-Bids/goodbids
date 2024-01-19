@@ -9,7 +9,6 @@
 
 /* WooCommerce overrides */
 @import 'woocommerce/checkout.css';
-@import 'woocommerce/global-woocommerce.css';
 @import 'woocommerce/my-account.css';
 
 @tailwind base;
