@@ -11,18 +11,22 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Fetcher } from './fetcher';
 import { useAuction } from '../utils/auction-store';
 
-export function Driver() {
+type DriverProps = {
+	auctionId: number;
+};
+
+export function Driver({ auctionId }: DriverProps) {
 	const [queryClient] = useState(() => client);
 	const { initialFetchCompleted, usePolling } = useAuction();
 
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="w-full text-lg flex flex-col gap-4">
-				<Fetcher />
+				<Fetcher auctionId={auctionId} />
 
 				{initialFetchCompleted && (
 					<>
-						{!usePolling && <Socket />}
+						{!usePolling && <Socket auctionId={auctionId} />}
 						<Metrics />
 						<CountdownTimer />
 						<BidButton />

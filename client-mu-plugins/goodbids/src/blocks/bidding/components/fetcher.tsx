@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useGetAuction } from '../utils/get-auction';
-import { attributes } from '../utils/get-data-attributes';
 import { useAuction } from '../utils/auction-store';
 
-export function Fetcher() {
-	const { auctionId } = attributes;
+type FetcherProps = {
+	auctionId: number;
+};
+
+export function Fetcher({ auctionId }: FetcherProps) {
 	const { setUpcomingAuction, setLiveAuction, setClosedAuction } =
 		useAuction();
 
