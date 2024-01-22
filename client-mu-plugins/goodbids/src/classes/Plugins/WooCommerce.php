@@ -378,11 +378,10 @@ class WooCommerce {
 				$product_type = goodbids()->auctions->get_product_type( $item->get_product_id() );
 				$auction_id   = false;
 
-				if ( 'bids' === $product_type ) {
+				if ( Auctions::ORDER_TYPE_BID === $product_type ) {
 					$auction_id = goodbids()->auctions->bids->get_auction_id( $item->get_product_id() );
-
-				} elseif ( 'rewards' === $product_type ) {
-					// TODO: In another ticket.
+				} elseif ( Auctions::ORDER_TYPE_REWARD === $product_type ) {
+					$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $item->get_product_id() );
 				}
 
 				if ( ! $auction_id ) {
@@ -589,7 +588,7 @@ class WooCommerce {
 	 * @return bool
 	 */
 	public function is_bid_order( int $order_id ): bool {
-		return 'bids' === $this->get_order_type( $order_id );
+		return Auctions::ORDER_TYPE_BID === $this->get_order_type( $order_id );
 	}
 
 	/**
@@ -602,7 +601,7 @@ class WooCommerce {
 	 * @return bool
 	 */
 	public function is_reward_order( int $order_id ): bool {
-		return 'rewards' === $this->get_order_type( $order_id );
+		return Auctions::ORDER_TYPE_REWARD === $this->get_order_type( $order_id );
 	}
 
 	/**
@@ -756,7 +755,7 @@ class WooCommerce {
 					return $url;
 				}
 
-				if ( 'rewards' === $product_type ) {
+				if ( Auctions::ORDER_TYPE_REWARD === $product_type ) {
 					$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $product->get_id() );
 
 					if ( ! $auction_id ) {

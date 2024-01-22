@@ -9,6 +9,7 @@
 namespace GoodBids\Auctioneer;
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use GoodBids\Auctioneer\Endpoints\Auctions;
 
 /**
@@ -401,6 +402,20 @@ class Auctioneer {
 		];
 
 		return JWT::encode( $payload, $this->api_key, 'HS256' );
+	}
+
+	/**
+	 * Decrypts the encrypted user cookie for Auctioneer, returns the User ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $cookie
+	 *
+	 * @return int
+	 */
+	public function decrypt_auctioneer_cookie( string $cookie ): int {
+		$data = JWT::decode( $cookie, new Key( $this->api_key, 'HS256' ) );
+		return $data?->userId ?: 0;
 	}
 
 	/**

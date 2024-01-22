@@ -106,6 +106,18 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const ORDER_TYPE_BID = 'bids';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const ORDER_TYPE_REWARD = 'rewards';
+
+	/**
+	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -307,6 +319,7 @@ class Auctions {
 			'rest_api_init',
 			function () {
 				( new API\Details() )->register_routes();
+				( new API\User() )->register_routes();
 			}
 		);
 	}
@@ -389,7 +402,7 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_rewards_category_id(): ?int {
-		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
+		$rewards_category = get_term_by( 'slug', self::ORDER_TYPE_REWARD, 'product_cat' );
 
 		if ( ! $rewards_category ) {
 			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
@@ -1000,7 +1013,7 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
-		$valid      = [ 'bids', 'rewards' ];
+		$valid      = [ self::ORDER_TYPE_BID, self::ORDER_TYPE_REWARD ];
 		$categories = get_the_terms( $product_id, 'product_cat' );
 
 		if ( ! is_array( $categories ) ) {
@@ -1023,10 +1036,11 @@ class Auctions {
 	 *
 	 * @param int $auction_id
 	 * @param int $limit
+	 * @param ?int $user_id
 	 *
 	 * @return int[]
 	 */
-	public function get_bid_order_ids( int $auction_id, int $limit = -1 ): array {
+	public function get_bid_order_ids( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
 		$args = [
 			'limit'   => $limit,
 			'status'  => [ 'processing', 'completed' ],
@@ -1034,6 +1048,10 @@ class Auctions {
 			'orderby' => 'date',
 			'order'   => 'DESC',
 		];
+
+		if ( $user_id ) {
+			$args['customer_id'] = $user_id;
+		}
 
 		$orders = wc_get_orders( $args );
 		$return = [];
@@ -1064,11 +1082,12 @@ class Auctions {
 	 *
 	 * @param int $auction_id
 	 * @param int $limit
+	 * @param ?int $user_id
 	 *
 	 * @return WC_Order[]
 	 */
-	public function get_bid_orders( int $auction_id, int $limit = -1 ): array {
-		$orders = $this->get_bid_order_ids( $auction_id, $limit );
+	public function get_bid_orders( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
+		$orders = $this->get_bid_order_ids( $auction_id, $limit, $user_id );
 
 		return array_map(
 			fn ( $order ) => wc_get_order( $order ),
@@ -1077,7 +1096,7 @@ class Auctions {
 	}
 
 	/**
-	 * Get the Auction Bid Count
+	 * Get the Auction Bid Count. If a User ID is specified, the Bid Count will be filtered by that User.
 	 *
 	 * @since 1.0.0
 	 *
@@ -1099,6 +1118,21 @@ class Auctions {
 		set_transient( $transient, $bid_count, HOUR_IN_SECONDS );
 
 		return $bid_count;
+	}
+
+	/**
+	 * Get total bids for a specific User on an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $user_id
+	 *
+	 * @return int
+	 */
+	public function get_user_bid_count( int $auction_id, int $user_id ): int {
+		$orders = $this->get_bid_order_ids( $auction_id, -1, $user_id );
+		return count( $orders );
 	}
 
 	/**
@@ -1124,6 +1158,21 @@ class Auctions {
 		set_transient( $transient, $total, HOUR_IN_SECONDS );
 
 		return $total;
+	}
+
+	/**
+	 * Get the Auction Total Donated by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $user_id
+	 *
+	 * @return float
+	 */
+	public function get_user_total_donated( int $auction_id, int $user_id ): float {
+		return collect( $this->get_bid_orders( $auction_id, -1, $user_id ) )
+			->sum( fn( $order ) => $order->get_total( 'edit' ) );
 	}
 
 	/**
@@ -1201,7 +1250,7 @@ class Auctions {
 	 */
 	public function get_status( int $auction_id ): string {
 		if ( 'publish' !== get_post_status( $auction_id ) ) {
-			return self::STATUS_DRAFT;;
+			return self::STATUS_DRAFT;
 		}
 
 		$status = self::STATUS_UPCOMING;

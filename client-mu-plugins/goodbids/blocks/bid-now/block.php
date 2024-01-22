@@ -73,14 +73,12 @@ class BidNow extends ACFBlock {
 		$button_text = __( 'GOODBID Now', 'goodbids' );
 
 		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
-			$claim_text = __( 'Claim Your Reward', 'goodbids' );
 
 			if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
-				return $claim_text;
+				return __( 'Claim Your Reward', 'goodbids' );
 			}
 
-			// TODO: This is temporary for testing, but should be changed.
-			return $claim_text;
+			return __( 'Auction has Ended.', 'goodbids' );
 		}
 
 		if ( $this->bid_product_id && ! is_admin() ) {
@@ -107,18 +105,15 @@ class BidNow extends ACFBlock {
 			return '#';
 		}
 
-		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
-			$reward_url = goodbids()->auctions->get_claim_reward_url( $this->auction_id );
-
-			if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
-				return $reward_url;
-			}
-
-			// TODO: This is temporary for testing, but should be removed or changed.
-			return $reward_url;
+		if ( ! goodbids()->auctions->has_ended( $this->auction_id ) ) {
+			return $this->bid_product_id ? add_query_arg( 'add-to-cart', $this->bid_product_id, wc_get_checkout_url() ) : '#';
 		}
 
-		return $this->bid_product_id ? add_query_arg( 'add-to-cart', $this->bid_product_id, wc_get_checkout_url() ) : '#';
+		if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
+			return goodbids()->auctions->get_claim_reward_url( $this->auction_id );
+		}
+
+		return '#'; // Disable button for non-winners.
 	}
 
 	/**
