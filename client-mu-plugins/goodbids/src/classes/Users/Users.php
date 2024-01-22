@@ -66,7 +66,7 @@ class Users {
 		/** @var FreeBid[] $free_bids */
 		$free_bids = get_user_meta( $user_id, self::FREE_BIDS_META_KEY, true );
 
-		if ( ! $free_bids || ! is_array( $free_bids ) || 0 >= count( $free_bids ) ) {
+		if ( ! $free_bids || ! is_array( $free_bids ) ) {
 			return [];
 		}
 
