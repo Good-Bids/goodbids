@@ -86,16 +86,15 @@ class Patterns {
 				];
 
 				$section_sidebar_chapters = [
-					'name'          => 'section-sidebar-chapters',
-					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/section-sidebar-chapters.php',
-					'title'         => __( 'Section with Sidebar and Chapters', 'goodbids' ),
-					'description'   => _x( 'Template for Terms and Conditions or any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
-					'categories'    => [ 'page', 'goodbids' ],
-					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
-					'postTypes'     => [ 'page', 'wp_template' ],
-					'templateTypes' => [ 'page' ],
-					'source'        => 'plugin',
-					'inserter'      => true,
+					'name'        => 'section-sidebar-chapters',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/section-sidebar-chapters.php',
+					'title'       => __( 'Section with Sidebar and Chapters', 'goodbids' ),
+					'description' => _x( 'Template for any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids' ],
+					'keywords'    => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'   => [ 'page' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
 				];
 
 				$template_about = [
@@ -124,6 +123,19 @@ class Patterns {
 					'inserter'    => false,
 				];
 
+				$template_terms_conditions = [
+					'name'          => 'template-terms-conditions',
+					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-terms-conditions.php',
+					'title'         => __( 'Terms and Conditions', 'goodbids' ),
+					'description'   => _x( 'Template for GoodBids Terms and Conditions Page', 'Block pattern description', 'goodbids' ),
+					'categories'    => [ 'page', 'goodbids' ],
+					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'     => [ 'page', 'wp_template' ],
+					'templateTypes' => [ 'page' ],
+					'source'        => 'plugin',
+					'inserter'      => true,
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
@@ -133,6 +145,7 @@ class Patterns {
 						$section_sidebar_chapters,
 						$template_about,
 						$template_auction,
+						$template_terms_conditions,
 					]
 				);
 

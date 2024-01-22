@@ -82,10 +82,11 @@
 	<!-- /wp:columns -->
 </div>
 <!-- /wp:group -->
+
 <!-- wp:group {"style":{"spacing":{"padding":{"right":"0","left":"0","top":"0","bottom":"0"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
-	<!-- wp:columns {"verticalAlignment":"top","style":{"spacing":{"blockGap":{"top":"0","left":"0"},"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":"16px"},"elements":{"link":{"color":{"text":"var:preset|color|contrast"}}}},"backgroundColor":"contrast-4","textColor":"contrast"} -->
-	<div class="wp-block-columns are-vertically-aligned-top has-contrast-color has-contrast-4-background-color has-text-color has-background has-link-color" style="border-radius:16px;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)">
+	<!-- wp:columns {"verticalAlignment":"top","style":{"spacing":{"blockGap":{"top":"0","left":"0"},"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":"16px"},"elements":{"link":{"color":{"text":"var:preset|color|contrast"}}}},"backgroundColor":"contrast-3","textColor":"contrast","className":"has-background"} -->
+	<div class="wp-block-columns are-vertically-aligned-top has-background has-contrast-color has-contrast-3-background-color has-text-color has-link-color" style="border-radius:16px;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)">
 		<!-- wp:column {"verticalAlignment":"top","width":"100%","style":{"spacing":{"padding":{"right":"0","left":"0","top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}},"layout":{"type":"default"}} -->
 		<div class="wp-block-column is-vertically-aligned-top" style="padding-top:var(--wp--preset--spacing--10);padding-right:0;padding-bottom:var(--wp--preset--spacing--10);padding-left:0;flex-basis:100%">
 			<!-- wp:heading {"textAlign":"left","style":{"typography":{"textTransform":"none"}},"fontSize":"x-large"} -->

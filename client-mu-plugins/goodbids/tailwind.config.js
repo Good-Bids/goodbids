@@ -25,7 +25,7 @@ export default {
 			transparent: 'transparent',
 		},
 		borderRadius: {
-			DEFAULT: '30px',
+			DEFAULT: 'var(--wp--preset--spacing--20)',
 		},
 		borderWidth: {
 			DEFAULT: '1px',
@@ -36,7 +36,7 @@ export default {
 		({ addComponents }) => {
 			//set up btn classes
 			const buttonBase = {
-				'@apply rounded py-3 px-5 border border-solid border-transparent no-underline':
+				'@apply rounded py-2 px-6 border border-solid border-transparent no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2':
 					{},
 			};
 
@@ -44,17 +44,17 @@ export default {
 				//set up btn classes
 				'.btn-fill': {
 					...buttonBase,
-					'@apply bg-contrast text-base-2 hover:bg-contrast-4 hover:text-base-2 hover:!no-underline focus:bg-contrast-4 focus:text-base-2':
+					'@apply bg-contrast text-base-2 hover:bg-contrast-3 hover:text-contrast hover:border-transparent hover:!no-underline focus:bg-contrast-3 focus:text-contrast':
 						{},
 				},
 				'.btn-fill-secondary': {
 					...buttonBase,
-					'@apply bg-base-2 text-contrast hover:bg-contrast hover:text-base-2 focus:bg-contrast focus:text-base-2':
+					'@apply bg-contrast-3 text-contrast hover:bg-base focus:bg-base focus:text-base-2':
 						{},
 				},
 				'.btn-outline': {
 					...buttonBase,
-					'@apply bg-transparent text-contrast border-contrast hover:bg-contrast hover:border-contrast hover:text-contrast-4 focus:bg-contrast focus:border-contrast focus:text-contrast-4':
+					'@apply bg-transparent text-contrast border-contrast hover:bg-contrast hover:border-contrast hover:text-contrast-3 focus:bg-contrast focus:border-contrast focus:text-contrast-3':
 						{},
 				},
 			});

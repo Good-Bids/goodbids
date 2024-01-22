@@ -25,17 +25,17 @@
 
 	<!-- wp:jetpack/contact-form {"subject":"[goodbids.go-vip.net] GOODBIDS for Nonprofit","to":"claire.eisinger@viget.com","className":"is-style-default","textColor":"base","style":{"spacing":{"padding":{"top":"16px","right":"16px","bottom":"16px","left":"16px"}},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}}} -->
 	<div class="wp-block-jetpack-contact-form is-style-default has-base-color has-text-color has-link-color" style="padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px">
-		<!-- wp:jetpack/field-name {"label":"Primary Contact Name","required":true,"requiredText":"(required)","borderRadius":30,"borderWidth":2,"lineHeight":1,"inputColor":"#FFFFFF","fieldBackgroundColor":"#0A3624","borderColor":"#D9FFD2","className":"placeholder:text-base focus:outline-contrast-4"} /-->
+		<!-- wp:jetpack/field-name {"label":"Primary Contact Name","required":true,"requiredText":"(required)","lineHeight":1} /-->
 
-		<!-- wp:jetpack/field-email {"label":"Primary Contact Email","required":true,"requiredText":"(required)","placeholder":"E.g. email@email.xyz","borderRadius":30,"borderWidth":2,"lineHeight":1,"inputColor":"#FFFFFF","fieldBackgroundColor":"#0A3624","borderColor":"#D9FFD2","className":"placeholder:text-base focus:outline-contrast-4"} /-->
+		<!-- wp:jetpack/field-email {"label":"Primary Contact Email","required":true,"requiredText":"(required)","placeholder":"E.g. email@email.xyz","lineHeight":1} /-->
 
-		<!-- wp:jetpack/field-text {"label":"Nonprofit Legal Name","required":true,"requiredText":"(required)","placeholder":"E.g. My Nonprofit, Inc.","borderRadius":30,"borderWidth":2,"lineHeight":1,"inputColor":"#FFFFFF","fieldBackgroundColor":"#0A3624","borderColor":"#D9FFD2","className":"placeholder:text-base focus:outline-contrast-4"} /-->
+		<!-- wp:jetpack/field-text {"label":"Nonprofit Legal Name","required":true,"requiredText":"(required)","placeholder":"E.g. My Nonprofit, Inc.","lineHeight":1} /-->
 
-		<!-- wp:jetpack/field-text {"label":"Nonprofit EIN","required":true,"requiredText":"(required)","placeholder":"XX-XXXXXXX","borderRadius":30,"borderWidth":2,"lineHeight":1,"inputColor":"#FFFFFF","fieldBackgroundColor":"#0A3624","borderColor":"#D9FFD2","className":"placeholder:text-base focus:outline-contrast-4"} /-->
+		<!-- wp:jetpack/field-text {"label":"Nonprofit EIN","required":true,"requiredText":"(required)","placeholder":"XX-XXXXXXX","lineHeight":1} /-->
 
-		<!-- wp:jetpack/field-url {"label":"Nonprofit Website","required":true,"requiredText":"(required)","placeholder":"https://","borderRadius":30,"borderWidth":2,"lineHeight":1,"inputColor":"#FFFFFF","fieldBackgroundColor":"#0A3624","borderColor":"#D9FFD2","className":"placeholder:text-base focus:outline-contrast-4"} /-->
+		<!-- wp:jetpack/field-url {"label":"Nonprofit Website","required":true,"requiredText":"(required)","placeholder":"https://","lineHeight":1} /-->
 
-		<!-- wp:jetpack/button {"element":"button","text":"Submit","textColor":"contrast","backgroundColor":"contrast-4","lock":{"remove":true}} /-->
+		<!-- wp:jetpack/button {"element":"button","text":"Submit","lock":{"remove":true}} /-->
 	</div>
 	<!-- /wp:jetpack/contact-form -->
 </div>
