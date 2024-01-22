@@ -98,6 +98,15 @@ Returns an array of Bid Order Objects for the given Auction ID. `$limit` can be 
 `goodbids()->auctions->are_free_bids_allowed( int $auction_id )`  
 Checks if Free Bids are allowed for the given Auction ID.
 
+`goodbids()->auctions->get_free_bids_available( int $auction_id )`  
+Returns the number of available free bids for the given Auction ID.
+
+`goodbids()->auctions->update_free_bids( int $auction_id, int $free_bids )`  
+Updates the number of available free bids for the given Auction ID.
+
+`goodbids()->auctions->maybe_award_free_bid( int $auction_id, int $user_id, string $description )`  
+Awards a Free Bid to the given User if it is eligible and available.
+
 `goodbids()->auctions->get_last_bid( int $auction_id )`  
 Returns the Bid Order object of the last bid for the given Auction ID.
 

@@ -13,3 +13,4 @@ Call the API using the `goodbids()` function.
 * [WooCommerce Methods](woocommerce-methods.md)
 * [Auctioneer Methods](auctioneer-methods.md)
 * [User Methods](user-methods.md)
+* [Utility Methods](utility-methods.md)

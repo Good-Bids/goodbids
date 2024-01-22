@@ -79,6 +79,8 @@ class WooCommerce {
 
 		$this->mark_reward_as_redeemed();
 
+		$this->load_woocommerce_templates();
+		$this->add_free_bids_account_tab();
 		$this->add_auction_meta_box();
 	}
 
@@ -430,8 +432,30 @@ class WooCommerce {
 				}
 
 				$auction_id = $this->get_order_auction_id( $order_id );
+				$redirect   = get_permalink( $auction_id );
 
-				wp_safe_redirect( get_permalink( $auction_id ) );
+				// Do not award free bids if this order contains a free bid.
+				if ( ! $this->is_free_bid_order( $order_id ) ) {
+					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
+					$remaining_free_bids = goodbids()->auctions->get_free_bids_available( $auction_id );
+					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
+					$bid_order           = wc_get_order( $order_id );
+
+					$description = sprintf(
+						// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
+						goodbids()->utilities->get_ordinal( $nth_bid ),
+						$bid_order->get_total( 'edit' ),
+						$auction_id
+					);
+
+					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id, null, $description ) ) {
+						// TODO: Let the user know they earned a free bid.
+						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
+					}
+				}
+
+				wp_safe_redirect( $redirect );
 				exit;
 			}
 		);
@@ -1051,5 +1075,88 @@ class WooCommerce {
 		}
 
 		return $emails;
+	}
+
+	/**
+	 * Load WooCommerce Templates from the GoodBids Views folder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function load_woocommerce_templates(): void {
+		add_filter(
+			'woocommerce_locate_template',
+			function ( $template, $template_name, $template_path ): string {
+				// Only override templates coming from WooCommerce.
+				if ( 'woocommerce' !== trim( $template_path, '/' ) ) {
+					return $template;
+				}
+
+				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
+				if ( file_exists( $goodbids_path ) ) {
+					return $goodbids_path;
+				}
+
+				return $template;
+			},
+			8,
+			3
+		);
+	}
+
+	/**
+	 * Create a new Free Bids tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_free_bids_account_tab(): void {
+		$slug = 'free-bids';
+
+		add_action(
+			'init',
+			function () use ( $slug ): void {
+				add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES );
+			}
+		);
+
+		add_filter(
+			'query_vars',
+			function ( $vars ) use ( $slug ): array {
+				if ( ! in_array( $slug, $vars, true ) ) {
+					$vars[] = $slug;
+				}
+				return $vars;
+			}
+		);
+
+		add_filter(
+			'woocommerce_account_menu_items',
+			function ( $items ) use ( $slug ): array {
+				if ( array_key_exists( $slug, $items ) ) {
+					return $items;
+				}
+
+				$new_items = [];
+				foreach ( $items as $id => $item ) {
+					$new_items[ $id ] = $item;
+					if ( 'orders' === $id ) {
+						$new_items[ $slug ] = __( 'Free Bids', 'goodbids' );
+					}
+				}
+
+				return $new_items;
+			}
+		);
+
+		add_action(
+			'woocommerce_account_' . $slug . '_endpoint',
+			function () use ( $slug ) {
+				$free_bids = goodbids()->users->get_free_bids();
+				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
+			}
+		);
 	}
 }
