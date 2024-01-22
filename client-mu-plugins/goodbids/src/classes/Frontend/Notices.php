@@ -108,6 +108,12 @@ class Notices {
 	const NO_AVAILABLE_FREE_BIDS = 'no-available-free-bids';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BID_REDEEMED = 'free-bid-redeemed';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -209,6 +215,11 @@ class Notices {
 				self::NO_AVAILABLE_FREE_BIDS    => [
 					'message' => __( 'Sorry, you do not have any available free bids.', 'goodbids' ),
 					'type'    => 'error',
+				],
+
+				self::FREE_BID_REDEEMED         => [
+					'message' => __( 'You have successfully used a free bid!', 'goodbids' ),
+					'type'    => 'success',
 				],
 			]
 		);

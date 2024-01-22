@@ -459,6 +459,10 @@ class WooCommerce {
 						// TODO: Let the user know they earned a free bid.
 						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
 					}
+				} else { // Reduce the Free Bid Count for the user.
+					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+						$redirect = add_query_arg( 'gb-notice', Notices::FREE_BID_REDEEMED, $redirect );
+					}
 				}
 
 				wp_safe_redirect( $redirect );
@@ -948,7 +952,7 @@ class WooCommerce {
 		add_filter(
 			'woocommerce_add_to_cart_validation',
 			function ( $passed, $product_id ) {
-				if ( 'rewards' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( Auctions::ORDER_TYPE_REWARD !== goodbids()->auctions->get_product_type( $product_id ) ) {
 					return $passed;
 				}
 
