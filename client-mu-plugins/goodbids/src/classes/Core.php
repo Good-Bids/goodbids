@@ -19,6 +19,7 @@ use GoodBids\Network\Sites;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\Users;
 
 /**
  * Core Class
@@ -102,6 +103,12 @@ class Core {
 	 * @var Notices
 	 */
 	public Notices $notices;
+
+	/**
+	 * @since 1.0.0
+	 * @var Users
+	 */
+	public Users $users;
 
 	/**
 	 * Constructor
@@ -310,6 +317,7 @@ class Core {
 				$this->woocommerce = new WooCommerce();
 				$this->blocks      = new Blocks();
 				$this->notices     = new Notices();
+				$this->users       = new Users();
 			}
 		);
 	}
