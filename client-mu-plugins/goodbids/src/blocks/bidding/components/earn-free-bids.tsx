@@ -1,4 +1,3 @@
-import React from 'react';
 import { DEMO_DATA } from '../utils/demo-data';
 import { WaveIcon } from './wave-icon';
 import { useAuction } from '../utils/auction-store';
@@ -6,7 +5,7 @@ import { useAuction } from '../utils/auction-store';
 function FreeBidsContent() {
 	const { auctionStatus, currentBid, freeBidsAvailable } = useAuction();
 
-	if (auctionStatus === 'in-progress') {
+	if (auctionStatus === 'live') {
 		if (DEMO_DATA.userId) {
 			return (
 				<p className="m-0">
