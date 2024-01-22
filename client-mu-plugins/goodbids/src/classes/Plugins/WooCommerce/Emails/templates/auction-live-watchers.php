@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
+<?php /* translators: %s:  */ ?>
+<p><?php // TODO: add in email message. sprintf( esc_html__( 'Custom email message here %s:', 'goodbids' ), $order->get_formatted_billing_full_name() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 <?php
 
 /**

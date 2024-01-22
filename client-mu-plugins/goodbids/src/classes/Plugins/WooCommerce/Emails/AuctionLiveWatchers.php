@@ -1,6 +1,6 @@
 <?php
 /**
- * Email Notification: Auction Live for watchers
+ * Auction Live Watchers: Send an email to the users that are watching when an auction goes live.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 use WC_Email;
 
 /**
- * Auction live for watchers custom WooCommerce email class
+ * Auction Live Watchers extend the custom WooCommerce email class
  *
  * @since 1.0.0
  * @extends WC_Email
@@ -31,6 +31,8 @@ class AuctionLiveWatchers extends WC_Email {
 		$this->description    = __( 'Auction Live Watchers Notification emails is sent when an auction goes live.', 'goodbids' );
 		$this->template_html  = GOODBIDS_PLUGIN_PATH . goodbids()->woocommerce::EMAIL_TEMPLATE_PATH . '/auction-live-watchers.php';
 		$this->template_plain = GOODBIDS_PLUGIN_PATH . goodbids()->woocommerce::EMAIL_TEMPLATE_PATH . '/plain/auction-live-watchers.php';
+
+		// TODO: Trigger this email.
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
