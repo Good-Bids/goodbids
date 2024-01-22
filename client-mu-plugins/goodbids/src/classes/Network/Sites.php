@@ -414,7 +414,15 @@ class Sites {
 					return $html;
 				}
 
-				return get_custom_logo( get_main_site_id() );
+				switch_to_blog( get_main_site_id() );
+				$custom_logo_id = get_theme_mod( 'custom_logo' );
+				restore_current_blog();
+
+				if ( $custom_logo_id ) {
+					return get_custom_logo( get_main_site_id() );
+				}
+
+				return '<!-- No Custom Logo -->';
 			}
 		);
 	}
