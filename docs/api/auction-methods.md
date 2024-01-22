@@ -130,3 +130,6 @@ Get the total amount donated by the given User for the given Auction ID.
 
 `goodbids()->auctions->get_status( int $auction_id )`  
 Returns the status of the Auction. Possible values are: "Upcoming", "Live", and "Closed". If the Auction has not yet been published, it will return "Draft".
+
+`goodbids()->auctions->get_all_site_auctions()`  
+Returns an array of all active auctions for all sites.

@@ -1,0 +1,22 @@
+{
+  "name": "featured-auctions",
+  "title": "Featured Auctions",
+  "description": "Displays the featured GoodBids Auctions.",
+  "icon": "awards",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": [
+    "featured auctions",
+    "auctions",
+    "listing",
+    "archive",
+    "index",
+    "top"
+  ],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
+}
