@@ -45,6 +45,12 @@ class WooCommerce {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const EMAIL_TEMPLATE_PATH = '/src/classes/Plugins/WooCommerce/Emails/templates';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	private string $slug = 'woocommerce';
 
 	/**

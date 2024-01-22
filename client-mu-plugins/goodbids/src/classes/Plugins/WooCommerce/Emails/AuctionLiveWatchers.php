@@ -29,21 +29,54 @@ class AuctionLiveWatchers extends WC_Email {
 		$this->id             = 'goodbids_auction_live_watchers';
 		$this->title          = __( 'Auction Live Watchers', 'goodbids' );
 		$this->description    = __( 'Auction Live Watchers Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->heading        = __( 'Auction Live Watchers', 'goodbids' );
-		$this->subject        = __( 'Auction Live Watchers', 'goodbids' );
-		$this->template_html  = 'emails/admin-new-order.php';
-		$this->template_plain = 'emails/plain/admin-new-order.php';
+		$this->template_html  = GOODBIDS_PLUGIN_PATH . goodbids()->woocommerce::EMAIL_TEMPLATE_PATH . '/auction-live-watchers.php';
+		$this->template_plain = GOODBIDS_PLUGIN_PATH . goodbids()->woocommerce::EMAIL_TEMPLATE_PATH . '/plain/auction-live-watchers.php';
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
 
-		// this sets the recipient to the settings defined below in init_form_fields()
-		$this->recipient = $this->get_option( 'recipient' );
+		$this->get_recipients();
+	}
 
-		// if none was entered, just use the WP admin email as a fallback
-		if ( ! $this->recipient ) {
-			$this->recipient = get_option( 'admin_email' );
+	/**
+	 * Get email subject.
+	 *
+	 * @since  1.0.0
+	 * @return string
+	 */
+	public function get_default_subject() {
+		return __( 'Your auction has gone live!', 'goodbids' );
+	}
+
+	/**
+	 * Get email heading.
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_default_heading() {
+		return __( 'Auction Live Watchers', 'goodbids' );
+	}
+
+	/**
+	 * Get the email recipients
+	 *
+	 * @return string
+	 */
+	public function get_recipients(): string {
+		$recipient = parent::get_recipient();
+
+		if ( ! $recipient ) {
+			// this sets the recipient to the settings defined below in init_form_fields()
+			$recipient = $this->get_option( 'recipient' );
+
+			// if none was entered, just use the WP admin email as a fallback
+			if ( ! $recipient ) {
+				$recipient = get_option( 'admin_email' );
+			}
 		}
+
+		return $recipient;
 	}
 
 	/**
@@ -59,7 +92,7 @@ class AuctionLiveWatchers extends WC_Email {
 		}
 
 		// woohoo, send the email!
-		$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+		$this->send( $this->get_recipient(), $this->get_default_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 	}
 
 	/**
@@ -74,7 +107,7 @@ class AuctionLiveWatchers extends WC_Email {
 			$this->template_html,
 			[
 				'order'         => $this->object,
-				'email_heading' => $this->get_heading(),
+				'email_heading' => $this->get_default_heading(),
 			]
 		);
 		return ob_get_clean();
@@ -93,7 +126,7 @@ class AuctionLiveWatchers extends WC_Email {
 			$this->template_plain,
 			[
 				'order'         => $this->object,
-				'email_heading' => $this->get_heading(),
+				'email_heading' => $this->get_default_heading(),
 			]
 		);
 		return ob_get_clean();
@@ -126,7 +159,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'title'       => __( 'Subject', 'goodbids' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
-				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->subject ),
+				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->get_default_subject() ),
 				'placeholder' => '',
 				'default'     => '',
 			],
@@ -134,7 +167,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'title'       => __( 'Email Heading', 'goodbids' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
-				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->heading ),
+				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->get_default_heading() ),
 				'placeholder' => '',
 				'default'     => '',
 			],
