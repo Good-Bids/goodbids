@@ -594,7 +594,12 @@ class Sites {
 			->flatMap(
 				function ( $site ) {
 					$site_id = get_object_vars( $site )['blog_id'];
-					return goodbids()->auctions->get_all( $site_id );
+
+					switch_to_blog( $site_id );
+					$auctions = goodbids()->auctions->get_all( $site_id );
+					restore_current_blog();
+
+					return $auctions;
 				}
 			)
 			->filter()

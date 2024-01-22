@@ -339,13 +339,10 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $site_id
-	 *
 	 * @return array
 	 */
-	public function get_all( int $site_id ): array {
-		// Start by switching to blog and get all auctions
-		switch_to_blog( $site_id );
+	public function get_all(): array {
+		$site_id  = get_current_blog_id();
 		$args     = [
 			'post_type'      => goodbids()->auctions->get_post_type(),
 			'post_status'    => 'publish',
@@ -353,11 +350,11 @@ class Auctions {
 			'fields'         => 'ids',
 		];
 		$auctions = new \WP_Query( $args );
-		restore_current_blog();
 
 		if ( ! $auctions->have_posts() ) {
 			return [];
 		}
+
 		return collect( $auctions->posts )->map(
 			function ( $post_id ) use ( $site_id ) {
 				return [
