@@ -74,6 +74,17 @@ class Patterns {
 					'inserter'   => true,
 				];
 
+				$logo_grid = [
+					'name'        => 'logo-grid',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/logo-grid.php',
+					'title'       => __( 'Logo Grid', 'goodbids' ),
+					'description' => _x( 'Grid of image for logos', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids', 'gallery' ],
+					'keywords'    => [ 'image', 'logo', 'grid' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
+				];
+
 				$nonprofit_interest_form = [
 					'name'        => 'nonprofit-interest-form',
 					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/nonprofit-interest-form.php',
@@ -86,16 +97,15 @@ class Patterns {
 				];
 
 				$section_sidebar_chapters = [
-					'name'          => 'section-sidebar-chapters',
-					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/section-sidebar-chapters.php',
-					'title'         => __( 'Section with Sidebar and Chapters', 'goodbids' ),
-					'description'   => _x( 'Template for Terms and Conditions or any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
-					'categories'    => [ 'page', 'goodbids' ],
-					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
-					'postTypes'     => [ 'page', 'wp_template' ],
-					'templateTypes' => [ 'page' ],
-					'source'        => 'plugin',
-					'inserter'      => true,
+					'name'        => 'section-sidebar-chapters',
+					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/section-sidebar-chapters.php',
+					'title'       => __( 'Section with Sidebar and Chapters', 'goodbids' ),
+					'description' => _x( 'Template for any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids' ],
+					'keywords'    => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'   => [ 'page' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
 				];
 
 				$template_about = [
@@ -124,15 +134,30 @@ class Patterns {
 					'inserter'    => false,
 				];
 
+				$template_terms_conditions = [
+					'name'          => 'template-terms-conditions',
+					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-terms-conditions.php',
+					'title'         => __( 'Terms and Conditions', 'goodbids' ),
+					'description'   => _x( 'Template for GoodBids Terms and Conditions Page', 'Block pattern description', 'goodbids' ),
+					'categories'    => [ 'page', 'goodbids' ],
+					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'     => [ 'page', 'wp_template' ],
+					'templateTypes' => [ 'page' ],
+					'source'        => 'plugin',
+					'inserter'      => true,
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
 						$auction_archive,
 						$hero_banner,
+						$logo_grid,
 						$nonprofit_interest_form,
 						$section_sidebar_chapters,
 						$template_about,
 						$template_auction,
+						$template_terms_conditions,
 					]
 				);
 

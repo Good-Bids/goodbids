@@ -4,6 +4,15 @@
 			@apply bg-base-2 p-2;
 		}
 
+		input,
+		textarea {
+			@apply bg-contrast text-base-2 border-base rounded placeholder:text-base focus:outline-contrast-3;
+		}
+
+		.wp-block-button__link {
+			@apply btn-fill-secondary;
+		}
+
 		.contact-form-submission {
 			@apply w-auto border-base-2;
 

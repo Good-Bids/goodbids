@@ -125,12 +125,12 @@
           "slug": "contrast-2"
         },
         {
-          "color": "#919493",
+          "color": "#70FF8F",
           "name": "Contrast / Three",
           "slug": "contrast-3"
         },
         {
-          "color": "#70FF8F",
+          "color": "#919493",
           "name": "Contrast / Four",
           "slug": "contrast-4"
         },
@@ -721,7 +721,7 @@
         "variations": {
           "plain": {
             "border": {
-              "color": "var(--wp--preset--color--contrast-4)",
+              "color": "var(--wp--preset--color--contrast-3)",
               "radius": "0",
               "style": "solid",
               "width": "0"
@@ -809,13 +809,13 @@
       "button": {
         ":active": {
           "color": {
-            "background": "var(--wp--preset--color--contrast-4)",
+            "background": "var(--wp--preset--color--contrast-3)",
             "text": "var(--wp--preset--color--contrast)"
           }
         },
         ":focus": {
           "color": {
-            "background": "var(--wp--preset--color--contrast-4)",
+            "background": "var(--wp--preset--color--contrast-3)",
             "text": "var(--wp--preset--color--contrast)"
           },
           "outline": {
@@ -827,7 +827,7 @@
         },
         ":hover": {
           "color": {
-            "background": "var(--wp--preset--color--contrast-4)",
+            "background": "var(--wp--preset--color--contrast-3)",
             "text": "var(--wp--preset--color--contrast)"
           },
           "border": {
