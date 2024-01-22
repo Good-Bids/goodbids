@@ -69,11 +69,11 @@ class AuctionLiveWatchers extends WC_Email {
 		if ( ! $recipient ) {
 			// this sets the recipient to the settings defined below in init_form_fields()
 			$recipient = $this->get_option( 'recipient' );
+		}
 
-			// if none was entered, just use the WP admin email as a fallback
-			if ( ! $recipient ) {
-				$recipient = get_option( 'admin_email' );
-			}
+		// if none was entered, just use the WP admin email as a fallback
+		if ( ! $recipient ) {
+			$recipient = get_option( 'admin_email' );
 		}
 
 		return $recipient;
@@ -91,8 +91,11 @@ class AuctionLiveWatchers extends WC_Email {
 			return;
 		}
 
+		$this->setup_locale();
 		// woohoo, send the email!
-		$this->send( $this->get_recipient(), $this->get_default_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+		$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+
+		$this->restore_locale();
 	}
 
 	/**
@@ -102,15 +105,13 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_html(): string {
-		ob_start();
-		woocommerce_get_template(
+		return wc_get_template_html(
 			$this->template_html,
 			[
 				'order'         => $this->object,
 				'email_heading' => $this->get_default_heading(),
 			]
 		);
-		return ob_get_clean();
 	}
 
 
@@ -121,15 +122,13 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @return string
 	 */
 	public function get_content_plain(): string {
-		ob_start();
-		woocommerce_get_template(
+		return wc_get_template_html(
 			$this->template_plain,
 			[
 				'order'         => $this->object,
 				'email_heading' => $this->get_default_heading(),
 			]
 		);
-		return ob_get_clean();
 	}
 
 	/**
@@ -160,7 +159,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'type'        => 'text',
 				'desc_tip'    => true,
 				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->get_default_subject() ),
-				'placeholder' => '',
+				'placeholder' => $this->get_default_subject(),
 				'default'     => '',
 			],
 			'heading'            => [
@@ -168,7 +167,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'type'        => 'text',
 				'desc_tip'    => true,
 				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->get_default_heading() ),
-				'placeholder' => '',
+				'placeholder' => $this->get_default_heading(),
 				'default'     => '',
 			],
 			'additional_content' => [
