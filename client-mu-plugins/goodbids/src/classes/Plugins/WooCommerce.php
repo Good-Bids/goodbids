@@ -11,7 +11,7 @@ namespace GoodBids\Plugins;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\API\Credentials;
-use GoodBids\Plugins\WooCommerce\Emails\{AuctionLiveWatchers};
+use GoodBids\Plugins\WooCommerce\Emails\AuctionLiveWatchers;
 
 use WC_Coupon;
 use WC_Product;

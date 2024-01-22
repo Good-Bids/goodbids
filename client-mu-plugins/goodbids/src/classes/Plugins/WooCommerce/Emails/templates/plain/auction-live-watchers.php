@@ -11,6 +11,10 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 echo esc_html( wp_strip_all_tags( $email_heading ) );
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
+/*
+translators: %s: Customer billing full name */
+// TODO: add in email message echo sprintf( esc_html__( 'Custom email message %s:', 'goodbids' ), esc_html( $order->get_formatted_billing_full_name() ) ) . "\n\n";
+
 /**
  * Show user-defined additional content - this is set in each email's settings.
  */

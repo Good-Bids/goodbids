@@ -88,6 +88,7 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @return void
 	 */
 	public function trigger(): void {
+		// TODO set up check before sending email
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
 			return;
@@ -152,7 +153,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'title'       => __( 'Recipient(s)', 'goodbids' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
-				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( get_option( 'admin_email' ) ) ),
+				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( $this->get_recipients() ) ),
 				'placeholder' => '',
 				'default'     => '',
 			],
@@ -184,7 +185,7 @@ class AuctionLiveWatchers extends WC_Email {
 			'email_type'         => [
 				'title'       => __( 'Email type', 'goodbids' ),
 				'type'        => 'select',
-				'description' => __( 'Choose which format of email to send.', 'woocommerce' ),
+				'description' => __( 'Choose which format of email to send.', 'goodbids' ),
 				'default'     => 'html',
 				'class'       => 'email_type wc-enhanced-select',
 				'options'     => $this->get_email_type_options(),
