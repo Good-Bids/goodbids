@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Live Watchers email (plain text)
+ * Auction Watchers Live email (plain text)
  *
  * @version 1.0.0
  */

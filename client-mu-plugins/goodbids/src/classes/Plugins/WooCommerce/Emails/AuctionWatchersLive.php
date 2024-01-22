@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Live Watchers: Send an email to the users that are watching when an auction goes live.
+ * Auction Watchers Live: Send an email to the users that are watching when an auction goes live.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -13,12 +13,12 @@ defined( 'ABSPATH' ) || exit;
 use WC_Email;
 
 /**
- * Auction Live Watchers extend the custom WooCommerce email class
+ * Auction Watchers Live extend the custom WooCommerce email class
  *
  * @since 1.0.0
  * @extends WC_Email
  */
-class AuctionLiveWatchers extends WC_Email {
+class AuctionWatchersLive extends WC_Email {
 
 	/**
 	 * Set email defaults
@@ -26,18 +26,16 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'goodbids_auction_live_watchers';
-		$this->title          = __( 'Auction Live Watchers', 'goodbids' );
-		$this->description    = __( 'Auction Live Watchers Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->template_html  = GOODBIDS_PLUGIN_PATH . goodbids()->woocommerce::EMAIL_TEMPLATE_PATH . '/auction-live-watchers.php';
-		$this->template_plain = GOODBIDS_PLUGIN_PATH . goodbids()->woocommerce::EMAIL_TEMPLATE_PATH . '/plain/auction-live-watchers.php';
+		$this->id             = 'goodbids_auction_watchers_live';
+		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
+		$this->description    = __( 'Auction Watchers Live Notification emails is sent when an auction goes live.', 'goodbids' );
+		$this->template_html  = 'emails/auction-watchers-live.php';
+		$this->template_plain = 'emails/plain/auction-watchers-live.php';
 
 		// TODO: Trigger this email.
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
-
-		$this->get_recipients();
 	}
 
 	/**
@@ -47,7 +45,7 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( 'Your auction has gone live!', 'goodbids' );
+		return __( 'subject', 'goodbids' );
 	}
 
 	/**
@@ -57,7 +55,7 @@ class AuctionLiveWatchers extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Auction Live Watchers', 'goodbids' );
+		return __( 'Heading', 'goodbids' );
 	}
 
 	/**
@@ -65,7 +63,7 @@ class AuctionLiveWatchers extends WC_Email {
 	 *
 	 * @return string
 	 */
-	public function get_recipients(): string {
+	public function get_recipient(): string {
 		$recipient = parent::get_recipient();
 
 		if ( ! $recipient ) {
@@ -111,7 +109,6 @@ class AuctionLiveWatchers extends WC_Email {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'order'         => $this->object,
 				'email_heading' => $this->get_default_heading(),
 			]
 		);
@@ -128,7 +125,6 @@ class AuctionLiveWatchers extends WC_Email {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'order'         => $this->object,
 				'email_heading' => $this->get_default_heading(),
 			]
 		);
@@ -153,7 +149,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'title'       => __( 'Recipient(s)', 'goodbids' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
-				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( $this->get_recipients() ) ),
+				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( $this->get_recipient() ) ),
 				'placeholder' => '',
 				'default'     => '',
 			],
@@ -161,7 +157,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'title'       => __( 'Subject', 'goodbids' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
-				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->get_default_subject() ),
+				'description' => sprintf( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', $this->get_subject() ),
 				'placeholder' => $this->get_default_subject(),
 				'default'     => '',
 			],
@@ -169,7 +165,7 @@ class AuctionLiveWatchers extends WC_Email {
 				'title'       => __( 'Email Heading', 'goodbids' ),
 				'type'        => 'text',
 				'desc_tip'    => true,
-				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->get_default_heading() ),
+				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.' ), $this->get_heading() ),
 				'placeholder' => $this->get_default_heading(),
 				'default'     => '',
 			],

@@ -11,7 +11,7 @@ namespace GoodBids\Plugins;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\API\Credentials;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionLiveWatchers;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
 
 use WC_Coupon;
 use WC_Product;
@@ -40,12 +40,6 @@ class WooCommerce {
 	 * @var string
 	 */
 	const REWARD_COUPON_META_KEY = '_goodbids_reward_coupon_id';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const EMAIL_TEMPLATE_PATH = '/src/classes/Plugins/WooCommerce/Emails/templates';
 
 	/**
 	 * @since 1.0.0
@@ -1195,7 +1189,7 @@ class WooCommerce {
 			function ( $email_classes ): array {
 
 				// add the email class to the list of email classes that WooCommerce loads
-				$email_classes['AuctionLiveWatchers'] = new AuctionLiveWatchers();
+				$email_classes['AuctionWatchersLive'] = new AuctionWatchersLive();
 
 				return $email_classes;
 			}
