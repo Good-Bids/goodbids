@@ -47,6 +47,7 @@ add_filter(
 	}
 );
 ```
+
 ### goodbids_block_locations
 
 Adds support for additional custom block directories.
@@ -98,5 +99,24 @@ add_filter(
 		$value = 'my-custom-value';
 
 		return $value;
+	}
+```
+
+### goodbids_auction_block_template
+
+Customizes the default block template for new Auctions.
+
+```php
+add_filter(
+	'goodbids_auction_block_template',
+	function ( mixed $template, int $auction_id ): array {
+		$template[] = [
+			'core/paragraph',
+			[
+				'placeholder' => __( 'Custom Placeholder', 'text-domain' ),
+			],		
+		];
+
+		return $template;
 	}
 ```

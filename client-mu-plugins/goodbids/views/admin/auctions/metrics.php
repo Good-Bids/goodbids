@@ -24,6 +24,12 @@ $last_bid    = $this->get_last_bid( $auction_id );
 
 	printf(
 		'<p><strong>%s</strong><br>%s</p>',
+		esc_html__( 'Available Free Bids', 'goodbids' ),
+		esc_html( $this->get_free_bids_available( $auction_id ) )
+	);
+
+	printf(
+		'<p><strong>%s</strong><br>%s</p>',
 		esc_html__( 'Total Extensions', 'goodbids' ),
 		esc_html( $this->get_extensions( $auction_id ) )
 	);

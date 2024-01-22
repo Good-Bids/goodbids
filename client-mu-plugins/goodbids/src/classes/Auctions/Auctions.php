@@ -108,6 +108,12 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const ORDER_TYPE_BID = 'bids';
 
 	/**
@@ -174,6 +180,9 @@ class Auctions {
 
 		// Register REST API Endpoints.
 		$this->setup_api_endpoints();
+
+		// Register the Auction Single and Archive templates.
+		$this->set_templates();
 
 		// Init Rewards Category.
 		$this->init_rewards_category();
@@ -299,7 +308,7 @@ class Auctions {
 					'capability_type'     => 'page',
 					'show_in_rest'        => true,
 					'rest_base'           => self::SINGULAR_SLUG,
-					'template'            => $this->get_template(),
+					'template'            => $this->get_block_template(),
 				];
 
 				register_post_type( $this->get_post_type(), $args );
@@ -331,9 +340,9 @@ class Auctions {
 	 *
 	 * @return array
 	 */
-	private function get_template(): array {
+	private function get_block_template(): array {
 		return apply_filters(
-			'woocommerce_auction_default_template',
+			'goodbids_auction_block_template',
 			[
 				[
 					'core/pattern',
@@ -342,6 +351,31 @@ class Auctions {
 					],
 				],
 			]
+		);
+	}
+
+	/**
+	 * Specify templates used for Auctions with Nice names.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_templates(): void {
+		add_filter(
+			'default_template_types',
+			function ( $template_types ): array {
+				$template_types[ 'single-' . $this->get_post_type() ] = array(
+					'title'       => _x( 'Single Auction', 'Template Name', 'goodbids' ),
+					'description' => __( 'Displays a single Auction post.', 'goodbids' ),
+				);
+				$template_types[ 'archive-' . $this->get_post_type() ] = array(
+					'title'       => _x( 'Archive: Auction', 'Template Name', 'goodbids' ),
+					'description' => __( 'Displays a the Auctions Archive.', 'goodbids' ),
+				);
+
+				return $template_types;
+			}
 		);
 	}
 
@@ -647,7 +681,7 @@ class Auctions {
 			return '';
 		}
 
-		return $this->format_date_time( $start, $format );
+		return goodbids()->utilities->format_date_time( $start, $format );
 	}
 
 	/**
@@ -667,33 +701,7 @@ class Auctions {
 			return '';
 		}
 
-		return $this->format_date_time( $end, $format );
-	}
-
-	/**
-	 * Format a date/time string.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $datetime
-	 * @param string $format
-	 *
-	 * @return string
-	 */
-	private function format_date_time( string $datetime, string $format ): string {
-		if ( ! $format ) {
-			return $datetime;
-		}
-
-		$formatted = $datetime;
-
-		try {
-			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
-		} catch ( \Exception $e ) {
-			// TODO: Log error.
-		}
-
-		return $formatted;
+		return goodbids()->utilities->format_date_time( $end, $format );
 	}
 
 	/**
@@ -889,6 +897,96 @@ class Auctions {
 	}
 
 	/**
+	 * Checks if Free Bids are allowed on Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function are_free_bids_allowed( ?int $auction_id = null ): bool {
+		$all_bids  = count( $this->get_bid_order_ids( $auction_id ) );
+		$free_bids = count( $this->get_free_bid_order_ids( $auction_id ) );
+
+		// Free orders must be less than 50% of all orders.
+		if ( round( $free_bids / $all_bids, 2 ) > 0.5 ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Gets the number of Available Free Bids for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_free_bids_available( ?int $auction_id = null ): int {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
+		$free_bids = get_post_meta( $auction_id, self::FREE_BIDS_META_KEY, true );
+
+		// Return the default value if we have no value.
+		if ( ! $free_bids && 0 !== $free_bids && '0' !== $free_bids ) {
+			$free_bids = goodbids()->get_config( 'auctions.default-free-bids' );
+			update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+		}
+
+		return intval( $free_bids );
+	}
+
+	/**
+	 * Update the Free Bids count for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $free_bids
+	 *
+	 * @return void
+	 */
+	public function update_free_bids( int $auction_id, int $free_bids ): void {
+		update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+	}
+
+	/**
+	 * Maybe Award a Free Bid, if available
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @param ?int $user_id
+	 * @param string $description
+	 *
+	 * @return bool
+	 */
+	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null, string $description = ''): bool {
+		$free_bids = $this->get_free_bids_available( $auction_id );
+		if ( ! $free_bids ) {
+			return false;
+		}
+
+		if ( null === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( goodbids()->users->award_free_bid( $user_id, $auction_id, $description ) ) {
+			$free_bids--;
+			$this->update_free_bids( $auction_id, $free_bids );
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Update Auction with some initial data when created.
 	 *
 	 * @since 1.0.0
@@ -1034,13 +1132,17 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
+	 * @param ?int $auction_id
 	 * @param int $limit
 	 * @param ?int $user_id
 	 *
 	 * @return int[]
 	 */
-	public function get_bid_order_ids( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
+	public function get_bid_order_ids( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
 		$args = [
 			'limit'   => $limit,
 			'status'  => [ 'processing', 'completed' ],
@@ -1076,6 +1178,48 @@ class Auctions {
 	}
 
 	/**
+	 * Get Order IDs that have been placed using a Free Bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @param int $limit
+	 * @param ?int $user_id
+	 *
+	 * @return int[]
+	 */
+	public function get_free_bid_order_ids( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		$orders = $this->get_bid_order_ids( $auction_id, $limit, $user_id );
+		$return = [];
+
+		foreach ( $orders as $order_id ) {
+			if ( ! goodbids()->woocommerce->is_free_bid_order( $order_id ) ) {
+				continue;
+			}
+
+			$return[] = $order_id;
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Get Order Objects that have been placed using a Free Bid.
+	 *
+	 * @param ?int $auction_id
+	 * @param int $limit
+	 * @param ?int $user_id
+	 *
+	 * @return WC_Order[]
+	 */
+	public function get_free_bid_orders( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		return array_map(
+			fn ( $order ) => wc_get_order( $order ),
+			$this->get_free_bid_order_ids( $auction_id, $limit, $user_id )
+		);
+	}
+
+	/**
 	 * Get Bid Order objects for an Auction
 	 *
 	 * @since 1.0.0
@@ -1087,11 +1231,9 @@ class Auctions {
 	 * @return WC_Order[]
 	 */
 	public function get_bid_orders( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
-		$orders = $this->get_bid_order_ids( $auction_id, $limit, $user_id );
-
 		return array_map(
 			fn ( $order ) => wc_get_order( $order ),
-			$orders
+			$this->get_bid_order_ids( $auction_id, $limit, $user_id )
 		);
 	}
 
@@ -1585,6 +1727,7 @@ class Auctions {
 			self::CRON_AUCTION_START_HOOK,
 			function (): void {
 				$auctions = $this->get_starting_auctions();
+				$starts   = 0;
 
 				if ( ! $auctions->have_posts() ) {
 					return;
@@ -1592,9 +1735,12 @@ class Auctions {
 
 				foreach ( $auctions->posts as $auction_id ) {
 					if ( $this->trigger_auction_start( $auction_id ) ) {
-						// Update the Auction meta to indicate it has started.
-						update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+						$starts++;
 					}
+				}
+
+				if ( count( $auctions->posts ) !== $starts ) {
+					// TODO: Log error.
 				}
 			}
 		);
@@ -1705,6 +1851,12 @@ class Auctions {
 		if ( true !== $result ) {
 			return false;
 		}
+
+		// Update the Auction meta to indicate it has started.
+		// This is used for the sole purposes of filtering started auctions from get_starting_auctions() method.
+		update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+
+		do_action( 'goodbids_auction_start', $auction_id );
 
 		return true;
 	}
@@ -1861,7 +2013,7 @@ class Auctions {
 
 				wp_send_json_success(
 					[
-						'closeDate' => $this->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
+						'closeDate' => goodbids()->utilities->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
 					]
 				);
 			}

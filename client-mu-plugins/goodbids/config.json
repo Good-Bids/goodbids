@@ -18,5 +18,8 @@
       },
       "api-key": "GOODBIDS_AUCTIONEER_API_KEY"
     }
+  },
+  "auctions": {
+    "default-free-bids": 5
   }
 }

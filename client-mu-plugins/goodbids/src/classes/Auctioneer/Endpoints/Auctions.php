@@ -47,9 +47,11 @@ class Auctions {
 		$payload_data = $this->setup_payload_data(
 			$guid,
 			[
-				'startTime',
-				'endTime',
 				'currentBid',
+				'endTime',
+				'freeBidsAllowed',
+				'freeBidsAvailable',
+				'startTime',
 			],
 			$extra_data
 		);
@@ -87,10 +89,10 @@ class Auctions {
 		$payload_data = $this->setup_payload_data(
 			$guid,
 			[
-				'totalBids',
-				'totalRaised',
 				'lastBid',
 				'lastBidder',
+				'totalBids',
+				'totalRaised',
 			],
 			$extra_data
 		);
@@ -130,6 +132,7 @@ class Auctions {
 			[
 				'currentBid',
 				'endTime',
+				'freeBidsAllowed',
 				'freeBidsAvailable',
 			],
 			$extra_data
