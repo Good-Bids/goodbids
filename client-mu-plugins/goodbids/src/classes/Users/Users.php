@@ -70,19 +70,17 @@ class Users {
 			return [];
 		}
 
-		if ( self::FREE_BID_STATUS_ALL === $status ) {
-			return $free_bids;
-		}
-
-		$return = [];
-
-		foreach ( $free_bids as $free_bid ) {
-			if ( $status === $free_bid->get_status() ) {
-				$return[] = $free_bid;
-			}
-		}
-
-		return $return;
+		return collect( $free_bids )
+			->filter(
+				fn ( $free_bid ) => (
+					// When status is self::FREE_BID_STATUS_ALL, always returns true
+					self::FREE_BID_STATUS_ALL === $status
+					// Otherwise bid must match status.
+					|| $status === $free_bid->get_status()
+				)
+			)
+			->values()
+			->all();
 	}
 
 	/**
