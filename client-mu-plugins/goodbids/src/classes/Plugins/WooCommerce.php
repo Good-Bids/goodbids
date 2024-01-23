@@ -619,17 +619,11 @@ class WooCommerce {
 				$cart_item_price = $this->get_order_bid_item_price( $order->get_id() );
 				$bid_variation   = goodbids()->auctions->bids->get_variation( $info['auction_id'] );
 
-				error_log( '[GB] Cart Item Price: ' . $cart_item_price );
-				error_log( '[GB] Bid Product Price: ' . floatval( $bid_variation->get_regular_price( 'edit' ) ) );
-
 				if ( floatval( $bid_variation->get_regular_price( 'edit' ) ) !== $cart_item_price ) {
 					$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
 					wc_add_notice( $notice['message'], $notice['type'] );
 					return;
 				}
-
-				$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
-				wc_add_notice( $notice['message'], $notice['type'] );
 
 				if ( $this->is_free_bid_order( $order->get_id() ) ) {
 					if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
