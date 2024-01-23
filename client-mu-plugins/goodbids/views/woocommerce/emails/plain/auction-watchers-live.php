@@ -20,23 +20,21 @@ printf(
 
 echo "\n\n----------------------------------------\n\n";
 
-// TODO update with final variables
 printf(
 	/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
 	esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
-	esc_html( '{Auction title}' ),
+	esc_html( $auction_title ),
 	esc_html( $site_name ),
-	esc_html( '{Auction Goal}' ),
-	esc_html( '{Auction URL}' )
+	esc_html( $auction_goal ),
+	esc_html( $auction_url )
 );
 
 echo "\n\n----------------------------------------\n\n";
 
-// TODO update with final variables
 printf(
 	/* translators: %1$s: Auction Start Date/Time */
 	esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-	esc_html( '{Auction Start Date/Time}' ),
+	esc_html( $auction_starting_bid ),
 );
 
 echo "\n\n----------------------------------------\n\n";
@@ -49,12 +47,11 @@ printf(
 
 echo "\n\n----------------------------------------\n\n";
 
-// TODO update with final variables
 printf(
 	/* translators: %1$s: Bid Now, %2$s: Auction page url */
 	'%1$s at %2$s',
-	esc_html( 'Bid Now' ),
-	esc_html( '#auction-page-url' )
+	esc_html( $button_text ),
+	esc_html( $auction_url )
 );
 
 /**

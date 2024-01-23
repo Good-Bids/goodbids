@@ -43,6 +43,13 @@ class AuctionWatchersLive extends WC_Email {
 	public $user_name;
 
 	/**
+	 * Button Text for main CTA in email.
+	 *
+	 * @var string
+	 */
+	public $button_text = 'Bid Now';
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -57,6 +64,7 @@ class AuctionWatchersLive extends WC_Email {
 		$this->site_name = get_bloginfo( 'name' );
 
 		// TODO: Trigger this email.
+		add_action( 'woocommerce_reset_password_notification', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
@@ -143,9 +151,15 @@ class AuctionWatchersLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'email_heading' => $this->get_default_heading(),
-				'user_name'     => $this->user_name,
-				'site_name'     => $this->site_name,
+				'email_heading'        => $this->get_default_heading(),
+				'user_name'            => $this->user_name,
+				'site_name'            => $this->site_name,
+				// TODO update with final variables
+				'auction_title'        => '{auction_title}',
+				'auction_goal'         => '{auction_goal}',
+				'auction_url'          => '{auction_url}',
+				'auction_starting_bid' => '{auction_starting_bid}',
+				'button_text'          => $this->button_text,
 			]
 		);
 	}
@@ -161,9 +175,15 @@ class AuctionWatchersLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'email_heading' => $this->get_default_heading(),
-				'user_name'     => $this->user_name,
-				'site_name'     => $this->site_name,
+				'email_heading'        => $this->get_default_heading(),
+				'user_name'            => $this->user_name,
+				'site_name'            => $this->site_name,
+				// TODO update with final variables
+				'auction_title'        => '{auction_title}',
+				'auction_goal'         => '{auction_goal}',
+				'auction_url'          => '{auction_url}',
+				'auction_starting_bid' => '{auction_starting_bid}',
+				'button_text'          => $this->button_text,
 			]
 		);
 	}
