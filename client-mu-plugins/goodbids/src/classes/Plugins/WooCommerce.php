@@ -710,8 +710,10 @@ class WooCommerce {
 					$bid_product   = goodbids()->auctions->get_bid_product( $info['auction_id'] );
 
 					if ( $bid_product->get_regular_price( 'edit' ) !== $bid_cart_item['line_total'] ) {
-						$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
-						wc_add_notice( $notice['message'], $notice['type'] );
+						$redirect = get_permalink( $info['auction_id'] );
+						$redirect = add_query_arg( 'gb-notice', Notices::BID_ALREADY_PLACED, $redirect );
+						wp_safe_redirect( $redirect );
+						exit;
 					}
 				}
 			},
