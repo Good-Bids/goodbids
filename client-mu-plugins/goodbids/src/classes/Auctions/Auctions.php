@@ -333,6 +333,40 @@ class Auctions {
 		);
 	}
 
+
+	/**
+	 * Returns an array of all active auctions for a given site
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_all(): array {
+		$site_id  = get_current_blog_id();
+		$args     = [
+			'post_type'      => goodbids()->auctions->get_post_type(),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+		];
+		$auctions = new \WP_Query( $args );
+
+		if ( ! $auctions->have_posts() ) {
+			return [];
+		}
+
+		return collect( $auctions->posts )->map(
+			function ( $post_id ) use ( $site_id ) {
+				return [
+					'post_id'      => $post_id,
+					'site_id'      => $site_id,
+					'bid_count'    => $this->get_bid_count( $post_id ),
+					'total_raised' => $this->get_total_raised( $post_id ),
+				];
+			}
+		)->all();
+	}
+
 	/**
 	 * Get the default template for Auctions.
 	 *
@@ -365,7 +399,7 @@ class Auctions {
 		add_filter(
 			'default_template_types',
 			function ( $template_types ): array {
-				$template_types[ 'single-' . $this->get_post_type() ] = array(
+				$template_types[ 'single-' . $this->get_post_type() ]  = array(
 					'title'       => _x( 'Single Auction', 'Template Name', 'goodbids' ),
 					'description' => __( 'Displays a single Auction post.', 'goodbids' ),
 				);
@@ -689,7 +723,7 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $auction_id
+	 * @param ?int   $auction_id
 	 * @param string $format
 	 *
 	 * @return string
@@ -966,13 +1000,13 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $auction_id
-	 * @param ?int $user_id
+	 * @param ?int   $auction_id
+	 * @param ?int   $user_id
 	 * @param string $description
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null, string $description = ''): bool {
+	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null, string $description = '' ): bool {
 		$free_bids = $this->get_free_bids_available( $auction_id );
 		if ( ! $free_bids ) {
 			return false;
@@ -983,7 +1017,7 @@ class Auctions {
 		}
 
 		if ( goodbids()->users->award_free_bid( $user_id, $auction_id, $description ) ) {
-			$free_bids--;
+			--$free_bids;
 			$this->update_free_bids( $auction_id, $free_bids );
 			return true;
 		}
@@ -1151,7 +1185,7 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $auction_id
-	 * @param int $limit
+	 * @param int  $limit
 	 * @param ?int $user_id
 	 *
 	 * @return int[]
@@ -1201,7 +1235,7 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $auction_id
-	 * @param int $limit
+	 * @param int  $limit
 	 * @param ?int $user_id
 	 *
 	 * @return int[]
@@ -1225,7 +1259,7 @@ class Auctions {
 	 * Get Order Objects that have been placed using a Free Bid.
 	 *
 	 * @param ?int $auction_id
-	 * @param int $limit
+	 * @param int  $limit
 	 * @param ?int $user_id
 	 *
 	 * @return WC_Order[]
@@ -1242,8 +1276,8 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
-	 * @param int $limit
+	 * @param int  $auction_id
+	 * @param int  $limit
 	 * @param ?int $user_id
 	 *
 	 * @return WC_Order[]
@@ -1420,7 +1454,8 @@ class Auctions {
 		}
 
 		if ( $this->has_ended( $auction_id ) ) {
-			$status = self::STATUS_CLOSED;;
+			$status = self::STATUS_CLOSED;
+
 		}
 
 		return $status;
@@ -1967,7 +2002,7 @@ class Auctions {
 
 		// Update Extensions
 		$extensions = $this->get_extensions( $auction_id );
-		$extensions++;
+		++$extensions;
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.

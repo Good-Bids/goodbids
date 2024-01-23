@@ -1,6 +1,6 @@
 <?php
 /**
- * Block: All Auctions
+ * Block: Featured Auctions
  *
  * @global array $block
  *
@@ -8,13 +8,14 @@
  * @package GoodBids
  */
 
-$auctions = goodbids()->sites->get_all_auctions();
+$featured_auctions = new GoodBids\Blocks\FeaturedAuctions( $block );
+$auctions          = $featured_auctions->get_featured_auctions();
 
 if ( ! count( $auctions ) ) :
 	if ( is_admin() ) :
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'No auctions found.', 'goodbids' )
+			esc_html__( 'No featured auctions found.', 'goodbids' )
 		);
 	endif;
 
