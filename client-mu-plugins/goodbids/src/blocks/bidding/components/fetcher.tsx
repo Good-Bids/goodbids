@@ -1,12 +1,19 @@
 import { useEffect } from 'react';
 import { useGetAuction } from '../utils/get-auction';
 import { useAuction } from '../utils/auction-store';
+import { useCookies } from 'react-cookie';
+
+const SESSION_COOKIE = 'goodbids_auctioneer_session';
 
 type FetcherProps = {
 	auctionId: number;
 };
 
 export function Fetcher({ auctionId }: FetcherProps) {
+	const [cookies] = useCookies([SESSION_COOKIE]);
+	const cookie = cookies[SESSION_COOKIE];
+	console.log(cookie);
+
 	const { setUpcomingAuction, setLiveAuction, setClosedAuction } =
 		useAuction();
 
