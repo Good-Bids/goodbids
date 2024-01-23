@@ -33,7 +33,7 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const NOT_AUTHENTICATED_REWARD = 'not-authenticated-reward';
+	const NOT_AUTHENTICATED = 'not-authenticated';
 
 	/**
 	 * @since 1.0.0
@@ -158,8 +158,8 @@ class Notices {
 		$this->notices = apply_filters(
 			'goodbids_notices',
 			[
-				self::NOT_AUTHENTICATED_REWARD  => [
-					'message' => __( 'You must be logged in to checkout with Reward products.', 'goodbids' ),
+				self::NOT_AUTHENTICATED  => [
+					'message' => __( 'You must be logged in before checking out.', 'goodbids' ),
 					'type'    => 'error',
 				],
 

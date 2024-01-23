@@ -8,6 +8,10 @@
 
 namespace GoodBids\Auctions;
 
+use WC_Product_Attribute;
+use WC_Product_Variable;
+use WC_Product_Variation;
+
 /**
  * Class for Bids
  *
@@ -26,6 +30,12 @@ class Bids {
 	 * @var string
 	 */
 	const BID_AUCTION_META_KEY = Auctions::PRODUCT_AUCTION_META_KEY;
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_BID_VARIATION_META_KEY = '_gb_bid_variation_id';
 
 	/**
 	 * Initialize Bids
@@ -87,33 +97,7 @@ class Bids {
 					return;
 				}
 
-				$bid_title = sprintf(
-					'%s %s (%s: %s)',
-					__( 'Bid for', 'goodbids' ),
-					get_the_title( $post_id ),
-					__( 'ID', 'goodbids' ),
-					$post_id
-				);
-
-				// Create a new Bid product.
-				$bid_product = new \WC_Product_Simple();
-				$bid_product->set_name( $bid_title );
-				$bid_product->set_slug( sanitize_title( $bid_title ) );
-				$bid_product->set_regular_price( $starting_bid );
-				$bid_product->set_category_ids( [ $this->get_bids_category_id() ] );
-				$bid_product->set_status( 'publish' );
-				$bid_product->set_manage_stock( true );
-				$bid_product->set_stock_quantity( 1 );
-				$bid_product->set_sold_individually( true );
-				$bid_product->set_virtual( true );
-
-				try {
-					$bid_product->set_sku( 'BID-' . $post_id );
-				} catch ( \WC_Data_Exception $e ) {
-					// Do nothing.
-				}
-
-				$bid_product = apply_filters( 'goodbids_bid_product_create', $bid_product, $post_id );
+				$bid_product = $this->create_new_bid_product( $post_id );
 
 				if ( ! $bid_product->save() ) {
 					// TODO: Log error.
@@ -122,9 +106,123 @@ class Bids {
 
 				// Set the Bid product as a meta of the Auction.
 				goodbids()->auctions->set_bid_product_id( (int) $post_id, $bid_product->get_id() );
+
+				$variation = $this->create_new_bid_variation( $bid_product->get_id(), $starting_bid, $post_id );
+
+				if ( ! $variation->save() ) {
+					// TODO: Log error.
+					return;
+				}
+
+				// Set the Bid variation as a meta of the Auction.
+				goodbids()->auctions->set_bid_variation_id( (int) $post_id, $variation->get_id() );
 			},
 			10
 		);
+	}
+
+	/**
+	 * Create a new Bid product.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return WC_Product_Variable
+	 */
+	private function create_new_bid_product( int $auction_id ): WC_Product_Variable {
+		$bid_title = sprintf(
+			'%s %s (%s: %s)',
+			__( 'Bid for', 'goodbids' ),
+			get_the_title( $auction_id ),
+			__( 'ID', 'goodbids' ),
+			$auction_id
+		);
+
+		// Create a new Bid product.
+		$bid_product = new WC_Product_Variable();
+		$bid_product->set_name( $bid_title );
+		$bid_product->set_slug( sanitize_title( $bid_title ) );
+		$bid_product->set_category_ids( [ $this->get_bids_category_id() ] );
+		$bid_product->set_status( 'publish' );
+
+		// Stock Management, Somewhat locked down.
+		$bid_product->set_manage_stock( true );
+		$bid_product->set_stock_quantity( 1 );
+		$bid_product->set_backorders( 'yes' ); // This resolves a cart conflict.
+		$bid_product->set_sold_individually( true );
+		$bid_product->set_virtual( true );
+
+		// Instance Attribute.
+		$instance_attr = new WC_Product_Attribute();
+		$instance_attr->set_id( 0 );
+		$instance_attr->set_name( 'bid_instance' );
+		$instance_attr->set_visible( false );
+		$instance_attr->set_variation( true );
+		$instance_attr->set_options( [ 0 ] );
+
+		$bid_product->set_attributes( [ 'bid_instance' => $instance_attr ] );
+
+		try {
+			$bid_product->set_sku( 'GB-BID-' . $auction_id );
+			$bid_product->set_catalog_visibility( 'hidden' );
+		} catch ( \WC_Data_Exception $e ) {
+			// Do nothing.
+		}
+
+		/**
+		 * Filter the Bid product before it is saved.
+		 *
+		 * @param WC_Product_Variable $bid_product The Bid Product.
+		 * @param int $auction_id The Auction ID.
+		 */
+		return apply_filters( 'goodbids_bid_product_create', $bid_product, $auction_id );
+	}
+
+	/**
+	 * Create a new Bid product variation.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $bid_product_id
+	 * @param float $bid_price
+	 * @param int $auction_id
+	 *
+	 * @return WC_Product_Variation
+	 */
+	public function create_new_bid_variation( int $bid_product_id, float $bid_price, int $auction_id ): WC_Product_Variation {
+		/** @var WC_Product_Variable $bid_product */
+		$bid_product = wc_get_product( $bid_product_id );
+		$variations  = $bid_product->get_available_variations();
+		$count       = count( $variations );
+
+		$variation = new WC_Product_Variation();
+		$variation->set_parent_id( $bid_product_id );
+		$variation->set_regular_price( $bid_price );
+
+		// Stock Management, Somewhat locked down.
+		$variation->set_manage_stock( true );
+		$variation->set_stock_quantity( 1 );
+		$variation->set_backorders( 'yes' ); // This resolves a cart conflict.
+		$variation->set_sold_individually( true );
+		$variation->set_virtual( true );
+
+		$variation->set_attributes( [ 'bid_instance' => $count ] );
+
+		try {
+			$variation->set_sku( 'GB-BID-' . $auction_id . '-' . $count );
+		} catch ( \WC_Data_Exception $e ) {
+			// Do nothing.
+		}
+
+		/**
+		 * Filter the Bid Variation before it is saved.
+		 *
+		 * @param WC_Product_Variation $variation The Bid Product Variation.
+		 * @param WC_Product_Variable $bid_product The Bid Product.
+		 * @param int $auction_id The Auction ID.
+		 */
+		return apply_filters( 'goodbids_bid_product_variation_create', $variation, $bid_product, $auction_id );
 	}
 
 	/**

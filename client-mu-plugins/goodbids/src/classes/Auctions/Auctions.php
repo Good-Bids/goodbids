@@ -532,6 +532,20 @@ class Auctions {
 	}
 
 	/**
+	 * Sets the Bid product Variation ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $bid_variation_id
+	 *
+	 * @return void
+	 */
+	public function set_bid_variation_id( int $auction_id, int $bid_variation_id ): void {
+		update_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
+	}
+
+	/**
 	 * Retrieves a setting for an Auction.
 	 *
 	 * @since 1.0.0
