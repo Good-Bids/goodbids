@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use WC_Email;
+use WP_User;
 
 /**
  * Auction Watchers Live extend the custom WooCommerce email class
@@ -19,6 +20,20 @@ use WC_Email;
  * @extends WC_Email
  */
 class AuctionWatchersLive extends WC_Email {
+
+	/**
+	 * User ID.
+	 *
+	 * @var integer
+	 */
+	public $user_id;
+
+	/**
+	 * User login name.
+	 *
+	 * @var string
+	 */
+	public $user_login;
 
 	/**
 	 * Set email defaults
@@ -33,6 +48,7 @@ class AuctionWatchersLive extends WC_Email {
 		$this->template_plain = 'emails/plain/auction-watchers-live.php';
 
 		// TODO: Trigger this email.
+		add_action( 'woocommerce_reset_password_notification', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
@@ -85,14 +101,20 @@ class AuctionWatchersLive extends WC_Email {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function trigger(): void {
+	public function trigger( $user_id ): void {
+		$this->setup_locale();
+
 		// TODO set up check before sending email
+		if ( $user_id ) {
+			$this->object     = new WP_User( $user_id );
+			$this->user_id    = $this->object->ID;
+			$this->user_login = stripslashes( $this->object->user_login );
+		}
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
 			return;
 		}
 
-		$this->setup_locale();
 		// woohoo, send the email!
 		$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 
@@ -110,6 +132,7 @@ class AuctionWatchersLive extends WC_Email {
 			$this->template_html,
 			[
 				'email_heading' => $this->get_default_heading(),
+				'user_login'    => $this->user_login,
 			]
 		);
 	}
@@ -126,6 +149,7 @@ class AuctionWatchersLive extends WC_Email {
 			$this->template_plain,
 			[
 				'email_heading' => $this->get_default_heading(),
+				'user_login'    => $this->user_login,
 			]
 		);
 	}
