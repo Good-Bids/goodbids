@@ -55,9 +55,7 @@ async function getAuction(auctionId: number) {
 		path,
 	});
 
-	const something = auctionSchema.parse(response);
-	console.log(something);
-	return something;
+	return auctionSchema.parse(response);
 }
 
 function auctionOptions(auctionId: number, refetchInterval?: number) {
