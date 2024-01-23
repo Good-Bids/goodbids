@@ -142,6 +142,10 @@ class Rewards {
 	 * @return int
 	 */
 	public function get_product_id( int $auction_id = null ): int {
+		if ( ! $auction_id ) {
+			$auction_id = goodbids()->auctions->get_auction_id();
+		}
+
 		return intval( goodbids()->auctions->get_setting( 'auction_product', $auction_id ) );
 	}
 
