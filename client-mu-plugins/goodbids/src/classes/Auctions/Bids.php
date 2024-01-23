@@ -149,9 +149,6 @@ class Bids {
 		$bid_product->set_status( 'publish' );
 
 		// Stock Management, Somewhat locked down.
-		$bid_product->set_manage_stock( true );
-		$bid_product->set_stock_quantity( 1 );
-		$bid_product->set_backorders( 'yes' ); // This resolves a cart conflict.
 		$bid_product->set_sold_individually( true );
 		$bid_product->set_virtual( true );
 
@@ -410,6 +407,10 @@ class Bids {
 		$current_price    = floatval( $bid_variation->get_regular_price( 'edit' ) );
 		$new_price        = $current_price + $increment_amount;
 
+		// Add support for new variation.
+		$this->update_bid_product_attributes( $bid_product );
+
+		// Create the new Variation.
 		$new_variation = $this->create_new_bid_variation( $bid_product->get_id(), $new_price, $auction_id );
 
 		if ( ! $new_variation->save() ) {
@@ -420,7 +421,35 @@ class Bids {
 		// Set the Bid variation as a meta of the Auction.
 		goodbids()->auctions->set_bid_variation_id( $auction_id, $new_variation->get_id() );
 
+		// Disallow backorders on previous variation.
+		$bid_variation->set_backorders( 'no' );
+		$bid_variation->save();
+
 		return true;
+	}
+
+	/**
+	 * Update the Bid Product to include more variations
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WC_Product $bid_product
+	 *
+	 * @return void
+	 */
+	public function update_bid_product_attributes( WC_Product $bid_product ): void {
+		$attributes = get_post_meta( $bid_product->get_id(), '_product_attributes', true );
+
+		if ( empty( $attributes['bid_instance'] ) ) {
+			return;
+		}
+
+		$options   = array_map( 'trim', explode( '|', $attributes['bid_instance']['value'] ) );
+		$options[] = count( $options );
+
+		$attributes['bid_instance']['value'] = implode( ' | ', $options );
+
+		update_post_meta( $bid_product->get_id(), '_product_attributes', $attributes );
 	}
 
 	/**
