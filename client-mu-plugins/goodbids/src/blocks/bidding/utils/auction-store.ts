@@ -8,6 +8,8 @@ import {
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 type AuctionState = {
+	auctionFetchStatus: 'loading' | 'success' | 'error';
+
 	socketUrl: string;
 	totalBids: number;
 	totalRaised: number;
@@ -18,7 +20,6 @@ type AuctionState = {
 	freeBidsAvailable: boolean;
 	currentBid: number;
 	auctionStatus: AuctionStatus;
-	initialFetchCompleted: boolean;
 	useSocket: boolean;
 	usePolling: boolean;
 };
@@ -33,6 +34,7 @@ interface AuctionActions {
 }
 
 const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
+	auctionFetchStatus: 'loading',
 	socketUrl: '',
 	totalBids: 0,
 	totalRaised: 0,
@@ -43,7 +45,6 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 	freeBidsAvailable: false,
 	currentBid: 0,
 	auctionStatus: 'upcoming',
-	initialFetchCompleted: false,
 	useSocket: false,
 	usePolling: false,
 	handleSocketUpdate: (state: SocketMessage) => {
@@ -70,7 +71,7 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 			...data,
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
-			initialFetchCompleted: true,
+			auctionFetchStatus: 'success',
 			useSocket: false,
 		});
 	},
@@ -79,7 +80,7 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 			...data,
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
-			initialFetchCompleted: true,
+			auctionFetchStatus: 'success',
 			useSocket: true,
 		});
 	},
@@ -87,12 +88,15 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 		set({
 			...data,
 			endTime: new Date(data.endTime),
-			initialFetchCompleted: true,
+			auctionFetchStatus: 'success',
 			useSocket: false,
 		});
 	},
 	setUsePolling: (usePolling: boolean) => {
 		set({ usePolling });
+	},
+	setAuctionError: () => {
+		set({ auctionFetchStatus: 'error' });
 	},
 }));
 

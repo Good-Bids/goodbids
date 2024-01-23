@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useGetAuction } from '../utils/get-auction';
 import { useAuction } from '../utils/auction-store';
 import { useCookies } from 'react-cookie';
+import { useGetUser } from '../utils/get-user';
+import { useUser } from '../utils/user-store';
 
 const SESSION_COOKIE = 'goodbids_auctioneer_session';
 
@@ -11,21 +13,31 @@ type FetcherProps = {
 
 export function Fetcher({ auctionId }: FetcherProps) {
 	const [cookies] = useCookies([SESSION_COOKIE]);
-	const cookie = cookies[SESSION_COOKIE];
-	console.log(cookie);
+	const cookie = cookies[SESSION_COOKIE] as string | undefined;
 
 	const { setUpcomingAuction, setLiveAuction, setClosedAuction } =
 		useAuction();
+	const { setUserDetails, setUserIdle } = useUser();
 
 	// TODO: If auctioneer fails, we should swap this to retry every minute or so.
 	const refetchInterval: number | undefined = undefined;
 
-	const {
-		isSuccess: auctionSuccess,
-		data: auctionData,
-		isFetching: auctionLoading,
-		isError: auctionError,
-	} = useGetAuction(auctionId, refetchInterval);
+	const { isSuccess: auctionSuccess, data: auctionData } = useGetAuction(
+		auctionId,
+		refetchInterval,
+	);
+
+	const { isSuccess: userSuccess, data: userData } = useGetUser(
+		auctionId,
+		cookie,
+	);
+
+	useEffect(() => {
+		if (!cookie) {
+			setUserIdle();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [cookie]);
 
 	useEffect(() => {
 		if (auctionSuccess) {
@@ -44,14 +56,12 @@ export function Fetcher({ auctionId }: FetcherProps) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [auctionSuccess, auctionData]);
 
-	// TODO: Add reasonable loading and error states.
-	if (auctionLoading) {
-		return <div>Loading...</div>;
-	}
-
-	if (auctionError) {
-		return <div>Error loading auction.</div>;
-	}
+	useEffect(() => {
+		if (userSuccess) {
+			setUserDetails(userData);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [userSuccess, userData]);
 
 	return null;
 }
