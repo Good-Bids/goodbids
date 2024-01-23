@@ -114,6 +114,12 @@ class Notices {
 	const FREE_BID_REDEEMED = 'free-bid-redeemed';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_ALREADY_PLACED = 'bid-already-placed';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -220,6 +226,11 @@ class Notices {
 				self::FREE_BID_REDEEMED         => [
 					'message' => __( 'You have successfully used a free bid!', 'goodbids' ),
 					'type'    => 'success',
+				],
+
+				self::BID_ALREADY_PLACED        => [
+					'message' => __( 'Uh-oh! Someone else already placed this bid. We\'ve updated your cart with the current bid amount. Click checkout to place your bid.', 'goodbids' ),
+					'type'    => 'error',
 				],
 			]
 		);

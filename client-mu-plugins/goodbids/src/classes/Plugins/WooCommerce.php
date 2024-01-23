@@ -704,11 +704,42 @@ class WooCommerce {
 						$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 						wc_add_notice( $notice['message'], $notice['type'] );
 					}
+				} elseif ( $this->is_bid_order( $order->get_id() ) ) {
+					// Make sure the bid product amount matches the auction current bid.
+					$bid_cart_item = $this->get_cart_bid_item();
+					$bid_product   = goodbids()->auctions->get_bid_product( $info['auction_id'] );
+
+					if ( $bid_product->get_regular_price( 'edit' ) !== $bid_cart_item['line_total'] ) {
+						$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
+						wc_add_notice( $notice['message'], $notice['type'] );
+					}
 				}
 			},
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Get the cart Bid Item.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?array
+	 */
+	public function get_cart_bid_item(): ?array {
+		if ( ! WC()->cart ) {
+			return null;
+		}
+
+		foreach( WC()->cart->get_cart() as $cart_item ) {
+			$product_id = ! empty( $cart_item['product_id'] ) ? $cart_item['product_id'] : $cart_item['data']->get_id();
+			if ( Auctions::ORDER_TYPE_BID === goodbids()->auctions->get_product_type( $product_id ) ) {
+				return $cart_item;
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -180,18 +180,19 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->get_bid_product_id( $auction_id );
+				if ( goodbids()->auctions->has_ended( $auction_id ) ) {
+					return;
+				}
 
-				if ( ! $bid_product_id ) {
+				$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
+
+				if ( ! $bid_product ) {
 					// TODO: Log error.
 					return;
 				}
 
-				// TODO: Check if Auction is over.
-
-				$increment   = goodbids()->auctions->get_bid_increment( $auction_id );
-				$bid_product = wc_get_product( $bid_product_id );
-				$bid_price   = intval( $bid_product->get_regular_price( 'edit' ) );
+				$increment = goodbids()->auctions->get_bid_increment( $auction_id );
+				$bid_price = floatval( $bid_product->get_regular_price( 'edit' ) );
 
 				$bid_product->set_stock_quantity( 1 );
 				$bid_product->set_regular_price( $bid_price + $increment );
