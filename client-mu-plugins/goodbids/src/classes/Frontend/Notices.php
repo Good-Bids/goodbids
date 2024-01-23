@@ -184,7 +184,7 @@ class Notices {
 				],
 
 				self::AUCTION_NOT_FOUND         => [
-					'message' => __( 'This reward is not associated with an auction.', 'goodbids' ),
+					'message' => __( 'There was a problem locating the associated auction.', 'goodbids' ),
 					'type'    => 'error',
 				],
 

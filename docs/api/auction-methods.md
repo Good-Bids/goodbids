@@ -14,32 +14,17 @@ Returns a setting value for an auction. If `$auction_id` is not provided, the cu
 `goodbids()->auctions->has_bid_product( int $auction_id )`  
 Checks if the Auction has a Bid Product. If `$auction_id` is not provided, the current post ID will be used.
 
-`goodbids()->auctions->get_bid_product_id( int $auction_id )`  
-Returns the Auction's Bid Product ID. If `$auction_id` is not provided, the current post ID will be used.
-
-`goodbids()->auctions->get_bid_product( int $auction_id )`  
-Returns the Auction's Bid Product object. If `$auction_id` is not provided, the current post ID will be used.
-
 `goodbids()->auctions->set_bid_product_id( int $auction_id, int $bid_product_id )`  
 Associates the Bid Product with the Auction and the Auction with the Bid Product.
 
-`goodbids()->auctions->get_place_bid_url( int $auction_id )`  
-Returns the URL to place a bid on the Auction. If `$auction_id` is not provided, the current post ID will be used.
-
-`goodbids()->auctions->get_reward_product_id( int $auction_id )`  
-Returns the Auction's Reward Product ID. If `$auction_id` is not provided, the current post ID will be used.
- 
-`goodbids()->auctions->get_reward_product( int $auction_id )`  
-Returns the Auction's Reward Product object. If `$auction_id` is not provided, the current post ID will be used.
-
-`goodbids()->auctions->get_auction_id_from_reward_product_id( int $reward_id )`  
-Returns the associated Auction's ID for the given Reward Product ID.
-
-`goodbids()->auctions->get_claim_reward_url( int $auction_id )`  
-Returns the URL where the winner can claim the Reward product.
+`goodbids()->auctions->get_auction_id_from_product_id( int $product_id )`  
+Returns the associated Auction's ID for the given Product ID.
 
 `goodbids()->auctions->get_product_type( int $product_id )`  
 Returns the type of the given product ID. Possible types are: "bids", "rewards", or null.
+
+`goodbids()->auctions->get_parent_product_id( int $product_id )`  
+Returns the parent product ID if product is Variation.
 
 `goodbids()->auctions->get_estimated_value( int $auction_id )`  
 Returns the Auction Reward's Estimated Value. If `$auction_id` is not provided, the current post ID will be used.

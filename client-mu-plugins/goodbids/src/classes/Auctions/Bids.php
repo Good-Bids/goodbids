@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Frontend\Notices;
+use WC_Product;
 use WC_Product_Attribute;
 use WC_Product_Variable;
 use WC_Product_Variation;
@@ -23,13 +25,13 @@ class Bids {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const AUCTION_BID_META_KEY = 'gb_bid_product_id';
+	const ITEM_TYPE = 'bids';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const BID_AUCTION_META_KEY = Auctions::PRODUCT_AUCTION_META_KEY;
+	const AUCTION_BID_META_KEY = 'gb_bid_product_id';
 
 	/**
 	 * @since 1.0.0
@@ -58,8 +60,8 @@ class Bids {
 		// Delete the Bid product when an Auction is deleted.
 		$this->delete_bid_product_on_auction_delete();
 
-		// Prevent access to Bid product.
-		$this->prevent_access_to_bid_product();
+		// Perform redirect after a bid checkout.
+		$this->redirect_after_bid_checkout();
 	}
 
 	/**
@@ -143,7 +145,7 @@ class Bids {
 		$bid_product = new WC_Product_Variable();
 		$bid_product->set_name( $bid_title );
 		$bid_product->set_slug( sanitize_title( $bid_title ) );
-		$bid_product->set_category_ids( [ $this->get_bids_category_id() ] );
+		$bid_product->set_category_ids( [ $this->get_category_id() ] );
 		$bid_product->set_status( 'publish' );
 
 		// Stock Management, Somewhat locked down.
@@ -232,8 +234,8 @@ class Bids {
 	 *
 	 * @return ?int
 	 */
-	public function get_bids_category_id(): ?int {
-		$bids_category = get_term_by( 'slug', Auctions::ORDER_TYPE_BID, 'product_cat' );
+	public function get_category_id(): ?int {
+		$bids_category = get_term_by( 'slug', self::ITEM_TYPE, 'product_cat' );
 
 		if ( ! $bids_category ) {
 			$bids_category = wp_insert_term( 'Bids', 'product_cat' );
@@ -249,6 +251,99 @@ class Bids {
 		return $bids_category->term_id;
 	}
 
+
+
+	/**
+	 * Retrieves the Bid product ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_product_id( int $auction_id ): int {
+		if ( ! $auction_id ) {
+			$auction_id = goodbids()->auctions->get_auction_id();
+		}
+
+		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, true ) );
+	}
+
+	/**
+	 * Retrieves the Bid product ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_product( int $auction_id ): ?WC_Product {
+		$bid_product_id = $this->get_product_id( $auction_id );
+
+		if ( ! $bid_product_id ) {
+			return null;
+		}
+
+		return wc_get_product( $bid_product_id );
+	}
+
+	/**
+	 * Retrieves the current Bid Variation ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_variation_id( int $auction_id ): int {
+		if ( ! $auction_id ) {
+			$auction_id = goodbids()->auctions->get_auction_id();
+		}
+
+		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, true ) );
+	}
+
+	/**
+	 * Retrieves the Bid product ID for an Auction.
+	 *
+	 * @param int $auction_id
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_variation( int $auction_id ): ?WC_Product {
+		$bid_variation_id = $this->get_variation_id( $auction_id );
+
+		if ( ! $bid_variation_id ) {
+			return null;
+		}
+
+		return wc_get_product( $bid_variation_id );
+	}
+
+	/**
+	 * Returns the URL to place a bid on an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url( int $auction_id ): string {
+		$bid_variation_id = $this->get_variation_id( $auction_id );
+
+		if ( ! $bid_variation_id ) {
+			return '';
+		}
+
+		return add_query_arg( 'add-to-cart', $bid_variation_id, wc_get_checkout_url() );
+	}
+
 	/**
 	 * Retrieve the Bid product ID for an Auction.
 	 *
@@ -259,7 +354,9 @@ class Bids {
 	 * @return ?int
 	 */
 	public function get_auction_id( int $bid_product_id ): ?int {
-		$auction_id = get_post_meta( $bid_product_id, self::BID_AUCTION_META_KEY, true );
+		$product_id = goodbids()->auctions->get_parent_product_id( $bid_product_id );
+		$auction_id = get_post_meta( $product_id, Auctions::PRODUCT_AUCTION_META_KEY, true );
+
 		return intval( $auction_id ) ?: null;
 	}
 
@@ -282,23 +379,48 @@ class Bids {
 					return;
 				}
 
-				$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
-
-				if ( ! $bid_product ) {
+				if ( ! $this->increase_bid( $auction_id ) ) {
 					// TODO: Log error.
-					return;
 				}
-
-				$increment = goodbids()->auctions->get_bid_increment( $auction_id );
-				$bid_price = floatval( $bid_product->get_regular_price( 'edit' ) );
-
-				$bid_product->set_stock_quantity( 1 );
-				$bid_product->set_regular_price( $bid_price + $increment );
-				$bid_product->save();
 			},
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Increase the current bid amount.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function increase_bid( int $auction_id ): bool {
+		$bid_product   = $this->get_product( $auction_id );
+		$bid_variation = $this->get_variation( $auction_id );
+
+		if ( ! $bid_product || ! $bid_variation ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		$increment_amount = goodbids()->auctions->get_bid_increment( $auction_id );
+		$current_price    = floatval( $bid_variation->get_regular_price( 'edit' ) );
+		$new_price        = $current_price + $increment_amount;
+
+		$new_variation = $this->create_new_bid_variation( $bid_product->get_id(), $new_price, $auction_id );
+
+		if ( ! $new_variation->save() ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		// Set the Bid variation as a meta of the Auction.
+		goodbids()->auctions->set_bid_variation_id( $auction_id, $new_variation->get_id() );
+
+		return true;
 	}
 
 	/**
@@ -316,7 +438,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+				$bid_product_id = goodbids()->auctions->bids->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -344,7 +466,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+				$bid_product_id = goodbids()->auctions->bids->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -372,7 +494,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
+				$bid_product_id = goodbids()->auctions->bids->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -386,34 +508,53 @@ class Bids {
 	}
 
 	/**
-	 * Disable access to Bid product singular product page.
+	 * Redirect back to Auction after Checkout.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function prevent_access_to_bid_product(): void {
+	private function redirect_after_bid_checkout(): void {
 		add_action(
-			'template_redirect',
-			function (): void {
-				if ( ! is_singular( 'product' ) ) {
+			'woocommerce_thankyou',
+			function ( int $order_id ): void {
+				if ( is_admin() || wp_doing_ajax() || headers_sent() ) {
 					return;
 				}
 
-				$product_id = get_the_ID();
-
-				if ( Auctions::ORDER_TYPE_BID !== goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
 					return;
 				}
 
-				$auction_id = $this->get_auction_id( $product_id );
+				$auction_id = goodbids()->woocommerce->get_order_auction_id( $order_id );
+				$redirect   = get_permalink( $auction_id );
 
-				if ( ! $auction_id ) {
-					wp_safe_redirect( home_url() );
-					exit;
+				// Do not award free bids if this order contains a free bid.
+				if ( ! goodbids()->woocommerce->is_free_bid_order( $order_id ) ) {
+					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
+					$remaining_free_bids = goodbids()->auctions->get_free_bids_available( $auction_id );
+					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
+					$bid_order           = wc_get_order( $order_id );
+
+					$description = sprintf(
+					// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
+						goodbids()->utilities->get_ordinal( $nth_bid ),
+						$bid_order->get_total( 'edit' ),
+						$auction_id
+					);
+
+					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id, null, $description ) ) {
+						// TODO: Let the user know they earned a free bid.
+						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
+					}
+				} else { // Reduce the Free Bid Count for the user.
+					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+						$redirect = add_query_arg( 'gb-notice', Notices::FREE_BID_REDEEMED, $redirect );
+					}
 				}
 
-				wp_safe_redirect( get_permalink( $auction_id ), 301 );
+				wp_safe_redirect( $redirect );
 				exit;
 			}
 		);

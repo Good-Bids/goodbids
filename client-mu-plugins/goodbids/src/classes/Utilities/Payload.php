@@ -167,7 +167,7 @@ class Payload {
 		return match ( $item ) {
 			'accountUrl'        => $this->get_auth_url(),
 			'auctionStatus'     => strtolower( goodbids()->auctions->get_status( $this->auction_id ) ),
-			'bidUrl'            => goodbids()->auctions->get_place_bid_url( $this->auction_id ),
+			'bidUrl'            => goodbids()->auctions->bids->get_place_bid_url( $this->auction_id ),
 			'currentBid'        => $this->get_current_bid(),
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
 			'freeBidsAvailable' => goodbids()->auctions->get_free_bids_available( $this->auction_id ),
@@ -175,7 +175,7 @@ class Payload {
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid(),
 			'lastBidder'        => $this->get_last_bidder(),
-			'rewardUrl'         => goodbids()->auctions->get_claim_reward_url( $this->auction_id ), // TBD.
+			'rewardUrl'         => goodbids()->auctions->rewards->get_claim_reward_url( $this->auction_id ), // TBD.
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
@@ -198,7 +198,7 @@ class Payload {
 	 */
 	private function get_current_bid(): ?float {
 		if ( ! $this->bid_product ) {
-			$this->bid_product = goodbids()->auctions->get_bid_product( $this->auction_id );
+			$this->bid_product = goodbids()->auctions->bids->get_product( $this->auction_id );
 		}
 
 		return floatval( $this->bid_product?->get_price( 'edit' ) );
