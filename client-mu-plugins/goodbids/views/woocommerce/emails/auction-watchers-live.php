@@ -41,6 +41,20 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	?>
 </p>
 
+<p>
+	<?php
+	/*
+	translators: %1$s: Site Name */
+	printf(
+		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
+		esc_html( '{Site Name}' ),
+	);
+	?>
+</p>
+
+<p>
+	<a class="button" href="#Auction-page">Bid Now</a>
+</p>
 
 <?php
 /** * Show user-defined additional content - this is set in each email's settings. */ if ( $additional_content ) {
