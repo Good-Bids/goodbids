@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use Illuminate\Support\Collection;
 use WP_Site;
 
 /**
@@ -413,7 +414,15 @@ class Sites {
 					return $html;
 				}
 
-				return get_custom_logo( get_main_site_id() );
+				switch_to_blog( get_main_site_id() );
+				$custom_logo_id = get_theme_mod( 'custom_logo' );
+				restore_current_blog();
+
+				if ( $custom_logo_id ) {
+					return get_custom_logo( get_main_site_id() );
+				}
+
+				return '<!-- No Custom Logo -->';
 			}
 		);
 	}
@@ -579,5 +588,29 @@ class Sites {
 		restore_current_blog();
 
 		return $terms_conditions_link;
+	}
+
+	/**
+	 * Returns an array of all active auctions across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_all_auctions(): array {
+		return Collection::make( get_sites() )
+			->flatMap(
+				function ( $site ) {
+					$site_id = get_object_vars( $site )['blog_id'];
+
+					switch_to_blog( $site_id );
+					$auctions = goodbids()->auctions->get_all( $site_id );
+					restore_current_blog();
+
+					return $auctions;
+				}
+			)
+			->filter()
+			->all();
 	}
 }

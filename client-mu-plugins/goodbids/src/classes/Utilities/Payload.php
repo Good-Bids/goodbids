@@ -216,7 +216,11 @@ class Payload {
 			$this->last_bid = goodbids()->auctions->get_last_bid( $this->auction_id );
 		}
 
-		return $this->last_bid?->get_total( 'edit' );
+		if ( $this->last_bid ) {
+			return $this->last_bid->get_total( 'edit' );
+		}
+
+		return 0;
 	}
 
 	/**
