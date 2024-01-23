@@ -229,7 +229,7 @@ class Notices {
 				],
 
 				self::BID_ALREADY_PLACED        => [
-					'message' => __( 'Uh-oh! Someone else already placed this bid. We\'ve updated your cart with the current bid amount. Click checkout to place your bid.', 'goodbids' ),
+					'message' => __( 'Uh-oh! Someone else already placed this bid. We\'ve removed the GoodBid from your cart. Please return to the Auction to place a new GoodBid.', 'goodbids' ),
 					'type'    => 'error',
 				],
 			]

@@ -13,9 +13,9 @@ use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\API\Credentials;
 use GoodBids\Plugins\WooCommerce\Coupons;
-use WC_Order_Item;
 use WC_Order_Item_Product;
 use WC_Product;
+use WP_Error;
 
 /**
  * Class for WooCommerce
@@ -82,6 +82,7 @@ class WooCommerce {
 		$this->auto_empty_cart();
 		$this->redirect_after_add_to_cart();
 		$this->validate_bid();
+		$this->adjust_out_of_stock_error();
 
 		$this->store_auction_info_in_cart();
 		$this->store_auction_info_on_checkout();
@@ -615,16 +616,6 @@ class WooCommerce {
 					return;
 				}
 
-				// Make sure the bid product amount matches the auction current bid.
-				$cart_item_price = $this->get_order_bid_item_price( $order->get_id() );
-				$bid_variation   = goodbids()->auctions->bids->get_variation( $info['auction_id'] );
-
-				if ( floatval( $bid_variation->get_regular_price( 'edit' ) ) !== $cart_item_price ) {
-					$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
-					wc_add_notice( $notice['message'], $notice['type'] );
-					return;
-				}
-
 				if ( $this->is_free_bid_order( $order->get_id() ) ) {
 					if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
 						$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
@@ -644,67 +635,29 @@ class WooCommerce {
 	}
 
 	/**
-	 * Get the cart Bid Item.
+	 * Empty Cart and Modify Error when out of stock error is received.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return ?array
+	 * @return void
 	 */
-	public function get_cart_bid_item(): ?array {
-		if ( ! WC()->cart ) {
-			return null;
-		}
+	private function adjust_out_of_stock_error(): void {
+		add_action(
+			'wp_error_added',
+			function ( string $code, string $message, array $data, WP_Error $wp_error ) {
+				if ( 'woocommerce_rest_product_out_of_stock' !== $code || ! is_checkout() ) {
+					return;
+				}
 
-		foreach( WC()->cart->get_cart() as $cart_item ) {
-			$product_id = ! empty( $cart_item['product_id'] ) ? $cart_item['product_id'] : $cart_item['data']->get_id();
-			if ( Bids::ITEM_TYPE === goodbids()->auctions->get_product_type( $product_id ) ) {
-				return $cart_item;
-			}
-		}
+				$wp_error->remove( $code );
+				WC()->cart->empty_cart();
 
-		return null;
-	}
-
-	/**
-	 * Get the order Bid item
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $order_id
-	 *
-	 * @return ?WC_Order_Item
-	 */
-	public function get_order_bid_item( ?int $order_id ): ?WC_Order_Item {
-		$order = wc_get_order( $order_id );
-
-		foreach( $order->get_items() as $cart_item ) {
-			$product_id = $cart_item->get_data()['product_id'];
-			if ( Bids::ITEM_TYPE === goodbids()->auctions->get_product_type( $product_id ) ) {
-				return $cart_item;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Get the order Bid item original price
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $order_id
-	 *
-	 * @return ?float
-	 */
-	public function get_order_bid_item_price( ?int $order_id ): ?float {
-		/** @var WC_Order_Item_Product $item */
-		$item = $this->get_order_bid_item( $order_id );
-
-		if ( ! $item ) {
-			return null;
-		}
-
-		return floatval( $item->get_product()->get_price( 'edit' ) );
+				$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
+				$wp_error->add( Notices::BID_ALREADY_PLACED, $notice['message'] );
+			},
+			10,
+			4
+		);
 	}
 
 	/**

@@ -8,9 +8,6 @@ Returns an array of information for the given Order ID, including the Auction ID
 `goodbids()->woocommerce->get_order_auction_id( int $order_id )`  
 Returns the Auction ID for the given Order ID. If `$order_id` is not provided, the current order ID will be used.
 
-`goodbids()->woocommerce->get_order_bid_item( int $order_id )`  
-Returns the bid item in the order.
-
 `goodbids()->woocommerce->get_order_type( int $order_id )`  
 Returns the type of the given order ID. Possible types are: "bids", "rewards", or null.
 
