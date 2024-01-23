@@ -145,14 +145,6 @@ class AuctionWatchersLive extends WC_Email {
 				'label'   => __( 'Enable this email notification', 'goodbids' ),
 				'default' => 'yes',
 			],
-			'recipient'          => [
-				'title'       => __( 'Recipient(s)', 'goodbids' ),
-				'type'        => 'text',
-				'desc_tip'    => true,
-				'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( $this->get_recipient() ) ),
-				'placeholder' => '',
-				'default'     => '',
-			],
 			'subject'            => [
 				'title'       => __( 'Subject', 'goodbids' ),
 				'type'        => 'text',
