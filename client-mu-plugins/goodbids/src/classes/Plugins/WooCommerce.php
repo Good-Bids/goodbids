@@ -477,33 +477,194 @@ private function modify_checkout_actions_block(): void {
 
 			$parsed_block['attrs']['showReturnToCart'] = false;
 
-			return $parsed_block;
-		},
-		10,
-		3
-	);
+			$coupon = new WC_Coupon();
+			$coupon->set_code( $coupon_code ); // Coupon code.
+			$coupon->set_description( $description );
+
+			// Restrictions.
+			$coupon->set_individual_use( true );
+			$coupon->set_usage_limit_per_user( 1 );
+			$coupon->set_usage_limit( 1 );
+			$coupon->set_limit_usage_to_x_items( 1 ); // Limit to 1 item.
+			$coupon->set_email_restrictions( $this->get_user_emails() ); // Restrict by user email(s).
+			$coupon->set_product_ids( [ $reward_id ] ); // Restrict to this Reward Product.
+
+			// Amount.
+			$coupon->set_discount_type( 'percent' );
+			$coupon->set_amount( 100 ); // 100% Discount.
+			$coupon->set_maximum_amount( $reward_price ); // Additional price restriction.
+
+			$coupon->save();
+
+			update_post_meta( $reward_id, self::REWARD_COUPON_META_KEY, $coupon_code );
+
+			return $coupon_code;
+		}
 
 	/**
-	 * Add custom email styles
+	 * Get User Email Addresses. If no user_id is provided, the current user is used.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_emails( int $user_id = null ): array {
+		$emails = [];
+
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$user = get_user_by( 'id', $user_id );
+
+		if ( ! $user ) {
+			return $emails;
+		}
+
+		$emails[] = $user->user_email;
+
+		$billing_email = get_user_meta( $user_id, 'billing_email', true );
+		if ( $billing_email ) {
+			$emails[] = $billing_email;
+		}
+
+		return $emails;
+	}
+
+	/**
+	 * Load WooCommerce Templates from the GoodBids Views folder.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
+	private function load_woocommerce_templates(): void {
+		add_filter(
+			'woocommerce_locate_template',
+			function ( $template, $template_name, $template_path ): string {
+				// Only override templates coming from WooCommerce.
+				if ( 'woocommerce' !== trim( $template_path, '/' ) ) {
+					return $template;
+				}
+
+				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
+				if ( file_exists( $goodbids_path ) ) {
+					return $goodbids_path;
+				}
+
+				return $template;
+			},
+			8,
+			3
+		);
+	}
+
+	/**
+	 * Create a new Free Bids tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_free_bids_account_tab(): void {
+		$slug = 'free-bids';
+
+		add_action(
+			'init',
+			function () use ( $slug ): void {
+				add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES );
+			}
+		);
+
+		add_filter(
+			'query_vars',
+			function ( $vars ) use ( $slug ): array {
+				if ( ! in_array( $slug, $vars, true ) ) {
+					$vars[] = $slug;
+				}
+				return $vars;
+			}
+		);
+
+		add_filter(
+			'woocommerce_account_menu_items',
+			function ( $items ) use ( $slug ): array {
+				if ( array_key_exists( $slug, $items ) ) {
+					return $items;
+				}
+
+				$new_items = [];
+				foreach ( $items as $id => $item ) {
+					$new_items[ $id ] = $item;
+					if ( 'orders' === $id ) {
+						$new_items[ $slug ] = __( 'Free Bids', 'goodbids' );
+					}
+				}
+
+				return $new_items;
+			}
+		);
+
+		add_action(
+			'woocommerce_account_' . $slug . '_endpoint',
+			function () use ( $slug ) {
+				$free_bids = goodbids()->users->get_free_bids();
+				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
+			}
+		);
+	}
+
+	/**
+	 * Add a custom email to the list of emails WooCommerce
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function setup_email_notifications(): void {
+		add_filter(
+			'woocommerce_email_classes',
+			function ( $email_classes ): array {
+
+				// add the email class to the list of email classes that WooCommerce loads
+				$email_classes['AuctionWatchersLive'] = new AuctionWatchersLive();
+
+				return $email_classes;
+			}
+		);
+	}
+
+	/**
+	 * Add custom email styles
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
 	private function add_custom_email_styles(): void {
 		add_filter(
 			'woocommerce_email_styles',
-			function ( $css ) {
-				return $css . '
-				a.button {
-					background-color: #000000;
-					padding: 12px 16px;
-					color: #ffffff;
-				}
-			';
+			function ( string $css ) {
+				$custom_css = sprintf(
+					'.button-wrapper {
+						text-align: center;
+						margin: 42px 0 12px 0 !important;
+					}
+					.button {
+						display: inline-block;
+						margin: 0 auto;
+						background-color: %s;
+						border-radius: 3px;
+						color: #ffffff;
+						padding: 8px 20px;
+						text-decoration: none;
+					}',
+					esc_attr( get_option( 'woocommerce_email_base_color' ) )
+				);
+
+				return $css . $custom_css;
 			},
-			10,
-			2
+			10
 		);
 	}
 }

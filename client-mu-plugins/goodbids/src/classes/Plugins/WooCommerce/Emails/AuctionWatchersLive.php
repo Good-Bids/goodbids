@@ -22,6 +22,13 @@ use WP_User;
 class AuctionWatchersLive extends WC_Email {
 
 	/**
+	 * Site Name
+	 *
+	 * @var string
+	 */
+	public $site_name;
+
+	/**
 	 * User ID.
 	 *
 	 * @var integer
@@ -33,7 +40,7 @@ class AuctionWatchersLive extends WC_Email {
 	 *
 	 * @var string
 	 */
-	public $user_login;
+	public $user_name;
 
 	/**
 	 * Set email defaults
@@ -47,8 +54,9 @@ class AuctionWatchersLive extends WC_Email {
 		$this->template_html  = 'emails/auction-watchers-live.php';
 		$this->template_plain = 'emails/plain/auction-watchers-live.php';
 
+		$this->site_name = get_bloginfo( 'name' );
+
 		// TODO: Trigger this email.
-		add_action( 'woocommerce_reset_password_notification', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
@@ -61,7 +69,7 @@ class AuctionWatchersLive extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( 'subject', 'goodbids' );
+		return sprintf( '%s auction.title auction is live', esc_html( $this->site_name ) );
 	}
 
 	/**
@@ -71,7 +79,7 @@ class AuctionWatchersLive extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Heading', 'goodbids' );
+		return __( 'Ready to GOODBID?', 'goodbids' );
 	}
 
 	/**
@@ -99,6 +107,7 @@ class AuctionWatchersLive extends WC_Email {
 	 * Determine if the email should actually be sent and setup email merge variables
 	 *
 	 * @since 1.0.0
+	 * @param mixed $user_id
 	 * @return void
 	 */
 	public function trigger( $user_id ): void {
@@ -106,9 +115,12 @@ class AuctionWatchersLive extends WC_Email {
 
 		// TODO set up check before sending email
 		if ( $user_id ) {
-			$this->object     = new WP_User( $user_id );
-			$this->user_id    = $this->object->ID;
-			$this->user_login = stripslashes( $this->object->user_login );
+			$this->object    = new WP_User( $user_id );
+			$user_first_name = get_user_meta( $this->object->ID, 'first_name', true );
+			$user_name       = $user_first_name ? $user_first_name : $this->object->user_login;
+			$this->object    = new WP_User( $user_id );
+			$this->user_id   = $this->object->ID;
+			$this->user_name = stripslashes( $user_name );
 		}
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
@@ -132,7 +144,8 @@ class AuctionWatchersLive extends WC_Email {
 			$this->template_html,
 			[
 				'email_heading' => $this->get_default_heading(),
-				'user_login'    => $this->user_login,
+				'user_name'     => $this->user_name,
+				'site_name'     => $this->site_name,
 			]
 		);
 	}
@@ -149,7 +162,8 @@ class AuctionWatchersLive extends WC_Email {
 			$this->template_plain,
 			[
 				'email_heading' => $this->get_default_heading(),
-				'user_login'    => $this->user_login,
+				'user_name'     => $this->user_name,
+				'site_name'     => $this->site_name,
 			]
 		);
 	}
