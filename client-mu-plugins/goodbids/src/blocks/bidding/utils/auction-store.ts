@@ -31,6 +31,7 @@ interface AuctionActions {
 	setLiveAuction: (data: AuctionLiveResponse) => void;
 	setClosedAuction: (data: AuctionClosedResponse) => void;
 	setUsePolling: (usePolling: boolean) => void;
+	setAuctionFetchError: () => void;
 }
 
 const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
@@ -95,7 +96,7 @@ const useAuctionStore = create<AuctionState & AuctionActions>()((set) => ({
 	setUsePolling: (usePolling: boolean) => {
 		set({ usePolling });
 	},
-	setAuctionError: () => {
+	setAuctionFetchError: () => {
 		set({ auctionFetchStatus: 'error' });
 	},
 }));

@@ -15,22 +15,30 @@ export function Fetcher({ auctionId }: FetcherProps) {
 	const [cookies] = useCookies([SESSION_COOKIE]);
 	const cookie = cookies[SESSION_COOKIE] as string | undefined;
 
-	const { setUpcomingAuction, setLiveAuction, setClosedAuction } =
-		useAuction();
-	const { setUserDetails, setUserIdle } = useUser();
+	const {
+		setUpcomingAuction,
+		setLiveAuction,
+		setClosedAuction,
+		setAuctionFetchError,
+	} = useAuction();
+	const { setUserDetails, setUserIdle, setUserFetchError } = useUser();
 
 	// TODO: If auctioneer fails, we should swap this to retry every minute or so.
 	const refetchInterval: number | undefined = undefined;
 
-	const { isSuccess: auctionSuccess, data: auctionData } = useGetAuction(
-		auctionId,
-		refetchInterval,
-	);
+	const {
+		isSuccess: auctionSuccess,
+		isError: auctionError,
+		data: auctionData,
+		error: auctionErrorData,
+	} = useGetAuction(auctionId, refetchInterval);
 
-	const { isSuccess: userSuccess, data: userData } = useGetUser(
-		auctionId,
-		cookie,
-	);
+	const {
+		isSuccess: userSuccess,
+		isError: userError,
+		data: userData,
+		error: userErrorData,
+	} = useGetUser(auctionId, cookie);
 
 	useEffect(() => {
 		if (!cookie) {
@@ -53,15 +61,27 @@ export function Fetcher({ auctionId }: FetcherProps) {
 				setClosedAuction(auctionData);
 			}
 		}
+
+		if (auctionError) {
+			setAuctionFetchError();
+			// TODO: Hook into Sentry or disable in production
+			console.error(auctionErrorData);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [auctionSuccess, auctionData]);
+	}, [auctionSuccess, auctionData, auctionError, auctionErrorData]);
 
 	useEffect(() => {
 		if (userSuccess) {
 			setUserDetails(userData);
 		}
+
+		if (userError) {
+			setUserFetchError();
+			// TODO: Hook into Sentry or disable in production
+			console.error(userErrorData);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [userSuccess, userData]);
+	}, [userSuccess, userData, userError, userErrorData]);
 
 	return null;
 }
