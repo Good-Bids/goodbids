@@ -644,7 +644,7 @@ class WooCommerce {
 	private function adjust_out_of_stock_error(): void {
 		add_action(
 			'wp_error_added',
-			function ( string $code, string $message, array $data, WP_Error $wp_error ) {
+			function ( string $code, string $message, mixed $data, WP_Error $wp_error ) {
 				if ( 'woocommerce_rest_product_out_of_stock' !== $code || ! is_checkout() ) {
 					return;
 				}
