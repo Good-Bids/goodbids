@@ -10,6 +10,7 @@ import { client } from '../utils/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Fetcher } from './fetcher';
 import { useAuction } from '../utils/auction-store';
+import { useUser } from '../utils/user-store';
 
 type DriverProps = {
 	auctionId: number;
@@ -17,22 +18,37 @@ type DriverProps = {
 
 export function Driver({ auctionId }: DriverProps) {
 	const [queryClient] = useState(() => client);
-	const { initialFetchCompleted, usePolling } = useAuction();
+	const { auctionFetchStatus, usePolling } = useAuction();
+	const { userFetchStatus } = useUser();
+
+	const loading =
+		auctionFetchStatus === 'loading' || userFetchStatus === 'loading';
+	const error = auctionFetchStatus === 'error' || userFetchStatus === 'error';
 
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="w-full text-lg flex flex-col gap-4">
-				<Fetcher auctionId={auctionId} />
-
-				{initialFetchCompleted && (
+				{error ? (
+					<div>Error loading auction</div>
+				) : (
 					<>
-						{!usePolling && <Socket auctionId={auctionId} />}
-						<Metrics />
-						<CountdownTimer />
-						<BidButton />
-						<FreeBidButton />
-						<Participation />
-						<EarnFreeBids />
+						<Fetcher auctionId={auctionId} />
+
+						{loading ? (
+							<div>Loading...</div>
+						) : (
+							<>
+								{!usePolling && (
+									<Socket auctionId={auctionId} />
+								)}
+								<Metrics />
+								<CountdownTimer />
+								<BidButton />
+								<FreeBidButton />
+								<Participation />
+								<EarnFreeBids />
+							</>
+						)}
 					</>
 				)}
 			</div>
