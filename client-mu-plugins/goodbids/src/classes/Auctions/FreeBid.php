@@ -72,6 +72,22 @@ class FreeBid {
 	public ?string $used_date = null;
 
 	/**
+	 * Order ID when Free Bid was redeemed.
+	 *
+	 * @since 1.0.0
+	 * @var ?int
+	 */
+	public ?int $order_id_redeemed = null;
+
+	/**
+	 * Value of Bid.
+	 *
+	 * @since 1.0.0
+	 * @var ?float
+	 */
+	public ?float $bid_value = null;
+
+	/**
 	 * Initialize Free Bid Object
 	 *
 	 * @since 1.0.0
@@ -194,5 +210,31 @@ class FreeBid {
 			esc_html( get_the_title( $auction_id ) ),
 			esc_html( $auction_id )
 		);
+	}
+
+	/**
+	 * Redeem this Free Bid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function redeem( int $auction_id, int $order_id ): bool {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return false;
+		}
+
+		$this->used_date         = current_time( 'Y-m-d H:i:s' );
+		$this->status            = Users::FREE_BID_STATUS_USED;
+		$this->auction_id_used   = $auction_id;
+		$this->order_id_redeemed = $order_id;
+		$this->bid_value         = 0; // TODO: Maybe calculate the order total pre-coupon?
+
+		return true;
 	}
 }

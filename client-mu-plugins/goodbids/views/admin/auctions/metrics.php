@@ -9,7 +9,7 @@
  * @package GoodBids
  */
 
-$bid_product = wc_get_product( $this->get_bid_product_id( $auction_id ) );
+$bid_product = wc_get_product( $this->bids->get_product_id( $auction_id ) );
 $last_bid    = $this->get_last_bid( $auction_id );
 ?>
 <div class="gb-auction-metrics">

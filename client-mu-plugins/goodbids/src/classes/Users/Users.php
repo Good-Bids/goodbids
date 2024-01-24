@@ -66,23 +66,21 @@ class Users {
 		/** @var FreeBid[] $free_bids */
 		$free_bids = get_user_meta( $user_id, self::FREE_BIDS_META_KEY, true );
 
-		if ( ! $free_bids || ! is_array( $free_bids ) || 0 >= count( $free_bids ) ) {
+		if ( ! $free_bids || ! is_array( $free_bids ) ) {
 			return [];
 		}
 
-		if ( self::FREE_BID_STATUS_ALL === $status ) {
-			return $free_bids;
-		}
-
-		$return = [];
-
-		foreach ( $free_bids as $free_bid ) {
-			if ( $status === $free_bid->get_status() ) {
-				$return[] = $free_bid;
-			}
-		}
-
-		return $return;
+		return collect( $free_bids )
+			->filter(
+				fn ( $free_bid ) => (
+					// When status is self::FREE_BID_STATUS_ALL, always returns true
+					self::FREE_BID_STATUS_ALL === $status
+					// Otherwise bid must match status.
+					|| $status === $free_bid->get_status()
+				)
+			)
+			->values()
+			->all();
 	}
 
 	/**
@@ -129,6 +127,87 @@ class Users {
 	 * @return bool
 	 */
 	private function save_free_bids( int $user_id, array $free_bids ): bool {
+		$original = get_user_meta( $user_id, self::FREE_BIDS_META_KEY, true );
+
+		if ( $original === $free_bids ) {
+			// Data is unchanged.
+			return false;
+		}
+
 		return boolval( update_user_meta( $user_id, self::FREE_BIDS_META_KEY, $free_bids ) );
+	}
+
+	/**
+	 * Redeem a Free Bid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $order_id
+	 * @param ?int $user_id
+	 *
+	 * @return bool
+	 */
+	public function redeem_free_bid( int $auction_id, int $order_id, ?int $user_id = null ): bool {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$all_free_bids    = $this->get_free_bids( $user_id );
+		$unused_free_bids = $this->get_free_bids( $user_id, self::FREE_BID_STATUS_UNUSED );
+
+		if ( ! count( $unused_free_bids ) ) {
+			// TODO: Log error
+			return false;
+		}
+
+		$redeemed = false;
+
+		// Use the first available free bid.
+		foreach ( $all_free_bids as $free_bid ) {
+			if ( $free_bid->redeem( $auction_id, $order_id ) ) {
+				$redeemed = true;
+			}
+			break;
+		}
+
+		if ( ! $redeemed ) {
+			// TODO: Log error.
+			return false;
+		}
+
+		return $this->save_free_bids( $user_id, $all_free_bids );
+	}
+
+	/**
+	 * Get User Email Addresses. If no user_id is provided, the current user is used.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_emails( int $user_id = null ): array {
+		$emails = [];
+
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$user = get_user_by( 'id', $user_id );
+
+		if ( ! $user ) {
+			return $emails;
+		}
+
+		$emails[] = $user->user_email;
+
+		$billing_email = get_user_meta( $user_id, 'billing_email', true );
+		if ( $billing_email ) {
+			$emails[] = $billing_email;
+		}
+
+		return $emails;
 	}
 }

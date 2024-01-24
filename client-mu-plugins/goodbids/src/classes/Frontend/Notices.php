@@ -33,13 +33,25 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const NOT_AUTHENTICATED_REWARD = 'not-authenticated-reward';
+	const NOT_AUTHENTICATED = 'not-authenticated';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
 	const AUCTION_NOT_ENDED = 'auction-not-ended';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_HAS_ENDED = 'auction-has-ended';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_NOT_STARTED = 'auction-not-started';
 
 	/**
 	 * @since 1.0.0
@@ -63,7 +75,13 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const APPLY_REWARD_COUPON_ERROR = 'apply-reward-coupon-error';
+	const GET_FREE_BID_COUPON_ERROR = 'get-free-bid-coupon-error';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const APPLY_COUPON_ERROR = 'apply-coupon-error';
 
 	/**
 	 * @since 1.0.0
@@ -78,6 +96,30 @@ class Notices {
 	const EARNED_FREE_BID = 'earned-free-bid';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BIDS_NOT_ELIGIBLE = 'free-bids-not-eligible';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const NO_AVAILABLE_FREE_BIDS = 'no-available-free-bids';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BID_REDEEMED = 'free-bid-redeemed';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_ALREADY_PLACED = 'bid-already-placed';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -89,18 +131,20 @@ class Notices {
 	}
 
 	/**
-	 * Grab the notice id from the query arg.
+	 * Grab the notice id from the query arg and return it.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void
+	 * @return ?string
 	 */
-	private function get_notice_id(): void {
+	private function get_notice_id(): ?string {
 		if ( empty( $_REQUEST['gb-notice'] ) ) { // phpcs:ignore
-			return;
+			return null;
 		}
 
 		$this->notice_id = trim( sanitize_text_field( wp_unslash( $_REQUEST['gb-notice'] ) ) ); // phpcs:ignore
+
+		return $this->notice_id;
 	}
 
 	/**
@@ -114,13 +158,23 @@ class Notices {
 		$this->notices = apply_filters(
 			'goodbids_notices',
 			[
-				self::NOT_AUTHENTICATED_REWARD  => [
-					'message' => __( 'You must be logged in to checkout with Reward products.', 'goodbids' ),
+				self::NOT_AUTHENTICATED  => [
+					'message' => __( 'You must be logged in before checking out.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::AUCTION_NOT_STARTED       => [
+					'message' => __( 'This Auction has not started yet.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
 				self::AUCTION_NOT_ENDED         => [
-					'message' => __( 'This auction has not ended.', 'goodbids' ),
+					'message' => __( 'This Auction has not ended.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::AUCTION_HAS_ENDED         => [
+					'message' => __( 'This Auction has already ended.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -130,7 +184,7 @@ class Notices {
 				],
 
 				self::AUCTION_NOT_FOUND         => [
-					'message' => __( 'This reward is not associated with an auction.', 'goodbids' ),
+					'message' => __( 'There was a problem locating the associated auction.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -139,8 +193,13 @@ class Notices {
 					'type'    => 'error',
 				],
 
-				self::APPLY_REWARD_COUPON_ERROR => [
-					'message' => __( 'There was a problem applying the Reward Coupon Code. Please contact support for further assistance.', 'goodbids' ),
+				self::GET_FREE_BID_COUPON_ERROR => [
+					'message' => __( 'There was a problem generating the Free Bid Coupon Code. Please contact support for further assistance.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::APPLY_COUPON_ERROR => [
+					'message' => __( 'There was a problem applying your Coupon Code. Please contact support for further assistance.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -152,6 +211,26 @@ class Notices {
 				self::EARNED_FREE_BID           => [
 					'message' => __( 'Congratulations! You have earned a Free Bid!', 'goodbids' ),
 					'type'    => 'success',
+				],
+
+				self::FREE_BIDS_NOT_ELIGIBLE    => [
+					'message' => __( 'Sorry, this Auction is currently not eligible to use Free Bids. Please try again later.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::NO_AVAILABLE_FREE_BIDS    => [
+					'message' => __( 'Sorry, you do not have any available free bids.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::FREE_BID_REDEEMED         => [
+					'message' => __( 'You have successfully used a free bid!', 'goodbids' ),
+					'type'    => 'success',
+				],
+
+				self::BID_ALREADY_PLACED        => [
+					'message' => __( 'Uh-oh! Someone else already placed this bid. We\'ve removed the GoodBid from your cart. Please return to the Auction to place a new GoodBid.', 'goodbids' ),
+					'type'    => 'error',
 				],
 			]
 		);
@@ -172,14 +251,36 @@ class Notices {
 					return;
 				}
 
-				if ( empty( $this->notices[ $this->notice_id ] ) ) {
-					// TODO: Log error.
+				$notice = $this->get_notice();
+
+				if ( ! $notice ) {
 					return;
 				}
 
-				$notice = $this->notices[ $this->notice_id ];
 				wc_add_notice( $notice['message'], $notice['type'] );
 			}
 		);
+	}
+
+	/**
+	 * Get the notice by Notice ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?string $notice_id
+	 *
+	 * @return ?array
+	 */
+	public function get_notice( string $notice_id = null ): ?array {
+		if ( ! $notice_id ) {
+			$notice_id = $this->get_notice_id();
+		}
+
+		if ( empty( $this->notices[ $notice_id ] ) ) {
+			// TODO: Log error.
+			return null;
+		}
+
+		return $this->notices[ $notice_id ];
 	}
 }
