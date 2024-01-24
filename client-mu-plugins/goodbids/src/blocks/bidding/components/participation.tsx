@@ -1,11 +1,11 @@
-import { DEMO_DATA } from '../utils/demo-data';
-import { useAuction } from '../utils/auction-store';
+import { useBiddingState } from '../store';
 
 function ParticipationContent() {
-	const { auctionStatus } = useAuction();
+	const { auctionStatus, isUserLoggedIn, userTotalBids, userTotalDonated } =
+		useBiddingState();
 
-	if (auctionStatus === 'upcoming') {
-		if (DEMO_DATA.userId) {
+	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
+		if (isUserLoggedIn) {
 			return (
 				<p className="m-0 text-center">
 					Watch this auction to be notified when bidding starts.
@@ -20,12 +20,12 @@ function ParticipationContent() {
 		);
 	}
 
-	if (auctionStatus === 'closed') {
-		if (DEMO_DATA.bids > 0 && DEMO_DATA.amountBid > 0) {
+	if (auctionStatus === 'closed' || auctionStatus === 'closing') {
+		if (userTotalBids > 0) {
 			return (
 				<p className="m-0 text-center">
-					You placed <b>{DEMO_DATA.bids}</b> for a total donation of{' '}
-					<b>${DEMO_DATA.amountBid}</b>.
+					You placed <b>{userTotalBids}</b> for a total donation of{' '}
+					<b>${userTotalDonated}</b>.
 				</p>
 			);
 		}
@@ -33,12 +33,12 @@ function ParticipationContent() {
 		return <p>You did not bid in this auction.</p>;
 	}
 
-	if (DEMO_DATA.userId) {
-		if (DEMO_DATA.bids > 0 && DEMO_DATA.amountBid > 0) {
+	if (isUserLoggedIn) {
+		if (userTotalBids > 0) {
 			return (
 				<p className="m-0 text-center">
-					You placed <b>{DEMO_DATA.bids}</b> for a total donation of{' '}
-					<b>${DEMO_DATA.amountBid}</b>.
+					You placed <b>{userTotalBids}</b> for a total donation of{' '}
+					<b>${userTotalDonated}</b>.
 				</p>
 			);
 		}

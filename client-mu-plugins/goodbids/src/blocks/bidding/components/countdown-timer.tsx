@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ClockIcon } from './clock-icon';
-import { DEMO_DATA } from '../utils/demo-data';
-import { useAuction } from '../utils/auction-store';
 import { AuctionStatus } from '../utils/types';
+import { useBiddingState } from '../store';
 
 type TimeRemainingType = {
 	status: AuctionStatus;
@@ -46,10 +45,9 @@ function formatTimeRemaining(timeRemaining: number) {
 }
 
 function getTimeRemaining(
-	user: string,
 	{ status, timeRemaining }: TimeRemainingType,
-	userBids: number,
-	lastBidder?: string,
+	userTotalBids: number,
+	isLastBidder: boolean,
 ) {
 	if (status === 'upcoming') {
 		return (
@@ -60,7 +58,7 @@ function getTimeRemaining(
 	}
 
 	if (status === 'live') {
-		if (user === lastBidder) {
+		if (isLastBidder) {
 			return (
 				<span>
 					<b>You will win in {formatTimeRemaining(timeRemaining)}</b>{' '}
@@ -77,7 +75,7 @@ function getTimeRemaining(
 		);
 	}
 
-	if (user === lastBidder) {
+	if (isLastBidder) {
 		return (
 			<span>
 				<b>Auction has closed.</b> Congratulations, you won!
@@ -85,7 +83,7 @@ function getTimeRemaining(
 		);
 	}
 
-	if (userBids > 0) {
+	if (userTotalBids > 0) {
 		return (
 			<span>
 				<b>Auction has closed.</b> Sorry, you were out-bid.
@@ -120,8 +118,8 @@ function getCountdownTime(
 }
 
 export function CountdownTimer() {
-	const { startTime, endTime, lastBidder, setAuctionStatus, auctionStatus } =
-		useAuction();
+	const { startTime, endTime, isLastBidder, auctionStatus, userTotalBids } =
+		useBiddingState();
 
 	const [timeRemaining, setTimeRemaining] = useState<TimeRemainingType>(
 		getCountdownTime(startTime, endTime),
@@ -132,7 +130,7 @@ export function CountdownTimer() {
 			const newRemainingTime = getCountdownTime(startTime, endTime);
 
 			if (auctionStatus !== newRemainingTime.status) {
-				setAuctionStatus(newRemainingTime.status);
+				// setAuctionStatus(newRemainingTime.status);
 			}
 
 			setTimeRemaining(newRemainingTime);
@@ -146,12 +144,7 @@ export function CountdownTimer() {
 		<div className="flex items-center gap-3 px-4">
 			<ClockIcon />
 
-			{getTimeRemaining(
-				DEMO_DATA.userId,
-				timeRemaining,
-				DEMO_DATA.bids,
-				lastBidder,
-			)}
+			{getTimeRemaining(timeRemaining, userTotalBids, isLastBidder)}
 		</div>
 	);
 }

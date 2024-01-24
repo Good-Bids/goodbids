@@ -1,39 +1,33 @@
-import { DEMO_DATA } from '../utils/demo-data';
+import { useBiddingState } from '../store';
 import { WaveIcon } from './wave-icon';
-import { useAuction } from '../utils/auction-store';
 
 function FreeBidsContent() {
-	const { auctionStatus, currentBid, freeBidsAvailable } = useAuction();
+	const { auctionStatus, currentBid, freeBidsAvailable, isUserLoggedIn } =
+		useBiddingState();
 
 	if (auctionStatus === 'live') {
-		if (DEMO_DATA.userId) {
+		if (isUserLoggedIn) {
 			return (
 				<p className="m-0">
 					Place one of the first five <b>paid bids</b> in this auction
 					or{' '}
-					<a
-						className="font-bold underline"
-						href={DEMO_DATA.shareUrl}
-					>
+					<span className="font-bold underline">
 						share GOODBIDS with a friend
-					</a>{' '}
+					</span>{' '}
 					to <b>earn a free bid</b>!
 				</p>
 			);
 		}
 	}
 
-	if (DEMO_DATA.userId) {
+	if (isUserLoggedIn) {
 		if (freeBidsAvailable) {
 			return (
 				<p className="m-0">
 					GOODBID <b>${currentBid}</b> now or{' '}
-					<a
-						className="font-bold underline"
-						href={DEMO_DATA.shareUrl}
-					>
+					<span className="font-bold underline">
 						share GOODBIDS with a friend
-					</a>{' '}
+					</span>{' '}
 					to <b>earn a free bid</b>!
 				</p>
 			);
@@ -41,9 +35,9 @@ function FreeBidsContent() {
 
 		return (
 			<p className="m-0">
-				<a className="font-bold underline" href={DEMO_DATA.shareUrl}>
+				<span className="font-bold underline">
 					Share GOODBIDS with a friend
-				</a>{' '}
+				</span>{' '}
 				to <b>earn a free bid</b>!
 			</p>
 		);
@@ -53,18 +47,18 @@ function FreeBidsContent() {
 		<p className="m-0">
 			GOODBIDS users earn <b>free bids</b> when they place one of the{' '}
 			<b>first five paid bids</b> in an auction or{' '}
-			<a className="font-bold underline" href={DEMO_DATA.shareUrl}>
+			<span className="font-bold underline">
 				share GOODBIDS with a friend
-			</a>{' '}
+			</span>{' '}
 			to <b>earn a free bid</b>!
 		</p>
 	);
 }
 
 export function EarnFreeBids() {
-	const { endTime } = useAuction();
+	const { auctionStatus } = useBiddingState();
 
-	if (endTime < new Date()) {
+	if (auctionStatus === 'closed' || auctionStatus === 'closing') {
 		return null;
 	}
 

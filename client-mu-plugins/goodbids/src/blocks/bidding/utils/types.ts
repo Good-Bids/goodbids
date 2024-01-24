@@ -1,6 +1,6 @@
 export type AuctionStatus = 'upcoming' | 'live' | 'closed';
 
-type MessageType = 'start' | 'update' | 'end';
+type MessageType = 'update' | 'end';
 
 type AuctionType = {
 	startTime: string;

@@ -1,11 +1,17 @@
 import clsx from 'clsx';
-import { DEMO_DATA } from '../utils/demo-data';
-import { useAuction } from '../utils/auction-store';
+import { useBiddingState } from '../store';
 
 export function FreeBidButton() {
-	const { lastBidder, freeBidsAvailable, auctionStatus } = useAuction();
+	const {
+		isLastBidder,
+		userFreeBids,
+		auctionStatus,
+		bidUrl,
+		freeBidsAllowed,
+		isUserLoggedIn,
+	} = useBiddingState();
 
-	const disabled = lastBidder === DEMO_DATA.userId && !DEMO_DATA.freeBids;
+	const disabled = isLastBidder || userFreeBids < 1 || !isUserLoggedIn;
 
 	const classes = clsx(
 		'bg-base rounded py-2 w-full block text-center no-underline text-lg',
@@ -15,13 +21,11 @@ export function FreeBidButton() {
 		},
 	);
 
-	if (freeBidsAvailable && auctionStatus === 'live') {
+	if (freeBidsAllowed && auctionStatus === 'live') {
 		return (
-			<a href={DEMO_DATA.freeBidUrl} className={classes}>
+			<a href={bidUrl} className={classes}>
 				{`Place free bid ${
-					DEMO_DATA.freeBids
-						? `(${DEMO_DATA.freeBids} available)`
-						: ''
+					isUserLoggedIn ? `(${userFreeBids} available)` : ''
 				}`}
 			</a>
 		);
