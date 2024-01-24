@@ -60,7 +60,7 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const REWARD_AUCTION_META_KEY = '_gb_auction_id';
+	const PRODUCT_AUCTION_META_KEY = '_gb_auction_id';
 
 	/**
 	 * @since 1.0.0
@@ -943,6 +943,11 @@ class Auctions {
 		$all_bids  = count( $this->get_bid_order_ids( $auction_id ) );
 		$free_bids = count( $this->get_free_bid_order_ids( $auction_id ) );
 
+		// Don't divide by zero.
+		if ( ! $all_bids ) {
+			return false;
+		}
+
 		// Free orders must be less than 50% of all orders.
 		if ( round( $free_bids / $all_bids, 2 ) > 0.5 ) {
 			return false;
@@ -1117,7 +1122,7 @@ class Auctions {
 					return;
 				}
 
-				update_post_meta( $reward_id, self::REWARD_AUCTION_META_KEY, $post_id );
+				update_post_meta( $reward_id, self::PRODUCT_AUCTION_META_KEY, $post_id );
 			}
 		);
 	}
@@ -1132,7 +1137,22 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_auction_id_from_reward_product_id( int $reward_product_id ): ?int {
-		return intval( get_post_meta( $reward_product_id, self::REWARD_AUCTION_META_KEY, true ) );
+		$auction_id = get_post_meta( $reward_product_id, self::PRODUCT_AUCTION_META_KEY, true );
+		return $auction_id ? intval( $auction_id ) : null;
+	}
+
+	/**
+	 * Get the Auction ID from the Bid Product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $bid_product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id_from_bid_product_id( int $bid_product_id ): ?int {
+		$auction_id = get_post_meta( $bid_product_id, self::PRODUCT_AUCTION_META_KEY, true );
+		return $auction_id ? intval( $auction_id ) : null;
 	}
 
 	/**

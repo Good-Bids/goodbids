@@ -45,6 +45,12 @@ class WooCommerce {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const FREE_BID_COUPON_META_KEY = '_goodbids_free_bid_%d_coupon_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	private string $slug = 'woocommerce';
 
 	/**
@@ -470,6 +476,10 @@ class WooCommerce {
 						// TODO: Let the user know they earned a free bid.
 						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
 					}
+				} else { // Reduce the Free Bid Count for the user.
+					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+						$redirect = add_query_arg( 'gb-notice', Notices::FREE_BID_REDEEMED, $redirect );
+					}
 				}
 
 				wp_safe_redirect( $redirect );
@@ -680,12 +690,25 @@ class WooCommerce {
 					return;
 				}
 
+				// Make sure Auction has started and has not ended.
 				if ( ! goodbids()->auctions->has_started( $info['auction_id'] ) ) {
-					// TODO: Move error to Settings Page.
-					wc_add_notice( __( 'Auction has not started yet.', 'goodbids' ), 'error' );
+					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
+					wc_add_notice( $notice['message'], $notice['type'] );
 				} elseif ( goodbids()->auctions->has_ended( $info['auction_id'] ) ) {
-					// TODO: Move error to Settings Page.
-					wc_add_notice( __( 'Auction has already ended.', 'goodbids' ), 'error' );
+					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
+					wc_add_notice( $notice['message'], $notice['type'] );
+				}
+
+				if ( $this->is_free_bid_order( $order->get_id() ) ) {
+					if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
+						$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+						wc_add_notice( $notice['message'], $notice['type'] );
+					}
+
+					if ( ! goodbids()->users->get_available_free_bid_count() ) {
+						$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+						wc_add_notice( $notice['message'], $notice['type'] );
+					}
 				}
 			},
 			10,
@@ -703,15 +726,17 @@ class WooCommerce {
 	 * @return ?array
 	 */
 	public function get_order_auction_info( int $order_id ): ?array {
-		$order      = wc_get_order( $order_id );
-		$auction_id = $this->get_order_auction_id( $order_id );
-		$order_type = $this->get_order_type( $order_id );
+		$order         = wc_get_order( $order_id );
+		$auction_id    = $this->get_order_auction_id( $order_id );
+		$order_type    = $this->get_order_type( $order_id );
+		$uses_free_bid = $this->is_free_bid_order( $order_id );
 
 		// Return early if we already have this info.
 		if ( $auction_id && $order_type ) {
 			return [
-				'auction_id' => $auction_id,
-				'order_type' => $order_type,
+				'auction_id'    => $auction_id,
+				'order_type'    => $order_type,
+				'uses_free_bid' => $uses_free_bid,
 			];
 		}
 
@@ -735,8 +760,9 @@ class WooCommerce {
 		}
 
 		return [
-			'auction_id' => $auction_id,
-			'order_type' => $order_type,
+			'auction_id'    => $auction_id,
+			'order_type'    => $order_type,
+			'uses_free_bid' => $uses_free_bid,
 		];
 	}
 
@@ -813,14 +839,14 @@ class WooCommerce {
 					$auction_id = goodbids()->auctions->get_auction_id_from_reward_product_id( $product->get_id() );
 
 					if ( ! $auction_id ) {
-						return $url;
+						return add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $url );
 					}
 
 					$redirect_url = get_permalink( $auction_id );
 
 					if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
 						WC()->cart->empty_cart();
-						return $url;
+						return add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $url );
 					}
 
 					$coupon_code = $this->get_reward_coupon_code( $auction_id, $product->get_id() );
@@ -828,14 +854,36 @@ class WooCommerce {
 					if ( ! $coupon_code ) {
 						return add_query_arg( 'gb-notice', Notices::GET_REWARD_COUPON_ERROR, $redirect_url );
 					}
+				} elseif ( Auctions::ORDER_TYPE_BID === $product_type ) {
+					if ( ! empty( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
+						$auction_id = goodbids()->auctions->bids->get_auction_id( $product->get_id() );
+
+						if ( ! $auction_id ) {
+							return add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $url );
+						}
+
+						if ( ! goodbids()->auctions->are_free_bids_allowed( $auction_id ) ) {
+							return add_query_arg( 'gb-notice', Notices::FREE_BIDS_NOT_ELIGIBLE, $url );
+						}
+
+						if ( ! goodbids()->users->get_available_free_bid_count() ) {
+							return add_query_arg( 'gb-notice', Notices::NO_AVAILABLE_FREE_BIDS, $url );
+						}
+
+						$coupon_code = $this->get_free_bid_coupon_code( $auction_id, $product->get_id() );
+
+						if ( ! $coupon_code ) {
+							return add_query_arg( 'gb-notice', Notices::GET_FREE_BID_COUPON_ERROR, $redirect_url );
+						}
+					}
 				}
 
 				// Only apply Coupon once.
 				if ( $coupon_code && ! WC()->cart->has_discount( $coupon_code ) ) {
-					// Apply Reward Coupon.
+					// Apply the Coupon.
 					if ( ! WC()->cart->add_discount( $coupon_code ) ) {
 						// TODO: Log Error.
-						return add_query_arg( 'gb-notice', Notices::APPLY_REWARD_COUPON_ERROR, $redirect_url );
+						return add_query_arg( 'gb-notice', Notices::APPLY_COUPON_ERROR, $redirect_url );
 					}
 				}
 
@@ -847,7 +895,8 @@ class WooCommerce {
 	}
 
 	/**
-	 * Redirect after adding bids and reward products to cart to remove the ?add-to-cart url parameter.
+	 * Redirect after adding bids and reward products to cart
+	 * to remove the add-to-cart and use-free-bid url parameters.
 	 *
 	 * @since 1.0.0
 	 *
@@ -857,12 +906,12 @@ class WooCommerce {
 		add_filter(
 			'woocommerce_add_to_cart_redirect',
 			function ( string $url, ?WC_Product $product ): string {
-				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				if ( wp_doing_ajax() ) {
 					return $url;
 				}
 
 				// No need to redirect.
-				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+				if ( ! isset( $_REQUEST['add-to-cart'] ) && ! isset( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
 					return $url;
 				}
 
@@ -887,7 +936,7 @@ class WooCommerce {
 			'template_redirect',
 			function (): void {
 				// No need to redirect.
-				if ( ! isset( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
+				if ( ! isset( $_REQUEST['add-to-cart'] ) && ! isset( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
 					return;
 				}
 
@@ -920,7 +969,7 @@ class WooCommerce {
 		add_filter(
 			'woocommerce_add_to_cart_validation',
 			function ( $passed, $product_id ) {
-				if ( 'rewards' !== goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( Auctions::ORDER_TYPE_REWARD !== goodbids()->auctions->get_product_type( $product_id ) ) {
 					return $passed;
 				}
 
@@ -1058,6 +1107,69 @@ class WooCommerce {
 		$coupon->save();
 
 		update_post_meta( $reward_id, self::REWARD_COUPON_META_KEY, $coupon_code );
+
+		return $coupon_code;
+	}
+
+	/**
+	 * Generate or retrieve the Free Bid Coupon Code for this User.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $bid_product_id
+	 *
+	 * @return ?string
+	 */
+	private function get_free_bid_coupon_code( int $auction_id, int $bid_product_id ): ?string {
+		$bid_product = goodbids()->auctions->get_bid_product( $auction_id );
+
+		if ( ! $bid_product ) {
+			return null;
+		}
+
+		if ( $bid_product->get_id() !== $bid_product_id ) {
+			// Bid Product ID does not match the Auction Bid Product ID.
+			return null;
+		}
+
+		$existing = get_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), true );
+
+		if ( $existing ) {
+			// Make sure it's still valid.
+			if ( wc_get_coupon_id_by_code( $existing ) ) {
+				return $existing;
+			}
+		}
+
+		$coupon_code  = 'GB_FREEBID_' . strtoupper( wc_rand_hash() );
+		$reward_price = $bid_product->get_price( 'edit' );
+		$description  = sprintf(
+			'%s: %d',
+			__( 'Autogenerated Free Bid Coupon Code for Auction ID', 'goodbids' ),
+			esc_html( $auction_id )
+		);
+
+		$coupon = new WC_Coupon();
+		$coupon->set_code( $coupon_code ); // Coupon code.
+		$coupon->set_description( $description );
+
+		// Restrictions.
+		$coupon->set_individual_use( true );
+		$coupon->set_usage_limit_per_user( 1 );
+		$coupon->set_usage_limit( 1 );
+		$coupon->set_limit_usage_to_x_items( 1 ); // Limit to 1 item.
+		$coupon->set_email_restrictions( $this->get_user_emails() ); // Restrict by user email(s).
+		$coupon->set_product_ids( [ $bid_product_id ] ); // Restrict to this Reward Product.
+
+		// Amount.
+		$coupon->set_discount_type( 'percent' );
+		$coupon->set_amount( 100 ); // 100% Discount.
+		$coupon->set_maximum_amount( $reward_price ); // Additional price restriction.
+
+		$coupon->save();
+
+		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), $coupon_code );
 
 		return $coupon_code;
 	}
