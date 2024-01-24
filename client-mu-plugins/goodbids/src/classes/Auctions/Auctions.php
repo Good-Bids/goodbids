@@ -1137,7 +1137,8 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_auction_id_from_reward_product_id( int $reward_product_id ): ?int {
-		return intval( get_post_meta( $reward_product_id, self::PRODUCT_AUCTION_META_KEY, true ) );
+		$auction_id = get_post_meta( $reward_product_id, self::PRODUCT_AUCTION_META_KEY, true );
+		return $auction_id ? intval( $auction_id ) : null;
 	}
 
 	/**
@@ -1150,7 +1151,8 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_auction_id_from_bid_product_id( int $bid_product_id ): ?int {
-		return intval( get_post_meta( $bid_product_id, self::PRODUCT_AUCTION_META_KEY, true ) );
+		$auction_id = get_post_meta( $bid_product_id, self::PRODUCT_AUCTION_META_KEY, true );
+		return $auction_id ? intval( $auction_id ) : null;
 	}
 
 	/**
