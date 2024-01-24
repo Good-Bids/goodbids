@@ -192,7 +192,8 @@ class Rewards {
 	 * @return ?int
 	 */
 	public function get_auction_id( int $reward_product_id ): ?int {
-		return intval( get_post_meta( $reward_product_id, Auctions::PRODUCT_AUCTION_META_KEY, true ) );
+		$auction_id = get_post_meta( $reward_product_id, Auctions::PRODUCT_AUCTION_META_KEY, true );
+		return $auction_id ? intval( $auction_id ) : null;
 	}
 
 	/**
