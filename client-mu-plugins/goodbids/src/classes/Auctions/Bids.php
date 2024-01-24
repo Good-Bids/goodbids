@@ -368,7 +368,7 @@ class Bids {
 		add_action(
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
@@ -551,15 +551,15 @@ class Bids {
 					return;
 				}
 
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
-				$auction_id = goodbids()->woocommerce->get_order_auction_id( $order_id );
+				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
 				$redirect   = get_permalink( $auction_id );
 
 				// Do not award free bids if this order contains a free bid.
-				if ( ! goodbids()->woocommerce->is_free_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
 					$remaining_free_bids = goodbids()->auctions->get_free_bids_available( $auction_id );
 					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;

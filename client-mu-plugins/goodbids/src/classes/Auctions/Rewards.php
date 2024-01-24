@@ -211,11 +211,11 @@ class Rewards {
 					return;
 				}
 
-				if ( ! goodbids()->woocommerce->is_reward_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) {
 					return;
 				}
 
-				$auction_id = goodbids()->woocommerce->get_order_auction_id( $order_id );
+				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
 				$product_id = $this->get_product_id( $auction_id );
 
 				update_post_meta( $product_id, self::REDEEMED_META_KEY, 1 );

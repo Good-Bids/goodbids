@@ -1042,11 +1042,11 @@ class Auctions {
 			// meta_query doesn't seem to work with the following filter hooks:
 			// - woocommerce_order_query_args
 			// - woocommerce_order_data_store_cpt_get_orders_query
-			if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+			if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 				continue;
 			}
 
-			if ( $auction_id !== goodbids()->woocommerce->get_order_auction_id( $order_id ) ) {
+			if ( $auction_id !== goodbids()->woocommerce->orders->get_order_auction_id( $order_id ) ) {
 				continue;
 			}
 
@@ -1072,7 +1072,7 @@ class Auctions {
 		$return = [];
 
 		foreach ( $orders as $order_id ) {
-			if ( ! goodbids()->woocommerce->is_free_bid_order( $order_id ) ) {
+			if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 				continue;
 			}
 
@@ -1328,7 +1328,7 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Don't clear if this isn't a Bid order.
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
@@ -1773,7 +1773,7 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Bail if this isn't a Bid order.
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
