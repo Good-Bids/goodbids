@@ -21,7 +21,7 @@ if ( ! $goal && ! $estimated_value && ! $expected_high_bid && is_admin() ) :
 	return;
 endif;
 ?>
-<section <?php block_attr( $block, 'flex gap-5 my-4 flex-wrap' ); ?>>
+<section <?php block_attr( $block, 'grid grid-cols-3 gap-5' ); ?>>
 	<?php
 	// Goal.
 	if ( $goal ) :
@@ -42,7 +42,7 @@ endif;
 	if ( $estimated_value ) :
 		?>
 		<div class="flex flex-col text-center">
-			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
+			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Est. Value', 'goodbids' ); ?></p>
 			<?php
 				printf(
 					'<p class="m-1 font-extrabold">%s</p>',
@@ -57,7 +57,7 @@ endif;
 	if ( $expected_high_bid ) :
 		?>
 		<div class="flex flex-col text-center">
-			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
+			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></p>
 			<?php
 				printf(
 					'<p class="m-1 font-extrabold">%s</p>',
