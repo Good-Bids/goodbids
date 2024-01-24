@@ -1046,7 +1046,7 @@ class Auctions {
 				continue;
 			}
 
-			if ( $auction_id !== goodbids()->woocommerce->orders->get_order_auction_id( $order_id ) ) {
+			if ( $auction_id !== goodbids()->woocommerce->orders->get_auction_id( $order_id ) ) {
 				continue;
 			}
 
