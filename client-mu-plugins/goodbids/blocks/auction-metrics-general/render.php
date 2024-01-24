@@ -57,7 +57,7 @@ endif;
 	if ( $expected_high_bid ) :
 		?>
 		<div class="flex flex-col text-center">
-			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></p>
+			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'High Bid Goal', 'goodbids' ); ?></p>
 			<?php
 				printf(
 					'<p class="m-1 font-extrabold">%s</p>',
