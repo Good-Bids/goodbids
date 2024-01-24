@@ -1033,7 +1033,7 @@ class Auctions {
 				[
 					'key'     => WooCommerce::TYPE_META_KEY,
 					'compare' => '=',
-					'value'   => Auctions::ORDER_TYPE_BID,
+					'value'   => Bids::ITEM_TYPE,
 				]
 			],
 		];
@@ -1069,6 +1069,7 @@ class Auctions {
 		$return = [];
 
 		foreach ( $orders as $order_id ) {
+			// TODO: Add Free Bid Order meta.
 			if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 				continue;
 			}
