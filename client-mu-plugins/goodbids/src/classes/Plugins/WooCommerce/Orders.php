@@ -92,7 +92,8 @@ class Orders {
 			return null;
 		}
 
-		$auction_id = get_post_meta( $order_id, WooCommerce::AUCTION_META_KEY, true );
+		$order      = wc_get_order( $order_id );
+		$auction_id = $order->get_meta( WooCommerce::AUCTION_META_KEY );
 
 		return intval( $auction_id ) ?: null;
 	}

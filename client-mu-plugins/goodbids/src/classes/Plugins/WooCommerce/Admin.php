@@ -57,44 +57,36 @@ class Admin {
 					return;
 				}
 
+				// Add and Render the Meta Box.
 				add_meta_box(
 					'goodbids-auction-info',
 					__( 'Auction Info', 'goodbids' ),
-					[ $this, 'auction_meta_box' ],
+					function () {
+						$order_id   = ! empty( $_GET['id'] ) ? intval( sanitize_text_field( $_GET['id'] ) ) : false; // phpcs:ignore
+						$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
+
+						printf(
+							'<p><strong>%s</strong><br><a href="%s">%s</a> (ID: %s)</p>',
+							esc_html__( 'Related Auction', 'goodbids' ),
+							esc_url( get_edit_post_link( $auction_id ) ),
+							esc_html( get_the_title( $auction_id ) ),
+							esc_html( $auction_id )
+						);
+
+						$reward_id = goodbids()->auctions->rewards->get_product_id( $auction_id );
+
+						printf(
+							'<p><strong>%s</strong><br><a href="%s">%s</a> (ID: %s)</p>',
+							esc_html__( 'Related Reward', 'goodbids' ),
+							esc_url( get_edit_post_link( $reward_id ) ),
+							esc_html( get_the_title( $reward_id ) ),
+							esc_html( $reward_id )
+						);
+					},
 					$screen->id,
 					'side'
 				);
 			}
-		);
-	}
-
-	/**
-	 * Auction Info Meta Box
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function auction_meta_box(): void {
-		$order_id   = ! empty( $_GET['id'] ) ? intval( sanitize_text_field( $_GET['id'] ) ) : false; // phpcs:ignore
-		$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
-
-		printf(
-			'<p><strong>%s</strong><br><a href="%s">%s</a> (ID: %s)</p>',
-			esc_html__( 'Related Auction', 'goodbids' ),
-			esc_url( get_edit_post_link( $auction_id ) ),
-			esc_html( get_the_title( $auction_id ) ),
-			esc_html( $auction_id )
-		);
-
-		$reward_id = goodbids()->auctions->rewards->get_product_id( $auction_id );
-
-		printf(
-			'<p><strong>%s</strong><br><a href="%s">%s</a> (ID: %s)</p>',
-			esc_html__( 'Related Reward', 'goodbids' ),
-			esc_url( get_edit_post_link( $reward_id ) ),
-			esc_html( get_the_title( $reward_id ) ),
-			esc_html( $reward_id )
 		);
 	}
 
