@@ -2,5 +2,5 @@
 
 ## Core Methods
 
-`goodbids()->woocommerce->get_add_to_cart_item( WC_Product $product )`  
+`goodbids()->woocommerce->get_add_to_cart_product( ?WC_Product $product )`  
 Returns the "add-to-cart" Product if not provided in the `$product` parameter.
