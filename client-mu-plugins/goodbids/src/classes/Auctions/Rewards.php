@@ -86,7 +86,7 @@ class Rewards {
 	}
 
 	/**
-	 * Update the Reward Product when an Auction is save.
+	 * Update the Reward Product when an Auction is saved.
 	 *
 	 * @since 1.0.0
 	 *

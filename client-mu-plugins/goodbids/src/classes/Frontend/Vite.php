@@ -179,8 +179,8 @@ class Vite {
 					window.\$RefreshSig\$ = () => (type) => type
 					window.__vite_plugin_react_preamble_installed__ = true
 			  	</script>",
-				"<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>",
-				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>",
+				"<script type=\"module\" src=\"http://localhost:5173/@vite/client\"></script>",
+				"<script type=\"module\" src=\"http://localhost:5173/{$entry}\"></script>",
 			];
 
 			return implode( PHP_EOL, $scripts );

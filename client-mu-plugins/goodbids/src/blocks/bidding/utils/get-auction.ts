@@ -1,47 +1,61 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import { apiHandler } from './api-handler';
+import { z } from 'zod';
 
-type ProtoAuctionResponse = {
-	socketUrl: string;
-	accountUrl: string;
-	bidUrl: string;
-	startTime: string;
-	endTime: string;
-	totalBids: number;
-	totalRaised: number;
-	currentBid: number;
-	lastBid: number;
-};
+const upcomingAuctionSchema = z.object({
+	auctionStatus: z.literal('upcoming'),
+	socketUrl: z.string(),
+	accountUrl: z.string(),
+	bidUrl: z.string(),
+	startTime: z.string(),
+	endTime: z.string(),
+});
 
-export type AuctionUpcomingResponse = Omit<
-	ProtoAuctionResponse,
-	'totalBids' | 'totalRaised' | 'currentBid' | 'lastBid'
-> & {
-	auctionStatus: 'upcoming';
-};
+const liveAuctionSchema = z.object({
+	auctionStatus: z.literal('live'),
+	socketUrl: z.string(),
+	accountUrl: z.string(),
+	bidUrl: z.string(),
+	startTime: z.string(),
+	endTime: z.string(),
+	totalBids: z.number(),
+	totalRaised: z.number(),
+	currentBid: z.number(),
+	lastBid: z.number().default(0),
+});
 
-export type AuctionLiveResponse = ProtoAuctionResponse & {
-	auctionStatus: 'live';
-};
+const closedAuctionSchema = z.object({
+	auctionStatus: z.literal('closed'),
+	socketUrl: z.string(),
+	accountUrl: z.string(),
+	endTime: z.string(),
+	totalBids: z.number(),
+	totalRaised: z.number(),
+	lastBid: z.number().default(0),
+});
 
-export type AuctionClosedResponse = Omit<
-	ProtoAuctionResponse,
-	'bidUrl' | 'startTime' | 'currentBid'
-> & {
-	auctionStatus: 'closed';
-};
+const auctionSchema = z.discriminatedUnion('auctionStatus', [
+	upcomingAuctionSchema,
+	liveAuctionSchema,
+	closedAuctionSchema,
+]);
 
-export type AuctionResponse =
-	| AuctionUpcomingResponse
-	| AuctionLiveResponse
-	| AuctionClosedResponse;
+export type AuctionUpcomingResponse = z.infer<typeof upcomingAuctionSchema>;
+
+export type AuctionLiveResponse = z.infer<typeof liveAuctionSchema>;
+
+export type AuctionClosedResponse = z.infer<typeof closedAuctionSchema>;
+
+export type AuctionResponse = z.infer<typeof auctionSchema>;
 
 async function getAuction(auctionId: number) {
 	const path = `/wp-json/wp/v2/auction/${auctionId}/details`;
 
-	return await apiHandler<AuctionResponse>({
+	const response = await apiHandler({
 		path,
 	});
+
+	return auctionSchema.parse(response);
 }
 
 function auctionOptions(auctionId: number, refetchInterval?: number) {
