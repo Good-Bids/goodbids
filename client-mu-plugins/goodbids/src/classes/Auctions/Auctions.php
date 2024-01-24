@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Plugins\WooCommerce;
 use WC_Order;
 use WC_Product;
 use WP_Query;
@@ -1178,41 +1179,33 @@ class Auctions {
 		}
 
 		$args = [
-			'limit'   => -1,
+			'limit'   => $limit,
 			'status'  => [ 'processing', 'completed' ],
 			'return'  => 'ids',
 			'orderby' => 'date',
 			'order'   => 'DESC',
+			'meta_query' => [
+				[
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Auctions::ORDER_TYPE_BID,
+				]
+			],
 		];
 
 		if ( $user_id ) {
 			$args['customer_id'] = $user_id;
 		}
 
-		$orders = wc_get_orders( $args );
-		$return = [];
-
-		foreach ( $orders as $order_id ) {
-			// We need to filter the orders out here, for some reason.
-			// meta_query doesn't seem to work with the following filter hooks:
-			// - woocommerce_order_query_args
-			// - woocommerce_order_data_store_cpt_get_orders_query
-			if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
-				continue;
-			}
-
-			if ( $auction_id !== goodbids()->woocommerce->get_order_auction_id( $order_id ) ) {
-				continue;
-			}
-
-			$return[] = $order_id;
+		if ( $auction_id ) {
+			$args['meta_query'][] = [
+				'key'     => WooCommerce::AUCTION_META_KEY,
+				'compare' => '=',
+				'value'   => $auction_id,
+			];
 		}
 
-		if ( $limit > 0 ) {
-			$return = array_slice( $return, 0, $limit );
-		}
-
-		return $return;
+		return wc_get_orders( $args );
 	}
 
 	/**

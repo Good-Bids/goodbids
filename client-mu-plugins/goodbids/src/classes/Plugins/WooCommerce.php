@@ -59,6 +59,10 @@ class WooCommerce {
 
 		$this->setup_api_endpoints();
 
+		// Let WooCommerce know about some custom meta keys.
+		$this->register_meta_keys();
+
+		// New Site Setup.
 		$this->configure_new_site();
 		$this->create_auth_page();
 		$this->add_auth_page_setting();
@@ -119,6 +123,42 @@ class WooCommerce {
 		return [
 			'credentials' => Credentials::class,
 		];
+	}
+
+	/**
+	 * Register Meta Keys with WordPress.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function register_meta_keys(): void {
+		add_action(
+			'init',
+			function (): void {
+				register_meta(
+					'post',
+					self::AUCTION_META_KEY,
+					[
+						'object_subtype' => 'shop_order',
+						'type'           => 'integer',
+						'single'         => true,
+						'show_in_rest'   => true,
+					]
+				);
+
+				register_meta(
+					'post',
+					self::TYPE_META_KEY,
+					[
+						'object_subtype' => 'shop_order',
+						'type'           => 'string',
+						'single'         => true,
+						'show_in_rest'   => true,
+					]
+				);
+			}
+		);
 	}
 
 	/**
@@ -404,7 +444,7 @@ class WooCommerce {
 	}
 
 	/**
-	 * Store the Auction ID in the Order Meta.
+	 * Store the Auction info in the Order Meta.
 	 *
 	 * @since 1.0.0
 	 *
@@ -412,8 +452,12 @@ class WooCommerce {
 	 */
 	private function store_auction_id_on_checkout(): void {
 		add_action(
-			'woocommerce_payment_complete',
+			'woocommerce_thankyou',
 			function ( int $order_id ) {
+				if ( is_admin() || wp_doing_ajax() || headers_sent() ) {
+					return;
+				}
+
 				$info = $this->get_order_auction_info( $order_id );
 
 				if ( ! $info ) {
@@ -421,11 +465,22 @@ class WooCommerce {
 					return;
 				}
 
-				update_post_meta( $order_id, self::AUCTION_META_KEY, $info['auction_id'] );
-				update_post_meta( $order_id, self::TYPE_META_KEY, $info['order_type'] );
+				$order = wc_get_order( $order_id );
+				$order->update_meta_data( self::AUCTION_META_KEY, $info['auction_id'] );
+				$order->update_meta_data( self::TYPE_META_KEY, $info['order_type'] );
+				$order->save();
 
+				/**
+				 * Action triggered when an Order is paid for.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $order_id
+				 * @param int $auction_id
+				 */
 				do_action( 'goodbids_order_payment_complete', $order_id, $info['auction_id'] );
-			}
+			},
+			5
 		);
 	}
 
@@ -524,9 +579,8 @@ class WooCommerce {
 			return null;
 		}
 
-		$auction_id = get_post_meta( $order_id, self::AUCTION_META_KEY, true );
-
-		return intval( $auction_id ) ?: null;
+		$order = wc_get_order( $order_id );
+		return intval( $order->get_meta( self::AUCTION_META_KEY ) ) ?: null;
 	}
 
 	/**
@@ -603,8 +657,8 @@ class WooCommerce {
 	 * @return ?string
 	 */
 	public function get_order_type( int $order_id ): ?string {
-		$type = get_post_meta( $order_id, self::TYPE_META_KEY, true );
-		return $type ?: null;
+		$order = wc_get_order( $order_id );
+		return $order->get_meta( self::TYPE_META_KEY ) ?: null;
 	}
 
 	/**
