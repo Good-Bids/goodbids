@@ -108,8 +108,8 @@ class Orders {
 	 * @return ?string
 	 */
 	public function get_type( int $order_id ): ?string {
-		$type = get_post_meta( $order_id, WooCommerce::TYPE_META_KEY, true );
-		return $type ?: null;
+		$order = wc_get_order( $order_id );
+		return $order->get_meta( WooCommerce::TYPE_META_KEY ) ?: null;
 	}
 
 	/**

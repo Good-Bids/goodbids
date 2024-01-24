@@ -50,9 +50,19 @@ class Checkout {
 					return;
 				}
 
-				update_post_meta( $order_id, WooCommerce::AUCTION_META_KEY, $info['auction_id'] );
-				update_post_meta( $order_id, WooCommerce::TYPE_META_KEY, $info['order_type'] );
+				$order = wc_get_order( $order_id );
+				$order->update_meta_data( WooCommerce::AUCTION_META_KEY, $info['auction_id'] );
+				$order->update_meta_data( WooCommerce::TYPE_META_KEY, $info['order_type'] );
+				$order->save();
 
+				/**
+				 * Action triggered when an Order is paid for.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $order_id
+				 * @param int $auction_id
+				 */
 				do_action( 'goodbids_order_payment_complete', $order_id, $info['auction_id'] );
 			}
 		);
