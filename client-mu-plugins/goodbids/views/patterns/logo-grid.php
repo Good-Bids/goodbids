@@ -62,9 +62,7 @@
 	<div class="wp-block-group alignwide">
 		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"0"}}}} -->
 		<div class="wp-block-buttons" style="margin-top:0">
-			<!-- wp:button -->
-			<div class="wp-block-button"><a class="wp-block-button__link wp-element-button"></a></div>
-			<!-- /wp:button -->
+			<!-- wp:button {"className":"wp-block-button"} /-->
 		</div>
 		<!-- /wp:buttons -->
 	</div>
