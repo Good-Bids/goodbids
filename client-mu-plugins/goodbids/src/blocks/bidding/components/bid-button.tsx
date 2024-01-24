@@ -1,12 +1,14 @@
 import clsx from 'clsx';
-import { useAuction } from '../utils/auction-store';
-import { DEMO_DATA } from '../utils/demo-data';
+import { useBiddingState } from '../store';
 
 export function BidButton() {
-	const { lastBidder, auctionStatus, currentBid } = useAuction();
+	const { isLastBidder, auctionStatus, currentBid, rewardUrl, bidUrl } =
+		useBiddingState();
 
 	const disabled =
-		lastBidder !== DEMO_DATA.userId && auctionStatus === 'closed';
+		isLastBidder ||
+		auctionStatus === 'closed' ||
+		auctionStatus === 'closing';
 
 	const classes = clsx(
 		'bg-base rounded text-white py-2 w-full block text-center no-underline text-lg',
@@ -16,14 +18,14 @@ export function BidButton() {
 		},
 	);
 
-	if (auctionStatus === 'upcoming') {
+	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
 		return null;
 	}
 
 	if (auctionStatus === 'closed') {
-		if (lastBidder === DEMO_DATA.userId) {
+		if (isLastBidder) {
 			return (
-				<a href={DEMO_DATA.rewardUrl} className={classes}>
+				<a href={rewardUrl} className={classes}>
 					Claim Your Reward
 				</a>
 			);
@@ -33,7 +35,7 @@ export function BidButton() {
 	}
 
 	return (
-		<a href={DEMO_DATA.bidUrl} className={classes}>
+		<a href={bidUrl} className={classes}>
 			GOODBID ${currentBid} Now
 		</a>
 	);

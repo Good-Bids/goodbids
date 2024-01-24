@@ -1,4 +1,4 @@
-import { useAuction } from '../utils/auction-store';
+import { useBiddingState } from '../store';
 
 type MetricType = 'bids' | 'raised' | 'last-bid' | 'winning-bid';
 
@@ -28,7 +28,8 @@ function MetricBlock({ type, value }: MetricBlockProps) {
 }
 
 export function Metrics() {
-	const { totalBids, lastBid, totalRaised, auctionStatus } = useAuction();
+	const { totalBids, lastBid, totalRaised, auctionStatus } =
+		useBiddingState();
 
 	return (
 		<div className="grid grid-cols-3 gap-5 my-4">

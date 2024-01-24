@@ -6,7 +6,6 @@ const upcomingAuctionSchema = z.object({
 	auctionStatus: z.literal('upcoming'),
 	socketUrl: z.string(),
 	accountUrl: z.string(),
-	bidUrl: z.string(),
 	startTime: z.string(),
 	endTime: z.string(),
 });
@@ -58,15 +57,13 @@ async function getAuction(auctionId: number) {
 	return auctionSchema.parse(response);
 }
 
-function auctionOptions(auctionId: number, refetchInterval?: number) {
+function auctionOptions(auctionId: number) {
 	return queryOptions({
 		queryKey: ['auction', auctionId],
 		queryFn: async () => getAuction(auctionId),
-		refetchInterval: refetchInterval,
-		refetchOnWindowFocus: false,
 	});
 }
 
-export function useGetAuction(auctionId: number, refetchInterval?: number) {
-	return useQuery(auctionOptions(auctionId, refetchInterval));
+export function useGetAuction(auctionId: number) {
+	return useQuery(auctionOptions(auctionId));
 }

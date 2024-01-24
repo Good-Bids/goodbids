@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { useAuction } from '../utils/auction-store';
 import { SocketMessage } from '../utils/types';
+import { useBiddingState } from '../store';
 
 // TODO: Remove once WP sends appropriate url in dev mode
 const socketUrlOverride = 'ws://localhost:3000/_ws/connect';
@@ -11,7 +11,7 @@ type SocketProps = {
 };
 
 export function Socket({ auctionId }: SocketProps) {
-	const { handleSocketUpdate, setUsePolling, socketUrl } = useAuction();
+	const { socketUrl, setPollingMode, setSocketAuction } = useBiddingState();
 
 	const { readyState, lastJsonMessage } = useWebSocket<SocketMessage>(
 		`${
@@ -21,7 +21,7 @@ export function Socket({ auctionId }: SocketProps) {
 		}/${auctionId}`,
 		{
 			onError: () => {
-				setUsePolling(true);
+				setPollingMode();
 			},
 		},
 	);
@@ -29,15 +29,15 @@ export function Socket({ auctionId }: SocketProps) {
 	useEffect(() => {
 		if (readyState === ReadyState.OPEN) {
 			if (lastJsonMessage) {
-				handleSocketUpdate(lastJsonMessage);
+				setSocketAuction(lastJsonMessage);
 			}
 		}
 
 		if (readyState === ReadyState.CLOSED) {
-			setUsePolling(true);
+			setPollingMode();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [lastJsonMessage, readyState, handleSocketUpdate]);
+	}, [lastJsonMessage, readyState, setPollingMode]);
 
 	return null;
 }
