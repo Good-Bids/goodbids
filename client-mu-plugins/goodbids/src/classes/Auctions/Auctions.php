@@ -850,7 +850,7 @@ class Auctions {
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null, string $description = '' ): bool {
+	public function maybe_award_free_bid( ?int $auction_id, ?int $user_id = null, string $description = '' ): bool {
 		$free_bids = $this->get_free_bids_available( $auction_id );
 		if ( ! $free_bids ) {
 			return false;
