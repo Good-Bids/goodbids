@@ -28,7 +28,7 @@ class BidNow extends ACFBlock {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $bid_product_id = null;
+	private ?int $bid_variation_id = null;
 
 	/**
 	 * Initialize the block.
@@ -43,7 +43,7 @@ class BidNow extends ACFBlock {
 		$this->auction_id = goodbids()->auctions->get_auction_id();
 
 		if ( $this->auction_id ) {
-			$this->bid_product_id = goodbids()->auctions->get_bid_product_id( $this->auction_id );
+			$this->bid_variation_id = goodbids()->auctions->bids->get_variation_id( $this->auction_id );
 		}
 	}
 
@@ -83,7 +83,7 @@ class BidNow extends ACFBlock {
 
 		$button_text = __( 'GOODBID Now', 'goodbids' );
 
-		if ( ! $this->bid_product_id || is_admin() ) {
+		if ( ! $this->bid_variation_id || is_admin() ) {
 			return $button_text;
 		}
 
@@ -91,12 +91,12 @@ class BidNow extends ACFBlock {
 			return __( 'Place Free Bid', 'goodbids' );
 		}
 
-		$bid_product = wc_get_product( $this->bid_product_id );
+		$bid_variation = wc_get_product( $this->bid_variation_id );
 
 		return sprintf(
 			/* translators: %s: Bid Price */
 			__( 'GOODBID %s Now', 'goodbids' ),
-			wc_price( $bid_product->get_regular_price() )
+			wc_price( $bid_variation->get_regular_price() )
 		);
 	}
 
@@ -115,11 +115,11 @@ class BidNow extends ACFBlock {
 		}
 
 		if ( ! goodbids()->auctions->has_ended( $this->auction_id ) ) {
-			if ( ! $this->bid_product_id ) {
+			if ( ! $this->bid_variation_id ) {
 				return '#';
 			}
 
-			$url = add_query_arg( 'add-to-cart', $this->bid_product_id, wc_get_checkout_url() );
+			$url = add_query_arg( 'add-to-cart', $this->bid_variation_id, wc_get_checkout_url() );
 
 			if ( $is_free_bid ) {
 				$url = add_query_arg( 'use-free-bid', 1, $url );
@@ -134,7 +134,7 @@ class BidNow extends ACFBlock {
 		}
 
 		if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
-			return goodbids()->auctions->get_claim_reward_url( $this->auction_id );
+			return goodbids()->auctions->rewards->get_claim_reward_url( $this->auction_id );
 		}
 
 		return '#'; // Disable button for non-winners.

@@ -9,7 +9,7 @@
 namespace GoodBids\Auctions;
 
 use WC_Order;
-use WC_Product;
+use WC_Product_Variation;
 use WP_Query;
 use WP_User;
 
@@ -102,25 +102,7 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const REWARD_REDEEMED_META_KEY = '_goodbids_reward_redeemed';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
 	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const ORDER_TYPE_BID = 'bids';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const ORDER_TYPE_REWARD = 'rewards';
 
 	/**
 	 * @since 1.0.0
@@ -150,6 +132,12 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var Rewards
+	 */
+	public Rewards $rewards;
+
+	/**
+	 * @since 1.0.0
 	 * @var array
 	 */
 	public array $cron_intervals = [];
@@ -161,7 +149,8 @@ class Auctions {
 	 */
 	public function __construct() {
 		// Initialize Submodules.
-		$this->bids = new Bids();
+		$this->bids    = new Bids();
+		$this->rewards = new Rewards();
 
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
@@ -184,9 +173,6 @@ class Auctions {
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
 
-		// Init Rewards Category.
-		$this->init_rewards_category();
-
 		// Add Auction Meta Box to display details and metrics.
 		$this->add_info_meta_box();
 
@@ -198,9 +184,6 @@ class Auctions {
 
 		// Update Bid Product when Auction is updated.
 		$this->update_bid_product_on_auction_update();
-
-		// Connect Reward product to Auctions.
-		$this->connect_reward_product_on_auction_save();
 
 		// Clear metric transients on new Bid Order.
 		$this->maybe_clear_metric_transients();
@@ -237,6 +220,9 @@ class Auctions {
 
 		// Allow admins to force update the close date to the Auction End Date.
 		$this->force_update_close_date();
+
+		// Prevent access to Bid/Reward products.
+		$this->prevent_access_to_products();
 	}
 
 	/**
@@ -414,23 +400,6 @@ class Auctions {
 	}
 
 	/**
-	 * Initialize Rewards Category
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function init_rewards_category(): void {
-		add_action(
-			'init',
-			function () {
-				$this->get_rewards_category_id();
-			}
-		);
-	}
-
-
-	/**
 	 * Returns the Auction post type slug.
 	 *
 	 * @since 1.0.0
@@ -463,30 +432,6 @@ class Auctions {
 	}
 
 	/**
-	 * Retrieve the Rewards category ID, or create it if it doesn't exist.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return ?int
-	 */
-	public function get_rewards_category_id(): ?int {
-		$rewards_category = get_term_by( 'slug', self::ORDER_TYPE_REWARD, 'product_cat' );
-
-		if ( ! $rewards_category ) {
-			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
-
-			if ( is_wp_error( $rewards_category ) ) {
-				// TODO: Log error.
-				return null;
-			}
-
-			return $rewards_category['term_id'];
-		}
-
-		return $rewards_category->term_id;
-	}
-
-	/**
 	 * Check if an auction has a Bid product.
 	 *
 	 * @since 1.0.0
@@ -496,58 +441,7 @@ class Auctions {
 	 * @return bool
 	 */
 	public function has_bid_product( int $auction_id ): bool {
-		return boolval( $this->get_bid_product_id( $auction_id ) );
-	}
-
-	/**
-	 * Retrieves the Bid product ID for an Auction.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 *
-	 * @return int
-	 */
-	public function get_bid_product_id( int $auction_id ): int {
-		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, true ) );
-	}
-
-	/**
-	 * Retrieves the Bid product ID for an Auction.
-	 *
-	 * @param int $auction_id
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return ?WC_Product
-	 */
-	public function get_bid_product( int $auction_id ): ?WC_Product {
-		$bid_product_id = $this->get_bid_product_id( $auction_id );
-
-		if ( ! $bid_product_id ) {
-			return null;
-		}
-
-		return wc_get_product( $bid_product_id );
-	}
-
-	/**
-	 * Returns the URL to place a bid on an Auction.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 *
-	 * @return string
-	 */
-	public function get_place_bid_url( int $auction_id ): string {
-		$bid_product_id = $this->get_bid_product_id( $auction_id );
-
-		if ( ! $bid_product_id ) {
-			return '';
-		}
-
-		return add_query_arg( 'add-to-cart', $bid_product_id, wc_get_checkout_url() );
+		return boolval( $this->bids->get_product_id( $auction_id ) );
 	}
 
 	/**
@@ -562,7 +456,21 @@ class Auctions {
 	 */
 	public function set_bid_product_id( int $auction_id, int $bid_product_id ): void {
 		update_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, $bid_product_id );
-		update_post_meta( $bid_product_id, Bids::BID_AUCTION_META_KEY, $auction_id );
+		update_post_meta( $bid_product_id, self::PRODUCT_AUCTION_META_KEY, $auction_id );
+	}
+
+	/**
+	 * Sets the Bid product Variation ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $bid_variation_id
+	 *
+	 * @return void
+	 */
+	public function set_bid_variation_id( int $auction_id, int $bid_variation_id ): void {
+		update_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
 	}
 
 	/**
@@ -618,71 +526,6 @@ class Auctions {
 			10,
 			3
 		);
-	}
-
-	/**
-	 * Get the Auction Reward Product ID.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return int
-	 */
-	public function get_reward_product_id( int $auction_id = null ): int {
-		return intval( $this->get_setting( 'auction_product', $auction_id ) );
-	}
-
-	/**
-	 * Get the Auction Reward Product object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return ?WC_Product
-	 */
-	public function get_reward_product( int $auction_id = null ): ?WC_Product {
-		$reward_product_id = $this->get_reward_product_id( $auction_id );
-
-		if ( ! $reward_product_id ) {
-			return null;
-		}
-
-		return wc_get_product( $reward_product_id );
-	}
-
-	/**
-	 * Check if reward for an Auction has been redeemed
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return bool
-	 */
-	public function is_reward_redeemed( ?int $auction_id = null ): bool {
-		$reward_id = $this->get_reward_product_id( $auction_id );
-		return boolval( get_post_meta( $reward_id, self::REWARD_REDEEMED_META_KEY, true ) );
-	}
-
-	/**
-	 * Returns the Add to Cart URL for the Reward Product
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int|null $auction_id
-	 *
-	 * @return string
-	 */
-	public function get_claim_reward_url( int $auction_id = null ): string {
-		$reward_product_id = $this->get_reward_product_id( $auction_id );
-
-		if ( ! $reward_product_id ) {
-			return '';
-		}
-
-		return add_query_arg( 'add-to-cart', $reward_product_id, wc_get_checkout_url() );
 	}
 
 	/**
@@ -1055,6 +898,29 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction ID from the Product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id_from_product_id( int $product_id ): ?int {
+		$type = $this->get_product_type( $product_id );
+
+		if ( Bids::ITEM_TYPE === $type ) {
+			return $this->bids->get_auction_id( $product_id );
+		}
+
+		if ( Rewards::ITEM_TYPE === $type ) {
+			return $this->rewards->get_auction_id( $product_id );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Update the Bid Product when an Auction is updated.
 	 *
 	 * @since 1.0.0
@@ -1076,83 +942,27 @@ class Auctions {
 					return;
 				}
 
+				// Only update if Auction hasn't started.
 				if ( $this->has_started( $post_id ) ) {
 					// TODO: Log warning.
 					return;
 				}
 
-				// Update the Bid product.
-				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
-				$bid_product    = wc_get_product( $bid_product_id );
-				$starting_bid   = $this->calculate_starting_bid( $post_id );
-				$bid_price      = intval( $bid_product->get_price( 'edit' ) );
+				// Update the Bid product variation.
+				$bid_variation = goodbids()->auctions->bids->get_variation( $post_id );
+				$starting_bid  = $this->calculate_starting_bid( $post_id );
+				$bid_price     = intval( $bid_variation->get_price( 'edit' ) );
 
 				if ( $starting_bid && $bid_price !== $starting_bid ) {
 					// Update post meta.
-					update_post_meta( $bid_product_id, '_price', $starting_bid );
+					update_post_meta( $bid_variation->get_id(), '_price', $starting_bid );
 
 					// Update current instance.
-					$bid_product->set_price( $starting_bid );
-					$bid_product->save();
+					$bid_variation->set_price( $starting_bid );
+					$bid_variation->save();
 				}
 			}
 		);
-	}
-
-	/**
-	 * Update the Reward Product when an Auction is save.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function connect_reward_product_on_auction_save(): void {
-		add_action(
-			'save_post',
-			function ( int $post_id ) {
-				// Bail if not an Auction and not published.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) ) {
-					return;
-				}
-
-				$reward_id = $this->get_reward_product_id( $post_id );
-
-				if ( ! $reward_id ) {
-					// TODO: Log error.
-					return;
-				}
-
-				update_post_meta( $reward_id, self::PRODUCT_AUCTION_META_KEY, $post_id );
-			}
-		);
-	}
-
-	/**
-	 * Get the Auction ID from the Reward Product ID.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $reward_product_id
-	 *
-	 * @return ?int
-	 */
-	public function get_auction_id_from_reward_product_id( int $reward_product_id ): ?int {
-		$auction_id = get_post_meta( $reward_product_id, self::PRODUCT_AUCTION_META_KEY, true );
-		return $auction_id ? intval( $auction_id ) : null;
-	}
-
-	/**
-	 * Get the Auction ID from the Bid Product ID.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $bid_product_id
-	 *
-	 * @return ?int
-	 */
-	public function get_auction_id_from_bid_product_id( int $bid_product_id ): ?int {
-		$auction_id = get_post_meta( $bid_product_id, self::PRODUCT_AUCTION_META_KEY, true );
-		return $auction_id ? intval( $auction_id ) : null;
 	}
 
 	/**
@@ -1165,8 +975,9 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
-		$valid      = [ self::ORDER_TYPE_BID, self::ORDER_TYPE_REWARD ];
-		$categories = get_the_terms( $product_id, 'product_cat' );
+		$lookup_id  = $this->get_parent_product_id( $product_id );
+		$valid      = [ Bids::ITEM_TYPE, Rewards::ITEM_TYPE ];
+		$categories = get_the_terms( $lookup_id, 'product_cat' );
 
 		if ( ! is_array( $categories ) ) {
 			return null;
@@ -1179,6 +990,20 @@ class Auctions {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Convert a product or variation to the parent product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_parent_product_id( int $product_id ): ?int {
+		$product = wc_get_product( $product_id );
+		return $product->get_parent_id() ?: $product_id;
 	}
 
 	/**
@@ -1217,11 +1042,11 @@ class Auctions {
 			// meta_query doesn't seem to work with the following filter hooks:
 			// - woocommerce_order_query_args
 			// - woocommerce_order_data_store_cpt_get_orders_query
-			if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+			if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 				continue;
 			}
 
-			if ( $auction_id !== goodbids()->woocommerce->get_order_auction_id( $order_id ) ) {
+			if ( $auction_id !== goodbids()->woocommerce->orders->get_auction_id( $order_id ) ) {
 				continue;
 			}
 
@@ -1247,7 +1072,7 @@ class Auctions {
 		$return = [];
 
 		foreach ( $orders as $order_id ) {
-			if ( ! goodbids()->woocommerce->is_free_bid_order( $order_id ) ) {
+			if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 				continue;
 			}
 
@@ -1503,7 +1328,7 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Don't clear if this isn't a Bid order.
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
@@ -1606,8 +1431,9 @@ class Auctions {
 					$last_bid = $this->get_last_bid( $post_id );
 					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
 				} elseif ( 'current_bid' === $column ) {
-					$bid_product = wc_get_product( $this->get_bid_product_id( $post_id ) );
-					echo wp_kses_post( wc_price( $bid_product->get_price() ) );
+					/** @var WC_Product_Variation $bid_variation */
+					$bid_variation = $this->bids->get_variation( $post_id );
+					echo $bid_variation ? wp_kses_post( wc_price( $bid_variation->get_price() ) ) : '';
 				}
 			},
 			10,
@@ -1636,7 +1462,7 @@ class Auctions {
 				}
 
 				// Default to the WooCommerce featured image or WooCommerce default image
-				$reward = $this->get_reward_product( $post_id );
+				$reward = $this->rewards->get_product( $post_id );
 
 				if ( ! $reward ) {
 					return $html;
@@ -1947,7 +1773,7 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Bail if this isn't a Bid order.
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
@@ -2071,6 +1897,40 @@ class Auctions {
 						'closeDate' => goodbids()->utilities->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
 					]
 				);
+			}
+		);
+	}
+
+	/**
+	 * Disable access to Bid product singular product page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function prevent_access_to_products(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! is_singular( 'product' ) ) {
+					return;
+				}
+
+				$product_id = get_the_ID();
+
+				if ( ! goodbids()->auctions->get_product_type( $product_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_auction_id_from_product_id( $product_id );
+
+				if ( ! $auction_id ) {
+					wp_safe_redirect( home_url() );
+					exit;
+				}
+
+				wp_safe_redirect( get_permalink( $auction_id ), 301 );
+				exit;
 			}
 		);
 	}

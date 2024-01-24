@@ -33,7 +33,7 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const NOT_AUTHENTICATED_REWARD = 'not-authenticated-reward';
+	const NOT_AUTHENTICATED = 'not-authenticated';
 
 	/**
 	 * @since 1.0.0
@@ -114,6 +114,12 @@ class Notices {
 	const FREE_BID_REDEEMED = 'free-bid-redeemed';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_ALREADY_PLACED = 'bid-already-placed';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -152,8 +158,8 @@ class Notices {
 		$this->notices = apply_filters(
 			'goodbids_notices',
 			[
-				self::NOT_AUTHENTICATED_REWARD  => [
-					'message' => __( 'You must be logged in to checkout with Reward products.', 'goodbids' ),
+				self::NOT_AUTHENTICATED  => [
+					'message' => __( 'You must be logged in before checking out.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -178,7 +184,7 @@ class Notices {
 				],
 
 				self::AUCTION_NOT_FOUND         => [
-					'message' => __( 'This reward is not associated with an auction.', 'goodbids' ),
+					'message' => __( 'There was a problem locating the associated auction.', 'goodbids' ),
 					'type'    => 'error',
 				],
 
@@ -220,6 +226,11 @@ class Notices {
 				self::FREE_BID_REDEEMED         => [
 					'message' => __( 'You have successfully used a free bid!', 'goodbids' ),
 					'type'    => 'success',
+				],
+
+				self::BID_ALREADY_PLACED        => [
+					'message' => __( 'Uh-oh! Someone else already placed this bid. We\'ve removed the GoodBid from your cart. Please return to the Auction to place a new GoodBid.', 'goodbids' ),
+					'type'    => 'error',
 				],
 			]
 		);
