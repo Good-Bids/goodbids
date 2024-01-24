@@ -1178,7 +1178,7 @@ class Auctions {
 		}
 
 		$args = [
-			'limit'   => $limit,
+			'limit'   => -1,
 			'status'  => [ 'processing', 'completed' ],
 			'return'  => 'ids',
 			'orderby' => 'date',
@@ -1206,6 +1206,10 @@ class Auctions {
 			}
 
 			$return[] = $order_id;
+		}
+
+		if ( $limit > 0 ) {
+			$return = array_slice( $return, 0, $limit );
 		}
 
 		return $return;
