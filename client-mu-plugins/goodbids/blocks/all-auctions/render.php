@@ -16,15 +16,19 @@ $page_url       = get_permalink( get_queried_object_id() );
 
 // Determine which auctions to display
 if ( $block_auctions->is_upcoming() || ! $live ) {
-	$auctions = $upcoming;
+	$auctions           = $upcoming;
+	$live_btn_class     = 'btn-fill';
+	$upcoming_btn_class = 'btn-fill-secondary';
 } else {
-	$auctions = $live;
+	$auctions           = $live;
+	$live_btn_class     = 'btn-fill-secondary';
+	$upcoming_btn_class = 'btn-fill';
 }
 
 $total_query = count( $auctions );
 $total_pages = ceil( $total_query / $block_auctions::AUCTION_PER_PAGE );
 
-$auctions = collect( $auctions )->slice( $block_auctions->get_offset(), $block_auctions::AUCTION_PER_PAGE )->all();
+$auctions = $block_auctions->filter_auctions( $auctions );
 
 if ( ! count( $auctions ) ) :
 	if ( is_admin() ) :
@@ -38,23 +42,31 @@ if ( ! count( $auctions ) ) :
 endif;
 ?>
 <section <?php block_attr( $block ); ?>>
-	<div class="text-base text-center border-b-2 border-contrast text-contrast">
-		<ul class="flex flex-wrap my-0 list-none">
+	<div class="text-base text-center text-contrast">
+		<ul class="flex flex-wrap px-0 py-4 mt-0 mb-12 list-none border-b-2 border-solid border-contrast border-t-transparent border-x-transparent">
 			<?php if ( $live ) : ?>
 				<li class="me-2">
-					<a href="<?php echo esc_url( $page_url ); ?>" class="btn-fill">Live</a>
+					<a
+						href="<?php echo esc_url( $page_url ); ?>"
+						class="<?php echo esc_attr( $live_btn_class ); ?>"
+					>
+						Live
+					</a>
 				</li>
 			<?php endif; ?>
 			<?php if ( $upcoming ) : ?>
 				<li class="me-2">
-					<a href="<?php echo esc_url( add_query_arg( $block_auctions::UPCOMING_QUERY_ARG, 1, $page_url ) ); ?>" class="btn-fill">Coming Soon</a>
+					<a
+						href="<?php echo esc_url( add_query_arg( $block_auctions::UPCOMING_QUERY_ARG, 1, $page_url ) ); ?>"
+						class="<?php echo esc_attr( $upcoming_btn_class ); ?>"
+					>
+						Coming Soon
+					</a>
 				</li>
 			<?php endif; ?>
 		</ul>
 	</div>
-	<?php
-	if ( ! count( $auctions ) ) :
-		?>
+	<?php if ( ! count( $auctions ) ) : ?>
 		<p>No auctions found.</p>
 	<?php else : ?>
 	<ul class="grid grid-cols-1 gap-8 list-none lg:grid-cols-3 sm:grid-cols-2">

@@ -15,8 +15,10 @@ $url = is_admin() ? '#' : get_the_permalink();
 	<?php if ( has_post_thumbnail() ) : ?>
 			<figure class="wp-block-post-featured-image aspect-square rounded overflow-hidden *:w-full *:h-full">
 				<?php the_post_thumbnail( 'woocommerce_thumbnail' ); ?>
-			</figure>
-		<?php endif; ?>
+			<?php else : ?>
+				<?php echo wp_kses_post( goodbids()->auctions->get_reward_product( get_the_ID() )->get_image() ); ?>
+			<?php endif; ?>
+		</figure>
 		<h2 class="wp-block-post-title has-large-font-size">
 			<?php the_title(); ?>
 		</h2>

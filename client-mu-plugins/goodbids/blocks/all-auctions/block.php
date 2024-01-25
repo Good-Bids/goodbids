@@ -35,30 +35,7 @@ class AllAuctions extends ACFBlock {
 	 * @since 1.0.0
 	 * @var ini
 	 */
-	const AUCTION_PER_PAGE = 4;
-
-	/**
-	 * @since 1.0.0
-	 * @var ?string
-	 */
-	private ?string $query_arg = null;
-
-	/**
-	 * @since 1.0.0
-	 * @var ?string
-	 */
-	private ?string $page_url = null;
-
-	/**
-	 * Initialize the block.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $block
-	 */
-	public function __construct( array $block ) {
-		$this->page_url = get_permalink();
-	}
+	const AUCTION_PER_PAGE = 9;
 
 
 	/**
@@ -91,15 +68,6 @@ class AllAuctions extends ACFBlock {
 
 
 	/**
-	 * Gets the total number of pages
-	 *
-	 * @return int
-	 */
-	public function get_total_pages(): int {
-		return intval( collect( goodbids()->sites->get_all_auctions() )->count() / self::AUCTION_PER_PAGE );
-	}
-
-	/**
 	 * Get the live auctions for the current pagination
 	 *
 	 * @param array $all_auctions
@@ -127,12 +95,24 @@ class AllAuctions extends ACFBlock {
 		)->all();
 	}
 
+
 	/**
-	 * Undocumented function
+	 * Filter Auctions
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public function get_pagination( $page_url, $total_pages ): string {
+	public function filter_auctions( array $auctions ): array {
+		// Determine which auctions to display
+		// TODO: more filters will be added
+		return collect( $auctions )->slice( $this->get_offset(), $this::AUCTION_PER_PAGE )->all();
+	}
+
+	/**
+	 * Pagination for all auctions
+	 *
+	 * @return ?string
+	 */
+	public function get_pagination( $page_url, $total_pages ): ?string {
 		$pre_format = $this->get_current_page() > 0 ? '?' : '&';
 
 		return paginate_links(
