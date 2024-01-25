@@ -45,7 +45,6 @@ class Auctions {
 
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
-			$guid,
 			[
 				'currentBid',
 				'endTime',
@@ -87,7 +86,6 @@ class Auctions {
 
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
-			$guid,
 			[
 				'lastBid',
 				'lastBidder',
@@ -128,7 +126,6 @@ class Auctions {
 
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
-			$guid,
 			[
 				'currentBid',
 				'endTime',
@@ -154,16 +151,15 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $auction_guid
 	 * @param array $payload_data
 	 * @param array $extra_data
 	 *
 	 * @return array
 	 */
-	private function setup_payload_data( string $auction_guid, array $payload_data, array $extra_data = [] ): array {
+	private function setup_payload_data( array $payload_data, array $extra_data = [] ): array {
 		$defaults = [
-			'id'          => $auction_guid,
-			'requestTime' => current_datetime()->format( 'c' ),
+			'id',
+			'requestTime',
 		];
 
 		return array_filter(

@@ -1659,7 +1659,7 @@ class Auctions {
 
 		$args = [
 			'post_type'      => $this->get_post_type(),
-			'post_status'    => 'publish',
+			'post_status'    => [ 'publish' ],
 			'posts_per_page' => -1,
 			'return'         => 'ids',
 			'meta_query'     => [
