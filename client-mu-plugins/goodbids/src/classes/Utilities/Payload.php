@@ -141,8 +141,6 @@ class Payload {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string[] $data
-	 *
 	 * @return array
 	 */
 	public function get_data(): array {
