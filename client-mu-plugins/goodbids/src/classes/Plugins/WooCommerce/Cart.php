@@ -36,6 +36,9 @@ class Cart {
 		// Add restrictions to cart products.
 		$this->restrict_products();
 
+		// Prevent users from accessing the Cart page.
+		$this->disable_cart_access();
+
 		// Clear query params after adding bids and reward products to cart.
 		$this->redirect_after_add_to_cart();
 
@@ -264,6 +267,29 @@ class Cart {
 			},
 			10,
 			2
+		);
+	}
+
+	private function disable_cart_access(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! is_cart() ) {
+					return;
+				}
+
+				$checkout_url = wc_get_page_permalink( 'checkout' );
+
+				// Redirect back to the checkout page if cart is not empty.
+				if ( WC()->cart->get_cart_contents() ) {
+					wp_safe_redirect( $checkout_url );
+					exit;
+				}
+
+				// Redirect to the home page if cart is empty.
+				wp_safe_redirect( home_url() );
+				exit;
+			}
 		);
 	}
 }
