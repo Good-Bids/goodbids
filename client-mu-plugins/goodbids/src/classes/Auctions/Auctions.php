@@ -331,6 +331,18 @@ class Auctions {
 		return new WP_Query( array_merge( $args, $query_args ) );
 	}
 
+
+	public function is_upcoming( int $auction_id ): bool {
+		if ( $this->has_ended( $auction_id ) || $this->has_started( $auction_id ) ) {
+			return false;
+		}
+		// Use the current time + 1min to get Auctions about to start.
+		$start_date     = current_datetime()->add( new \DateInterval( 'P2D' ) )->format( 'Y-m-d H:i:s' );
+		$auctions_start = $this->get_start_date_time( $auction_id );
+
+		return $auctions_start < $start_date;
+	}
+
 	/**
 	 * Get the default template for Auctions.
 	 *
@@ -1019,7 +1031,7 @@ class Auctions {
 					'key'     => WooCommerce::TYPE_META_KEY,
 					'compare' => '=',
 					'value'   => Bids::ITEM_TYPE,
-				]
+				],
 			],
 		];
 

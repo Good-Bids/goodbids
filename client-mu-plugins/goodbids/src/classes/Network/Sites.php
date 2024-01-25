@@ -297,7 +297,6 @@ class Sites {
 	private function save_new_site_fields(): void {
 		add_action(
 			'wp_initialize_site',
-
 			/**
 			 * @param WP_Site $new_site New site object.
 			 */
@@ -422,7 +421,7 @@ class Sites {
 					)
 				) {
 					return get_custom_logo( get_main_site_id() );
-				};
+				}
 
 				return '<!-- No Custom Logo -->';
 			}
@@ -512,10 +511,12 @@ class Sites {
 		}
 
 		return collect( get_sites( $site_args ) )
-			->flatMap( fn( WP_Site $site ) => $this->swap(
-				fn ( int $site_id ) => call_user_func( $callback, $site_id ),
-				$site->blog_id
-			))
+			->flatMap(
+				fn( WP_Site $site ) => $this->swap(
+					fn ( int $site_id ) => call_user_func( $callback, $site_id ),
+					$site->blog_id
+				)
+			)
 			->all();
 	}
 
@@ -651,15 +652,23 @@ class Sites {
 	 * @return array
 	 */
 	public function get_all_auctions( array $query_args = [] ): array {
+		$transient = '_goodbids_all_auctions';
+		$auctions  = get_transient( $transient );
+		if ( $auctions ) {
+			return $auctions;
+		}
+
 		return $this->loop(
 			function ( $site_id ) use ( $query_args ) {
-			$auctions = goodbids()->auctions->get_all( $query_args );
+				$auctions = goodbids()->auctions->get_all( $query_args );
 
-			return collect( $auctions->posts )
-				->map( fn ( $post_id ) => [
-					'post_id' => $post_id,
-					'site_id' => $site_id,
-				])
+				return collect( $auctions->posts )
+				->map(
+					fn ( $post_id ) => [
+						'post_id' => $post_id,
+						'site_id' => $site_id,
+					]
+				)
 				->all();
 			}
 		);
@@ -698,6 +707,33 @@ class Sites {
 			->slice( 0, 3 )
 			->values()
 			->all();
+
+		set_transient( $transient, $auctions, DAY_IN_SECONDS );
+
+		return $auctions;
+	}
+
+
+	/**
+	 * Reloads the transient for all auctions.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function reload_transient(): void {
+		add_action(
+			'transition_post_status',
+			function ( $new_status, $old_status, $post ) {
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post ) ) {
+					return;
+				}
+				if ( $new_status == $old_status ) {
+					return;
+				}
+
+				delete_transient( '_goodbids_all_auctions' );
+			}
+		);
 	}
 
 	/**
@@ -705,7 +741,7 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $user_id
+	 * @param ?int  $user_id
 	 * @param array $status
 	 *
 	 * @return array
@@ -721,9 +757,9 @@ class Sites {
 							]
 						)
 						->all();
-					}
-				)
+				}
 			)
+		)
 			->sortByDesc(
 				function ( $goodbids_order ) {
 					return $this->swap(
@@ -763,7 +799,7 @@ class Sites {
 	public function get_user_total_donated( ?int $user_id = null ): float {
 		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
 			->sum(
-				function( $goodbids_order ) {
+				function ( $goodbids_order ) {
 					return $this->swap(
 						function () use ( $goodbids_order ) {
 							$order = wc_get_order( $goodbids_order['order_id'] );
