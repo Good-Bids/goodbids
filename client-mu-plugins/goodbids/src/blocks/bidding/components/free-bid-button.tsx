@@ -28,9 +28,5 @@ export function FreeBidButton() {
 		);
 	}
 
-	return (
-		<a href={bidUrl} className={classes}>
-			Dummy Free Bid Button
-		</a>
-	);
+	return null;
 }
