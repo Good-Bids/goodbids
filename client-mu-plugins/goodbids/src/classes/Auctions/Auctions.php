@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Plugins\WooCommerce;
 use WC_Order;
 use WC_Product_Variation;
 use WP_Query;
@@ -97,12 +98,6 @@ class Auctions {
 	 * @var string
 	 */
 	const AUCTION_EXTENSIONS_META_KEY = '_auction_extensions';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
 
 	/**
 	 * @since 1.0.0
@@ -813,12 +808,12 @@ class Auctions {
 			$auction_id = $this->get_auction_id();
 		}
 
-		$free_bids = get_post_meta( $auction_id, self::FREE_BIDS_META_KEY, true );
+		$free_bids = get_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, true );
 
 		// Return the default value if we have no value.
 		if ( ! $free_bids && 0 !== $free_bids && '0' !== $free_bids ) {
 			$free_bids = goodbids()->get_config( 'auctions.default-free-bids' );
-			update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+			update_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, $free_bids );
 		}
 
 		return intval( $free_bids );
@@ -835,7 +830,7 @@ class Auctions {
 	 * @return void
 	 */
 	public function update_free_bids( int $auction_id, int $free_bids ): void {
-		update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+		update_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, $free_bids );
 	}
 
 	/**
@@ -849,7 +844,7 @@ class Auctions {
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $auction_id = null, ?int $user_id = null, string $description = '' ): bool {
+	public function maybe_award_free_bid( ?int $auction_id, ?int $user_id = null, string $description = '' ): bool {
 		$free_bids = $this->get_free_bids_available( $auction_id );
 		if ( ! $free_bids ) {
 			return false;
@@ -1028,32 +1023,28 @@ class Auctions {
 			'return'  => 'ids',
 			'orderby' => 'date',
 			'order'   => 'DESC',
+			'meta_query' => [
+				[
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Bids::ITEM_TYPE,
+				]
+			],
 		];
 
 		if ( $user_id ) {
 			$args['customer_id'] = $user_id;
 		}
 
-		$orders = wc_get_orders( $args );
-		$return = [];
-
-		foreach ( $orders as $order_id ) {
-			// We need to filter the orders out here, for some reason.
-			// meta_query doesn't seem to work with the following filter hooks:
-			// - woocommerce_order_query_args
-			// - woocommerce_order_data_store_cpt_get_orders_query
-			if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
-				continue;
-			}
-
-			if ( $auction_id !== goodbids()->woocommerce->orders->get_auction_id( $order_id ) ) {
-				continue;
-			}
-
-			$return[] = $order_id;
+		if ( $auction_id ) {
+			$args['meta_query'][] = [
+				'key'     => WooCommerce::AUCTION_META_KEY,
+				'compare' => '=',
+				'value'   => $auction_id,
+			];
 		}
 
-		return $return;
+		return wc_get_orders( $args );
 	}
 
 	/**
@@ -1072,6 +1063,7 @@ class Auctions {
 		$return = [];
 
 		foreach ( $orders as $order_id ) {
+			// TODO: Add Free Bid Order meta.
 			if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 				continue;
 			}

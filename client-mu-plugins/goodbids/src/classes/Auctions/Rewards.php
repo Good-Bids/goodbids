@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Plugins\WooCommerce\Coupons;
 use WC_Product;
 
 /**
@@ -212,13 +213,15 @@ class Rewards {
 				}
 
 				if ( ! goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) {
+					error_log( 'Not a reward order.' );
 					return;
 				}
 
 				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
-				$product_id = $this->get_product_id( $auction_id );
+				$reward_id  = $this->get_product_id( $auction_id );
 
-				update_post_meta( $product_id, self::REDEEMED_META_KEY, 1 );
+				update_post_meta( $reward_id, self::REDEEMED_META_KEY, 1 );
+				delete_post_meta( $reward_id, sprintf( Coupons::REWARD_COUPON_META_KEY, $auction_id ), true );
 
 				wp_safe_redirect( get_permalink( $auction_id ) );
 				exit;

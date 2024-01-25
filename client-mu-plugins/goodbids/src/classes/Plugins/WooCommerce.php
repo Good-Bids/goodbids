@@ -102,6 +102,9 @@ class WooCommerce {
 		// Init API Endpoints.
 		$this->setup_api_endpoints();
 
+		// Let WooCommerce know about some custom meta keys.
+		$this->register_meta_keys();
+
 		// New Site Setup.
 		$this->configure_new_site();
 
@@ -150,6 +153,42 @@ class WooCommerce {
 		return [
 			'credentials' => Credentials::class,
 		];
+	}
+
+	/**
+	 * Register Meta Keys with WordPress.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function register_meta_keys(): void {
+		add_action(
+			'init',
+			function (): void {
+				register_meta(
+					'post',
+					self::AUCTION_META_KEY,
+					[
+						'object_subtype' => 'shop_order',
+						'type'           => 'integer',
+						'single'         => true,
+						'show_in_rest'   => true,
+					]
+				);
+
+				register_meta(
+					'post',
+					self::TYPE_META_KEY,
+					[
+						'object_subtype' => 'shop_order',
+						'type'           => 'string',
+						'single'         => true,
+						'show_in_rest'   => true,
+					]
+				);
+			}
+		);
 	}
 
 	/**

@@ -8,7 +8,9 @@
 
 namespace GoodBids\Users;
 
+use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\FreeBid;
+use GoodBids\Plugins\WooCommerce\Coupons;
 
 /**
  * User Class
@@ -16,30 +18,6 @@ use GoodBids\Auctions\FreeBid;
  * @since 1.0.0
  */
 class Users {
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BID_STATUS_ALL = 'all';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BID_STATUS_UNUSED = 'unused';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BID_STATUS_USED = 'used';
 
 	/**
 	 * Constructor
@@ -58,13 +36,13 @@ class Users {
 	 *
 	 * @return FreeBid[]
 	 */
-	public function get_free_bids( ?int $user_id = null, string $status = self::FREE_BID_STATUS_ALL ): array {
+	public function get_free_bids( ?int $user_id = null, string $status = Bids::FREE_BID_STATUS_ALL ): array {
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
 
 		/** @var FreeBid[] $free_bids */
-		$free_bids = get_user_meta( $user_id, self::FREE_BIDS_META_KEY, true );
+		$free_bids = get_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, true );
 
 		if ( ! $free_bids || ! is_array( $free_bids ) ) {
 			return [];
@@ -73,8 +51,8 @@ class Users {
 		return collect( $free_bids )
 			->filter(
 				fn ( $free_bid ) => (
-					// When status is self::FREE_BID_STATUS_ALL, always returns true
-					self::FREE_BID_STATUS_ALL === $status
+					// When status is Bids::FREE_BID_STATUS_ALL, always returns true.
+					Bids::FREE_BID_STATUS_ALL === $status
 					// Otherwise bid must match status.
 					|| $status === $free_bid->get_status()
 				)
@@ -93,7 +71,7 @@ class Users {
 	 * @return int
 	 */
 	public function get_available_free_bid_count( ?int $user_id = null ): int {
-		return count( $this->get_free_bids( $user_id, self::FREE_BID_STATUS_UNUSED ) );
+		return count( $this->get_free_bids( $user_id, Bids::FREE_BID_STATUS_UNUSED ) );
 	}
 
 	/**
@@ -127,14 +105,14 @@ class Users {
 	 * @return bool
 	 */
 	private function save_free_bids( int $user_id, array $free_bids ): bool {
-		$original = get_user_meta( $user_id, self::FREE_BIDS_META_KEY, true );
+		$original = get_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, true );
 
 		if ( $original === $free_bids ) {
 			// Data is unchanged.
 			return false;
 		}
 
-		return boolval( update_user_meta( $user_id, self::FREE_BIDS_META_KEY, $free_bids ) );
+		return boolval( update_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, $free_bids ) );
 	}
 
 	/**
@@ -154,7 +132,7 @@ class Users {
 		}
 
 		$all_free_bids    = $this->get_free_bids( $user_id );
-		$unused_free_bids = $this->get_free_bids( $user_id, self::FREE_BID_STATUS_UNUSED );
+		$unused_free_bids = $this->get_free_bids( $user_id, Bids::FREE_BID_STATUS_UNUSED );
 
 		if ( ! count( $unused_free_bids ) ) {
 			// TODO: Log error
@@ -165,16 +143,23 @@ class Users {
 
 		// Use the first available free bid.
 		foreach ( $all_free_bids as $free_bid ) {
+			if ( Bids::FREE_BID_STATUS_UNUSED !== $free_bid->get_status() ) {
+				continue;
+			}
+
 			if ( $free_bid->redeem( $auction_id, $order_id ) ) {
 				$redeemed = true;
+				break;
 			}
-			break;
 		}
 
 		if ( ! $redeemed ) {
 			// TODO: Log error.
 			return false;
 		}
+
+		// Clear Cached Free Bid.
+		delete_user_meta( $user_id, sprintf( Coupons::FREE_BID_COUPON_META_KEY, $auction_id ) );
 
 		return $this->save_free_bids( $user_id, $all_free_bids );
 	}
