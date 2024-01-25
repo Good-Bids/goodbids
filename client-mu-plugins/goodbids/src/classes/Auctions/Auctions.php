@@ -101,12 +101,6 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
-
-	/**
-	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -814,12 +808,12 @@ class Auctions {
 			$auction_id = $this->get_auction_id();
 		}
 
-		$free_bids = get_post_meta( $auction_id, self::FREE_BIDS_META_KEY, true );
+		$free_bids = get_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, true );
 
 		// Return the default value if we have no value.
 		if ( ! $free_bids && 0 !== $free_bids && '0' !== $free_bids ) {
 			$free_bids = goodbids()->get_config( 'auctions.default-free-bids' );
-			update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+			update_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, $free_bids );
 		}
 
 		return intval( $free_bids );
@@ -836,7 +830,7 @@ class Auctions {
 	 * @return void
 	 */
 	public function update_free_bids( int $auction_id, int $free_bids ): void {
-		update_post_meta( $auction_id, self::FREE_BIDS_META_KEY, $free_bids );
+		update_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, $free_bids );
 	}
 
 	/**

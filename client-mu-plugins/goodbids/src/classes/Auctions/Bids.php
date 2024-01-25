@@ -40,6 +40,30 @@ class Bids {
 	const AUCTION_BID_VARIATION_META_KEY = '_gb_bid_variation_id';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BID_STATUS_ALL = 'all';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BID_STATUS_UNUSED = 'unused';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BID_STATUS_USED = 'used';
+
+	/**
 	 * Initialize Bids
 	 *
 	 * @since 1.0.0

@@ -29,7 +29,7 @@ class FreeBid {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	public string $status = Users::FREE_BID_STATUS_UNUSED;
+	public string $status = Bids::FREE_BID_STATUS_UNUSED;
 
 	/**
 	 * ID of the Auction Free Bid was Earned
@@ -230,12 +230,12 @@ class FreeBid {
 			return false;
 		}
 
-		if ( $this->get_status() !== Users::FREE_BID_STATUS_UNUSED ) {
+		if ( $this->get_status() !== Bids::FREE_BID_STATUS_UNUSED ) {
 			return false;
 		}
 
 		$this->used_date         = current_time( 'Y-m-d H:i:s' );
-		$this->status            = Users::FREE_BID_STATUS_USED;
+		$this->status            = Bids::FREE_BID_STATUS_USED;
 		$this->auction_id_used   = $auction_id;
 		$this->order_id_redeemed = $order->get_id();
 		$this->bid_value         = 0; // TODO: Maybe calculate the order total pre-coupon?
