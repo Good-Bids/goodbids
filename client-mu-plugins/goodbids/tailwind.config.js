@@ -31,6 +31,21 @@ export default {
 			DEFAULT: '1px',
 			0: '0',
 		},
+		extend: {
+			animation: {
+				'spin-left': 'spin-left 1.5s linear infinite',
+			},
+			keyframes: {
+				'spin-left': {
+					'0%': {
+						transform: 'rotate(0deg)',
+					},
+					'100%': {
+						transform: 'rotate(-360deg)',
+					},
+				},
+			},
+		},
 	},
 	plugins: [
 		({ addComponents }) => {
