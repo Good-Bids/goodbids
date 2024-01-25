@@ -38,6 +38,9 @@ class Cart {
 
 		// Clear query params after adding bids and reward products to cart.
 		$this->redirect_after_add_to_cart();
+
+		// Disable the add to cart message.
+		$this->disable_add_to_cart_message();
 	}
 
 	/**
@@ -236,6 +239,30 @@ class Cart {
 				exit;
 			},
 			15,
+			2
+		);
+	}
+
+	/**
+	 * Disable Added to Cart message for Bid and Reward products.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_add_to_cart_message(): void {
+		add_filter(
+			'wc_add_to_cart_message_html',
+			function ( string $message, array $products ): string {
+				foreach ( $products as $product_id => $quantity ) {
+					if ( goodbids()->auctions->get_product_type( $product_id ) ) {
+						return '';
+					}
+				}
+
+				return $message;
+			},
+			10,
 			2
 		);
 	}
