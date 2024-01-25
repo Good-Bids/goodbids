@@ -1481,7 +1481,14 @@ class Auctions {
 			$auction_id = $this->get_auction_id();
 		}
 
-		return get_post_meta( $auction_id, self::GUID_META_KEY, true );
+		$guid = get_post_meta( $auction_id, self::GUID_META_KEY, true );
+
+		if ( ! $guid ) {
+			$guid = wp_generate_uuid4();
+			update_post_meta( $auction_id, self::GUID_META_KEY, $guid );
+		}
+
+		return $guid;
 	}
 
 	/**
@@ -1505,12 +1512,8 @@ class Auctions {
 					return;
 				}
 
-				// Bail if the Auction already has a guid.
-				if ( $this->get_guid( $post_id ) ) {
-					return;
-				}
-
-				update_post_meta( $post_id, self::GUID_META_KEY, wp_generate_uuid4() );
+				// Generate a GUID if one doesn't already exist.
+				$this->get_guid( $post_id );
 			}
 		);
 	}
@@ -1661,7 +1664,7 @@ class Auctions {
 			'post_type'      => $this->get_post_type(),
 			'post_status'    => [ 'publish' ],
 			'posts_per_page' => -1,
-			'return'         => 'ids',
+			'fields'         => 'ids',
 			'meta_query'     => [
 				[
 					'key'     => 'auction_start',
