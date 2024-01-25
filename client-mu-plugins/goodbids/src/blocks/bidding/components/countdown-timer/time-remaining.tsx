@@ -10,7 +10,7 @@ type TimeRemainingProps = TimeRemainingMessageProps;
 
 export function TimeRemaining({
 	auctionStatus,
-	timeRemaining,
+	timeRemainingMs,
 	userTotalBids,
 	isLastBidder,
 }: TimeRemainingProps) {
@@ -42,7 +42,7 @@ export function TimeRemaining({
 				<div className={timeRemainingClasses}>
 					<TimeRemainingMessage
 						auctionStatus={auctionStatus}
-						timeRemaining={timeRemaining}
+						timeRemainingMs={timeRemainingMs}
 						userTotalBids={userTotalBids}
 						isLastBidder={isLastBidder}
 					/>

@@ -1,20 +1,20 @@
 import { AuctionStatus } from '../../store/types';
-import { formatTimeRemaining } from './format-time-remaing';
+import { formatTimeRemaining } from './format-time-remaining';
 
 export type TimeRemainingMessageProps = {
 	auctionStatus: AuctionStatus;
-	timeRemaining: number;
+	timeRemainingMs: number;
 	userTotalBids: number;
 	isLastBidder: boolean;
 };
 
 export function TimeRemainingMessage({
 	auctionStatus,
-	timeRemaining,
+	timeRemainingMs,
 	userTotalBids,
 	isLastBidder,
 }: TimeRemainingMessageProps) {
-	const formattedTimeRemaining = formatTimeRemaining(timeRemaining);
+	const formattedTimeRemaining = formatTimeRemaining(timeRemainingMs);
 
 	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
 		return (

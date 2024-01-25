@@ -6,7 +6,7 @@ import { START_TIME_BUFFER } from '../../utils/constants';
 
 type TimeRemainingType = {
 	status: AuctionStatus;
-	timeRemaining: number;
+	timeRemainingMs: number;
 };
 
 function getCountdownTime(
@@ -15,7 +15,7 @@ function getCountdownTime(
 	auctionStatus: AuctionStatus,
 ): TimeRemainingType {
 	if (auctionStatus === 'initializing') {
-		return { status: 'initializing', timeRemaining: 0 };
+		return { status: 'initializing', timeRemainingMs: 0 };
 	}
 
 	const startTime = startTimeDate.getTime();
@@ -26,22 +26,22 @@ function getCountdownTime(
 	// If the auction is starting in the next minute, we want to
 	// re-fetch auction data to ensure startTime hasn't been updated
 	if (now >= bufferedStartTime && now < startTime) {
-		return { status: 'starting', timeRemaining: startTime - now };
+		return { status: 'starting', timeRemainingMs: startTime - now };
 	}
 
 	if (now < startTime) {
-		return { status: 'upcoming', timeRemaining: startTime - now };
+		return { status: 'upcoming', timeRemainingMs: startTime - now };
 	}
 
 	if (now < endTime) {
-		return { status: 'live', timeRemaining: endTime - now };
+		return { status: 'live', timeRemainingMs: endTime - now };
 	}
 
 	if (auctionStatus === 'closed') {
-		return { status: 'closed', timeRemaining: 0 };
+		return { status: 'closed', timeRemainingMs: 0 };
 	}
 
-	return { status: 'closing', timeRemaining: 0 };
+	return { status: 'closing', timeRemainingMs: 0 };
 }
 
 export function CountdownTimer() {
@@ -87,7 +87,7 @@ export function CountdownTimer() {
 	return (
 		<TimeRemaining
 			auctionStatus={countdownStatus.status}
-			timeRemaining={countdownStatus.timeRemaining}
+			timeRemainingMs={countdownStatus.timeRemainingMs}
 			userTotalBids={userTotalBids}
 			isLastBidder={isLastBidder}
 		/>
