@@ -141,14 +141,24 @@ class Payload {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param string[] $data
+	 *
 	 * @return array
 	 */
 	public function get_data(): array {
-		// Payload Defaults.
-		$data = [];
+		$data  = [];
+		$dates = [
+			'startTime',
+			'endTime',
+			'requestTime',
+		];
 
 		foreach ( $this->payload as $item ) {
 			$data[ $item ] = $this->get_payload_item( $item );
+
+			if ( in_array( $item, $dates, true ) ) {
+				$data[ $item ] = $this->convert_datetime_to_gmt( $data[ $item ] );
+			}
 		}
 
 		return $data;
@@ -187,6 +197,20 @@ class Payload {
 			'userTotalDonated'  => goodbids()->auctions->get_user_total_donated( $this->auction_id, $this->get_user_id() ),
 			default             => null,
 		};
+	}
+
+	/**
+	 * Convert a date to GMT.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $date
+	 * @param string $format
+	 *
+	 * @return string
+	 */
+	public function convert_datetime_to_gmt( string $date, string $format = 'c' ): string {
+		return get_gmt_from_date( $date, $format );
 	}
 
 	/**
