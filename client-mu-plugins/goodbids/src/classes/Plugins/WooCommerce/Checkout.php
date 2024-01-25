@@ -90,32 +90,40 @@ class Checkout {
 					return;
 				}
 
-				// Make sure Auction has started and has not ended.
+				if ( Bids::ITEM_TYPE !== $info['order_type'] ) {
+					return;
+				}
+
+				// Make sure Auction has started.
 				if ( ! goodbids()->auctions->has_started( $info['auction_id'] ) ) {
 					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
 					wc_add_notice( $notice['message'], $notice['type'] );
 					return;
-				} elseif ( goodbids()->auctions->has_ended( $info['auction_id'] ) ) {
+				}
+
+				// Make sure Auction has not ended.
+				if ( goodbids()->auctions->has_ended( $info['auction_id'] ) ) {
 					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
 					wc_add_notice( $notice['message'], $notice['type'] );
 					return;
 				}
 
-				if ( Bids::ITEM_TYPE !== $info['order_type'] ) {
+				// Maybe perform Free Bids checks.
+				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
 					return;
 				}
 
-				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
-					if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
-						$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-						wc_add_notice( $notice['message'], $notice['type'] );
-						return;
-					}
+				// Make sure Free Bids are allowed.
+				if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
+					$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+					wc_add_notice( $notice['message'], $notice['type'] );
+					return;
+				}
 
-					if ( ! goodbids()->users->get_available_free_bid_count() ) {
-						$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
-						wc_add_notice( $notice['message'], $notice['type'] );
-					}
+				// Make sure the current user has available Free Bids.
+				if ( ! goodbids()->users->get_available_free_bid_count() ) {
+					$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+					wc_add_notice( $notice['message'], $notice['type'] );
 				}
 			},
 			10,
