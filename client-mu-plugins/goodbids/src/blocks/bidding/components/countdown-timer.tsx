@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ClockIcon } from './clock-icon';
-import { AuctionStatus } from '../utils/types';
+import { AuctionStatus } from '../store/types';
 import { useBiddingState } from '../store';
+import { client } from '../utils/query-client';
+import clsx from 'clsx';
 
 type TimeRemainingType = {
 	status: AuctionStatus;
@@ -49,7 +51,7 @@ function getTimeRemaining(
 	userTotalBids: number,
 	isLastBidder: boolean,
 ) {
-	if (status === 'upcoming') {
+	if (status === 'upcoming' || status === 'starting') {
 		return (
 			<span>
 				<b>Bidding starts in {formatTimeRemaining(timeRemaining)}</b>
@@ -75,36 +77,56 @@ function getTimeRemaining(
 		);
 	}
 
-	if (isLastBidder) {
-		return (
-			<span>
-				<b>Auction has closed.</b> Congratulations, you won!
-			</span>
-		);
-	}
+	if (status === 'closing' || status === 'closed') {
+		if (isLastBidder) {
+			return (
+				<span>
+					<b>Auction has closed.</b> Congratulations, you won!
+				</span>
+			);
+		}
 
-	if (userTotalBids > 0) {
+		if (userTotalBids > 0) {
+			return (
+				<span>
+					<b>Auction has closed.</b> Sorry, you were out-bid.
+				</span>
+			);
+		}
+
 		return (
 			<span>
-				<b>Auction has closed.</b> Sorry, you were out-bid.
+				<b>Auction has closed.</b>
 			</span>
 		);
 	}
 
 	return (
 		<span>
-			<b>Auction has closed.</b>
+			<b>Discovering relativity</b>
 		</span>
 	);
 }
 
+const startTimeBuffer = 1000 * 60;
+
 function getCountdownTime(
-	startTimeString: Date,
-	endTimeString: Date,
+	startTimeDate: Date,
+	endTimeDate: Date,
+	status: AuctionStatus,
 ): TimeRemainingType {
-	const startTime = startTimeString.getTime();
-	const endTime = endTimeString.getTime();
+	if (status === 'initializing') {
+		return { status: 'initializing', timeRemaining: 0 };
+	}
+
+	const startTime = startTimeDate.getTime();
+	const bufferedStartTime = startTime - startTimeBuffer;
+	const endTime = endTimeDate.getTime();
 	const now = new Date().getTime();
+
+	if (now >= bufferedStartTime && now < startTime) {
+		return { status: 'starting', timeRemaining: startTime - now };
+	}
 
 	if (now < startTime) {
 		return { status: 'upcoming', timeRemaining: startTime - now };
@@ -114,23 +136,44 @@ function getCountdownTime(
 		return { status: 'live', timeRemaining: endTime - now };
 	}
 
-	return { status: 'closed', timeRemaining: 0 };
+	return { status: 'closing', timeRemaining: 0 };
 }
 
 export function CountdownTimer() {
-	const { startTime, endTime, isLastBidder, auctionStatus, userTotalBids } =
-		useBiddingState();
+	const {
+		startTime,
+		endTime,
+		isLastBidder,
+		auctionStatus,
+		userTotalBids,
+		setAuctionStatus,
+		setSocketMode,
+	} = useBiddingState();
 
 	const [timeRemaining, setTimeRemaining] = useState<TimeRemainingType>(
-		getCountdownTime(startTime, endTime),
+		getCountdownTime(startTime, endTime, auctionStatus),
 	);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			const newRemainingTime = getCountdownTime(startTime, endTime);
+			const newRemainingTime = getCountdownTime(
+				startTime,
+				endTime,
+				auctionStatus,
+			);
 
 			if (auctionStatus !== newRemainingTime.status) {
-				// setAuctionStatus(newRemainingTime.status);
+				if (newRemainingTime.status === 'starting') {
+					setAuctionStatus(newRemainingTime.status);
+					client.invalidateQueries({
+						queryKey: ['auction'],
+					});
+				} else if (newRemainingTime.status === 'live') {
+					setSocketMode();
+				} else if (newRemainingTime.status === 'closing') {
+					// TODO: https://github.com/Good-Bids/goodbids/issues/241
+					// setAuctionStatus(newRemainingTime.status);
+				}
 			}
 
 			setTimeRemaining(newRemainingTime);
@@ -138,13 +181,41 @@ export function CountdownTimer() {
 
 		return () => clearInterval(interval);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [startTime, endTime]);
+	}, [startTime, endTime, auctionStatus]);
+
+	const placeholderClasses = clsx(
+		'absolute top-1/2 -translate-y-1/2 transition-all ',
+		{
+			'opacity-0': timeRemaining.status !== 'initializing',
+			'opacity-100': timeRemaining.status === 'initializing',
+		},
+	);
+
+	const timeRemainingClasses = clsx(
+		'absolute top-1/2 -translate-y-1/2 transition-all ',
+		{
+			'opacity-100': timeRemaining.status !== 'initializing',
+			'opacity-0': timeRemaining.status === 'initializing',
+		},
+	);
 
 	return (
-		<div className="flex items-center gap-3 px-4">
+		<div className="flex items-center gap-3 px-4 h-12">
 			<ClockIcon />
 
-			{getTimeRemaining(timeRemaining, userTotalBids, isLastBidder)}
+			<div className="relative w-full">
+				<span className={placeholderClasses}>
+					<b>Discovering relativity</b>
+				</span>
+
+				<div className={timeRemainingClasses}>
+					{getTimeRemaining(
+						timeRemaining,
+						userTotalBids,
+						isLastBidder,
+					)}
+				</div>
+			</div>
 		</div>
 	);
 }

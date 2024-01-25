@@ -22,6 +22,7 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 		error: auctionError,
 		status: auctionStatus,
 	} = useGetAuction(auctionId);
+
 	const {
 		data: userData,
 		error: userError,
