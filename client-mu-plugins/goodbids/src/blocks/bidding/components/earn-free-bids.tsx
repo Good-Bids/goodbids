@@ -63,8 +63,10 @@ export function EarnFreeBids() {
 	}
 
 	return (
-		<div className="flex items-start gap-4 bg-gray-100 rounded p-4">
-			<WaveIcon />
+		<div className="flex items-start gap-4 bg-contrast-5 rounded p-4">
+			<div className="h-6 w-6">
+				<WaveIcon />
+			</div>
 			<div className="flex flex-col gap-3">
 				<p className="m-0">
 					<b>Earn free bids:</b>

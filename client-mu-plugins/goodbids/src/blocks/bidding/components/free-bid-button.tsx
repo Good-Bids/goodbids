@@ -13,13 +13,10 @@ export function FreeBidButton() {
 
 	const disabled = isLastBidder || userFreeBids < 1 || !isUserLoggedIn;
 
-	const classes = clsx(
-		'bg-base rounded py-2 w-full block text-center no-underline text-lg',
-		{
-			'pointer-events-none cursor-not-allowed': disabled,
-			'pointer-events-auto': !disabled,
-		},
-	);
+	const classes = clsx('btn-fill-secondary text-center', {
+		'pointer-events-none cursor-not-allowed bg-base-3': disabled,
+		'pointer-events-auto': !disabled,
+	});
 
 	if (freeBidsAllowed && auctionStatus === 'live') {
 		return (
@@ -31,5 +28,9 @@ export function FreeBidButton() {
 		);
 	}
 
-	return null;
+	return (
+		<a href={bidUrl} className={classes}>
+			Dummy Free Bid Button
+		</a>
+	);
 }
