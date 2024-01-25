@@ -225,6 +225,7 @@ class FreeBid {
 	public function redeem( int $auction_id, int $order_id ): bool {
 		$order = wc_get_order( $order_id );
 
+		// Verify order exists.
 		if ( ! $order ) {
 			return false;
 		}
@@ -232,7 +233,7 @@ class FreeBid {
 		$this->used_date         = current_time( 'Y-m-d H:i:s' );
 		$this->status            = Users::FREE_BID_STATUS_USED;
 		$this->auction_id_used   = $auction_id;
-		$this->order_id_redeemed = $order_id;
+		$this->order_id_redeemed = $order->get_id();
 		$this->bid_value         = 0; // TODO: Maybe calculate the order total pre-coupon?
 
 		return true;

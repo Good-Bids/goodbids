@@ -9,6 +9,7 @@
 namespace GoodBids\Users;
 
 use GoodBids\Auctions\FreeBid;
+use GoodBids\Plugins\WooCommerce\Coupons;
 
 /**
  * User Class
@@ -175,6 +176,11 @@ class Users {
 			// TODO: Log error.
 			return false;
 		}
+
+		// Clear Cached Free Bid.
+		delete_user_meta( $user_id, sprintf( Coupons::FREE_BID_COUPON_META_KEY, $auction_id ) );
+
+		$all_free_bids = $this->get_free_bids( $user_id );
 
 		return $this->save_free_bids( $user_id, $all_free_bids );
 	}
