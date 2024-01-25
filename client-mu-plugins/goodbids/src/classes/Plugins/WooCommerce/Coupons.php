@@ -25,7 +25,7 @@ class Coupons {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const REWARD_COUPON_META_KEY = '_goodbids_reward_coupon_id';
+	const REWARD_COUPON_META_KEY = '_goodbids_reward_%d_coupon_id';
 
 	/**
 	 * @since 1.0.0
@@ -65,7 +65,7 @@ class Coupons {
 			return null;
 		}
 
-		$existing = get_post_meta( $reward_id, self::REWARD_COUPON_META_KEY, true );
+		$existing = get_post_meta( $reward_id, sprintf( self::REWARD_COUPON_META_KEY, $auction_id ), true );
 
 		if ( $existing ) {
 			// Make sure it's still valid.
@@ -103,7 +103,7 @@ class Coupons {
 
 		$coupon->save();
 
-		update_post_meta( $reward_id, self::REWARD_COUPON_META_KEY, $coupon_code );
+		update_post_meta( $reward_id, sprintf( self::REWARD_COUPON_META_KEY, $auction_id ), $coupon_code );
 
 		return $coupon_code;
 	}
