@@ -270,6 +270,13 @@ class Cart {
 		);
 	}
 
+	/**
+	 * Disable access to the Cart page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
 	private function disable_cart_access(): void {
 		add_action(
 			'template_redirect',
