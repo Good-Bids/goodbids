@@ -7,6 +7,7 @@ import {
 	UrlsType,
 	BidsType,
 	FetchingType,
+	AuctionStatus,
 } from './types';
 
 export function handleSetUser(data: UserResponse): UserType {
@@ -16,10 +17,33 @@ export function handleSetUser(data: UserResponse): UserType {
 	};
 }
 
+export const handleSetAuctionStatus = (status: AuctionStatus) => {
+	return {
+		auctionStatus: status,
+	};
+};
+
+const startTimeBuffer = 1000 * 60;
+
 export function handleSetInitialAuction(
 	data: AuctionResponse,
 ): Partial<UrlsType & TimingType & BidsType & FetchingType> {
 	if (data.auctionStatus === 'upcoming') {
+		const startTime = new Date(data.startTime);
+		const bufferedStartTime = startTime.getTime() - startTimeBuffer;
+		const now = new Date().getTime();
+
+		if (now >= bufferedStartTime) {
+			return {
+				...data,
+				auctionStatus: 'starting',
+				startTime: new Date(data.startTime),
+				endTime: new Date(data.endTime),
+				initialFetchComplete: true,
+				fetchMode: 'no-socket',
+			};
+		}
+
 		return {
 			...data,
 			startTime: new Date(data.startTime),
@@ -75,5 +99,20 @@ export function handleSetSocketAuction(
 export function handleSetPollingMode(): Partial<FetchingType> {
 	return {
 		fetchMode: 'polling',
+	};
+}
+
+export function handleSetSocketMode(
+	fetchMode: FetchingType['fetchMode'],
+	override?: boolean,
+): Partial<FetchingType> {
+	if (fetchMode === 'polling' && !override) {
+		return {
+			fetchMode: 'polling',
+		};
+	}
+
+	return {
+		fetchMode: 'socket',
 	};
 }
