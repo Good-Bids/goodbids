@@ -230,6 +230,10 @@ class FreeBid {
 			return false;
 		}
 
+		if ( $this->get_status() !== Users::FREE_BID_STATUS_UNUSED ) {
+			return false;
+		}
+
 		$this->used_date         = current_time( 'Y-m-d H:i:s' );
 		$this->status            = Users::FREE_BID_STATUS_USED;
 		$this->auction_id_used   = $auction_id;

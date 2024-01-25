@@ -166,10 +166,14 @@ class Users {
 
 		// Use the first available free bid.
 		foreach ( $all_free_bids as $free_bid ) {
+			if ( self::FREE_BID_STATUS_UNUSED !== $free_bid->get_status() ) {
+				continue;
+			}
+
 			if ( $free_bid->redeem( $auction_id, $order_id ) ) {
 				$redeemed = true;
+				break;
 			}
-			break;
 		}
 
 		if ( ! $redeemed ) {
@@ -179,8 +183,6 @@ class Users {
 
 		// Clear Cached Free Bid.
 		delete_user_meta( $user_id, sprintf( Coupons::FREE_BID_COUPON_META_KEY, $auction_id ) );
-
-		$all_free_bids = $this->get_free_bids( $user_id );
 
 		return $this->save_free_bids( $user_id, $all_free_bids );
 	}
