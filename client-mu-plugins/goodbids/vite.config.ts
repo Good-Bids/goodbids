@@ -15,9 +15,9 @@ export default defineConfig(({ command }) => ({
 	plugins: [
 		react(),
 		liveReload([
-			resolve(__dirname, './src/**/*'),
-			resolve(__dirname, './blocks/**/*'),
-			resolve(__dirname, './views/**/*'),
+			resolve(__dirname, './src/**/*.php'),
+			resolve(__dirname, './blocks/**/*.php'),
+			resolve(__dirname, './views/**/*.php'),
 		]),
 		splitVendorChunkPlugin(),
 		svgr(),
