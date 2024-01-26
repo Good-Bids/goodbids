@@ -1,3 +1,11 @@
+export type AuctionStatus =
+	| 'initializing'
+	| 'upcoming'
+	| 'starting'
+	| 'live'
+	| 'closing'
+	| 'closed';
+
 export type UrlsType = {
 	socketUrl: string;
 	accountUrl: string;
@@ -5,7 +13,7 @@ export type UrlsType = {
 };
 
 export type TimingType = {
-	auctionStatus: 'upcoming' | 'starting' | 'live' | 'closing' | 'closed';
+	auctionStatus: AuctionStatus;
 	startTime: Date;
 	endTime: Date;
 };
