@@ -970,7 +970,7 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
-		if ( 'product' !== get_post_type( $product_id ) ) {
+		if ( ! in_array( get_post_type( $product_id ), [ 'product', 'product_variation' ], true ) ) {
 			return null;
 		}
 
@@ -1001,7 +1001,7 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_parent_product_id( int $product_id ): ?int {
-		if ( 'product' !== get_post_type( $product_id ) ) {
+		if ( ! in_array( get_post_type( $product_id ), [ 'product', 'product_variation' ], true ) ) {
 			return $product_id;
 		}
 
