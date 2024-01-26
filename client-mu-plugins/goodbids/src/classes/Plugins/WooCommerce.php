@@ -458,7 +458,7 @@ class WooCommerce {
 		add_filter(
 			'render_block_data',
 			function ( $parsed_block, $source_block, $parent_block ) {
-				if ( empty( $parsed_block['blockName'] ) || 'woocommerce/checkout-actions-block' !== $parsed_block['blockName'] ) {
+				if ( empty( $parsed_block['blockName'] ) || 'woocommerce/checkout-actions-block' !== $parsed_block['blockName'] || is_admin() ) {
 					return $parsed_block;
 				}
 
