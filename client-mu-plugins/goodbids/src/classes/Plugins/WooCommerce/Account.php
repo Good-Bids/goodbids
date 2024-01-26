@@ -8,6 +8,9 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use GoodBids\Auctions\Bids;
+use GoodBids\Plugins\WooCommerce;
+
 /**
  * Class for Account Methods
  *
@@ -23,6 +26,9 @@ class Account {
 	public function __construct() {
 		// Custom My Account pages.
 		$this->add_free_bids_tab();
+
+		// Only show Bid Orders in My Account > Orders.
+		$this->only_show_bid_orders();
 	}
 
 	/**
@@ -76,6 +82,32 @@ class Account {
 			function () use ( $slug ) {
 				$free_bids = goodbids()->users->get_free_bids();
 				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
+			}
+		);
+	}
+
+	/**
+	 * Filter Order by Bid type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function only_show_bid_orders(): void {
+		add_filter(
+			'woocommerce_my_account_my_orders_query',
+			function ( $args ) {
+				if ( empty( $args['meta_query'] ) ) {
+					$args['meta_query'] = [];
+				}
+
+				$args['meta_query'][] = [
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Bids::ITEM_TYPE,
+				];
+
+				return $args;
 			}
 		);
 	}
