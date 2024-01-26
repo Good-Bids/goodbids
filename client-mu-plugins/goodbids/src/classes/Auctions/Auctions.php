@@ -970,6 +970,10 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return null;
+		}
+
 		$lookup_id  = $this->get_parent_product_id( $product_id );
 		$valid      = [ Bids::ITEM_TYPE, Rewards::ITEM_TYPE ];
 		$categories = get_the_terms( $lookup_id, 'product_cat' );
@@ -997,8 +1001,12 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_parent_product_id( int $product_id ): ?int {
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return $product_id;
+		}
+
 		$product = wc_get_product( $product_id );
-		return $product->get_parent_id() ?: $product_id;
+		return $product?->get_parent_id() ?: $product_id;
 	}
 
 	/**
@@ -1913,7 +1921,7 @@ class Auctions {
 
 				$product_id = get_the_ID();
 
-				if ( ! goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( ! $this->get_product_type( $product_id ) ) {
 					return;
 				}
 
