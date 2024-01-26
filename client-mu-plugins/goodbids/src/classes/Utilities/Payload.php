@@ -198,7 +198,7 @@ class Payload {
 	}
 
 	/**
-	 * Convert a date to GMT.
+	 * Convert a local date to GMT.
 	 *
 	 * @since 1.0.0
 	 *
@@ -208,6 +208,10 @@ class Payload {
 	 * @return string
 	 */
 	public function convert_datetime_to_gmt( string $date, string $format = 'c' ): string {
+		if ( str_ends_with( $date, '+00:00' ) ) {
+			$date = substr( $date, 0, -6 );
+		}
+
 		return get_gmt_from_date( $date, $format );
 	}
 
