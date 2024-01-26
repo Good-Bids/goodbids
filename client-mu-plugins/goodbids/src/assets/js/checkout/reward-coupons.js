@@ -8,7 +8,7 @@ const rewardCoupons = (coupons) => {
 
 		return {
 			...coupon,
-			label: 'Free Bid',
+			label: 'Auction Reward',
 		};
 	});
 };
