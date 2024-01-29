@@ -250,7 +250,7 @@ class Credentials extends WC_REST_Controller {
 	 *
 	 * @param int $site_id
 	 *
-	 * @return string[]|null
+	 * @return ?string[]
 	 */
 	private function generate_credentials( int $site_id ): ?array {
 		// Do not allow on main site.
