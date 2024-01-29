@@ -60,7 +60,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setInitialAuction: (data) => {
-		set(handleSetInitialAuction(data));
+		set((state) => handleSetInitialAuction(data, state.fetchMode));
 	},
 
 	setPollingMode: () => {

@@ -1,6 +1,8 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import { apiHandler } from './api-handler';
 import { z } from 'zod';
+import { FetchingType } from '../store/types';
+import { POLLING_INTERVAL } from './constants';
 
 const upcomingAuctionSchema = z.object({
 	auctionStatus: z.literal('upcoming'),
@@ -57,13 +59,20 @@ async function getAuction(auctionId: number) {
 	return auctionSchema.parse(response);
 }
 
-function auctionOptions(auctionId: number) {
+function auctionOptions(
+	auctionId: number,
+	fetchMode: FetchingType['fetchMode'],
+) {
 	return queryOptions({
 		queryKey: ['auction', auctionId],
 		queryFn: async () => getAuction(auctionId),
+		refetchInterval: fetchMode === 'polling' ? POLLING_INTERVAL : undefined,
 	});
 }
 
-export function useGetAuction(auctionId: number) {
-	return useQuery(auctionOptions(auctionId));
+export function useGetAuction(
+	auctionId: number,
+	fetchMode: FetchingType['fetchMode'],
+) {
+	return useQuery(auctionOptions(auctionId, fetchMode));
 }
