@@ -718,14 +718,15 @@ class Sites {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $user_id
+	 * @param array $status
 	 *
 	 * @return array
 	 */
-	public function get_user_bid_orders( ?int $user_id = null ): array {
+	public function get_user_bid_orders( ?int $user_id = null, array $status = [] ): array {
 		return collect(
 			$this->loop(
-				function ( $site_id ) use ( $user_id ) {
-					return collect( goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id ) )
+				function ( $site_id ) use ( $user_id, $status ) {
+					return collect( goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id, -1, $status ) )
 						->map(
 							function ( $order_id ) use ( $site_id ) {
 								return [
@@ -750,5 +751,57 @@ class Sites {
 				}
 			)
 			->all();
+	}
+
+	/**
+	 * Get total number of successful bids for a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return int
+	 */
+	public function get_user_total_bids( ?int $user_id = null ): int {
+		return count( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) );
+	}
+
+	/**
+	 * Get total amount donated by a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return float
+	 */
+	public function get_user_total_donated( ?int $user_id = null ): float {
+		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+			->sum(
+				function( $goodbids_order ) {
+					return $this->swap(
+						function () use ( $goodbids_order ) {
+							$order = wc_get_order( $goodbids_order['order_id'] );
+							return $order->get_total();
+						},
+						$goodbids_order['site_id']
+					);
+				}
+			);
+	}
+
+	/**
+	 * Get total number of nonprofits supported by a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return int
+	 */
+	public function get_user_nonprofits_supported( ?int $user_id = null ): int {
+		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+			->groupBy( 'site_id' )
+			->count();
 	}
 }

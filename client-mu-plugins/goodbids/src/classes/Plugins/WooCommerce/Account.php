@@ -88,12 +88,13 @@ class Account {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $user_id
-	 * @param int  $limit
+	 * @param ?int  $user_id
+	 * @param int   $limit
+	 * @param array $status
 	 *
 	 * @return int[]
 	 */
-	public function get_user_bid_order_ids( ?int $user_id = null, int $limit = -1 ): array {
+	public function get_user_bid_order_ids( ?int $user_id = null, int $limit = -1, array $status = [] ): array {
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -113,6 +114,10 @@ class Account {
 				]
 			],
 		];
+
+		if ( ! empty( $status ) ) {
+			$args['status'] = $status;
+		}
 
 		return wc_get_orders( $args );
 	}
