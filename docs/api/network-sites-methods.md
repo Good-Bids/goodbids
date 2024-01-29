@@ -9,7 +9,7 @@ Accepts a callback that will loop through all network sites and return an array 
 Accepts a callback that will return the returned value of the callback after swapping to the specified site ID.
 
 `goodbids()->sites->get_all_auctions( array $query_args )`  
-Returns an array of all auctions from all sites.
+Returns an array of all Auctions from all sites.
 
 `goodbids()->sites->get_featured_auctions( array $query_args )`  
 Returns an array of the top 3 featured auctions from all sites.
