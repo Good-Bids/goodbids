@@ -1,5 +1,13 @@
 import { useBiddingState } from '../store';
 
+function formatBids(bids: number) {
+	if (bids === 1) {
+		return `${bids} bid`;
+	}
+
+	return `${bids} bids`;
+}
+
 function ParticipationContent() {
 	const { auctionStatus, isUserLoggedIn, userTotalBids, userTotalDonated } =
 		useBiddingState();
@@ -24,8 +32,8 @@ function ParticipationContent() {
 		if (userTotalBids > 0) {
 			return (
 				<p className="m-0 text-center">
-					You placed <b>{userTotalBids}</b> for a total donation of{' '}
-					<b>${userTotalDonated}</b>.
+					You placed <b>{formatBids(userTotalBids)}</b> for a total
+					donation of <b>${userTotalDonated}</b>.
 				</p>
 			);
 		}
@@ -37,8 +45,8 @@ function ParticipationContent() {
 		if (userTotalBids > 0) {
 			return (
 				<p className="m-0 text-center">
-					You placed <b>{userTotalBids}</b> for a total donation of{' '}
-					<b>${userTotalDonated}</b>.
+					You placed <b>{formatBids(userTotalBids)}</b> for a total
+					donation of <b>${userTotalDonated}</b>.
 				</p>
 			);
 		}
