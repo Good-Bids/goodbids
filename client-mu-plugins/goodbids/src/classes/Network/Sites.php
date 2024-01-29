@@ -542,6 +542,10 @@ class Sites {
 			return false;
 		}
 
+		if ( get_current_blog_id() === $site_id ) {
+			return call_user_func( $callback, $site_id );
+		}
+
 		switch_to_blog( $site_id );
 		$return = call_user_func( $callback, $site_id );
 		restore_current_blog();
