@@ -60,6 +60,9 @@ class Admin {
 			$view_file = 'select';
 		}
 
-		require GOODBIDS_PLUGIN_PATH . 'views/admin/fields/' . $view_file . '.php';
+		goodbids()->load_view(
+			'admin/fields/' . $view_file . '.php',
+			compact( 'key', 'field', 'prefix', 'data', 'required', 'placeholder', 'field_id', 'value' )
+		);
 	}
 }

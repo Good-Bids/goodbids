@@ -27,8 +27,8 @@ class Account {
 		// Custom My Account pages.
 		$this->add_free_bids_tab();
 
-		// Only show Bid Orders in My Account > Orders.
-		$this->only_show_bid_orders();
+		// Add multisite support to My Account > Orders actions.
+		$this->maybe_switch_site();
 	}
 
 	/**
@@ -87,28 +87,75 @@ class Account {
 	}
 
 	/**
-	 * Filter Order by Bid type.
+	 * Get all User Bid Order IDs
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 * @param int  $limit
+	 *
+	 * @return int[]
+	 */
+	public function get_user_bid_order_ids( ?int $user_id = null, int $limit = -1 ): array {
+		if ( null === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$args = [
+			'limit'       => $limit,
+			'return'      => 'ids',
+			'orderby'     => 'date',
+			'order'       => 'DESC',
+			'customer'    => $user_id,
+			'paginate'    => false,
+			'meta_query'  => [
+				[
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Bids::ITEM_TYPE,
+				]
+			],
+		];
+
+		return wc_get_orders( $args );
+	}
+
+	/**
+	 * Add Multisite support to My Account > Orders actions
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function only_show_bid_orders(): void {
-		add_filter(
-			'woocommerce_my_account_my_orders_query',
-			function ( $args ) {
-				if ( empty( $args['meta_query'] ) ) {
-					$args['meta_query'] = [];
+	private function maybe_switch_site(): void {
+		if ( empty( $_REQUEST['site-id'] ) ) {
+			return;
+		}
+
+		$site_id = intval( sanitize_text_field( wp_unslash( $_REQUEST['site-id'] ) ) );
+
+		add_action(
+			'woocommerce_account_view-order_endpoint',
+			function () use ( $site_id ) {
+				if ( get_current_blog_id() === $site_id ) {
+					return;
 				}
 
-				$args['meta_query'][] = [
-					'key'     => WooCommerce::TYPE_META_KEY,
-					'compare' => '=',
-					'value'   => Bids::ITEM_TYPE,
-				];
+				switch_to_blog( $site_id );
+			},
+			1
+		);
 
-				return $args;
-			}
+		add_action(
+			'woocommerce_account_view-order_endpoint',
+			function () use ( $site_id ) {
+				if ( get_current_blog_id() === $site_id ) {
+					return;
+				}
+
+				restore_current_blog();
+			},
+			9999
 		);
 	}
 }

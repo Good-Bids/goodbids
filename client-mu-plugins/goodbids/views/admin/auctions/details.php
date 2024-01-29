@@ -13,22 +13,22 @@
 <h3><?php esc_html_e( 'Auction Details', 'goodbids' ); ?></h3>
 
 <?php
-$start_time   = $this->get_start_date_time();
+$start_time   = goodbids()->auctions->get_start_date_time();
 $current_time = strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) );
 $extra        = '';
 
 // Customize the Status Display.
-if ( $start_time && ! $this->has_started() ) {
+if ( $start_time && ! goodbids()->auctions->has_started() ) {
 	$extra = sprintf(
 		' (%s)',
 		esc_html( human_time_diff( $current_time, strtotime( $start_time ) ) )
 	);
-} elseif ( ! $this->has_ended() && $this->get_extensions( $auction_id ) ) {
+} elseif ( ! goodbids()->auctions->has_ended() && goodbids()->auctions->get_extensions( $auction_id ) ) {
 	$extra = sprintf(
 		' (%s)',
 		__( 'Extended', 'goodbids' )
 	);
-} elseif ( ! $this->has_ended() && $this->is_extension_window( $auction_id ) ) {
+} elseif ( ! goodbids()->auctions->has_ended() && goodbids()->auctions->is_extension_window( $auction_id ) ) {
 	$extra = sprintf(
 		' (%s)',
 		__( 'Extension Window', 'goodbids' )
@@ -38,7 +38,7 @@ if ( $start_time && ! $this->has_started() ) {
 printf(
 	'<p><strong>%s</strong><br>%s%s</p>',
 	esc_html__( 'Status', 'goodbids' ),
-	esc_html( $this->get_status( $auction_id ) ),
+	esc_html( goodbids()->auctions->get_status( $auction_id ) ),
 	esc_html( $extra )
 );
 
@@ -50,6 +50,6 @@ if ( 'publish' === get_post_status( $auction_id ) ) {
 		esc_attr( $auction_id ),
 		esc_attr( wp_create_nonce( 'gb-force-update-close-date' ) ),
 		esc_html__( 'Force Update', 'goodbids' ),
-		esc_html( $this->get_end_date_time( $auction_id, 'n/j/Y g:i:s a' ) )
+		esc_html( goodbids()->auctions->get_end_date_time( $auction_id, 'n/j/Y g:i:s a' ) )
 	);
 }

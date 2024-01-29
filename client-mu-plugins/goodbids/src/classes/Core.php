@@ -331,6 +331,47 @@ class Core {
 	}
 
 	/**
+	 * Get path to a view file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $name
+	 *
+	 * @return string
+	 */
+	public function get_view_path( string $name ): string {
+		$path = get_stylesheet_directory() . '/goodbids/' . $name;
+
+		if ( ! file_exists( $path ) ) {
+			$path = GOODBIDS_PLUGIN_PATH . 'views/' . $name;
+		}
+
+		return apply_filters( 'goodbids_view_path', $path, $name );
+	}
+
+	/**
+	 * Load a view file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $_name
+	 * @param array  $_data
+	 *
+	 * @return void
+	 */
+	public function load_view( string $_name, array $_data = [] ): void {
+		$_path = $this->get_view_path( $_name );
+
+		if ( ! file_exists( $_path ) ) {
+			return;
+		}
+
+		extract( $_data ); // phpcs:ignore
+
+		require $_path;
+	}
+
+	/**
 	 * Only allow authenticated users with specific roles to access parts of the REST API.
 	 *
 	 * @since 1.0.0

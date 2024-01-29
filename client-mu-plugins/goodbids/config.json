@@ -21,5 +21,13 @@
   },
   "auctions": {
     "default-free-bids": 5
+  },
+  "sites": {
+    "default-posts-per-page": 9
+  },
+  "woocommerce": {
+    "account": {
+      "default-orders-per-page": 10
+    }
   }
 }

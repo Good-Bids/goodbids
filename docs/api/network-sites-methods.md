@@ -2,6 +2,18 @@
 
 ## Core Methods
 
+`goodbids()->sites->loop( callable $callback, array $site_args )`  
+Accepts a callback that will loop through all network sites and return an array of the returned data.
+
+`goodbids()->sites->swap( callable $callback, int $site_id )`  
+Accepts a callback that will return the returned value of the callback after swapping to the specified site ID.
+
+`goodbids()->sites->get_all_auctions( array $query_args )`  
+Returns an array of all auctions from all sites.
+
+`goodbids()->sites->get_featured_auctions( array $query_args )`  
+Returns an array of the top 3 featured auctions from all sites.
+
 `goodbids()->sites->get_np_data( string $site_id, string $field_id )`  
 Returns the custom Nonprofit data for the given network site. If `$field_id` is provided, only that field will be returned, otherwise all fields will be returned.
 
