@@ -26,9 +26,6 @@ class Account {
 	public function __construct() {
 		// Custom My Account pages.
 		$this->add_free_bids_tab();
-
-		// Add multisite support to My Account > Orders actions.
-		$this->maybe_switch_site();
 	}
 
 	/**
@@ -118,44 +115,5 @@ class Account {
 		];
 
 		return wc_get_orders( $args );
-	}
-
-	/**
-	 * Add Multisite support to My Account > Orders actions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function maybe_switch_site(): void {
-		if ( empty( $_REQUEST['site-id'] ) ) {
-			return;
-		}
-
-		$site_id = intval( sanitize_text_field( wp_unslash( $_REQUEST['site-id'] ) ) );
-
-		add_action(
-			'woocommerce_account_view-order_endpoint',
-			function () use ( $site_id ) {
-				if ( get_current_blog_id() === $site_id ) {
-					return;
-				}
-
-				switch_to_blog( $site_id );
-			},
-			1
-		);
-
-		add_action(
-			'woocommerce_account_view-order_endpoint',
-			function () use ( $site_id ) {
-				if ( get_current_blog_id() === $site_id ) {
-					return;
-				}
-
-				restore_current_blog();
-			},
-			9999
-		);
 	}
 }

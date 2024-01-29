@@ -50,11 +50,8 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 								<td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
 									<?php if ( has_action( 'woocommerce_my_account_my_orders_column_' . $column_id ) ) : ?>
 										<?php do_action( 'woocommerce_my_account_my_orders_column_' . $column_id, $order, $goodbids_order['site_id'] ); ?>
-									<?php
-									elseif ( 'order-number' === $column_id ) :
-										$order_url = add_query_arg( 'site-id', $goodbids_order['site_id'], $order->get_view_order_url() );
-										?>
-										<a href="<?php echo esc_url( $order_url ); ?>">
+									<?php elseif ( 'order-number' === $column_id ) : ?>
+										<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>">
 											<?php echo esc_html( _x( '#', 'hash before order number', 'woocommerce' ) . $order->get_order_number() ); ?>.<?php echo esc_html( $goodbids_order['site_id'] ); ?>
 										</a>
 
@@ -76,11 +73,9 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 										if ( ! empty( $actions ) ) {
 											foreach ( $actions as $key => $action ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-												$url = add_query_arg( 'site-id', $goodbids_order['site_id'], $action['url'] );
-
 												printf(
 													'<a href="%s" class="woocommerce-button%s button %s">%s</a>',
-													esc_url( $url ),
+													esc_url( $action['url'] ),
 													esc_attr( $wp_button_class ),
 													sanitize_html_class( $key ),
 													esc_html( $action['name'] )
