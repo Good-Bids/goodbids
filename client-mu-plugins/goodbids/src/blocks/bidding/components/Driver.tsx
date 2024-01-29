@@ -21,7 +21,7 @@ export function Driver({ auctionId }: DriverProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<div className="w-full text-lg flex flex-col gap-4">
+			<div className="w-full text-lg flex flex-col gap-6">
 				<Fetcher auctionId={auctionId}>
 					{fetchMode === 'socket' && <Socket auctionId={auctionId} />}
 					<Metrics />
