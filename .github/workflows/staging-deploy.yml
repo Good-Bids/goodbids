@@ -1,16 +1,13 @@
-name: Develop Deploy
+name: Staging Deploy
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  release:
+    types: [prereleased]
 
 jobs:
   deploy:
-    name: Develop Deploy
+    name: Staging Deploy
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -28,6 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.release.target_commitish }}
 
       - name: Push to remote
         run: |
@@ -35,4 +33,4 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email github-actions@github.com
           git remote add wpvip git@github.com:wpcomvip/goodbids.git
-          git push -f wpvip main:develop
+          git push -f wpvip HEAD:staging

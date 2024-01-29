@@ -1,34 +1,31 @@
 name: Production Deploy
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [production]
+  release:
+    types: [released]
 
 jobs:
   deploy:
-    name: Deploy
+    name: Production Deploy
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.CI_DEPLOY_KEY }}
-          name: id_goodbidsNode
+          name: id_goodbids
           known_hosts: unnecessary # Actions have have github.com in known_hosts by default
           config: |
             Host github.com
               HostName github.com
-              IdentityFile /home/runner/.ssh/id_goodbidsNode
+              IdentityFile /home/runner/.ssh/id_goodbids
           if_key_exists: fail
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: production
+          ref: ${{ github.event.release.target_commitish }}
 
       - name: Push to remote
         run: |
@@ -36,4 +33,4 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email github-actions@github.com
           git remote add wpvip git@github.com:wpcomvip/goodbids.git
-          git push -f wpvip production:production
+          git push -f wpvip HEAD:production
