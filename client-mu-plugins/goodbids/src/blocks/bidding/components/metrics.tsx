@@ -14,6 +14,18 @@ type MetricBlockProps = {
 	value: number;
 };
 
+function formatValue(type: MetricType, value: number) {
+	if (type === 'bids') {
+		return value;
+	}
+
+	if ((type === 'last-bid' || type === 'winning-bid') && value < 1) {
+		return '--';
+	}
+
+	return `$${value.toLocaleString()}`;
+}
+
 function MetricBlock({ type, value }: MetricBlockProps) {
 	return (
 		<div className="flex flex-col text-center">
@@ -21,7 +33,7 @@ function MetricBlock({ type, value }: MetricBlockProps) {
 				{metricTypes[type]}
 			</p>
 			<p className="m-1 font-extrabold has-large-font-size">
-				{type === 'bids' ? value : `$${value.toLocaleString()}`}
+				{formatValue(type, value)}
 			</p>
 		</div>
 	);
