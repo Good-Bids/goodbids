@@ -187,11 +187,11 @@ class Credentials extends WC_REST_Controller {
 			return null;
 		}
 
-		$key = goodbids()->sites->swap(
-			function () {
+		return goodbids()->sites->swap(
+			function (): ?int {
 				global $wpdb;
 
-				$wpdb->get_col(
+				$key = $wpdb->get_col(
 					$wpdb->prepare(
 						"SELECT key_id
 						FROM {$wpdb->prefix}woocommerce_api_keys
@@ -200,15 +200,15 @@ class Credentials extends WC_REST_Controller {
 						$this->default_description
 					)
 				);
+
+				if ( ! $key ) {
+					return null;
+				}
+
+				return intval( $key[0] );
 			},
 			$site_id
 		);
-
-		if ( ! $key ) {
-			return null;
-		}
-
-		return intval( $key[0] );
 	}
 
 	/**
@@ -227,20 +227,20 @@ class Credentials extends WC_REST_Controller {
 			return false;
 		}
 
-		$delete = goodbids()->sites->swap(
-			function () use ( $key_id ) {
+		return goodbids()->sites->swap(
+			function () use ( $key_id ): bool {
 				global $wpdb;
 
-				return $wpdb->delete(
+				$delete = $wpdb->delete(
 					$wpdb->prefix . 'woocommerce_api_keys',
 					[ 'key_id' => $key_id ],
 					[ '%d' ]
 				);
+
+				return 1 === $delete;
 			},
 			$site_id
 		);
-
-		return 1 === $delete;
 	}
 
 	/**
