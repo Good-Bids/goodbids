@@ -8,14 +8,20 @@
 
 ?>
 <div class="goodbids-orders-header">
-	<dl class="goodbids-order-metrics">
-		<dt><?php esc_html_e( 'Total Bids', 'goodbids' ); ?></dt>
-		<dd><?php echo esc_html( goodbids()->sites->get_user_total_bids() ); ?></dd>
+	<ul class="goodbids-order-metrics" style="display: flex; justify-content: space-between;">
+		<li>
+			<strong><?php esc_html_e( 'Total Bids', 'goodbids' ); ?></strong><br>
+			<?php echo esc_html( goodbids()->sites->get_user_total_bids() ); ?>
+		</li>
 
-		<dt><?php esc_html_e( 'Total Donated', 'goodbids' ); ?></dt>
-		<dd><?php echo wp_kses_post( wc_price( goodbids()->sites->get_user_total_donated() ) ); ?></dd>
+		<li>
+			<strong><?php esc_html_e( 'Total Donated', 'goodbids' ); ?></strong><br>
+			<?php echo wp_kses_post( wc_price( goodbids()->sites->get_user_total_donated() ) ); ?>
+		</li>
 
-		<dt><?php esc_html_e( 'Nonprofits Supported', 'goodbids' ); ?></dt>
-		<dd><?php echo esc_html( goodbids()->sites->get_user_nonprofits_supported() ); ?></dd>
-	</dl>
+		<li>
+			<strong><?php esc_html_e( 'Nonprofits Supported', 'goodbids' ); ?></strong><br>
+			<?php echo esc_html( goodbids()->sites->get_user_nonprofits_supported() ); ?>
+		</li>
+	</ul>
 </div>
