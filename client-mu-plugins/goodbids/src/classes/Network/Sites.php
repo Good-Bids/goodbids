@@ -53,6 +53,9 @@ class Sites {
 		$this->disable_blocks_for_nonprofits();
 		$this->create_about_page();
 		$this->lock_block_editor();
+
+		// Auto-register users on new sites.
+		$this->auto_register_user();
 	}
 
 	/**
@@ -803,5 +806,35 @@ class Sites {
 		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
 			->groupBy( 'site_id' )
 			->count();
+	}
+
+	/**
+	 * Automatically register users as a customer when they visit a new Nonprofit site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function auto_register_user(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				$user = wp_get_current_user();
+
+				if ( ! $user?->exists() ) {
+					return;
+				}
+
+				$site_id = get_current_blog_id();
+
+				// Check if the user is already registered on the site.
+				if ( is_user_member_of_blog( $user->ID, $site_id ) ) {
+					return;
+				}
+
+				// Add the user to the site.
+				add_user_to_blog( $site_id, $user->ID, 'customer' );
+			}
+		);
 	}
 }
