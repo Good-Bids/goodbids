@@ -19,7 +19,7 @@ function formatValue(type: MetricType, value: number) {
 		return value;
 	}
 
-	if ((type === 'last-bid' || type === 'winning-bid') && value < 1) {
+	if (value < 1) {
 		return '--';
 	}
 
