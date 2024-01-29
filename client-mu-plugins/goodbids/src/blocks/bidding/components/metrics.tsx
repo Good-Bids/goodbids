@@ -20,7 +20,7 @@ function MetricBlock({ type, value }: MetricBlockProps) {
 			<p className="m-0 font-thin uppercase has-x-small-font-size">
 				{metricTypes[type]}
 			</p>
-			<p className="m-1 font-extrabold">
+			<p className="m-1 font-extrabold has-large-font-size">
 				{type === 'bids' ? value : `$${value.toLocaleString()}`}
 			</p>
 		</div>
