@@ -31,6 +31,14 @@ export function Metrics() {
 	const { totalBids, lastBid, totalRaised, auctionStatus } =
 		useBiddingState();
 
+	if (
+		auctionStatus === 'initializing' ||
+		auctionStatus === 'upcoming' ||
+		auctionStatus === 'starting'
+	) {
+		return null;
+	}
+
 	return (
 		<div className="grid grid-cols-3 gap-5 my-4">
 			<MetricBlock type="bids" value={totalBids} />
