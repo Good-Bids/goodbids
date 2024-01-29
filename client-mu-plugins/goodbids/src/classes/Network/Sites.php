@@ -819,21 +819,21 @@ class Sites {
 		add_action(
 			'template_redirect',
 			function (): void {
-				$user = wp_get_current_user();
+				$user_id = get_current_user_id();
 
-				if ( ! $user?->exists() ) {
+				if ( ! $user_id ) {
 					return;
 				}
 
 				$site_id = get_current_blog_id();
 
 				// Check if the user is already registered on the site.
-				if ( is_user_member_of_blog( $user->ID, $site_id ) ) {
+				if ( is_user_member_of_blog( $user_id, $site_id ) ) {
 					return;
 				}
 
 				// Add the user to the site.
-				add_user_to_blog( $site_id, $user->ID, 'customer' );
+				add_user_to_blog( $site_id, $$user_id, 'customer' );
 			}
 		);
 	}
