@@ -121,6 +121,9 @@ class WooCommerce {
 
 		// Custom Email Notifications
 		$this->setup_email_notifications();
+
+		// Adjust the WooCommerce Checkout Actions block.
+		$this->modify_checkout_actions_block();
 	}
 
 	/**
@@ -438,5 +441,29 @@ class WooCommerce {
 		}
 
 		return $product;
+	}
+
+	/**
+	 * Disable the Return to Cart link on the Checkout page inside the Checkout Actions block.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_checkout_actions_block(): void {
+		add_filter(
+			'render_block_data',
+			function ( $parsed_block, $source_block, $parent_block ) {
+				if ( empty( $parsed_block['blockName'] ) || 'woocommerce/checkout-actions-block' !== $parsed_block['blockName'] || is_admin() ) {
+					return $parsed_block;
+				}
+
+				$parsed_block['attrs']['showReturnToCart'] = false;
+
+				return $parsed_block;
+			},
+			10,
+			3
+		);
 	}
 }

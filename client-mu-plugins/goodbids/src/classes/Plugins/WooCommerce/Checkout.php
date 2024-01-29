@@ -30,6 +30,9 @@ class Checkout {
 
 		// Validate Bids during checkout.
 		$this->validate_bid();
+
+		// Remove the Order Notes Checkout field.
+		$this->disable_order_notes();
 	}
 
 	/**
@@ -125,6 +128,28 @@ class Checkout {
 					$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 					wc_add_notice( $notice['message'], $notice['type'] );
 				}
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Disable Order Notes Checkout field.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_order_notes(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				if ( empty( $block['blockName'] ) || 'woocommerce/checkout-order-note-block' !== $block['blockName'] ) {
+					return $block_content;
+				}
+
+				return '';
 			},
 			10,
 			2

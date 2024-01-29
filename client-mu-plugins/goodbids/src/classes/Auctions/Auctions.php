@@ -956,6 +956,10 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return null;
+		}
+
 		$lookup_id  = $this->get_parent_product_id( $product_id );
 		$valid      = [ Bids::ITEM_TYPE, Rewards::ITEM_TYPE ];
 		$categories = get_the_terms( $lookup_id, 'product_cat' );
@@ -983,8 +987,12 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_parent_product_id( int $product_id ): ?int {
+		if ( 'product' !== get_post_type( $product_id ) ) {
+			return $product_id;
+		}
+
 		$product = wc_get_product( $product_id );
-		return $product->get_parent_id() ?: $product_id;
+		return $product?->get_parent_id() ?: $product_id;
 	}
 
 	/**
@@ -1467,7 +1475,14 @@ class Auctions {
 			$auction_id = $this->get_auction_id();
 		}
 
-		return get_post_meta( $auction_id, self::GUID_META_KEY, true );
+		$guid = get_post_meta( $auction_id, self::GUID_META_KEY, true );
+
+		if ( ! $guid ) {
+			$guid = wp_generate_uuid4();
+			update_post_meta( $auction_id, self::GUID_META_KEY, $guid );
+		}
+
+		return $guid;
 	}
 
 	/**
@@ -1491,12 +1506,8 @@ class Auctions {
 					return;
 				}
 
-				// Bail if the Auction already has a guid.
-				if ( $this->get_guid( $post_id ) ) {
-					return;
-				}
-
-				update_post_meta( $post_id, self::GUID_META_KEY, wp_generate_uuid4() );
+				// Generate a GUID if one doesn't already exist.
+				$this->get_guid( $post_id );
 			}
 		);
 	}
@@ -1645,9 +1656,9 @@ class Auctions {
 
 		$args = [
 			'post_type'      => $this->get_post_type(),
-			'post_status'    => 'publish',
+			'post_status'    => [ 'publish' ],
 			'posts_per_page' => -1,
-			'return'         => 'ids',
+			'fields'         => 'ids',
 			'meta_query'     => [
 				[
 					'key'     => 'auction_start',
@@ -1896,7 +1907,7 @@ class Auctions {
 
 				$product_id = get_the_ID();
 
-				if ( ! goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( ! $this->get_product_type( $product_id ) ) {
 					return;
 				}
 
