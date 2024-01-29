@@ -115,7 +115,7 @@
           "slug": "base-3"
         },
         {
-          "color": "#0A3624",
+          "color": "rgb(10, 54, 36)",
           "name": "Contrast",
           "slug": "contrast"
         },
@@ -133,6 +133,11 @@
           "color": "#919493",
           "name": "Contrast / Four",
           "slug": "contrast-4"
+        },
+        {
+          "color": "#0A36240D",
+          "name": "Contrast / Five",
+          "slug": "contrast-5"
         },
         {
           "color": "#cfcabe",

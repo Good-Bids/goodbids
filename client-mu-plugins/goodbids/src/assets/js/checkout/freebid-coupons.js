@@ -2,7 +2,7 @@ const { registerCheckoutFilters } = window.wc.blocksCheckout;
 
 const freeBidCoupons = (coupons) => {
 	return coupons.map((coupon) => {
-		if (0 > coupon.label.indexOf('gb_freebid_')) {
+		if (!coupon.label.startsWith('gb_freebid_')) {
 			return coupon;
 		}
 

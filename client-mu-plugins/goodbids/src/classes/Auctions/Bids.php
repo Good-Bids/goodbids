@@ -158,11 +158,9 @@ class Bids {
 	 */
 	private function create_new_bid_product( int $auction_id ): WC_Product_Variable {
 		$bid_title = sprintf(
-			'%s %s (%s: %s)',
+			'%s %s',
 			__( 'Bid for', 'goodbids' ),
-			get_the_title( $auction_id ),
-			__( 'ID', 'goodbids' ),
-			$auction_id
+			get_the_title( $auction_id )
 		);
 
 		// Create a new Bid product.

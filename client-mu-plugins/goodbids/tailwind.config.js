@@ -9,6 +9,13 @@ export default {
 		'./views/**/**/*.{php,html}',
 	],
 	theme: {
+		borderRadius: {
+			DEFAULT: 'var(--wp--preset--spacing--20)',
+		},
+		borderWidth: {
+			DEFAULT: '1px',
+			0: '0',
+		},
 		colors: {
 			//Colors are set in the wordpress theme.json
 			base: 'var(--wp--preset--color--base)',
@@ -18,18 +25,27 @@ export default {
 			'contrast-2': 'var(--wp--preset--color--contrast-2)',
 			'contrast-3': 'var(--wp--preset--color--contrast-3)',
 			'contrast-4': 'var(--wp--preset--color--contrast-4)',
+			'contrast-5': 'var(--wp--preset--color--contrast-5)',
 			accent: 'var(--wp--preset--color--accent)',
 			'accent-2': 'var(--wp--preset--color--accent-2)',
 			'accent-3': 'var(--wp--preset--color--accent-3)',
 			'accent-4': 'var(--wp--preset--color--accent-4)',
 			transparent: 'transparent',
 		},
-		borderRadius: {
-			DEFAULT: 'var(--wp--preset--spacing--20)',
-		},
-		borderWidth: {
-			DEFAULT: '1px',
-			0: '0',
+		extend: {
+			animation: {
+				'spin-left': 'spin-left 1.5s linear infinite',
+			},
+			keyframes: {
+				'spin-left': {
+					'0%': {
+						transform: 'rotate(0deg)',
+					},
+					'100%': {
+						transform: 'rotate(-360deg)',
+					},
+				},
+			},
 		},
 	},
 	plugins: [

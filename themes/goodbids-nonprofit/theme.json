@@ -38,6 +38,11 @@
           "color": "#919493",
           "name": "Contrast / Four",
           "slug": "contrast-4"
+        },
+        {
+          "color": "#0A36240D",
+          "name": "Contrast / Five",
+          "slug": "contrast-5"
         }
       ]
     }

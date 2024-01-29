@@ -10,13 +10,10 @@ export function BidButton() {
 		auctionStatus === 'closed' ||
 		auctionStatus === 'closing';
 
-	const classes = clsx(
-		'bg-base rounded text-white py-2 w-full block text-center no-underline text-lg',
-		{
-			'pointer-events-none cursor-not-allowed': disabled,
-			'pointer-events-auto': !disabled,
-		},
-	);
+	const classes = clsx('btn-fill text-center', {
+		'pointer-events-none cursor-not-allowed': disabled,
+		'pointer-events-auto': !disabled,
+	});
 
 	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
 		return null;
