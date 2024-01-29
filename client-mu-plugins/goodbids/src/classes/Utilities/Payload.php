@@ -49,7 +49,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?WC_Product
 	 */
-	private ?WC_Product $bid_product = null;
+	private ?WC_Product $bid_variation = null;
 
 	/**
 	 * The Last Bid Order
@@ -180,10 +180,12 @@ class Payload {
 			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
 			'freeBidsAvailable' => goodbids()->auctions->get_free_bids_available( $this->auction_id ),
 			'freeBidsAllowed'   => goodbids()->auctions->are_free_bids_allowed( $this->auction_id ),
+			'guid'              => goodbids()->auctions->get_guid( $this->auction_id ),
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid(),
 			'lastBidder'        => $this->get_last_bidder(),
 			'rewardUrl'         => goodbids()->auctions->rewards->get_claim_reward_url( $this->auction_id ), // TBD.
+			'requestTime'       => current_datetime()->format( 'c' ),
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
@@ -223,11 +225,11 @@ class Payload {
 	 * @return ?float
 	 */
 	private function get_current_bid(): ?float {
-		if ( ! $this->bid_product ) {
-			$this->bid_product = goodbids()->auctions->bids->get_product( $this->auction_id );
+		if ( ! $this->bid_variation ) {
+			$this->bid_variation = goodbids()->auctions->bids->get_variation( $this->auction_id );
 		}
 
-		return floatval( $this->bid_product?->get_price( 'edit' ) );
+		return floatval( $this->bid_variation?->get_price( 'edit' ) );
 	}
 
 	/**
