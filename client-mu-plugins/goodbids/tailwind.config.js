@@ -31,6 +31,7 @@ export default {
 			'accent-3': 'var(--wp--preset--color--accent-3)',
 			'accent-4': 'var(--wp--preset--color--accent-4)',
 			transparent: 'transparent',
+			warning: '#fcd34d',
 		},
 		extend: {
 			animation: {

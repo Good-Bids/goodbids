@@ -53,7 +53,6 @@ export const handleSetAuctionStatus = (
 
 export function handleSetInitialAuction(
 	data: AuctionResponse,
-	fetchMode: FetchingType['fetchMode'],
 ): Partial<UrlsType & TimingType & BidsType & FetchingType> {
 	if (data.auctionStatus === 'upcoming') {
 		const startTime = new Date(data.startTime);
@@ -88,7 +87,7 @@ export function handleSetInitialAuction(
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
 			initialFetchComplete: true,
-			fetchMode: fetchMode === 'polling' ? 'polling' : 'socket',
+			fetchMode: 'socket',
 		};
 	}
 
@@ -125,9 +124,10 @@ export function handleSetSocketAuction(
 	};
 }
 
-export function handleSetPollingMode(): Partial<FetchingType> {
+export function handleSetSocketError(): Partial<FetchingType> {
 	return {
 		fetchMode: 'polling',
+		hasSocketError: true,
 	};
 }
 

@@ -10,6 +10,7 @@ import { client } from '../utils/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Fetcher } from './fetcher';
 import { useBiddingState } from '../store';
+import { SocketError } from './scoket-error';
 
 type DriverProps = {
 	auctionId: number;
@@ -30,6 +31,7 @@ export function Driver({ auctionId }: DriverProps) {
 					<FreeBidButton />
 					<Participation />
 					<EarnFreeBids />
+					<SocketError />
 				</Fetcher>
 			</div>
 		</QueryClientProvider>
