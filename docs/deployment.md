@@ -36,7 +36,7 @@ Finally, set as a prerelease and publish.
 
 ### Production
 
-Ideally, we are always upgraded prereleases to releases when deploying to production. This ensures that the code we are shipping to production is the same code that has been tested in staging.
+Ideally, we are always upgrading prereleases to releases when deploying to production. This ensures that the code we are shipping to production is the same code that has been tested in staging.
 
 To upgrade a prelease to a release, edit the release and uncheck the prerelease checkbox. You will also want to ensure that `Set as latest release` is checked.
 
