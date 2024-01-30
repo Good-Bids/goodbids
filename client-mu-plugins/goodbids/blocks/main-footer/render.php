@@ -8,7 +8,9 @@
  * @package GoodBids
  */
 
-$main_footer = new GoodBids\Blocks\MainFooter( $block );
+$main_footer  = new GoodBids\Blocks\MainFooter( $block );
+$terms_link   = goodbids()->sites->get_terms_conditions_link();
+$privacy_link = goodbids()->sites->get_privacy_policy_link();
 ?>
 <section <?php block_attr( $block, 'wp-block-group alignwide has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained' ); ?>>
 	<div class="wp-block-group alignwide has-global-padding is-layout-constrained wp-block-group-is-layout-constrained">
@@ -18,15 +20,15 @@ $main_footer = new GoodBids\Blocks\MainFooter( $block );
 
 			<div class="wp-block-group is-nowrap is-layout-flex wp-container-core-group-layout-29 wp-block-group-is-layout-flex">
 
-				<?php if ( goodbids()->sites->get_terms_conditions_link() ) : ?>
+				<?php if ( $terms_link ) : ?>
 					<p>
-						<?php echo wp_kses_post( goodbids()->sites->get_terms_conditions_link() ); ?>
+						<?php echo wp_kses_post( $terms_link ); ?>
 					</p>
 				<?php endif; ?>
 
-				<?php if ( goodbids()->sites->get_privacy_policy_link() ) : ?>
+				<?php if ( $privacy_link ) : ?>
 					<p>
-						<?php echo wp_kses_post( goodbids()->sites->get_privacy_policy_link() ); ?>
+						<?php echo wp_kses_post( $privacy_link ); ?>
 					</p>
 				<?php endif; ?>
 			</div>

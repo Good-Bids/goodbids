@@ -314,38 +314,24 @@ class Auctions {
 		);
 	}
 
-
 	/**
-	 * Returns an array of all active auctions for a given site
+	 * Returns a WP_Query object for all auctions
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array
+	 * @param array $query_args
+	 *
+	 * @return WP_Query
 	 */
-	public function get_all(): array {
-		$site_id  = get_current_blog_id();
-		$args     = [
+	public function get_all( array $query_args = [] ): WP_Query {
+		$args = [
 			'post_type'      => goodbids()->auctions->get_post_type(),
-			'post_status'    => 'publish',
+			'post_status'    => [ 'publish' ],
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
 		];
-		$auctions = new \WP_Query( $args );
 
-		if ( ! $auctions->have_posts() ) {
-			return [];
-		}
-
-		return collect( $auctions->posts )->map(
-			function ( $post_id ) use ( $site_id ) {
-				return [
-					'post_id'      => $post_id,
-					'site_id'      => $site_id,
-					'bid_count'    => $this->get_bid_count( $post_id ),
-					'total_raised' => $this->get_total_raised( $post_id ),
-				];
-			}
-		)->all();
+		return new WP_Query( array_merge( $args, $query_args ) );
 	}
 
 	/**
@@ -1026,11 +1012,11 @@ class Auctions {
 		}
 
 		$args = [
-			'limit'   => $limit,
-			'status'  => [ 'processing', 'completed' ],
-			'return'  => 'ids',
-			'orderby' => 'date',
-			'order'   => 'DESC',
+			'limit'      => $limit,
+			'status'     => [ 'processing', 'completed' ],
+			'return'     => 'ids',
+			'orderby'    => 'date',
+			'order'      => 'DESC',
 			'meta_query' => [
 				[
 					'key'     => WooCommerce::TYPE_META_KEY,
@@ -1357,12 +1343,12 @@ class Auctions {
 		$auction_id = $this->get_auction_id();
 
 		// Display the Auction Details.
-		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
+		goodbids()->load_view( 'admin/auctions/details.php', compact( 'auction_id' ) );
 
 		echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
 
 		// Display the Auction Metrics.
-		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/metrics.php';
+		goodbids()->load_view( 'admin/auctions/metrics.php', compact( 'auction_id' ) );
 	}
 
 	/**

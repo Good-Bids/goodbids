@@ -8,7 +8,6 @@
 
 namespace GoodBids\Network;
 
-use Illuminate\Support\Collection;
 use WP_Site;
 
 /**
@@ -54,6 +53,9 @@ class Sites {
 		$this->disable_blocks_for_nonprofits();
 		$this->create_about_page();
 		$this->lock_block_editor();
+
+		// Auto-register users on new sites.
+		$this->auto_register_user();
 	}
 
 	/**
@@ -255,7 +257,8 @@ class Sites {
 			function () {
 				$fields = $this->get_np_fields( 'create' );
 				$prefix = self::OPTION_SLUG;
-				require GOODBIDS_PLUGIN_PATH . 'views/network/new-site-fields.php';
+
+				goodbids()->load_view( 'network/new-site-fields.php', compact( 'fields', 'prefix' ) );
 			}
 		);
 	}
@@ -274,7 +277,11 @@ class Sites {
 				$data   = $this->get_np_data( $site_id );
 				$fields = $this->get_np_fields( 'edit' );
 				$prefix = self::OPTION_SLUG;
-				require GOODBIDS_PLUGIN_PATH . 'views/network/edit-site-fields.php';
+
+				goodbids()->load_view(
+					'network/edit-site-fields.php',
+					compact( 'data', 'fields', 'prefix' )
+				);
 			}
 		);
 	}
@@ -289,11 +296,11 @@ class Sites {
 	private function save_new_site_fields(): void {
 		add_action(
 			'wp_initialize_site',
+
 			/**
 			 * @param WP_Site $new_site New site object.
-			 * @param array $args Arguments for the initialization.
 			 */
-			function ( WP_Site $new_site, array $args ) {
+			function ( WP_Site $new_site ) {
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) { // phpcs:ignore
 					// TODO: Log error.
 					return;
@@ -312,9 +319,7 @@ class Sites {
 				}
 
 				$this->init_site_defaults( $new_site->id );
-			},
-			10,
-			2
+			}
 		);
 	}
 
@@ -330,10 +335,9 @@ class Sites {
 			'wp_update_site',
 			/**
 			 * @param WP_Site $new_site New site object.
-			 * @param WP_Site $old_site Old site object.
 			 */
-			function ( WP_Site $new_site, WP_Site $old_site ): void {
-				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			function ( WP_Site $new_site ): void {
+				if ( wp_doing_ajax() ) {
 					return;
 				}
 
@@ -355,9 +359,7 @@ class Sites {
 					$meta_value = sanitize_text_field( $data[ $key ] );
 					update_site_meta( $new_site->id, $meta_key, $meta_value );
 				}
-			},
-			10,
-			2
+			}
 		);
 	}
 
@@ -371,7 +373,7 @@ class Sites {
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( int $site_id ) {
+			function () {
 				$stylesheet = 'goodbids-nonprofit';
 
 				// Check if the Goodbids child theme exists first.
@@ -392,11 +394,12 @@ class Sites {
 	 * @return void
 	 */
 	private function init_site_defaults( int $site_id ): void {
-		switch_to_blog( $site_id );
-
-		do_action( 'goodbids_init_site', $site_id );
-
-		restore_current_blog();
+		$this->swap(
+			function () use ( $site_id ) {
+				do_action( 'goodbids_init_site', $site_id );
+			},
+			$site_id
+		);
 	}
 
 	/**
@@ -414,13 +417,16 @@ class Sites {
 					return $html;
 				}
 
-				switch_to_blog( get_main_site_id() );
-				$custom_logo_id = get_theme_mod( 'custom_logo' );
-				restore_current_blog();
-
-				if ( $custom_logo_id ) {
+				if (
+					$this->swap(
+						function () {
+							return get_theme_mod( 'custom_logo' );
+						},
+						get_main_site_id()
+					)
+				) {
 					return get_custom_logo( get_main_site_id() );
-				}
+				};
 
 				return '<!-- No Custom Logo -->';
 			}
@@ -437,8 +443,11 @@ class Sites {
 	private function set_default_posts_per_page(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( int $site_id ): void {
-				update_option( 'posts_per_page', 9 );
+			function (): void {
+				update_option(
+					'posts_per_page',
+					goodbids()->get_config( 'sites.default-posts-per-page' )
+				);
 			}
 		);
 	}
@@ -453,17 +462,14 @@ class Sites {
 	private function lock_block_editor(): void {
 		add_filter(
 			'block_editor_settings_all',
-			static function ( $settings, $context ) {
+			static function ( $settings ) {
 				if ( ! is_super_admin() ) {
 					$settings['canLockBlocks'] = false;
 				}
 				return $settings;
-			},
-			10,
-			2
+			}
 		);
 	}
-
 
 	/**
 	 * Hide blocks on nonprofits sites
@@ -495,6 +501,55 @@ class Sites {
 	}
 
 	/**
+	 * Loop through all Nonprofit sites with a callback function
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param callable $callback
+	 * @param array    $site_args
+	 *
+	 * @return array
+	 */
+	public function loop( callable $callback, array $site_args = [] ): array {
+		if ( ! is_callable( $callback ) ) {
+			return [];
+		}
+
+		return collect( get_sites( $site_args ) )
+			->flatMap( fn( WP_Site $site ) => $this->swap(
+				fn ( int $site_id ) => call_user_func( $callback, $site_id ),
+				$site->blog_id
+			))
+			->all();
+	}
+
+	/**
+	 * Swap between sites with a callback function
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param callable $callback
+	 * @param int      $site_id
+	 *
+	 * @return mixed
+	 */
+	public function swap( callable $callback, int $site_id ): mixed {
+		if ( ! is_callable( $callback ) ) {
+			return false;
+		}
+
+		if ( get_current_blog_id() === $site_id ) {
+			return call_user_func( $callback, $site_id );
+		}
+
+		switch_to_blog( $site_id );
+		$return = call_user_func( $callback, $site_id );
+		restore_current_blog();
+
+		return $return;
+	}
+
+	/**
 	 * Sets a pattern template for the page post type
 	 *
 	 * @since 1.0.0
@@ -506,13 +561,14 @@ class Sites {
 			'goodbids_init_site',
 			function ( int $site_id ): void {
 				ob_start();
-				include GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php';
+
+				goodbids()->load_view( 'patterns/template-about-page.php' );
 
 				$about = [
 					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
 					'post_content' => ob_get_clean(),
 					'post_type'    => 'page',
-					'post_status'  => 'publish',
+					'post_status'  => [ 'publish' ],
 					'post_author'  => 1,
 					'post_name'    => 'about',
 				];
@@ -527,7 +583,6 @@ class Sites {
 		);
 	}
 
-
 	/**
 	 * Get the privacy policy link for the site.
 	 *
@@ -537,26 +592,26 @@ class Sites {
 	 */
 	public function get_privacy_policy_link(): ?string {
 		if ( ! is_multisite() ) {
-			return false;
+			return null;
 		}
 
-		switch_to_blog( get_main_site_id() );
+		return $this->swap(
+			function (): string {
+				$privacy_policy_link = '';
+				$privacy_policy_id   = get_option( 'wp_page_for_privacy_policy' );
 
-		$privacy_policy_link = '';
+				if ( $privacy_policy_id ) {
+					$privacy_policy_link = sprintf(
+						'<a href="%s">%s</a>',
+						get_privacy_policy_url(),
+						get_the_title( $privacy_policy_id ),
+					);
+				}
 
-		$privacy_policy_id = get_option( 'wp_page_for_privacy_policy' );
-
-		if ( $privacy_policy_id ) {
-			$privacy_policy_link = sprintf(
-				'<a href="%s">%s</a>',
-				get_privacy_policy_url(),
-				get_the_title( $privacy_policy_id ),
-			);
-		}
-
-		restore_current_blog();
-
-		return $privacy_policy_link;
+				return $privacy_policy_link;
+			},
+			get_current_blog_id()
+		);
 	}
 
 	/**
@@ -568,49 +623,207 @@ class Sites {
 	 */
 	public function get_terms_conditions_link(): ?string {
 		if ( ! is_multisite() ) {
-			return false;
+			return null;
 		}
 
-		switch_to_blog( get_main_site_id() );
+		return $this->swap(
+			function (): string {
+				$terms_conditions_link = '';
+				$terms_conditions_id   = wc_terms_and_conditions_page_id();
 
-		$terms_conditions_link = '';
+				if ( $terms_conditions_id ) {
+					$terms_conditions_link = sprintf(
+						'<a href="%s">%s</a>',
+						get_page_link( $terms_conditions_id ),
+						get_the_title( $terms_conditions_id ),
+					);
+				}
 
-		$terms_conditions_id = wc_terms_and_conditions_page_id();
-
-		if ( $terms_conditions_id ) {
-			$terms_conditions_link = sprintf(
-				'<a href="%s">%s</a>',
-				get_page_link( $terms_conditions_id ),
-				get_the_title( $terms_conditions_id ),
-			);
-		}
-
-		restore_current_blog();
-
-		return $terms_conditions_link;
+				return $terms_conditions_link;
+			},
+			get_main_site_id()
+		);
 	}
 
 	/**
-	 * Returns an array of all active auctions across all sites
+	 * Returns an array of all published auctions across all sites
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param array $query_args
+	 *
 	 * @return array
 	 */
-	public function get_all_auctions(): array {
-		return Collection::make( get_sites() )
-			->flatMap(
-				function ( $site ) {
-					$site_id = get_object_vars( $site )['blog_id'];
+	public function get_all_auctions( array $query_args = [] ): array {
+		return $this->loop(
+			function ( $site_id ) use ( $query_args ) {
+			$auctions = goodbids()->auctions->get_all( $query_args );
 
-					switch_to_blog( $site_id );
-					$auctions = goodbids()->auctions->get_all( $site_id );
-					restore_current_blog();
+			return collect( $auctions->posts )
+				->map( fn ( $post_id ) => [
+					'post_id' => $post_id,
+					'site_id' => $site_id,
+				])
+				->all();
+			}
+		);
+	}
 
-					return $auctions;
+	/**
+	 * Get the top 3 featured auctions from all sites.
+	 * Auctions are sorted by highest bid count, then by highest total raised.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $query_args
+	 *
+	 * @return array
+	 */
+	public function get_featured_auctions( array $query_args = [] ): array {
+		return collect( $this->get_all_auctions( $query_args ) )
+			->sortByDesc(
+				function ( $auction ) {
+					return [
+						'bid_count'    => $this->swap(
+							function () use ( $auction ) {
+								return goodbids()->auctions->get_bid_count( $auction['post_id'] );
+							},
+							$auction['site_id']
+						),
+						'total_raised' => $this->swap(
+							function () use ( $auction ) {
+								return goodbids()->auctions->get_total_raised( $auction['post_id'] );
+							},
+							$auction['site_id']
+						),
+					];
 				}
 			)
-			->filter()
+			->slice( 0, 3 )
+			->values()
 			->all();
+	}
+
+	/**
+	 * Returns an array of all bid orders for a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 * @param array $status
+	 *
+	 * @return array
+	 */
+	public function get_user_bid_orders( ?int $user_id = null, array $status = [] ): array {
+		return collect(
+			$this->loop(
+				function ( $site_id ) use ( $user_id, $status ) {
+					return collect( goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id, -1, $status ) )
+						->map(
+							function ( $order_id ) use ( $site_id ) {
+								return [
+									'order_id' => $order_id,
+									'site_id'  => $site_id,
+								];
+							}
+						)
+						->all();
+					}
+				)
+			)
+			->sortByDesc(
+				function ( $goodbids_order ) {
+					return $this->swap(
+						function () use ( $goodbids_order ) {
+							$order = wc_get_order( $goodbids_order['order_id'] );
+							return $order->get_date_created( 'edit' )->date( 'Y-m-d H:i:s' );
+						},
+						$goodbids_order['site_id']
+					);
+				}
+			)
+			->all();
+	}
+
+	/**
+	 * Get total number of successful bids for a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return int
+	 */
+	public function get_user_total_bids( ?int $user_id = null ): int {
+		return count( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) );
+	}
+
+	/**
+	 * Get total amount donated by a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return float
+	 */
+	public function get_user_total_donated( ?int $user_id = null ): float {
+		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+			->sum(
+				function( $goodbids_order ) {
+					return $this->swap(
+						function () use ( $goodbids_order ) {
+							$order = wc_get_order( $goodbids_order['order_id'] );
+							return $order->get_total();
+						},
+						$goodbids_order['site_id']
+					);
+				}
+			);
+	}
+
+	/**
+	 * Get total number of nonprofits supported by a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return int
+	 */
+	public function get_user_nonprofits_supported( ?int $user_id = null ): int {
+		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+			->groupBy( 'site_id' )
+			->count();
+	}
+
+	/**
+	 * Automatically register users as a customer when they visit a new Nonprofit site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function auto_register_user(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				$user_id = get_current_user_id();
+
+				if ( ! $user_id ) {
+					return;
+				}
+
+				$site_id = get_current_blog_id();
+
+				// Check if the user is already registered on the site.
+				if ( is_user_member_of_blog( $user_id, $site_id ) ) {
+					return;
+				}
+
+				// Add the user to the site.
+				add_user_to_blog( $site_id, $user_id, 'customer' );
+			}
+		);
 	}
 }

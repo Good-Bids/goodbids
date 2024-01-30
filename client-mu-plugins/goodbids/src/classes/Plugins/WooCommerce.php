@@ -387,22 +387,18 @@ class WooCommerce {
 	 */
 	private function load_woocommerce_templates(): void {
 		add_filter(
-			'woocommerce_locate_template',
-			function ( $template, $template_name, $template_path ): string {
-				// Only override templates coming from WooCommerce.
-				if ( 'woocommerce' !== trim( $template_path, '/' ) ) {
-					return $template;
-				}
+			'wc_get_template',
+			function ( $template, $template_name ): string {
+				$goodbids_path = goodbids()->get_view_path( 'woocommerce/' . $template_name );
 
-				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
-				if ( file_exists( $goodbids_path ) ) {
+				if ( $goodbids_path && file_exists( $goodbids_path ) ) {
 					return $goodbids_path;
 				}
 
 				return $template;
 			},
 			8,
-			3
+			2
 		);
 	}
 

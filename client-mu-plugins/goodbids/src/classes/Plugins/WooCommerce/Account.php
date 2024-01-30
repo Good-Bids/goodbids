@@ -8,6 +8,9 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use GoodBids\Auctions\Bids;
+use GoodBids\Plugins\WooCommerce;
+
 /**
  * Class for Account Methods
  *
@@ -78,5 +81,44 @@ class Account {
 				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
 			}
 		);
+	}
+
+	/**
+	 * Get all User Bid Order IDs
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int  $user_id
+	 * @param int   $limit
+	 * @param array $status
+	 *
+	 * @return int[]
+	 */
+	public function get_user_bid_order_ids( ?int $user_id = null, int $limit = -1, array $status = [] ): array {
+		if ( null === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$args = [
+			'limit'       => $limit,
+			'return'      => 'ids',
+			'orderby'     => 'date',
+			'order'       => 'DESC',
+			'customer'    => $user_id,
+			'paginate'    => false,
+			'meta_query'  => [
+				[
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Bids::ITEM_TYPE,
+				]
+			],
+		];
+
+		if ( ! empty( $status ) ) {
+			$args['status'] = $status;
+		}
+
+		return wc_get_orders( $args );
 	}
 }
