@@ -833,7 +833,7 @@ class Sites {
 				}
 
 				// Add the user to the site.
-				add_user_to_blog( $site_id, $$user_id, 'customer' );
+				add_user_to_blog( $site_id, $user_id, 'customer' );
 			}
 		);
 	}
