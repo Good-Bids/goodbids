@@ -14,8 +14,7 @@ export function FreeBidButton() {
 	const disabled = isLastBidder || userFreeBids < 1 || !isUserLoggedIn;
 
 	const classes = clsx('btn-fill-secondary text-center', {
-		'pointer-events-none cursor-not-allowed !bg-base-3 !text-contrast-4':
-			disabled,
+		'pointer-events-none cursor-not-allowed !text-contrast-4': disabled,
 		'pointer-events-auto': !disabled,
 	});
 

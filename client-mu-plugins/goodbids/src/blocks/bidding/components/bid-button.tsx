@@ -11,7 +11,8 @@ export function BidButton() {
 		auctionStatus === 'closing';
 
 	const biddingClasses = clsx('btn-fill text-center', {
-		'pointer-events-none cursor-not-allowed': disabled,
+		'pointer-events-none cursor-not-allowed !bg-base-3 !text-contrast-4':
+			disabled,
 		'pointer-events-auto': !disabled,
 	});
 
