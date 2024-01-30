@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use Illuminate\Support\Collection;
 use WP_Site;
 
 /**
@@ -395,9 +396,7 @@ class Sites {
 	 */
 	private function init_site_defaults( int $site_id ): void {
 		$this->swap(
-			function () use ( $site_id ) {
-				do_action( 'goodbids_init_site', $site_id );
-			},
+			fn() => do_action( 'goodbids_init_site', $site_id ),
 			$site_id
 		);
 	}
@@ -417,11 +416,8 @@ class Sites {
 					return $html;
 				}
 
-				if (
-					$this->swap(
-						function () {
-							return get_theme_mod( 'custom_logo' );
-						},
+				if ( $this->swap(
+						fn () => get_theme_mod( 'custom_logo' ),
 						get_main_site_id()
 					)
 				) {
@@ -719,13 +715,10 @@ class Sites {
 			$this->loop(
 				function ( $site_id ) use ( $user_id, $status ) {
 					return collect( goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id, -1, $status ) )
-						->map(
-							function ( $order_id ) use ( $site_id ) {
-								return [
-									'order_id' => $order_id,
-									'site_id'  => $site_id,
-								];
-							}
+						->map( fn ( $order_id ) => [
+								'order_id' => $order_id,
+								'site_id'  => $site_id,
+							]
 						)
 						->all();
 					}
@@ -795,6 +788,59 @@ class Sites {
 		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
 			->groupBy( 'site_id' )
 			->count();
+	}
+
+	/**
+	 * Get all Auction user has participated in.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_participating_auctions( ?int $user_id = null ): array {
+		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+			->map(
+				function ( array $item ) {
+					return $this->swap(
+						function () use ( &$item ) {
+							$item['auction_id'] = goodbids()->woocommerce->orders->get_auction_id( $item['order_id'] );
+							return $item;
+						},
+						$item['site_id']
+					);
+				}
+			)
+			->groupBy( 'auction_id' )
+			->map( fn( Collection $group ) => [
+				'site_id'    => $group->first()['site_id'],
+				'auction_id' => $group->first()['auction_id'],
+				'count'      => $group->count(),
+			])
+			->all();
+	}
+
+	/**
+	 * Get Auctions from all Nonprofit sites won by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_auctions_won( ?int $user_id = null ): array {
+		return collect( $this->get_user_participating_auctions( $user_id ) )
+			->filter(
+				function ( $auction ) {
+					return $this->swap(
+						fn () => goodbids()->auctions->is_current_user_winner( $auction['auction_id'] ),
+						$auction['site_id']
+					);
+				}
+			)
+			->all();
 	}
 
 	/**
