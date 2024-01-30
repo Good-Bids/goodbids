@@ -90,9 +90,7 @@ class Account {
 	private function init_new_account_page( string $slug, string $label ): void {
 		add_action(
 			'init',
-			function () use ( $slug ): void {
-				add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES );
-			}
+			fn () => add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES )
 		);
 
 		add_filter(
@@ -129,12 +127,10 @@ class Account {
 
 		add_action(
 			'woocommerce_account_' . $slug . '_endpoint',
-			function () use ( $slug ) {
-				wc_get_template(
-					'myaccount/' . $slug . '.php',
-					apply_filters( 'goodbids_account_' . $slug . '_args', [] )
-				);
-			}
+			fn () => wc_get_template(
+				'myaccount/' . $slug . '.php',
+				apply_filters( 'goodbids_account_' . $slug . '_args', [] )
+			)
 		);
 	}
 
