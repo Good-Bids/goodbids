@@ -342,7 +342,6 @@ class Auctions {
 	 */
 	public function is_upcoming( int $auction_id ): bool {
 		if ( $this->has_started( $auction_id ) ) {
-//			error_log( get_the_title( $auction_id ) . ' has already started.' );
 			return false;
 		}
 
@@ -350,11 +349,6 @@ class Auctions {
 		$start_date     = current_datetime()->add( new \DateInterval( 'P2D' ) )->format( 'Y-m-d H:i:s' );
 		$auctions_start = $this->get_start_date_time( $auction_id );
 
-		if ( $auctions_start >= $start_date ) {
-//			error_log(get_the_title($auction_id) . ' is not upcoming.' );
-		} else {
-//			error_log(get_the_title($auction_id) . ' IS upcoming!' );
-		}
 		return $auctions_start < $start_date;
 	}
 
