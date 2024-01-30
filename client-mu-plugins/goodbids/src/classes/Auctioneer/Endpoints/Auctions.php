@@ -36,13 +36,6 @@ class Auctions {
 	 * @return bool
 	 */
 	public function start( int $auction_id, array $extra_data = [] ): bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
-
-		if ( ! $guid ) {
-			// TODO: Log error.
-			return false;
-		}
-
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
 			[
@@ -55,7 +48,7 @@ class Auctions {
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$guid/start";
+		$endpoint = "{$this->endpoint}/$auction_id/start";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -77,25 +70,17 @@ class Auctions {
 	 * @return bool
 	 */
 	public function end( int $auction_id, array $extra_data = [] ): bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
-
-		if ( ! $guid ) {
-			// TODO: Log error.
-			return false;
-		}
-
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
 			[
 				'lastBid',
-				'lastBidder',
 				'totalBids',
 				'totalRaised',
 			],
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$guid/end";
+		$endpoint = "{$this->endpoint}/$auction_id/end";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -117,13 +102,6 @@ class Auctions {
 	 * @return bool
 	 */
 	public function update( int $auction_id, array $extra_data = [] ): bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
-
-		if ( ! $guid ) {
-			// TODO: Log error.
-			return false;
-		}
-
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
 			[
@@ -131,11 +109,14 @@ class Auctions {
 				'endTime',
 				'freeBidsAllowed',
 				'freeBidsAvailable',
+				'lastBid',
+				'totalBids',
+				'totalRaised'
 			],
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$guid/update";
+		$endpoint = "{$this->endpoint}/$auction_id/update";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
 
@@ -158,7 +139,6 @@ class Auctions {
 	 */
 	private function setup_payload_data( array $payload_data, array $extra_data = [] ): array {
 		$defaults = [
-			'id',
 			'requestTime',
 		];
 
