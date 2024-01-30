@@ -36,7 +36,9 @@
 		}
 
 		/* Login form */
-		&.login {
+		&.login,
+		&.register,
+		&.lost_reset_password {
 			@apply border-0 bg-contrast rounded text-base-2;
 
 			.wp-element-button {
@@ -50,7 +52,8 @@
 	}
 
 	.wc-block-checkout__actions_row
-		.wc-block-components-checkout-place-order-button {
+		.wc-block-components-checkout-place-order-button,
+	.lost_reset_password {
 		@apply py-2 px-6;
 	}
 }
