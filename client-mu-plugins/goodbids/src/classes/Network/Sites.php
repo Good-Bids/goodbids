@@ -25,6 +25,12 @@ class Sites {
 	const OPTION_SLUG = 'gbnp';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TRANSIENT = '_goodbids_all_auctions';
+
+	/**
 	 * Nonprofit custom fields
 	 *
 	 * @since 1.0.0
@@ -57,6 +63,8 @@ class Sites {
 
 		// Auto-register users on new sites.
 		$this->auto_register_user();
+
+		$this->reload_transient();
 	}
 
 	/**
@@ -652,13 +660,12 @@ class Sites {
 	 * @return array
 	 */
 	public function get_all_auctions( array $query_args = [] ): array {
-		$transient = '_goodbids_all_auctions';
-		$auctions  = get_transient( $transient );
+		$auctions = get_transient( self::TRANSIENT );
 		if ( $auctions ) {
 			return $auctions;
 		}
 
-		return $this->loop(
+		$auctions = $this->loop(
 			function ( $site_id ) use ( $query_args ) {
 				$auctions = goodbids()->auctions->get_all( $query_args );
 
@@ -672,6 +679,12 @@ class Sites {
 				->all();
 			}
 		);
+
+		if ( ! $query_args ) {
+			set_transient( self::TRANSIENT, $auctions, DAY_IN_SECONDS );
+		}
+
+		return $auctions;
 	}
 
 	/**
@@ -685,7 +698,7 @@ class Sites {
 	 * @return array
 	 */
 	public function get_featured_auctions( array $query_args = [] ): array {
-		return collect( $this->get_all_auctions( $query_args ) )
+		$auctions = collect( $this->get_all_auctions( $query_args ) )
 			->sortByDesc(
 				function ( $auction ) {
 					return [
@@ -708,7 +721,7 @@ class Sites {
 			->values()
 			->all();
 
-		set_transient( $transient, $auctions, DAY_IN_SECONDS );
+		set_transient( self::TRANSIENT, $auctions, DAY_IN_SECONDS );
 
 		return $auctions;
 	}
@@ -731,8 +744,10 @@ class Sites {
 					return;
 				}
 
-				delete_transient( '_goodbids_all_auctions' );
-			}
+				delete_transient( self::TRANSIENT );
+			},
+			10,
+			3
 		);
 	}
 

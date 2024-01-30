@@ -69,9 +69,7 @@ endif;
 	<?php if ( ! count( $auctions ) ) : ?>
 		<p>No auctions found.</p>
 	<?php else : ?>
-	<ul class="grid grid-cols-1 gap-8 list-none lg:grid-cols-3 sm:grid-cols-2">
 		<?php goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) ); ?>
-	</ul>
 		<?php echo wp_kses_post( $block_auctions->get_pagination( $page_url, $total_pages ) ); ?>
 	<?php endif; ?>
 	<?php $post = $og_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited ?>
