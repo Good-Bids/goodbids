@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { AuctionStatus, BiddingState } from './types';
 import { UserResponse } from '../utils/get-user';
 import {
-	handleSetInitialAuction,
+	handelSetFetchAuction,
 	handleSetUser,
 	handleSetSocketAuction,
 	handleSetSocketMode,
@@ -15,7 +15,7 @@ import { SocketMessage } from '../utils/types';
 
 type BiddingActions = {
 	setAuctionStatus: (status: AuctionStatus) => void;
-	setInitialAuction: (data: AuctionResponse) => void;
+	setFetchAuction: (data: AuctionResponse) => void;
 	setSocketError: () => void;
 	setSocketAuction: (message: SocketMessage) => void;
 	setSocketMode: (override?: boolean) => void;
@@ -59,8 +59,8 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 		);
 	},
 
-	setInitialAuction: (data) => {
-		set(handleSetInitialAuction(data));
+	setFetchAuction: (data) => {
+		set(handelSetFetchAuction(data));
 	},
 
 	setSocketError: () => {
