@@ -10,10 +10,12 @@ export function BidButton() {
 		auctionStatus === 'closed' ||
 		auctionStatus === 'closing';
 
-	const classes = clsx('btn-fill text-center', {
+	const biddingClasses = clsx('btn-fill text-center', {
 		'pointer-events-none cursor-not-allowed': disabled,
 		'pointer-events-auto': !disabled,
 	});
+
+	const rewardClasses = clsx('btn-fill text-center');
 
 	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
 		return null;
@@ -22,7 +24,7 @@ export function BidButton() {
 	if (auctionStatus === 'closed') {
 		if (isLastBidder) {
 			return (
-				<a href={rewardUrl} className={classes}>
+				<a href={rewardUrl} className={rewardClasses}>
 					Claim Your Reward
 				</a>
 			);
@@ -32,7 +34,7 @@ export function BidButton() {
 	}
 
 	return (
-		<a href={bidUrl} className={classes}>
+		<a href={bidUrl} className={biddingClasses}>
 			GOODBID ${currentBid} Now
 		</a>
 	);
