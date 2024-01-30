@@ -516,17 +516,10 @@ class Sites {
 		}
 
 		return collect( get_sites( $site_args ) )
-			->flatMap(
-				function ( $blog ) use ( $callback ) {
-					return $this->swap(
-						function ( $site_id ) use ( $callback ) {
-							return call_user_func( $callback, $site_id );
-						},
-						$blog->blog_id
-					);
-				}
-			)
-			->filter()
+			->flatMap( fn( WP_Site $site ) => $this->swap(
+				fn ( int $site_id ) => call_user_func( $callback, $site_id ),
+				$site->blog_id
+			))
 			->all();
 	}
 
@@ -667,14 +660,10 @@ class Sites {
 			$auctions = goodbids()->auctions->get_all( $query_args );
 
 			return collect( $auctions->posts )
-				->map(
-					function ( $post_id ) use ( $site_id ) {
-						return [
-							'post_id' => $post_id,
-							'site_id' => $site_id,
-						];
-					}
-				)
+				->map( fn ( $post_id ) => [
+					'post_id' => $post_id,
+					'site_id' => $site_id,
+				])
 				->all();
 			}
 		);
