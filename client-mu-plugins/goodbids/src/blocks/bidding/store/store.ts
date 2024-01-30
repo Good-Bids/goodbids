@@ -3,20 +3,20 @@ import { create } from 'zustand';
 import { AuctionStatus, BiddingState } from './types';
 import { UserResponse } from '../utils/get-user';
 import {
-	handleSetInitialAuction,
-	handleSetPollingMode,
+	handelSetFetchAuction,
 	handleSetUser,
 	handleSetSocketAuction,
 	handleSetSocketMode,
 	handleSetAuctionStatus,
+	handleSetSocketError,
 } from './functions';
 import { AuctionResponse } from '../utils/get-auction';
 import { SocketMessage } from '../utils/types';
 
 type BiddingActions = {
 	setAuctionStatus: (status: AuctionStatus) => void;
-	setInitialAuction: (data: AuctionResponse) => void;
-	setPollingMode: () => void;
+	setFetchAuction: (data: AuctionResponse) => void;
+	setSocketError: () => void;
 	setSocketAuction: (message: SocketMessage) => void;
 	setSocketMode: (override?: boolean) => void;
 	setUser: (data: UserResponse) => void;
@@ -38,16 +38,16 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	freeBidsAvailable: 0,
 	freeBidsAllowed: false,
 
+	isUserLoggedIn: false,
 	isLastBidder: false,
 	rewardUrl: undefined,
 	userFreeBids: 0,
 	userTotalBids: 0,
 	userTotalDonated: 0,
 
-	isUserLoggedIn: false,
 	initialFetchComplete: false,
 	fetchMode: 'no-socket',
-	refetchInterval: undefined,
+	hasSocketError: false,
 
 	setAuctionStatus: (status) => {
 		set((state) =>
@@ -59,12 +59,12 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 		);
 	},
 
-	setInitialAuction: (data) => {
-		set(handleSetInitialAuction(data));
+	setFetchAuction: (data) => {
+		set(handelSetFetchAuction(data));
 	},
 
-	setPollingMode: () => {
-		set(handleSetPollingMode());
+	setSocketError: () => {
+		set(handleSetSocketError());
 	},
 
 	setSocketAuction: (message) => {

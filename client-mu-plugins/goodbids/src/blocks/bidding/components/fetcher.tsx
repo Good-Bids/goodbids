@@ -12,7 +12,7 @@ type FetcherProps = {
 };
 
 export function Fetcher({ auctionId, children }: FetcherProps) {
-	const { setUser, setInitialAuction } = useBiddingState();
+	const { setUser, setFetchAuction, fetchMode } = useBiddingState();
 
 	const [cookies] = useCookies([SESSION_COOKIE]);
 	const cookie = cookies[SESSION_COOKIE] as string | undefined;
@@ -21,7 +21,7 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 		data: auctionData,
 		error: auctionError,
 		status: auctionStatus,
-	} = useGetAuction(auctionId);
+	} = useGetAuction(auctionId, fetchMode);
 
 	const {
 		data: userData,
@@ -31,7 +31,7 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 
 	useEffect(() => {
 		if (auctionStatus === 'success') {
-			setInitialAuction(auctionData);
+			setFetchAuction(auctionData);
 		}
 
 		if (auctionStatus === 'error') {

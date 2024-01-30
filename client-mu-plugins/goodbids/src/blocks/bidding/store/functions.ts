@@ -27,7 +27,7 @@ export const handleSetAuctionStatus = (
 	if (newStatus !== currentStatus) {
 		// If the auction is starting, invalidate the auction query
 		// and re-fetch it to ensure startTime hasn't changed
-		if (newStatus === 'starting') {
+		if (newStatus === 'starting' || newStatus === 'live') {
 			client.invalidateQueries({
 				queryKey: ['auction'],
 			});
@@ -51,7 +51,7 @@ export const handleSetAuctionStatus = (
 	};
 };
 
-export function handleSetInitialAuction(
+export function handelSetFetchAuction(
 	data: AuctionResponse,
 ): Partial<UrlsType & TimingType & BidsType & FetchingType> {
 	if (data.auctionStatus === 'upcoming') {
@@ -124,9 +124,10 @@ export function handleSetSocketAuction(
 	};
 }
 
-export function handleSetPollingMode(): Partial<FetchingType> {
+export function handleSetSocketError(): Partial<FetchingType> {
 	return {
 		fetchMode: 'polling',
+		hasSocketError: true,
 	};
 }
 

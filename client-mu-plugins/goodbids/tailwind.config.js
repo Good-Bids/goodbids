@@ -31,6 +31,15 @@ export default {
 			'accent-3': 'var(--wp--preset--color--accent-3)',
 			'accent-4': 'var(--wp--preset--color--accent-4)',
 			transparent: 'transparent',
+			// warning: '#fcd34d',
+			warning: {
+				text: '#000',
+				bg: '#fcda82',
+			},
+			error: {
+				text: '#000',
+				bg: '#f87171',
+			},
 		},
 		extend: {
 			animation: {
