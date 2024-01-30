@@ -8,6 +8,8 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Auctions\Bids;
+use GoodBids\Auctions\Rewards;
 use Illuminate\Support\Collection;
 use WP_Site;
 
@@ -546,6 +548,36 @@ class Sites {
 	}
 
 	/**
+	 * Automatically register users as a customer when they visit a new Nonprofit site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function auto_register_user(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				$user_id = get_current_user_id();
+
+				if ( ! $user_id ) {
+					return;
+				}
+
+				$site_id = get_current_blog_id();
+
+				// Check if the user is already registered on the site.
+				if ( is_user_member_of_blog( $user_id, $site_id ) ) {
+					return;
+				}
+
+				// Add the user to the site.
+				add_user_to_blog( $site_id, $user_id, 'customer' );
+			}
+		);
+	}
+
+	/**
 	 * Sets a pattern template for the page post type
 	 *
 	 * @since 1.0.0
@@ -705,37 +737,59 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?int   $user_id
+	 * @param array  $status
+	 * @param string $type
+	 *
+	 * @return array
+	 */
+	public function get_user_orders( ?int $user_id = null, array $status = [], string $type = Bids::ITEM_TYPE ): array {
+		return collect(
+			$this->loop(
+				function ( $site_id ) use ( $type, $user_id, $status ) {
+					if ( Bids::ITEM_TYPE === $type ) {
+						$orders = goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id, -1, $status );
+					} elseif ( Rewards::ITEM_TYPE ) {
+						$orders = goodbids()->woocommerce->account->get_user_reward_order_ids( $user_id, -1, $status );
+					} else {
+						return [];
+					}
+
+					return collect( $orders )
+						->map( fn ( $order_id ) => [
+							'order_id' => $order_id,
+							'site_id'  => $site_id,
+						])
+						->all();
+				}
+			)
+		)
+		->sortByDesc(
+			function ( $rewards_order ) {
+				return $this->swap(
+					function () use ( $rewards_order ) {
+						$order = wc_get_order( $rewards_order['order_id'] );
+						return $order->get_date_created( 'edit' )->date( 'Y-m-d H:i:s' );
+					},
+					$rewards_order['site_id']
+				);
+			}
+		)
+		->all();
+	}
+
+	/**
+	 * Returns an array of all bid orders for a user across all sites
+	 *
+	 * @since 1.0.0
+	 *
 	 * @param ?int $user_id
 	 * @param array $status
 	 *
 	 * @return array
 	 */
 	public function get_user_bid_orders( ?int $user_id = null, array $status = [] ): array {
-		return collect(
-			$this->loop(
-				function ( $site_id ) use ( $user_id, $status ) {
-					return collect( goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id, -1, $status ) )
-						->map( fn ( $order_id ) => [
-								'order_id' => $order_id,
-								'site_id'  => $site_id,
-							]
-						)
-						->all();
-					}
-				)
-			)
-			->sortByDesc(
-				function ( $goodbids_order ) {
-					return $this->swap(
-						function () use ( $goodbids_order ) {
-							$order = wc_get_order( $goodbids_order['order_id'] );
-							return $order->get_date_created( 'edit' )->date( 'Y-m-d H:i:s' );
-						},
-						$goodbids_order['site_id']
-					);
-				}
-			)
-			->all();
+		return $this->get_user_orders( $user_id, $status, Bids::ITEM_TYPE );
 	}
 
 	/**
@@ -844,32 +898,16 @@ class Sites {
 	}
 
 	/**
-	 * Automatically register users as a customer when they visit a new Nonprofit site.
+	 * Returns an array of all reward orders for a user across all sites
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void
+	 * @param ?int $user_id
+	 * @param array $status
+	 *
+	 * @return array
 	 */
-	private function auto_register_user(): void {
-		add_action(
-			'template_redirect',
-			function (): void {
-				$user_id = get_current_user_id();
-
-				if ( ! $user_id ) {
-					return;
-				}
-
-				$site_id = get_current_blog_id();
-
-				// Check if the user is already registered on the site.
-				if ( is_user_member_of_blog( $user_id, $site_id ) ) {
-					return;
-				}
-
-				// Add the user to the site.
-				add_user_to_blog( $site_id, $user_id, 'customer' );
-			}
-		);
+	public function get_user_reward_orders( ?int $user_id = null, array $status = [] ): array {
+		return $this->get_user_orders( $user_id, $status, Rewards::ITEM_TYPE );
 	}
 }
