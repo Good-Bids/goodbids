@@ -118,6 +118,8 @@ class Details extends WC_REST_Controller {
 					'totalRaised',
 					'currentBid',
 					'lastBid',
+					'freeBidsAvailable',
+					'freeBidsAllowed',
 				]
 			);
 		} elseif ( strtolower( Auctions::STATUS_CLOSED ) === $status ) {
