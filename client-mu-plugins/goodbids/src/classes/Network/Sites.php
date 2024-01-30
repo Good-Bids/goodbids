@@ -841,6 +841,30 @@ class Sites {
 	}
 
 	/**
+	 * Get Auctions from all Nonprofit sites won by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_auctions_won( ?int $user_id = null ): array {
+		return collect( $this->get_user_participating_auctions( $user_id ) )
+			->filter(
+				function ( $auction ) {
+					return $this->swap(
+						function () use ( $auction ) {
+							return goodbids()->auctions->is_current_user_winner( $auction['auction_id'] );
+						},
+						$auction['site_id']
+					);
+				}
+			)
+			->all();
+	}
+
+	/**
 	 * Automatically register users as a customer when they visit a new Nonprofit site.
 	 *
 	 * @since 1.0.0

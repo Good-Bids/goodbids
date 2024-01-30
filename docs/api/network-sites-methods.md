@@ -40,3 +40,6 @@ Returns the count of nonprofits supported by the given user ID for all sites.
 
 `goodbids()->sites->get_user_participating_auctions( int $user_id )`
 Returns an array of all auctions the given user ID has participated in for all sites.
+
+`goodbids()->sites->get_user_auctions_won( int $user_id )`
+Returns an array of all auctions the given user ID has won for all sites.

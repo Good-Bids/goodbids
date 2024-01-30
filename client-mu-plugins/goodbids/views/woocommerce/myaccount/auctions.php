@@ -14,6 +14,8 @@
 	<?php if ( ! count( $auctions ) ) : ?>
 		<p><?php esc_html_e( 'You have not bid on any auctions yet.', 'goodbids' ); ?></p>
 	<?php else : ?>
+		<?php goodbids()->load_view( 'woocommerce/myaccount/auctions-header.php' ); ?>
+
 		<table class="goodbids-auctions-table woocommerce-MyAccount-auctions shop_table shop_table_responsive my_account_auctions account-auctions-table">
 			<thead>
 				<tr>
