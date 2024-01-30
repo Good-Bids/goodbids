@@ -8,7 +8,7 @@ export function SocketError() {
 
 	if (hasSocketError) {
 		return (
-			<div className="flex items-start gap-4 bg-warning/35 rounded p-4">
+			<div className="flex items-start gap-4 bg-warning-bg text-warning-text rounded p-4">
 				<div className="h-6 w-6">
 					<WarningIcon />
 				</div>
