@@ -337,7 +337,7 @@ class Sites {
 			 * @param WP_Site $new_site New site object.
 			 */
 			function ( WP_Site $new_site ): void {
-				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				if ( wp_doing_ajax() ) {
 					return;
 				}
 
