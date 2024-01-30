@@ -4,8 +4,6 @@ import { WarningIcon } from './warning-icon';
 export function SocketError() {
 	const { hasSocketError } = useBiddingState();
 
-	console.log(hasSocketError);
-
 	if (hasSocketError) {
 		return (
 			<div className="flex items-start gap-4 bg-warning-bg text-warning-text rounded p-4">
