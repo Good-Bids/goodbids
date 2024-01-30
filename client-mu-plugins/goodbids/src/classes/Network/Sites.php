@@ -338,7 +338,7 @@ class Sites {
 			 * @param WP_Site $new_site New site object.
 			 */
 			function ( WP_Site $new_site ): void {
-				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				if ( wp_doing_ajax() ) {
 					return;
 				}
 
@@ -396,9 +396,7 @@ class Sites {
 	 */
 	private function init_site_defaults( int $site_id ): void {
 		$this->swap(
-			function () use ( $site_id ) {
-				do_action( 'goodbids_init_site', $site_id );
-			},
+			fn() => do_action( 'goodbids_init_site', $site_id ),
 			$site_id
 		);
 	}
@@ -418,11 +416,8 @@ class Sites {
 					return $html;
 				}
 
-				if (
-					$this->swap(
-						function () {
-							return get_theme_mod( 'custom_logo' );
-						},
+				if ( $this->swap(
+						fn () => get_theme_mod( 'custom_logo' ),
 						get_main_site_id()
 					)
 				) {
@@ -517,17 +512,10 @@ class Sites {
 		}
 
 		return collect( get_sites( $site_args ) )
-			->flatMap(
-				function ( $blog ) use ( $callback ) {
-					return $this->swap(
-						function ( $site_id ) use ( $callback ) {
-							return call_user_func( $callback, $site_id );
-						},
-						$blog->blog_id
-					);
-				}
-			)
-			->filter()
+			->flatMap( fn( WP_Site $site ) => $this->swap(
+				fn ( int $site_id ) => call_user_func( $callback, $site_id ),
+				$site->blog_id
+			))
 			->all();
 	}
 
@@ -668,14 +656,10 @@ class Sites {
 			$auctions = goodbids()->auctions->get_all( $query_args );
 
 			return collect( $auctions->posts )
-				->map(
-					function ( $post_id ) use ( $site_id ) {
-						return [
-							'post_id' => $post_id,
-							'site_id' => $site_id,
-						];
-					}
-				)
+				->map( fn ( $post_id ) => [
+					'post_id' => $post_id,
+					'site_id' => $site_id,
+				])
 				->all();
 			}
 		);
@@ -731,13 +715,10 @@ class Sites {
 			$this->loop(
 				function ( $site_id ) use ( $user_id, $status ) {
 					return collect( goodbids()->woocommerce->account->get_user_bid_order_ids( $user_id, -1, $status ) )
-						->map(
-							function ( $order_id ) use ( $site_id ) {
-								return [
-									'order_id' => $order_id,
-									'site_id'  => $site_id,
-								];
-							}
+						->map( fn ( $order_id ) => [
+								'order_id' => $order_id,
+								'site_id'  => $site_id,
+							]
 						)
 						->all();
 					}
@@ -854,9 +835,7 @@ class Sites {
 			->filter(
 				function ( $auction ) {
 					return $this->swap(
-						function () use ( $auction ) {
-							return goodbids()->auctions->is_current_user_winner( $auction['auction_id'] );
-						},
+						fn () => goodbids()->auctions->is_current_user_winner( $auction['auction_id'] ),
 						$auction['site_id']
 					);
 				}
@@ -889,7 +868,7 @@ class Sites {
 				}
 
 				// Add the user to the site.
-				add_user_to_blog( $site_id, $$user_id, 'customer' );
+				add_user_to_blog( $site_id, $user_id, 'customer' );
 			}
 		);
 	}

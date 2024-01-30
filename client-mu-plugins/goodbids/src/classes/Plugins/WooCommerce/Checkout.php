@@ -33,6 +33,9 @@ class Checkout {
 
 		// Remove the Order Notes Checkout field.
 		$this->disable_order_notes();
+
+		// Automatically mark processing orders as Complete.
+		$this->automatically_complete_orders();
 	}
 
 	/**
@@ -153,6 +156,32 @@ class Checkout {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Automatically mark processing orders as Complete.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function automatically_complete_orders(): void {
+		add_action(
+			'woocommerce_order_status_processing',
+			function ( $order_id ): void {
+				if ( ! $order_id ) {
+					return;
+				}
+
+				$order = wc_get_order( $order_id );
+
+				if ( $order->needs_payment() ) {
+					return;
+				}
+
+				$order->update_status( 'completed' );
+			}
 		);
 	}
 }
