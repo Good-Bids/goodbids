@@ -30,7 +30,7 @@ endif;
 			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
 			<?php
 				printf(
-					'<p class="m-1 font-extrabold">%s</p>',
+					'<p class="m-1 font-extrabold has-large-font-size">%s</p>',
 					wp_kses_post( wc_price( $goal ) )
 				);
 			?>
@@ -45,7 +45,7 @@ endif;
 			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Est. Value', 'goodbids' ); ?></p>
 			<?php
 				printf(
-					'<p class="m-1 font-extrabold">%s</p>',
+					'<p class="m-1 font-extrabold has-large-font-size">%s</p>',
 					wp_kses_post( wc_price( $estimated_value ) )
 				);
 			?>
@@ -60,7 +60,7 @@ endif;
 			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'High Bid Goal', 'goodbids' ); ?></p>
 			<?php
 				printf(
-					'<p class="m-1 font-extrabold">%s</p>',
+					'<p class="m-1 font-extrabold has-large-font-size">%s</p>',
 					wp_kses_post( wc_price( $expected_high_bid ) )
 				);
 			?>
