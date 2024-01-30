@@ -136,7 +136,17 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php else : ?>
 
-	<?php wc_print_notice( esc_html__( 'You have not won any auctions... yet!', 'goodbids' ), 'notice' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment ?>
+	<?php
+	$message = sprintf(
+		'%s <a href="%s">%s</a> %s',
+		esc_html__( 'Check out the', 'goodbids' ),
+		esc_url( wc_get_endpoint_url( 'auctions' ) ),
+		esc_html__( 'Auctions page', 'goodbids' ),
+		esc_html__( 'to find auctions you\'ve recently won and claim your reward!', 'goodbids' )
+	);
+
+	wc_print_notice( $message, 'notice' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
+	?>
 
 <?php endif; ?>
 
