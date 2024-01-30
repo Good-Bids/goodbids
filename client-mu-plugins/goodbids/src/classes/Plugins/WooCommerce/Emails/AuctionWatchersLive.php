@@ -29,13 +29,6 @@ class AuctionWatchersLive extends WC_Email {
 	public $site_name;
 
 	/**
-	 * User ID.
-	 *
-	 * @var integer
-	 */
-	public $user_id;
-
-	/**
 	 * User login name.
 	 *
 	 * @var string
@@ -43,11 +36,11 @@ class AuctionWatchersLive extends WC_Email {
 	public $user_name;
 
 	/**
-	 * Button Text for main CTA in email.
+	 * User ID.
 	 *
-	 * @var string
+	 * @var integer
 	 */
-	public $button_text = 'Bid Now';
+	public $user_id;
 
 	/**
 	 * Set email defaults
@@ -61,14 +54,22 @@ class AuctionWatchersLive extends WC_Email {
 		$this->template_html  = 'emails/auction-watchers-live.php';
 		$this->template_plain = 'emails/plain/auction-watchers-live.php';
 
-		$this->site_name = get_bloginfo( 'name' );
-
 		// TODO: Trigger this email.
-		add_action( 'woocommerce_reset_password_notification', array( $this, 'trigger' ), 10, 2 );
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
 	}
+
+	/**
+	 * Get site name.
+	 *
+	 * @since  1.0.0
+	 * @return string
+	 */
+	public function get_site_name() {
+		return get_bloginfo( 'name' );
+	}
+
 
 	/**
 	 * Get email subject.
@@ -77,7 +78,7 @@ class AuctionWatchersLive extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return sprintf( '%s auction.title auction is live', esc_html( $this->site_name ) );
+		return sprintf( '%s auction.title auction is live', esc_html( $this->get_site_name() ) );
 	}
 
 	/**
@@ -89,6 +90,34 @@ class AuctionWatchersLive extends WC_Email {
 	public function get_default_heading() {
 		return __( 'Ready to GOODBID?', 'goodbids' );
 	}
+
+	/**
+	 * Get button text
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_default_button_text() {
+		return __( 'Bid Now', 'goodbids' );
+	}
+
+	/**
+	 * Get user name.
+	 *
+	 * @since   1.0.0
+	 * @param mixed $id
+	 * @return string
+	 */
+	public function get_user_name() {
+		if ( ! $this->user_id ) {
+			return;
+		}
+
+		$user_first_name = get_user_meta( $this->user_id, 'first_name', true );
+
+		return $user_first_name ? $user_first_name : $this->object->user_login;
+	}
+
 
 	/**
 	 * Get the email recipients
@@ -124,11 +153,8 @@ class AuctionWatchersLive extends WC_Email {
 		// TODO set up check before sending email
 		if ( $user_id ) {
 			$this->object    = new WP_User( $user_id );
-			$user_first_name = get_user_meta( $this->object->ID, 'first_name', true );
-			$user_name       = $user_first_name ? $user_first_name : $this->object->user_login;
-			$this->object    = new WP_User( $user_id );
 			$this->user_id   = $this->object->ID;
-			$this->user_name = stripslashes( $user_name );
+			$this->user_name = stripslashes( $this->get_user_name() );
 		}
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
@@ -152,14 +178,14 @@ class AuctionWatchersLive extends WC_Email {
 			$this->template_html,
 			[
 				'email_heading'        => $this->get_default_heading(),
-				'user_name'            => $this->user_name,
-				'site_name'            => $this->site_name,
+				'user_name'            => $this->get_user_name(),
+				'site_name'            => $this->get_site_name(),
 				// TODO update with final variables
 				'auction_title'        => '{auction_title}',
 				'auction_goal'         => '{auction_goal}',
 				'auction_url'          => '{auction_url}',
 				'auction_starting_bid' => '{auction_starting_bid}',
-				'button_text'          => $this->button_text,
+				'button_text'          => $this->get_default_button_text(),
 			]
 		);
 	}
@@ -176,14 +202,14 @@ class AuctionWatchersLive extends WC_Email {
 			$this->template_plain,
 			[
 				'email_heading'        => $this->get_default_heading(),
-				'user_name'            => $this->user_name,
-				'site_name'            => $this->site_name,
+				'user_name'            => $this->get_user_name(),
+				'site_name'            => $this->get_site_name(),
 				// TODO update with final variables
 				'auction_title'        => '{auction_title}',
 				'auction_goal'         => '{auction_goal}',
 				'auction_url'          => '{auction_url}',
 				'auction_starting_bid' => '{auction_starting_bid}',
-				'button_text'          => $this->button_text,
+				'button_text'          => $this->get_default_button_text(),
 			]
 		);
 	}
