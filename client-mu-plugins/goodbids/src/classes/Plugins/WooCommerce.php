@@ -105,6 +105,9 @@ class WooCommerce {
 		// Let WooCommerce know about some custom meta keys.
 		$this->register_meta_keys();
 
+		// Trim zeros on the prices
+		$this->price_trim_zeros();
+
 		// New Site Setup.
 		$this->configure_new_site();
 
@@ -193,6 +196,17 @@ class WooCommerce {
 			}
 		);
 	}
+
+	/**
+	 * Trim zeros in price decimals
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function price_trim_zeros(): void {
+		add_filter( 'woocommerce_price_trim_zeros', '__return_true' );
+	}
+
 
 	/**
 	 * Configure WooCommerce settings for new sites.
