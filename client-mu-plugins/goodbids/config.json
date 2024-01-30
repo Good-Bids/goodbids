@@ -14,6 +14,7 @@
       "urls": {
         "local": "GOODBIDS_AUCTIONEER_URL_LOCAL",
         "develop": "GOODBIDS_AUCTIONEER_URL_DEVELOP",
+        "staging": "GOODBIDS_AUCTIONEER_URL_STAGING",
         "production": "GOODBIDS_AUCTIONEER_URL_PRODUCTION"
       },
       "api-key": "GOODBIDS_AUCTIONEER_API_KEY"
