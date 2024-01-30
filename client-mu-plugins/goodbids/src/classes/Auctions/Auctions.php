@@ -189,9 +189,6 @@ class Auctions {
 		// Override End Date/Time.
 		$this->override_end_date_time();
 
-		// Generate a unique ID for each Auction.
-		$this->generate_guid_on_publish();
-
 		// Set up 1min Cron Job Schedule.
 		$this->add_one_min_cron_schedule();
 
@@ -1472,57 +1469,6 @@ class Auctions {
 			},
 			10,
 			2
-		);
-	}
-
-	/**
-	 * Get the Auction GUID
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return string
-	 */
-	public function get_guid( int $auction_id = null ): string {
-		if ( null === $auction_id ) {
-			$auction_id = $this->get_auction_id();
-		}
-
-		$guid = get_post_meta( $auction_id, self::GUID_META_KEY, true );
-
-		if ( ! $guid ) {
-			$guid = wp_generate_uuid4();
-			update_post_meta( $auction_id, self::GUID_META_KEY, $guid );
-		}
-
-		return $guid;
-	}
-
-	/**
-	 * Create a Bid product when an Auction is created.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function generate_guid_on_publish(): void {
-		add_action(
-			'wp_after_insert_post',
-			function ( $post_id ): void {
-				// Bail if this is a revision.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
-					return;
-				}
-
-				// Bail if not an Auction.
-				if ( $this->get_post_type() !== get_post_type( $post_id ) ) {
-					return;
-				}
-
-				// Generate a GUID if one doesn't already exist.
-				$this->get_guid( $post_id );
-			}
 		);
 	}
 
