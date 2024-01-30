@@ -20,7 +20,11 @@ export function FreeBidButton() {
 
 	if (freeBidsAllowed && auctionStatus === 'live') {
 		return (
-			<a href={bidUrl} className={classes} aria-disabled={disabled}>
+			<a
+				href={`${bidUrl}&use-free-bid=1`}
+				className={classes}
+				aria-disabled={disabled}
+			>
 				{`Place free bid ${
 					isUserLoggedIn ? `(${userFreeBids} available)` : ''
 				}`}
