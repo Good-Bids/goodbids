@@ -10,7 +10,7 @@ import { client } from '../utils/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Fetcher } from './fetcher';
 import { useBiddingState } from '../store';
-import { SocketError } from './scoket-error';
+import { SocketError } from './socket-error';
 
 type DriverProps = {
 	auctionId: number;
