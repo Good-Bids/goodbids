@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use Illuminate\Support\Collection;
 use WP_Site;
 
 /**
@@ -806,6 +807,37 @@ class Sites {
 		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
 			->groupBy( 'site_id' )
 			->count();
+	}
+
+	/**
+	 * Get all Auction user has participated in.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_participating_auctions( ?int $user_id = null ): array {
+		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+			->map(
+				function ( array $item ) {
+					return $this->swap(
+						function () use ( &$item ) {
+							$item['auction_id'] = goodbids()->woocommerce->orders->get_auction_id( $item['order_id'] );
+							return $item;
+						},
+						$item['site_id']
+					);
+				}
+			)
+			->groupBy( 'auction_id' )
+			->map( fn( Collection $group ) => [
+				'site_id'    => $group->first()['site_id'],
+				'auction_id' => $group->first()['auction_id'],
+				'count'      => $group->count(),
+			])
+			->all();
 	}
 
 	/**

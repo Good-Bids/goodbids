@@ -24,8 +24,15 @@ class Account {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Custom My Account pages.
+		/**
+		 * Note: Tabs will be added in reverse order.
+		 */
+
+		// Custom My Account > Free Bids page.
 		$this->add_free_bids_tab();
+
+		// Custom My Account > Auctions page.
+		$this->add_auctions_tab();
 	}
 
 	/**
@@ -38,6 +45,49 @@ class Account {
 	private function add_free_bids_tab(): void {
 		$slug = 'free-bids';
 
+		add_filter(
+			'goodbids_account_' . $slug . '_args',
+			function ( $args ) {
+				$args['free_bids'] = goodbids()->users->get_free_bids();
+				return $args;
+			}
+		);
+
+		$this->init_new_account_page( $slug, __( 'Free Bids', 'goodbids' ) );
+	}
+
+	/**
+	 * Create a new Auctions tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_auctions_tab(): void {
+		$slug = 'auctions';
+
+		add_filter(
+			'goodbids_account_' . $slug . '_args',
+			function ( $args ) {
+				$args['auctions'] = goodbids()->sites->get_user_participating_auctions();
+				return $args;
+			}
+		);
+
+		$this->init_new_account_page( $slug, __( 'Auctions', 'goodbids' ) );
+	}
+
+	/**
+	 * Initialize a new page on My Account
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $slug
+	 * @param string $label
+	 *
+	 * @return void
+	 */
+	private function init_new_account_page( string $slug, string $label ): void {
 		add_action(
 			'init',
 			function () use ( $slug ): void {
@@ -57,16 +107,19 @@ class Account {
 
 		add_filter(
 			'woocommerce_account_menu_items',
-			function ( $items ) use ( $slug ): array {
+			function ( $items ) use ( $slug, $label ): array {
 				if ( array_key_exists( $slug, $items ) ) {
 					return $items;
 				}
 
 				$new_items = [];
-				foreach ( $items as $id => $item ) {
-					$new_items[ $id ] = $item;
-					if ( 'orders' === $id ) {
-						$new_items[ $slug ] = __( 'Free Bids', 'goodbids' );
+
+				// Insert New Items after Orders.
+				foreach ( $items as $key => $value ) {
+					$new_items[ $key ] = $value;
+
+					if ( 'orders' === $key ) {
+						$new_items[ $slug ] = $label;
 					}
 				}
 
@@ -77,8 +130,10 @@ class Account {
 		add_action(
 			'woocommerce_account_' . $slug . '_endpoint',
 			function () use ( $slug ) {
-				$free_bids = goodbids()->users->get_free_bids();
-				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
+				wc_get_template(
+					'myaccount/' . $slug . '.php',
+					apply_filters( 'goodbids_account_' . $slug . '_args', [] )
+				);
 			}
 		);
 	}

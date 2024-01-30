@@ -1216,6 +1216,20 @@ class Auctions {
 	}
 
 	/**
+	 * Checks if the current user is the current high bidder of an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_current_user_winning( int $auction_id ): bool {
+		$last_bidder = $this->get_last_bidder( $auction_id );
+		return $last_bidder?->ID === get_current_user_id();
+	}
+
+	/**
 	 * Get the Auction's winning bidder.
 	 *
 	 * @since 1.0.0

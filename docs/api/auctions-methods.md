@@ -104,6 +104,9 @@ Returns the User object of the winning bidder. Returns null if Auction has not e
 `goodbids()->auctions->is_current_user_winner( int $auction_id )`  
 Checks if the current user is the winner of the Auction.
 
+`goodbids()->auctions->is_current_user_winning( int $auction_id )`  
+Checks if the current user is currently the high bidder of the Auction.
+
 `goodbids()->auctions->get_bid_count( int $auction_id )`  
 Get the number of bids for the given Auction ID.
 
