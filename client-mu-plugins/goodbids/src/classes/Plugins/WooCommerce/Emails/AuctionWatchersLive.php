@@ -78,7 +78,11 @@ class AuctionWatchersLive extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return sprintf( '%s auction.title auction is live', esc_html( $this->get_site_name() ) );
+		return sprintf(
+			'%s %s is live',
+			esc_html( $this->get_site_name() ),
+			esc_html( $this->get_auction_title() )
+		);
 	}
 
 	/**
@@ -99,6 +103,47 @@ class AuctionWatchersLive extends WC_Email {
 	 */
 	public function get_default_button_text() {
 		return __( 'Bid Now', 'goodbids' );
+	}
+
+	/**
+	 * Get the auction title
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_title() {
+		return __( '{auction_title}', 'goodbids' );
+	}
+
+	/**
+	 * Get the auction goal
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_goal() {
+		return __( '{auction_goal}', 'goodbids' );
+	}
+
+	/**
+	 * Get the auction url
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_url() {
+		return __( '{auction_url}', 'goodbids' );
+	}
+
+
+	/**
+	 * Get the auction starting bid
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_starting_bid() {
+		return __( '{auction_starting_bid}', 'goodbids' );
 	}
 
 	/**
@@ -180,11 +225,10 @@ class AuctionWatchersLive extends WC_Email {
 				'email_heading'        => $this->get_default_heading(),
 				'user_name'            => $this->get_user_name(),
 				'site_name'            => $this->get_site_name(),
-				// TODO update with final variables
-				'auction_title'        => '{auction_title}',
-				'auction_goal'         => '{auction_goal}',
-				'auction_url'          => '{auction_url}',
-				'auction_starting_bid' => '{auction_starting_bid}',
+				'auction_title'        => $this->get_auction_title(),
+				'auction_goal'         => $this->get_auction_goal(),
+				'auction_url'          => $this->get_auction_url(),
+				'auction_starting_bid' => $this->get_auction_starting_bid(),
 				'button_text'          => $this->get_default_button_text(),
 			]
 		);
@@ -204,11 +248,10 @@ class AuctionWatchersLive extends WC_Email {
 				'email_heading'        => $this->get_default_heading(),
 				'user_name'            => $this->get_user_name(),
 				'site_name'            => $this->get_site_name(),
-				// TODO update with final variables
-				'auction_title'        => '{auction_title}',
-				'auction_goal'         => '{auction_goal}',
-				'auction_url'          => '{auction_url}',
-				'auction_starting_bid' => '{auction_starting_bid}',
+				'auction_title'        => $this->get_auction_title(),
+				'auction_goal'         => $this->get_auction_goal(),
+				'auction_url'          => $this->get_auction_url(),
+				'auction_starting_bid' => $this->get_auction_starting_bid(),
 				'button_text'          => $this->get_default_button_text(),
 			]
 		);
