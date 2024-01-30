@@ -36,7 +36,7 @@ export function TimeRemaining({
 
 			<div className="relative w-full">
 				<span className={placeholderClasses}>
-					<b>Discovering relativity</b>
+					<b>Calculating duration</b>
 				</span>
 
 				<div className={timeRemainingClasses}>
