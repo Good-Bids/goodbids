@@ -58,7 +58,7 @@
 									<span><?php echo esc_html( $bid_count ); ?></span>
 								</td>
 								<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-donated" data-title="<?php esc_attr_e( 'Donated', 'goodbids' ); ?>">
-									<span><?php echo wp_kses_post( wc_price( $total_donated, [ 'decimals' => 0 ] ) ); ?></span>
+									<span><?php echo wp_kses_post( wc_price( $total_donated ) ); ?></span>
 								</td>
 								<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-high-bidder" data-title="<?php esc_attr_e( 'High Bidder', 'goodbids' ); ?>">
 									<span><?php $is_winning ? esc_html_e( 'Yes', 'goodbids' ) : esc_html_e( 'No', 'goodbids' ); ?></span>
