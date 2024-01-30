@@ -30,5 +30,10 @@
     "account": {
       "default-orders-per-page": 10
     }
+  },
+  "blocks": {
+    "all-auctions": {
+      "auctions-per-page": 1
+    }
   }
 }

@@ -3,14 +3,12 @@
  * All Auctions Block
  *
  * @since 1.0.0
- *
  * @package GoodBids
  */
 
 namespace GoodBids\Blocks;
 
 use GoodBids\Plugins\ACF\ACFBlock;
-
 
 /**
  * Class for All Auctions Block
@@ -32,11 +30,15 @@ class AllAuctions extends ACFBlock {
 	const UPCOMING_QUERY_ARG = 'gba-upcoming';
 
 	/**
+	 * Returns the amount of Auctions to display per page
+	 *
 	 * @since 1.0.0
-	 * @var ini
+	 *
+	 * @return int
 	 */
-	const AUCTION_PER_PAGE = 9;
-
+	public function get_auctions_per_page(): int {
+		return intval( goodbids()->get_config( 'blocks.all-auctions.auctions-per-page' ) );
+	}
 
 	/**
 	 * Get the current page number
@@ -52,77 +54,122 @@ class AllAuctions extends ACFBlock {
 	 *
 	 * @return bool
 	 */
-	public function is_upcoming(): bool {
+	public function is_displaying_upcoming(): bool {
 		return ! empty( $_GET[ self::UPCOMING_QUERY_ARG ] ) ? boolval( $_GET[ self::UPCOMING_QUERY_ARG ] ) : false;
 	}
 
-
 	/**
-	 * Get the offset page number
+	 * Get the offset for pagination
+	 *
+	 * @since 1.0.0
 	 *
 	 * @return int
 	 */
 	public function get_offset(): int {
-		return $this->get_current_page() == 1 ? 0 : intval( $this->get_current_page() * self::AUCTION_PER_PAGE ) - self::AUCTION_PER_PAGE;
+		$per_page = $this->get_auctions_per_page();
+		return 1 === $this->get_current_page() ? 0 : intval( $this->get_current_page() * $per_page ) - $per_page;
 	}
 
-
 	/**
-	 * Get the live auctions for the current pagination
+	 * Get the live auctions
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param array $all_auctions
+	 *
 	 * @return array
 	 */
-	public function get_live( array $all_auctions ): array {
-		return collect( $all_auctions )->filter(
-			function ( $data ) {
-				return goodbids()->auctions->has_started( $data['post_id'] ) && ! goodbids()->auctions->has_ended( $data['post_id'] );
-			}
-		)->all();
+	public function get_live_auctions( array $all_auctions = [] ): array {
+		if ( ! $all_auctions ) {
+			$all_auctions = goodbids()->sites->get_all_auctions();
+		}
+
+		return collect( $all_auctions )
+			->filter(
+				fn ( array $auction ) => goodbids()->sites->swap(
+					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
+					$auction['site_id']
+				)
+			)->all();
 	}
 
 	/**
-	 * Get the upcoming auctions for the current pagination
+	 * Get the upcoming auctions
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param array $all_auctions
-	 * @return array
-	 */
-	public function get_upcoming( array $all_auctions ): array {
-		return collect( $all_auctions )->filter(
-			function ( $data ) {
-				return goodbids()->auctions->is_upcoming( $data['post_id'] );
-			}
-		)->all();
-	}
-
-
-	/**
-	 * Filter Auctions
 	 *
 	 * @return array
 	 */
-	public function filter_auctions( array $auctions ): array {
-		// Determine which auctions to display
-		// TODO: more filters will be added
-		return collect( $auctions )->slice( $this->get_offset(), $this::AUCTION_PER_PAGE )->all();
+	public function get_upcoming_auctions( array $all_auctions = [] ): array {
+		if ( ! $all_auctions ) {
+			$all_auctions = goodbids()->sites->get_all_auctions();
+		}
+
+		return collect( $all_auctions )
+			->filter(
+				fn ( array $auction ) => goodbids()->sites->swap(
+					fn () => goodbids()->auctions->is_upcoming( $auction['post_id'] ),
+					$auction['site_id']
+				)
+			)->all();
+	}
+
+	/**
+	 * Apply filters to the auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $auctions
+	 *
+	 * @return array
+	 */
+	public function apply_filters( array $auctions ): array {
+		// TODO: Add filters here.
+		return $auctions;
+	}
+
+	/**
+	 * Apply pagination to the filtered auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $auctions
+	 *
+	 * @return array
+	 */
+	public function apply_pagination( array $auctions ): array {
+		return collect( $auctions )
+			->slice( $this->get_offset(), $this->get_auctions_per_page() )
+			->all();
 	}
 
 	/**
 	 * Pagination for all auctions
 	 *
-	 * @return ?string
+	 * @since 1.0.0
+	 *
+	 * @param string $page_url
+	 * @param int    $total_pages
+	 *
+	 * @return string
 	 */
-	public function get_pagination( $page_url, $total_pages ): ?string {
-		$pre_format = $this->get_current_page() > 0 ? '?' : '&';
+	public function get_pagination( string $page_url, int $total_pages ): string {
+		$separator = false === strpos( $page_url, '?' ) ? '?' : '&';
 
 		return paginate_links(
 			[
-				'base'      => $page_url . '%_%',
-				'format'    => $pre_format . self::PAGE_QUERY_ARG . '=%#%',
+				'base'      => esc_url_raw( $page_url . '%_%' ),
+				'format'    => $separator . self::PAGE_QUERY_ARG . '=%#%',
+				'add_args'  => false,
 				'current'   => $this->get_current_page(),
 				'total'     => $total_pages,
-				'prev_next' => true,
+				'prev_text' => '&larr;',
+				'next_text' => '&rarr;',
 				'type'      => 'list',
+				'end_size'  => 3,
+				'mid_size'  => 3,
 			]
 		);
 	}
