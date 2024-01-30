@@ -20,10 +20,10 @@ defined( 'ABSPATH' ) || exit;
 $disabled_columns = ['order-total'];
 
 // Handle pagination.
-$max_per_page    = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
-$max_pages       = ceil( $has_orders / $max_per_page );
-$offset          = ( $current_page - 1 ) * $max_per_page;
-$reward_orders   = array_slice( $reward_orders, $offset, $max_per_page );
+$max_per_page  = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
+$max_pages     = ceil( $has_orders / $max_per_page );
+$offset        = ( $current_page - 1 ) * $max_per_page;
+$reward_orders = array_slice( $reward_orders, $offset, $max_per_page );
 
 do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
