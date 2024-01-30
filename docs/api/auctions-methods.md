@@ -65,9 +65,6 @@ Returns the Auction's Goal value. If `$auction_id` is not provided, the current 
 `goodbids()->auctions->get_expected_high_bid( int $auction_id )`  
 Returns the Auction's Expected High Bid value. If `$auction_id` is not provided, the current post ID will be used.
 
-`goodbids()->auctions->get_guid( int $auction_id )`  
-Returns the Auction's Unique GUID. If `$auction_id` is not provided, the current post ID will be used.
-
 `goodbids()->auctions->get_bid_order_ids( int $auction_id, int $limit, int $user_id )`  
 Returns an array of Bid Order IDs for the given Auction ID. `$limit` can be specified to return a set number of orders. `$user_id` can be specified to return orders for a specific user.
 

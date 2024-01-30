@@ -14,6 +14,18 @@ type MetricBlockProps = {
 	value: number;
 };
 
+function formatValue(type: MetricType, value: number) {
+	if (type === 'bids') {
+		return value;
+	}
+
+	if (value < 1) {
+		return '--';
+	}
+
+	return `$${value.toLocaleString()}`;
+}
+
 function MetricBlock({ type, value }: MetricBlockProps) {
 	return (
 		<div className="flex flex-col text-center">
@@ -21,7 +33,7 @@ function MetricBlock({ type, value }: MetricBlockProps) {
 				{metricTypes[type]}
 			</p>
 			<p className="m-1 font-extrabold has-large-font-size">
-				{type === 'bids' ? value : `$${value.toLocaleString()}`}
+				{formatValue(type, value)}
 			</p>
 		</div>
 	);
@@ -30,6 +42,14 @@ function MetricBlock({ type, value }: MetricBlockProps) {
 export function Metrics() {
 	const { totalBids, lastBid, totalRaised, auctionStatus } =
 		useBiddingState();
+
+	if (
+		auctionStatus === 'initializing' ||
+		auctionStatus === 'upcoming' ||
+		auctionStatus === 'starting'
+	) {
+		return null;
+	}
 
 	return (
 		<div className="grid grid-cols-3 gap-5 my-4">

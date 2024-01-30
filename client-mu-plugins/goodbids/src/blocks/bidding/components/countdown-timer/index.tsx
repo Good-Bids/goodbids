@@ -52,7 +52,6 @@ export function CountdownTimer() {
 		auctionStatus,
 		userTotalBids,
 		setAuctionStatus,
-		setSocketMode,
 	} = useBiddingState();
 
 	const [countdownStatus, setCountdownStatus] = useState<TimeRemainingType>(
@@ -68,13 +67,7 @@ export function CountdownTimer() {
 			);
 
 			if (auctionStatus !== newCountdownStatus.status) {
-				if (newCountdownStatus.status === 'starting') {
-					setAuctionStatus(newCountdownStatus.status);
-				} else if (newCountdownStatus.status === 'live') {
-					setSocketMode();
-				} else if (newCountdownStatus.status === 'closing') {
-					setAuctionStatus(newCountdownStatus.status);
-				}
+				setAuctionStatus(newCountdownStatus.status);
 			}
 
 			setCountdownStatus(newCountdownStatus);

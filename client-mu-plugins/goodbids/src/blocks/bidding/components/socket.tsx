@@ -11,7 +11,7 @@ type SocketProps = {
 };
 
 export function Socket({ auctionId }: SocketProps) {
-	const { socketUrl, setPollingMode, setSocketAuction } = useBiddingState();
+	const { socketUrl, setSocketError, setSocketAuction } = useBiddingState();
 
 	const { readyState, lastJsonMessage } = useWebSocket<SocketMessage>(
 		`${
@@ -21,7 +21,7 @@ export function Socket({ auctionId }: SocketProps) {
 		}/${auctionId}`,
 		{
 			onError: () => {
-				setPollingMode();
+				setSocketError();
 			},
 		},
 	);
@@ -34,10 +34,10 @@ export function Socket({ auctionId }: SocketProps) {
 		}
 
 		if (readyState === ReadyState.CLOSED) {
-			setPollingMode();
+			setSocketError();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [lastJsonMessage, readyState, setPollingMode]);
+	}, [lastJsonMessage, readyState, setSocketError]);
 
 	return null;
 }

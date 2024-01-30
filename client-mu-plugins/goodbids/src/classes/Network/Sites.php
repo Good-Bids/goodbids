@@ -845,7 +845,7 @@ class Sites {
 	}
 
 	/**
-	 * Get all Auction user has participated in.
+	 * Get all Auctions user has participated in.
 	 *
 	 * @since 1.0.0
 	 *

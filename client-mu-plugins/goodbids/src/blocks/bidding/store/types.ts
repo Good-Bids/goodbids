@@ -39,7 +39,7 @@ export type UserType = {
 export type FetchingType = {
 	initialFetchComplete: boolean;
 	fetchMode: 'no-socket' | 'socket' | 'polling';
-	refetchInterval?: number;
+	hasSocketError: boolean;
 };
 
 export type BiddingState = UrlsType &
