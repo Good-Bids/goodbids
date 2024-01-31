@@ -115,6 +115,7 @@ class WooCommerce {
 		// $this->authentication_redirect();
 		// $this->prevent_wp_login_access();
 		$this->redirect_after_login();
+		$this->redirect_after_registration();
 
 		// Adjust Out of Stock Error to reflect Duplicate Bids.
 		$this->adjust_out_of_stock_error();
@@ -359,11 +360,32 @@ class WooCommerce {
 		add_filter(
 			'woocommerce_login_redirect',
 			function ( $redirect ) {
-                if ( empty( $_REQUEST['redirect-to'] ) ) { // phpcs:ignore
+				if ( empty( $_REQUEST['redirect-to'] ) ) { // phpcs:ignore
 					return $redirect;
 				}
 
-                return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
+				return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
+			},
+			5
+		);
+	}
+
+	/**
+	 * Handle post-registration redirect.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_registration(): void {
+		add_filter(
+			'woocommerce_registration_redirect',
+			function ( $redirect ) {
+				if ( empty( $_REQUEST['redirect-to'] ) ) { // phpcs:ignore
+					return $redirect;
+				}
+
+				return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
 			},
 			5
 		);
