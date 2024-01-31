@@ -114,11 +114,15 @@ class User extends WC_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Response $response
+	 * @param WP_REST_Response|WP_Error $response
 	 *
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response|WP_Error
 	 */
-	private function adjust_response_headers( WP_REST_Response $response ): WP_REST_Response {
+	private function adjust_response_headers( WP_REST_Response|WP_Error $response ): WP_REST_Response|WP_Error {
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
 		$cache_ttl = intval( goodbids()->get_config( 'auctions.rest-api.cache-timeout' ) );
 
 		$response->header( 'Cache-Control', sprintf( 'max-age=%d', $cache_ttl ) );
