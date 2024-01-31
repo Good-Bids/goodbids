@@ -56,10 +56,17 @@ class Checkout {
 					return;
 				}
 
+				// Update the Order Meta.
 				$order = wc_get_order( $order_id );
 				$order->update_meta_data( WooCommerce::AUCTION_META_KEY, $info['auction_id'] );
 				$order->update_meta_data( WooCommerce::TYPE_META_KEY, $info['order_type'] );
+				$order->update_meta_data( WooCommerce::MICROTIME_META_KEY, microtime( true ) );
 				$order->save();
+
+				// Update Auctioneer when there is a new Bid Order.
+				if ( Bids::ITEM_TYPE === $info['order_type'] ) {
+					goodbids()->auctioneer->auctions->update( $info['auction_id'] );
+				}
 
 				/**
 				 * Action triggered when an Order is paid for.

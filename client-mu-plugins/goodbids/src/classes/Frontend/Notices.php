@@ -120,6 +120,12 @@ class Notices {
 	const BID_ALREADY_PLACED = 'bid-already-placed';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const ALREADY_HIGH_BIDDER = 'already-high-bidder';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -230,6 +236,11 @@ class Notices {
 
 				self::BID_ALREADY_PLACED        => [
 					'message' => __( 'Uh-oh! Someone else already placed this bid. We\'ve removed the GoodBid from your cart. Please return to the Auction to place a new GoodBid.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
+				self::ALREADY_HIGH_BIDDER       => [
+					'message' => __( 'It looks like you are already the current high bidder for this Auction.', 'goodbids' ),
 					'type'    => 'error',
 				],
 			]

@@ -111,15 +111,16 @@ class Auctions {
 				'freeBidsAllowed',
 				'freeBidsAvailable',
 				'lastBid',
+				'lastBidder',
 				'totalBids',
-				'totalRaised'
+				'totalRaised',
 			],
 			$extra_data
 		);
 
 		$endpoint = "$this->endpoint/$auction_id/update";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
-		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
+		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
 		if ( ! $response ) {
 			return false;
@@ -144,10 +145,12 @@ class Auctions {
 		];
 
 		return array_filter(
-			array_merge(
-				$defaults,
-				$payload_data,
-				$extra_data
+			array_unique(
+				array_merge(
+					$defaults,
+					$payload_data,
+					$extra_data
+				)
 			)
 		);
 	}

@@ -253,7 +253,11 @@ class Auctioneer {
 	 *
 	 * @return bool
 	 */
-	public function is_invalid_response( mixed $response ): bool {
+	public function is_invalid_response( mixed $response = null ): bool {
+		if ( null === $response ) {
+			$response = $this->get_last_response();
+		}
+
 		if ( is_wp_error( $response ) ) {
 			// TODO: Log error.
 			error_log( '[GB Auctioneer] Invalid Response: ' . $response->get_error_message() );
@@ -288,7 +292,7 @@ class Auctioneer {
 		$msg_raw = $this->get_response_message_raw( $response );
 
 		if ( ! $msg_raw ) {
-			return '';
+			return wp_remote_retrieve_body( $response );
 		}
 
 		$message = sprintf(
