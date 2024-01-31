@@ -196,6 +196,19 @@ class AllAuctions extends ACFBlock {
 	}
 
 	/**
+	 * Sort Auctions by lowest bid
+	 *
+	 * @return array
+	 */
+	public function sortby_lowbid( array $auctions ): array {
+		return collect( $auctions )->sortBy(
+			function ( $data ) {
+				return goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' );
+			}
+		)->all();
+	}
+
+	/**
 	 * Apply filters to the auctions
 	 *
 	 * @since 1.0.0
