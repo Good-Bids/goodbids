@@ -15,6 +15,7 @@ export default {
 		borderWidth: {
 			DEFAULT: '1px',
 			0: '0',
+			2: '2px',
 		},
 		colors: {
 			//Colors are set in the wordpress theme.json
@@ -40,6 +41,14 @@ export default {
 				text: '#000',
 				bg: '#f87171',
 			},
+		},
+		fontSize: {
+			xs: 'var(--wp--preset--font-size--x-small)',
+			sm: 'var(--wp--preset--font-size--small)',
+			md: 'var(--wp--preset--font-size--medium)',
+			lg: 'var(--wp--preset--font-size--large)',
+			xl: 'var(--wp--preset--font-size--x-large)',
+			xxl: 'var(--wp--preset--font-size--xx-large)',
 		},
 		extend: {
 			animation: {
