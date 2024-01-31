@@ -59,10 +59,13 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 				</li>
 			<?php endif; ?>
 		</ul>
-		<div class="flex justify-end">
-			<div>
-				<label for="sort-auctions" class="block mb-2 text-xs text-right">Sort Auctions</label>
-				<select class="px-3 py-2 border-2 rounded-sm border-contrast" id="sort-auctions" onchange="window.location.href = '<?php echo esc_url( $page_url ); ?>' + '?' + this.value + '=1'">
+		<?php if ( ! empty( $block_auctions->get_sort_options() ) ) : ?>
+			<div class="flex justify-end">
+				<select
+					class="px-3 py-2 border-2 rounded-sm border-contrast"
+					aria-label="Sort Auctions"
+					onchange="window.location.href = '<?php echo esc_url( $page_url ); ?>' + '?' + this.value + '=1'"
+				>
 					<?php foreach ( $block_auctions->get_sort_options() as $option ) : ?>
 						<option
 							value="<?php echo esc_attr( $option['value'] ); ?>"
@@ -73,7 +76,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 					<?php endforeach; ?>
 				</select>
 			</div>
-		</div>
+		<?php endif; ?>
 	</div>
 
 

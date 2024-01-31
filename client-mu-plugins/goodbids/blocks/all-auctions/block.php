@@ -241,8 +241,11 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_sort_options(): array {
+
 		if ( $this->is_displaying_upcoming() ) {
-			return $this->get_upcoming_sort_options();
+			// TODO add sort by upcoming auction dropdown options for now just return an empty array
+			// return $this->get_upcoming_sort_options();
+			return [];
 		}
 
 		return $this->get_live_sort_options();
@@ -289,6 +292,7 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_upcoming_sort_options(): array {
+		// TODO finish adding in logic and options
 		$options = [
 			[
 				'label' => __( 'Opening Soon', 'goodbids' ),
