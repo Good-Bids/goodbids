@@ -106,6 +106,23 @@ class User extends WC_REST_Controller {
 		$payload = new Payload( $request['id'], $payload_data );
 		$payload->set_user_id( $user_id );
 
-		return rest_ensure_response( $payload->get_data() );
+		return $this->adjust_response_headers( rest_ensure_response( $payload->get_data() ) );
+	}
+
+	/**
+	 * Adjust the response headers.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Response $response
+	 *
+	 * @return WP_REST_Response
+	 */
+	private function adjust_response_headers( WP_REST_Response $response ): WP_REST_Response {
+		$cache_ttl = intval( goodbids()->get_config( 'auctions.rest-api.cache-timeout' ) );
+
+		$response->header( 'Cache-Control', sprintf( 'max-age=%d', $cache_ttl ) );
+
+		return $response;
 	}
 }

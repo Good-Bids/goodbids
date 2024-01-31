@@ -21,7 +21,10 @@
     }
   },
   "auctions": {
-    "default-free-bids": 5
+    "default-free-bids": 5,
+    "rest-api": {
+      "cache-timeout": 10
+    }
   },
   "sites": {
     "default-posts-per-page": 9

@@ -12,6 +12,7 @@ use GoodBids\Plugins\WooCommerce;
 use WC_Order;
 use WC_Product_Variation;
 use WP_Query;
+use WP_REST_Response;
 use WP_User;
 
 /**
@@ -165,6 +166,9 @@ class Auctions {
 		// Register REST API Endpoints.
 		$this->setup_api_endpoints();
 
+		// Reduce the REST API cache time for Auction Requests.
+		$this->adjust_rest_timeout();
+
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
 
@@ -308,6 +312,37 @@ class Auctions {
 				( new API\Details() )->register_routes();
 				( new API\User() )->register_routes();
 			}
+		);
+	}
+
+	/**
+	 * Use a shorter timeout for Auction REST API requests.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_rest_timeout(): void {
+		add_filter(
+			'wpcom_vip_rest_read_response_ttl',
+			function ( int $ttl, WP_REST_Response $response ): int {
+				$handler = $response->get_matched_handler();
+
+				if ( empty( $handler['callback'][0] ) || ! is_object(  $handler['callback'][0] ) ) {
+					return $ttl;
+				}
+
+				$class = get_class( $handler['callback'][0] );
+
+				if ( ! str_starts_with( $class, __NAMESPACE__ ) ) {
+					return $ttl;
+				}
+
+				// Cache for 10 seconds.
+				return intval( goodbids()->get_config( 'auctions.rest-api.cache-timeout' ) );
+			},
+			10,
+			2
 		);
 	}
 
