@@ -40,5 +40,10 @@ function goodbids() : ?\GoodBids\Core {
 	return null;
 }
 
+add_filter( 'wpcom_vip_rest_read_response_ttl', function( $ttl, $response, $rest_server, $request ) {
+    // Cache for 10 seconds.
+    return 10;
+}, 10, 4 );
+
 // Init GoodBids plugin.
 goodbids();
