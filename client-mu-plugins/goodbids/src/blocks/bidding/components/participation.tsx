@@ -9,8 +9,13 @@ function formatBids(bids: number) {
 }
 
 function ParticipationContent() {
-	const { auctionStatus, isUserLoggedIn, userTotalBids, userTotalDonated } =
-		useBiddingState();
+	const {
+		auctionStatus,
+		isUserLoggedIn,
+		userTotalBids,
+		userTotalDonated,
+		accountUrl,
+	} = useBiddingState();
 
 	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
 		if (isUserLoggedIn) {
@@ -23,7 +28,8 @@ function ParticipationContent() {
 
 		return (
 			<p className="m-0 text-center">
-				<a href="">Join GoodBids</a> to bid when the auction starts.
+				<a href={accountUrl}>Join GoodBids</a> to bid when the auction
+				starts.
 			</p>
 		);
 	}
@@ -60,7 +66,7 @@ function ParticipationContent() {
 
 	return (
 		<p className="m-0 text-center">
-			<a href="">Join GoodBids</a> to bid in this auction.
+			<a href={accountUrl}>Join GoodBids</a> to bid in this auction.
 		</p>
 	);
 }
