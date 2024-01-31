@@ -35,8 +35,8 @@ $total_pages = ceil( $total_query / $block_auctions->get_auctions_per_page() );
 $auctions    = $block_auctions->apply_pagination( $auctions );
 ?>
 <section <?php block_attr( $block ); ?>>
-	<div class="text-base text-center text-contrast">
-		<ul class="flex flex-wrap px-0 py-4 mt-0 mb-12 list-none border-b-2 border-solid border-contrast border-t-transparent border-x-transparent">
+	<div class="mb-12 text-center text-contrast">
+		<ul class="flex flex-wrap px-0 py-4 mt-0 mb-4 list-none border-b-2 border-solid border-contrast border-t-transparent border-x-transparent">
 			<?php if ( $live_auctions ) : ?>
 				<li class="me-2">
 					<a
@@ -59,7 +59,23 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 				</li>
 			<?php endif; ?>
 		</ul>
+		<div class="flex justify-end">
+			<div>
+				<label for="sort-auctions" class="block mb-2 text-xs text-right">Sort Auctions</label>
+				<select class="px-3 py-2 border-2 rounded-sm border-contrast" id="sort-auctions" onchange="window.location.href = '<?php echo esc_url( $page_url ); ?>' + '?' + this.value + '=1'">
+					<?php foreach ( $block_auctions->get_sort_options() as $option ) : ?>
+						<option
+							value="<?php echo esc_attr( $option['value'] ); ?>"
+							<?php selected( $option['selected'] ); ?>
+						>
+							<?php echo esc_html( $option['label'] ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</div>
 	</div>
+
 
 	<?php
 	if ( ! count( $auctions ) ) :

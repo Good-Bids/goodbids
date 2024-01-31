@@ -676,6 +676,18 @@ class Sites {
 						'site_id' => $site_id,
 					]
 				)
+				->sortByDesc(
+					fn ( array $auction ) => [
+						'bid_count'    => $this->swap(
+							fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
+							$auction['site_id']
+						),
+						'total_raised' => $this->swap(
+							fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
+							$auction['site_id']
+						),
+					]
+				)
 				->all()
 		);
 
@@ -698,18 +710,6 @@ class Sites {
 	 */
 	public function get_featured_auctions( array $query_args = [] ): array {
 		return collect( $this->get_all_auctions( $query_args ) )
-			->sortByDesc(
-				fn ( array $auction ) => [
-					'bid_count'    => $this->swap(
-						fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
-						$auction['site_id']
-					),
-					'total_raised' => $this->swap(
-						fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
-						$auction['site_id']
-					),
-				]
-			)
 			->slice( 0, 3 )
 			->values()
 			->all();
@@ -738,6 +738,19 @@ class Sites {
 			},
 			10,
 			3
+		);
+
+		add_action(
+			'wp_trash_post',
+			function ( int $post_id, string $previous_status ): void {
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
+					return;
+				}
+
+				delete_transient( self::ALL_AUCTIONS_TRANSIENT );
+			},
+			10,
+			2
 		);
 	}
 

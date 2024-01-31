@@ -29,6 +29,13 @@ class AllAuctions extends ACFBlock {
 	 */
 	const UPCOMING_QUERY_ARG = 'gba-upcoming';
 
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const POPULAR_QUERY_ARG = 'gba-popular';
+
 	/**
 	 * @since 1.0.0
 	 * @var string
@@ -199,14 +206,94 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function apply_filters( array $auctions ): array {
 		if ( $this->is_sortby_newest() ) {
-			$auctions = $this->sortby_start_date( $auctions );
+			return $this->sortby_start_date( $auctions );
 		}
 
 		if ( $this->is_sortby_ending() ) {
-			$auctions = $this->sortby_end_date( $auctions );
+			return $this->sortby_end_date( $auctions );
+		}
+
+		if ( $this->is_sortby_lowbid() ) {
+			return $this->sortby_lowbid( $auctions );
 		}
 
 		return $auctions;
+	}
+
+	/**
+	 * Sort options
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_sort_options(): array {
+		if ( $this->is_displaying_upcoming() ) {
+			return $this->get_upcoming_sort_options();
+		}
+
+		return $this->get_live_sort_options();
+	}
+
+	/**
+	 * Sort options for live auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_live_sort_options(): array {
+		$options = [
+			[
+				'label' => __( 'Most Popular', 'goodbids' ),
+				'value' => self::POPULAR_QUERY_ARG,
+			],
+			[
+				'label'    => __( 'Newest', 'goodbids' ),
+				'value'    => self::NEWEST_QUERY_ARG,
+				'selected' => $this->is_sortby_newest(),
+			],
+			[
+				'label'    => __( 'Ending Soon', 'goodbids' ),
+				'value'    => self::ENDING_QUERY_ARG,
+				'selected' => $this->is_sortby_ending(),
+			],
+			[
+				'label'    => __( 'Lowest Current Bid', 'goodbids' ),
+				'value'    => self::LOWBID_QUERY_ARG,
+				'selected' => $this->is_sortby_lowbid(),
+			],
+		];
+
+		return $options;
+	}
+
+	/**
+	 * Sort options for upcoming auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_upcoming_sort_options(): array {
+		$options = [
+			[
+				'label' => __( 'Opening Soon', 'goodbids' ),
+				'value' => '',
+			],
+			[
+				'label'    => __( 'Most Watched', 'goodbids' ),
+				'value'    => '',
+				'selected' => false,
+			],
+			[
+				'label'    => __( 'Lowest Starting Bid', 'goodbids' ),
+				'value'    => '',
+				'selected' => false,
+			],
+		];
+
+		return $options;
 	}
 
 	/**
