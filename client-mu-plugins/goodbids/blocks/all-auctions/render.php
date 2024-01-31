@@ -9,13 +9,21 @@
  */
 
 use GoodBids\Blocks\AllAuctions;
+use GoodBids\Auctions\Auctions;
 
 $block_auctions    = new GoodBids\Blocks\AllAuctions( $block );
 $all_auctions      = goodbids()->sites->get_all_auctions();
 $live_auctions     = $block_auctions->get_live_auctions( $all_auctions );
 $upcoming_auctions = $block_auctions->get_upcoming_auctions( $all_auctions );
-$page_url          = get_permalink( get_queried_object_id() );
-$upcoming_url      = add_query_arg( AllAuctions::UPCOMING_QUERY_ARG, 1, $page_url );
+
+
+if ( is_post_type_archive( Auctions::POST_TYPE ) ) {
+	$page_url = get_post_type_archive_link( Auctions::POST_TYPE );
+} else {
+	$page_url = get_permalink( get_queried_object_id() );
+}
+
+$upcoming_url = add_query_arg( AllAuctions::UPCOMING_QUERY_ARG, 1, $page_url );
 
 // Determine which auctions to display.
 if ( $block_auctions->is_displaying_upcoming() || ! $live_auctions ) {
@@ -62,7 +70,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 		<?php if ( ! empty( $block_auctions->get_sort_options() ) ) : ?>
 			<div class="flex justify-end">
 				<select
-					class="px-3 py-2 border-2 rounded-sm border-contrast"
+					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
 					aria-label="Sort Auctions"
 					onchange="window.location.href = '<?php echo esc_url( $page_url ); ?>' + '?' + this.value + '=1'"
 				>
