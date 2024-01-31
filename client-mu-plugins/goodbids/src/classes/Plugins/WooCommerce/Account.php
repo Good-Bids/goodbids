@@ -36,7 +36,7 @@ class Account {
 		$this->add_free_bids_tab();
 
 		// 1. Custom My Account > Auctions page.
-		$this->add_auctions_tab();
+		$this->add_my_auctions_tab();
 
 		// 0. Rename "Orders" to "Bids"
 		$this->rename_orders_tab();
@@ -70,8 +70,8 @@ class Account {
 	 *
 	 * @return void
 	 */
-	private function add_auctions_tab(): void {
-		$slug = 'auctions';
+	private function add_my_auctions_tab(): void {
+		$slug = 'my-auctions';
 
 		add_filter(
 			'goodbids_account_' . $slug . '_args',
