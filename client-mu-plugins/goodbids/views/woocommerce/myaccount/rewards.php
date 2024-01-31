@@ -1,9 +1,11 @@
 <?php
 /**
- * Orders
+ * Rewards (copy of Orders) page.
  *
- * Shows Bid orders on the account page.
+ * Shows Reward orders on the account page.
  *
+ * @global array  $reward_orders
+ * @global bool   $has_orders
  * @global string $wp_button_class
  * @global int    $current_page
  *
@@ -14,47 +16,56 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// Our custom overrides.
-$goodbids_orders = goodbids()->sites->get_user_bid_orders();
-$has_orders      = count( $goodbids_orders );
+// Customizations
+$disabled_columns = ['order-total'];
 
 // Handle pagination.
-$max_per_page    = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
-$max_pages       = ceil( $has_orders / $max_per_page );
-$offset          = ( $current_page - 1 ) * $max_per_page;
-$goodbids_orders = array_slice( $goodbids_orders, $offset, $max_per_page );
+$max_per_page  = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
+$max_pages     = ceil( $has_orders / $max_per_page );
+$offset        = ( $current_page - 1 ) * $max_per_page;
+$reward_orders = array_slice( $reward_orders, $offset, $max_per_page );
 
 do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php if ( $has_orders ) : ?>
 
-	<?php goodbids()->load_view( 'woocommerce/myaccount/orders-header.php' ); ?>
+	<?php goodbids()->load_view( 'woocommerce/myaccount/rewards-header.php' ); ?>
 
 	<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 		<thead>
-			<tr>
-				<?php foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) : ?>
-					<th class="woocommerce-orders-table__header woocommerce-orders-table__header-<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
-				<?php endforeach; ?>
-			</tr>
+		<tr>
+			<?php
+			foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) :
+				if ( in_array( $column_id, $disabled_columns, true ) ) {
+					continue;
+				}
+				?>
+				<th class="woocommerce-orders-table__header woocommerce-orders-table__header-<?php echo esc_attr( $column_id ); ?>"><span class="nobr"><?php echo esc_html( $column_name ); ?></span></th>
+			<?php endforeach; ?>
+		</tr>
 		</thead>
 
 		<tbody>
 			<?php
-			foreach ( $goodbids_orders as $goodbids_order ) {
+			foreach ( $reward_orders as $reward_order ) {
 				goodbids()->sites->swap(
-					function () use ( $goodbids_order, $wp_button_class ) {
-						$order      = wc_get_order( $goodbids_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+					function () use ( $reward_order, $disabled_columns, $wp_button_class ) {
+						$order      = wc_get_order( $reward_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 						$item_count = $order->get_item_count() - $order->get_item_count_refunded();
 						?>
 						<tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
-							<?php foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) : ?>
+							<?php
+							foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) :
+								if ( in_array( $column_id, $disabled_columns, true ) ) {
+									continue;
+								}
+								?>
 								<td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
 									<?php if ( has_action( 'woocommerce_my_account_my_orders_column_' . $column_id ) ) : ?>
-										<?php do_action( 'woocommerce_my_account_my_orders_column_' . $column_id, $order, $goodbids_order['site_id'] ); ?>
+										<?php do_action( 'woocommerce_my_account_my_orders_column_' . $column_id, $order, $reward_order['site_id'] ); ?>
 									<?php elseif ( 'order-number' === $column_id ) : ?>
 										<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>">
-											<?php echo esc_html( _x( '#', 'hash before order number', 'woocommerce' ) . $order->get_order_number() ); ?>.<?php echo esc_html( $goodbids_order['site_id'] ); ?>
+											<?php echo esc_html( _x( '#', 'hash before order number', 'woocommerce' ) . $order->get_order_number() ); ?>.<?php echo esc_html( $reward_order['site_id'] ); ?>
 										</a>
 
 									<?php elseif ( 'order-date' === $column_id ) : ?>
@@ -91,7 +102,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 						</tr>
 						<?php
 					},
-					$goodbids_order['site_id']
+					$reward_order['site_id']
 				);
 			}
 			?>
@@ -106,7 +117,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 			echo wp_kses_post(
 				paginate_links(
 					[
-						'base'      => esc_url_raw( wc_get_endpoint_url( 'orders', '%_%' ) ),
+						'base'      => esc_url_raw( wc_get_endpoint_url( 'rewards', '%_%' ) ),
 						'format'    => '%#%',
 						'add_args'  => false,
 						'current'   => max( 1, $current_page ),
@@ -125,7 +136,17 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php else : ?>
 
-	<?php wc_print_notice( esc_html__( 'You have not bid on any auctions yet.', 'goodbids' ), 'notice' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment ?>
+	<?php
+	$message = sprintf(
+		'%s <a href="%s">%s</a> %s',
+		esc_html__( 'Check out the', 'goodbids' ),
+		esc_url( wc_get_endpoint_url( 'auctions' ) ),
+		esc_html__( 'Auctions page', 'goodbids' ),
+		esc_html__( 'to find auctions you\'ve recently won and claim your reward!', 'goodbids' )
+	);
+
+	wc_print_notice( $message, 'notice' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
+	?>
 
 <?php endif; ?>
 
