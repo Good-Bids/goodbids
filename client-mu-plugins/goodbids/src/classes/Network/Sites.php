@@ -649,7 +649,7 @@ class Sites {
 
 				return $privacy_policy_link;
 			},
-			get_current_blog_id()
+			get_main_site_id()
 		);
 	}
 
