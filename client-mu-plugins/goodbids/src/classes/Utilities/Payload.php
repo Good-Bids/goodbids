@@ -28,6 +28,12 @@ class Payload {
 	private array $payload = [];
 
 	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private array $override_data = [];
+
+	/**
 	 * The Auction ID.
 	 *
 	 * @since 1.0.0
@@ -137,6 +143,20 @@ class Payload {
 	}
 
 	/**
+	 * Override default Payload Data.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $key
+	 * @param mixed  $value
+	 *
+	 * @return void
+	 */
+	public function set_data( string $key, mixed $value ): void {
+		$this->override_data[ $key ] = $value;
+	}
+
+	/**
 	 * Get the Payload Data as an array.
 	 *
 	 * @since 1.0.0
@@ -172,6 +192,10 @@ class Payload {
 	 * @return mixed
 	 */
 	private function get_payload_item( string $item ): mixed {
+		if ( isset( $this->override_data[ $item ] ) ) {
+			return $this->override_data[ $item ];
+		}
+
 		return match ( $item ) {
 			'accountUrl'        => $this->get_auth_url(),
 			'auctionStatus'     => strtolower( goodbids()->auctions->get_status( $this->auction_id ) ),

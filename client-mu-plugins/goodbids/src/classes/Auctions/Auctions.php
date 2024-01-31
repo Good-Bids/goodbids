@@ -211,6 +211,9 @@ class Auctions {
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
 
+		// Tell Auctioneer about new Bid Order.
+		$this->update_auctioneer_on_order_complete();
+
 		// Allow admins to force update the close date to the Auction End Date.
 		$this->force_update_close_date();
 
@@ -1792,6 +1795,30 @@ class Auctions {
 				}
 			},
 			10,
+			2
+		);
+	}
+
+	/**
+	 * Update the Auctioneer when a Bid is placed.
+	 * Priority must be AFTER Bid Amount has been increased.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_auctioneer_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				// Bail if this isn't a Bid order.
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				goodbids()->auctioneer->auctions->update( $auction_id );
+			},
+			50,
 			2
 		);
 	}
