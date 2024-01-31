@@ -33,7 +33,7 @@
   },
   "blocks": {
     "all-auctions": {
-      "auctions-per-page": 1
+      "auctions-per-page": 9
     }
   }
 }

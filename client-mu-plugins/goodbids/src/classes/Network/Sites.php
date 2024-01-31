@@ -32,12 +32,6 @@ class Sites {
 	const ALL_AUCTIONS_TRANSIENT = '_goodbids_all_auctions';
 
 	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FEATURED_AUCTIONS_TRANSIENT = '_goodbids_featured_auctions';
-
-	/**
 	 * Nonprofit custom fields
 	 *
 	 * @since 1.0.0
@@ -703,13 +697,7 @@ class Sites {
 	 * @return array
 	 */
 	public function get_featured_auctions( array $query_args = [] ): array {
-		$featured = empty( $query_args ) ? get_transient( self::ALL_AUCTIONS_TRANSIENT ) : false;
-
-		if ( $featured ) {
-			return $featured;
-		}
-
-		$featured = collect( $this->get_all_auctions( $query_args ) )
+		return collect( $this->get_all_auctions( $query_args ) )
 			->sortByDesc(
 				fn ( array $auction ) => [
 					'bid_count'    => $this->swap(
@@ -725,12 +713,6 @@ class Sites {
 			->slice( 0, 3 )
 			->values()
 			->all();
-
-		if ( empty( $query_args ) ) {
-			set_transient( self::FEATURED_AUCTIONS_TRANSIENT, $featured, DAY_IN_SECONDS );
-		}
-
-		return $featured;
 	}
 
 	/**
@@ -753,7 +735,6 @@ class Sites {
 				}
 
 				delete_transient( self::ALL_AUCTIONS_TRANSIENT );
-				delete_transient( self::FEATURED_AUCTIONS_TRANSIENT );
 			},
 			10,
 			3
