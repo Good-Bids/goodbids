@@ -1616,6 +1616,11 @@ class Auctions {
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
+					// Skip START Action on Auctions that have ended.
+					if ( $this->has_ended( $auction_id ) ) {
+						continue;
+					}
+
 					if ( $this->trigger_auction_start( $auction_id ) ) {
 						$starts++;
 					}
