@@ -205,7 +205,7 @@ class Payload {
 			'freeBidsAvailable' => goodbids()->auctions->get_free_bids_available( $this->auction_id ),
 			'freeBidsAllowed'   => goodbids()->auctions->are_free_bids_allowed( $this->auction_id ),
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
-			'lastBid'           => $this->get_last_bid(),
+			'lastBid'           => $this->get_last_bid_amount(),
 			'lastBidder'        => $this->get_last_bidder(),
 			'rewardUrl'         => goodbids()->auctions->rewards->get_claim_reward_url( $this->auction_id ), // TBD.
 			'requestTime'       => current_datetime()->format( 'c' ),
@@ -262,13 +262,13 @@ class Payload {
 	 *
 	 * @return ?float
 	 */
-	private function get_last_bid(): ?float {
+	private function get_last_bid_amount(): ?float {
 		if ( ! $this->last_bid ) {
 			$this->last_bid = goodbids()->auctions->get_last_bid( $this->auction_id );
 		}
 
 		if ( $this->last_bid ) {
-			return $this->last_bid->get_total( 'edit' );
+			return $this->last_bid->get_subtotal();
 		}
 
 		return 0;
