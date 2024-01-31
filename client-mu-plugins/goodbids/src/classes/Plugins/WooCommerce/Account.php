@@ -120,10 +120,11 @@ class Account {
 	 *
 	 * @param string $slug
 	 * @param string $label
+	 * @param bool   $core_wc
 	 *
 	 * @return void
 	 */
-	private function init_new_account_page( string $slug, string $label ): void {
+	private function init_new_account_page( string $slug, string $label, bool $core_wc = false ): void {
 		add_action(
 			'init',
 			fn () => add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES )
@@ -163,10 +164,17 @@ class Account {
 
 		add_action(
 			'woocommerce_account_' . $slug . '_endpoint',
-			fn () => wc_get_template(
-				'myaccount/' . $slug . '.php',
-				apply_filters( 'goodbids_account_' . $slug . '_args', [] )
-			)
+			function () use ( $slug, $core_wc ): void {
+				$template = 'myaccount/' . $slug . '.php';
+				$args     = apply_filters( 'goodbids_account_' . $slug . '_args', [] );
+
+				if ( $core_wc ) {
+					wc_get_template( $template, $args );
+					return;
+				}
+
+				goodbids()->load_view( 'woocommerce/' . $template, $args );
+			}
 		);
 	}
 
