@@ -230,6 +230,21 @@ class Auctioneer {
 	}
 
 	/**
+	 * Get the last response code.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_last_response_code(): ?int {
+		if ( ! $this->get_last_response() ) {
+			return null;
+		}
+
+		return wp_remote_retrieve_response_code( $this->get_last_response() );
+	}
+
+	/**
 	 * Check if the response if valid.
 	 *
 	 * @since 1.0.0

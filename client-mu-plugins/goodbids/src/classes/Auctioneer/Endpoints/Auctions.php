@@ -52,7 +52,8 @@ class Auctions {
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
-		if ( ! $response ) {
+		// Bail if the request fails and the response code is not 208 (Already Reported).
+		if ( ! $response && 208 !== goodbids()->auctioneer->get_last_response_code() ) {
 			return false;
 		}
 

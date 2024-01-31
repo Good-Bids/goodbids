@@ -1335,7 +1335,6 @@ class Auctions {
 
 		if ( $this->has_ended( $auction_id ) ) {
 			$status = self::STATUS_CLOSED;
-
 		}
 
 		return $status;
