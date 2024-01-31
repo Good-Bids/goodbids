@@ -16,7 +16,6 @@ $all_auctions      = goodbids()->sites->get_all_auctions();
 $live_auctions     = $block_auctions->get_live_auctions( $all_auctions );
 $upcoming_auctions = $block_auctions->get_upcoming_auctions( $all_auctions );
 
-
 if ( is_post_type_archive( Auctions::POST_TYPE ) ) {
 	$page_url = get_post_type_archive_link( Auctions::POST_TYPE );
 } else {
@@ -30,10 +29,12 @@ if ( $block_auctions->is_displaying_upcoming() || ! $live_auctions ) {
 	$auctions           = $upcoming_auctions;
 	$live_btn_class     = 'btn-fill';
 	$upcoming_btn_class = 'btn-fill-secondary';
+	$sort_url           = $upcoming_url . '&';
 } else {
 	$auctions           = $live_auctions;
 	$live_btn_class     = 'btn-fill-secondary';
 	$upcoming_btn_class = 'btn-fill';
+	$sort_url           = $page_url . '?';
 }
 
 // Apply filters and pagination.
@@ -72,7 +73,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 				<select
 					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
 					aria-label="Sort Auctions"
-					onchange="window.location.href = '<?php echo esc_url( $page_url ); ?>' + '?' + this.value + '=1'"
+					onchange="window.location.href = '<?php echo esc_url( $sort_url ); ?>' + this.value + '=1'"
 				>
 					<?php foreach ( $block_auctions->get_sort_options() as $option ) : ?>
 						<option
