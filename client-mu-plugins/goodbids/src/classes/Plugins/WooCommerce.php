@@ -43,6 +43,12 @@ class WooCommerce {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const MICROTIME_META_KEY = '_goodbids_order_microtime';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	private string $slug = 'woocommerce';
 
 	/**

@@ -230,6 +230,21 @@ class Auctioneer {
 	}
 
 	/**
+	 * Get the last response code.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_last_response_code(): ?int {
+		if ( ! $this->get_last_response() ) {
+			return null;
+		}
+
+		return wp_remote_retrieve_response_code( $this->get_last_response() );
+	}
+
+	/**
 	 * Check if the response if valid.
 	 *
 	 * @since 1.0.0
@@ -238,7 +253,11 @@ class Auctioneer {
 	 *
 	 * @return bool
 	 */
-	public function is_invalid_response( mixed $response ): bool {
+	public function is_invalid_response( mixed $response = null ): bool {
+		if ( null === $response ) {
+			$response = $this->get_last_response();
+		}
+
 		if ( is_wp_error( $response ) ) {
 			// TODO: Log error.
 			error_log( '[GB Auctioneer] Invalid Response: ' . $response->get_error_message() );
@@ -273,7 +292,7 @@ class Auctioneer {
 		$msg_raw = $this->get_response_message_raw( $response );
 
 		if ( ! $msg_raw ) {
-			return '';
+			return wp_remote_retrieve_body( $response );
 		}
 
 		$message = sprintf(

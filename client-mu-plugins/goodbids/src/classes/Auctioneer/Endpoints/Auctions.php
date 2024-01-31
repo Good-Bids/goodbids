@@ -48,11 +48,12 @@ class Auctions {
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$auction_id/start";
+		$endpoint = "$this->endpoint/$auction_id/start";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
-		if ( ! $response ) {
+		// Bail if the request fails and the response code is not 208 (Already Reported).
+		if ( ! $response && 208 !== goodbids()->auctioneer->get_last_response_code() ) {
 			return false;
 		}
 
@@ -80,7 +81,7 @@ class Auctions {
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$auction_id/end";
+		$endpoint = "$this->endpoint/$auction_id/end";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -110,15 +111,16 @@ class Auctions {
 				'freeBidsAllowed',
 				'freeBidsAvailable',
 				'lastBid',
+				'lastBidder',
 				'totalBids',
-				'totalRaised'
+				'totalRaised',
 			],
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$auction_id/update";
+		$endpoint = "$this->endpoint/$auction_id/update";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
-		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
+		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
 		if ( ! $response ) {
 			return false;
@@ -143,10 +145,12 @@ class Auctions {
 		];
 
 		return array_filter(
-			array_merge(
-				$defaults,
-				$payload_data,
-				$extra_data
+			array_unique(
+				array_merge(
+					$defaults,
+					$payload_data,
+					$extra_data
+				)
 			)
 		);
 	}

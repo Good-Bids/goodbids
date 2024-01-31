@@ -8,6 +8,9 @@ Makes a request to the Auctioneer API.
 `goodbids()->auctioneer->get_last_response()`  
 Returns the last response from the Auctioneer API.
 
+`goodbids()->auctioneer->get_last_response_code()`  
+Returns the last response code from the Auctioneer API.
+
 `goodbids()->auctioneer->is_invalid_response( mixed $response )`  
 Checks if the API response is valid.
 

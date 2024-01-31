@@ -155,6 +155,13 @@ class Cart {
 						exit;
 					}
 
+					// Make sure they aren't the current high bidder.
+					if ( goodbids()->auctions->is_current_user_winning( $auction_id ) ) {
+						$redirect = add_query_arg( 'gb-notice', Notices::ALREADY_HIGH_BIDDER, $auction_url );
+						wp_safe_redirect( $redirect );
+						exit;
+					}
+
 					// Nothing left to do for bid items.
 					return $passed;
 				}
