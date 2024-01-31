@@ -45,7 +45,7 @@ export default {
 		fontSize: {
 			xs: 'var(--wp--preset--font-size--x-small)',
 			sm: 'var(--wp--preset--font-size--small)',
-			base: 'var(--wp--preset--font-size--medium)',
+			md: 'var(--wp--preset--font-size--medium)',
 			lg: 'var(--wp--preset--font-size--large)',
 			xl: 'var(--wp--preset--font-size--x-large)',
 			xxl: 'var(--wp--preset--font-size--xx-large)',
