@@ -102,7 +102,7 @@ class AllAuctions extends ACFBlock {
 	}
 
 	/**
-	 * Are we sorting by $query_arg
+	 * Is it sorting by $query_arg
 	 *
 	 * @since 1.0.0
 	 *
@@ -282,12 +282,9 @@ class AllAuctions extends ACFBlock {
 	 *
 	 * @return array
 	 */
-	public function get_sort_options(): array {
-
+	public function get_sort_dropdown_options(): array {
 		if ( $this->is_displaying_upcoming() ) {
-			// TODO add sort by upcoming auction dropdown options for now just return an empty array
 			return $this->get_upcoming_sort_options();
-			// return [];
 		}
 
 		return $this->get_live_sort_options();
@@ -303,8 +300,9 @@ class AllAuctions extends ACFBlock {
 	public function get_live_sort_options(): array {
 		$options = [
 			[
-				'label' => __( 'Most Popular', 'goodbids' ),
-				'value' => self::POPULAR_QUERY_ARG,
+				'label'    => __( 'Most Popular', 'goodbids' ),
+				'value'    => self::POPULAR_QUERY_ARG,
+				'selected' => '',
 			],
 			[
 				'label'    => __( 'Newest', 'goodbids' ),
@@ -334,12 +332,14 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_upcoming_sort_options(): array {
-		// TODO finish adding in logic and options
+
 		$options = [
 			[
-				'label' => __( 'Opening Soon', 'goodbids' ),
-				'value' => self::OPENING_QUERY_ARG,
+				'label'    => __( 'Opening Soon', 'goodbids' ),
+				'value'    => self::OPENING_QUERY_ARG,
+				'selected' => '',
 			],
+			// TODO finish once we have most watched set up
 			// [
 			// 'label'    => __( 'Most Watched', 'goodbids' ),
 			// 'value'    => '',
