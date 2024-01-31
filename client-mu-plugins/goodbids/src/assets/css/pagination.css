@@ -1,0 +1,14 @@
+@layer components {
+	ul.page-numbers {
+		@apply flex gap-5 list-none p-0 justify-center items-center;
+
+		li {
+			@apply flex;
+		}
+
+		a.next,
+		a.prev {
+			@apply btn-fill text-xs;
+		}
+	}
+}

@@ -2,6 +2,7 @@
 @import '../../../blocks/reward-product-gallery/block.css';
 
 @import 'global-forms.css';
+@import 'pagination.css';
 
 /* Patterns */
 @import 'patterns/nonprofit-interest-form.css';

@@ -12,6 +12,7 @@ use GoodBids\Plugins\WooCommerce;
 use WC_Order;
 use WC_Product_Variation;
 use WP_Query;
+use WP_REST_Response;
 use WP_User;
 
 /**
@@ -165,6 +166,9 @@ class Auctions {
 		// Register REST API Endpoints.
 		$this->setup_api_endpoints();
 
+		// Reduce the REST API cache time for Auction Requests.
+		$this->adjust_rest_timeout();
+
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
 
@@ -206,9 +210,6 @@ class Auctions {
 
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
-
-		// Tell Auctioneer about new Bid Order.
-		$this->update_auctioneer_on_order_complete();
 
 		// Allow admins to force update the close date to the Auction End Date.
 		$this->force_update_close_date();
@@ -312,6 +313,37 @@ class Auctions {
 	}
 
 	/**
+	 * Use a shorter timeout for Auction REST API requests.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_rest_timeout(): void {
+		add_filter(
+			'wpcom_vip_rest_read_response_ttl',
+			function ( int $ttl, WP_REST_Response $response ): int {
+				$handler = $response->get_matched_handler();
+
+				if ( empty( $handler['callback'][0] ) || ! is_object(  $handler['callback'][0] ) ) {
+					return $ttl;
+				}
+
+				$class = get_class( $handler['callback'][0] );
+
+				if ( ! str_starts_with( $class, __NAMESPACE__ ) ) {
+					return $ttl;
+				}
+
+				// Cache for 10 seconds.
+				return intval( goodbids()->get_config( 'auctions.rest-api.cache-timeout' ) );
+			},
+			10,
+			2
+		);
+	}
+
+	/**
 	 * Returns a WP_Query object for all auctions
 	 *
 	 * @since 1.0.0
@@ -329,6 +361,27 @@ class Auctions {
 		];
 
 		return new WP_Query( array_merge( $args, $query_args ) );
+	}
+
+	/**
+	 * Check if an auction is Upcoming.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_upcoming( int $auction_id ): bool {
+		if ( $this->has_started( $auction_id ) ) {
+			return false;
+		}
+
+		// Use the current time + two days to get Auctions about to start.
+		$start_date     = current_datetime()->add( new \DateInterval( 'P2D' ) )->format( 'Y-m-d H:i:s' );
+		$auctions_start = $this->get_start_date_time( $auction_id );
+
+		return $auctions_start < $start_date;
 	}
 
 	/**
@@ -1019,7 +1072,7 @@ class Auctions {
 					'key'     => WooCommerce::TYPE_META_KEY,
 					'compare' => '=',
 					'value'   => Bids::ITEM_TYPE,
-				]
+				],
 			],
 		];
 
@@ -1279,7 +1332,6 @@ class Auctions {
 
 		if ( $this->has_ended( $auction_id ) ) {
 			$status = self::STATUS_CLOSED;
-
 		}
 
 		return $status;
@@ -1564,6 +1616,11 @@ class Auctions {
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
+					// Skip START Action on Auctions that have ended.
+					if ( $this->has_ended( $auction_id ) ) {
+						continue;
+					}
+
 					if ( $this->trigger_auction_start( $auction_id ) ) {
 						$starts++;
 					}
@@ -1786,32 +1843,6 @@ class Auctions {
 		goodbids()->auctioneer->auctions->update( $auction_id );
 
 		return true;
-	}
-
-	/**
-	 * Update the Auctioneer when a Bid is placed.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function update_auctioneer_on_order_complete(): void {
-		add_action(
-			'goodbids_order_payment_complete',
-			function ( int $order_id, int $auction_id ) {
-				// Trigger Node to update the Auction.
-				$extra_data = [
-					'totalBids',
-					'totalRaised',
-					'lastBid',
-					'lastBidder',
-				];
-
-				goodbids()->auctioneer->auctions->update( $auction_id, $extra_data );
-			},
-			10,
-			2
-		);
 	}
 
 	/**

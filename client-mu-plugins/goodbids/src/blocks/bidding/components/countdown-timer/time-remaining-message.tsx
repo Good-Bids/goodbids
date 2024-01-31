@@ -76,7 +76,7 @@ export function TimeRemainingMessage({
 
 	return (
 		<span>
-			<b>Discovering relativity</b>
+			<b>Calculating duration</b>
 		</span>
 	);
 }

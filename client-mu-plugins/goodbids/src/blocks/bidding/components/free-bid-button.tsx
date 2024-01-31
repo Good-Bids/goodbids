@@ -14,13 +14,17 @@ export function FreeBidButton() {
 	const disabled = isLastBidder || userFreeBids < 1 || !isUserLoggedIn;
 
 	const classes = clsx('btn-fill-secondary text-center', {
-		'pointer-events-none cursor-not-allowed bg-base-3': disabled,
+		'pointer-events-none cursor-not-allowed !text-contrast-4': disabled,
 		'pointer-events-auto': !disabled,
 	});
 
 	if (freeBidsAllowed && auctionStatus === 'live') {
 		return (
-			<a href={bidUrl} className={classes}>
+			<a
+				href={`${bidUrl}&use-free-bid=1`}
+				className={classes}
+				aria-disabled={disabled}
+			>
 				{`Place free bid ${
 					isUserLoggedIn ? `(${userFreeBids} available)` : ''
 				}`}

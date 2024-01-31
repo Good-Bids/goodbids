@@ -13,7 +13,7 @@
 	<?php
 	foreach ( $auctions as $auction ) :
 		goodbids()->sites->swap(
-			function() use ( $auction ) {
+			function () use ( $auction ) {
 				global $post;
 				$og_post = $post;
 				$post    = get_post( $auction['post_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited

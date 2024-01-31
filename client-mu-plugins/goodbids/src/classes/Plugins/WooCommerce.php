@@ -43,6 +43,12 @@ class WooCommerce {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const MICROTIME_META_KEY = '_goodbids_order_microtime';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	private string $slug = 'woocommerce';
 
 	/**
@@ -115,6 +121,7 @@ class WooCommerce {
 		// $this->authentication_redirect();
 		// $this->prevent_wp_login_access();
 		$this->redirect_after_login();
+		$this->redirect_after_registration();
 
 		// Adjust Out of Stock Error to reflect Duplicate Bids.
 		$this->adjust_out_of_stock_error();
@@ -122,11 +129,14 @@ class WooCommerce {
 		// Use GoodBids templates when available.
 		$this->load_woocommerce_templates();
 
-		// Custom Email Notifications
-		$this->setup_email_notifications();
-
 		// Adjust the WooCommerce Checkout Actions block.
 		$this->modify_checkout_actions_block();
+
+		// Add email notifications.
+		$this->setup_email_notifications();
+
+		// Adding Custom Email Styles
+		$this->add_custom_email_styles();
 	}
 
 	/**
@@ -367,6 +377,27 @@ class WooCommerce {
 	}
 
 	/**
+	 * Handle post-registration redirect.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_after_registration(): void {
+		add_filter(
+			'woocommerce_registration_redirect',
+			function ( $redirect ) {
+				if ( empty( $_REQUEST['redirect-to'] ) ) { // phpcs:ignore
+					return $redirect;
+				}
+
+				return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
+			},
+			5
+		);
+	}
+
+	/**
 	 * Empty Cart and Modify Error when out of stock error is received.
 	 *
 	 * @since 1.0.0
@@ -389,30 +420,6 @@ class WooCommerce {
 			},
 			10,
 			4
-		);
-	}
-
-	/**
-	 * Load WooCommerce Templates from the GoodBids Views folder.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function load_woocommerce_templates(): void {
-		add_filter(
-			'wc_get_template',
-			function ( $template, $template_name ): string {
-				$goodbids_path = goodbids()->get_view_path( 'woocommerce/' . $template_name );
-
-				if ( $goodbids_path && file_exists( $goodbids_path ) ) {
-					return $goodbids_path;
-				}
-
-				return $template;
-			},
-			8,
-			2
 		);
 	}
 
@@ -478,6 +485,155 @@ class WooCommerce {
 			},
 			10,
 			3
+		);
+	}
+
+
+	/**
+	 * Get User Email Addresses. If no user_id is provided, the current user is used.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_emails( int $user_id = null ): array {
+		$emails = [];
+
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$user = get_user_by( 'id', $user_id );
+
+		if ( ! $user ) {
+			return $emails;
+		}
+
+		$emails[] = $user->user_email;
+
+		$billing_email = get_user_meta( $user_id, 'billing_email', true );
+		if ( $billing_email ) {
+			$emails[] = $billing_email;
+		}
+
+		return $emails;
+	}
+
+	/**
+	 * Load WooCommerce Templates from the GoodBids Views folder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function load_woocommerce_templates(): void {
+		add_filter(
+			'woocommerce_locate_template',
+			function ( $template, $template_name, $template_path ): string {
+				// Only override templates coming from WooCommerce.
+				if ( 'woocommerce' !== trim( $template_path, '/' ) ) {
+					return $template;
+				}
+
+				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
+				if ( file_exists( $goodbids_path ) ) {
+					return $goodbids_path;
+				}
+
+				return $template;
+			},
+			8,
+			3
+		);
+	}
+
+	/**
+	 * Create a new Free Bids tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_free_bids_account_tab(): void {
+		$slug = 'free-bids';
+
+		add_action(
+			'init',
+			function () use ( $slug ): void {
+				add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES );
+			}
+		);
+
+		add_filter(
+			'query_vars',
+			function ( $vars ) use ( $slug ): array {
+				if ( ! in_array( $slug, $vars, true ) ) {
+					$vars[] = $slug;
+				}
+				return $vars;
+			}
+		);
+
+		add_filter(
+			'woocommerce_account_menu_items',
+			function ( $items ) use ( $slug ): array {
+				if ( array_key_exists( $slug, $items ) ) {
+					return $items;
+				}
+
+				$new_items = [];
+				foreach ( $items as $id => $item ) {
+					$new_items[ $id ] = $item;
+					if ( 'orders' === $id ) {
+						$new_items[ $slug ] = __( 'Free Bids', 'goodbids' );
+					}
+				}
+
+				return $new_items;
+			}
+		);
+
+		add_action(
+			'woocommerce_account_' . $slug . '_endpoint',
+			function () use ( $slug ) {
+				$free_bids = goodbids()->users->get_free_bids();
+				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
+			}
+		);
+	}
+
+	/**
+	 * Add custom email styles
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function add_custom_email_styles(): void {
+		add_filter(
+			'woocommerce_email_styles',
+			function ( string $css ) {
+				$custom_css = sprintf(
+					'.button-wrapper {
+						text-align: center;
+						margin: 42px 0 12px 0 !important;
+					}
+					.button {
+						display: inline-block;
+						margin: 0 auto;
+						background-color: %s;
+						border-radius: 3px;
+						color: #ffffff;
+						padding: 8px 20px;
+						text-decoration: none;
+					}',
+					esc_attr( get_option( 'woocommerce_email_base_color' ) )
+				);
+
+				return $css . $custom_css;
+			},
+			10
 		);
 	}
 }

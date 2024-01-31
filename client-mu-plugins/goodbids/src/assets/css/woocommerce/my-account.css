@@ -1,6 +1,6 @@
 @layer components {
 	#customer_login {
-		@apply flex flex-col;
+		@apply flex flex-col items-center;
 
 		& > div[class^='u-column'] {
 			@apply w-full max-w-md;

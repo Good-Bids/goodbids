@@ -21,7 +21,10 @@
     }
   },
   "auctions": {
-    "default-free-bids": 5
+    "default-free-bids": 5,
+    "rest-api": {
+      "cache-timeout": 10
+    }
   },
   "sites": {
     "default-posts-per-page": 9
@@ -29,6 +32,11 @@
   "woocommerce": {
     "account": {
       "default-orders-per-page": 10
+    }
+  },
+  "blocks": {
+    "all-auctions": {
+      "auctions-per-page": 9
     }
   }
 }
