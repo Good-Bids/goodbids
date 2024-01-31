@@ -97,7 +97,7 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
+	 * @param int   $auction_id
 	 * @param array $extra_data
 	 *
 	 * @return bool
@@ -111,7 +111,7 @@ class Auctions {
 				'freeBidsAllowed',
 				'freeBidsAvailable',
 				'lastBid',
-				'lastBidder',
+				'startTime',
 				'totalBids',
 				'totalRaised',
 			],
