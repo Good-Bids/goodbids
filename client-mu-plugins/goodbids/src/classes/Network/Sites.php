@@ -675,7 +675,7 @@ class Sites {
 		}
 
 		$auctions = $this->loop(
-			fn ( int $site_id ) => collect( goodbids()->auctions->get_all( $query_args ) )
+			fn ( int $site_id ) => collect( ( goodbids()->auctions->get_all( $query_args ) )->posts )
 				->map(
 					fn ( int $post_id ) => [
 						'post_id' => $post_id,
