@@ -48,7 +48,7 @@ class Auctions {
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$auction_id/start";
+		$endpoint = "$this->endpoint/$auction_id/start";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -80,7 +80,7 @@ class Auctions {
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$auction_id/end";
+		$endpoint = "$this->endpoint/$auction_id/end";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
@@ -116,7 +116,7 @@ class Auctions {
 			$extra_data
 		);
 
-		$endpoint = "{$this->endpoint}/$auction_id/update";
+		$endpoint = "$this->endpoint/$auction_id/update";
 		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
 
