@@ -332,27 +332,6 @@ class Auctions {
 	}
 
 	/**
-	 * Check if an auction is Upcoming.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 *
-	 * @return bool
-	 */
-	public function is_upcoming( int $auction_id ): bool {
-		if ( $this->has_started( $auction_id ) ) {
-			return false;
-		}
-
-		// Use the current time + two days to get Auctions about to start.
-		$start_date     = current_datetime()->add( new \DateInterval( 'P2D' ) )->format( 'Y-m-d H:i:s' );
-		$auctions_start = $this->get_start_date_time( $auction_id );
-
-		return $auctions_start < $start_date;
-	}
-
-	/**
 	 * Get the default template for Auctions.
 	 *
 	 * @since 1.0.0

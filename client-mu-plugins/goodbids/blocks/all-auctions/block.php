@@ -9,6 +9,7 @@
 namespace GoodBids\Blocks;
 
 use GoodBids\Plugins\ACF\ACFBlock;
+use GoodBids\Auctions\Auctions;
 
 /**
  * Class for All Auctions Block
@@ -163,7 +164,7 @@ class AllAuctions extends ACFBlock {
 		return collect( $all_auctions )
 			->filter(
 				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => goodbids()->auctions->is_upcoming( $auction['post_id'] ),
+					fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
 					$auction['site_id']
 				)
 			)->all();
