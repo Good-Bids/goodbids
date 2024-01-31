@@ -87,7 +87,7 @@ export function handelSetFetchAuction(
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
 			initialFetchComplete: true,
-			fetchMode: 'socket',
+			fetchMode: 'polling',
 		};
 	}
 
@@ -142,6 +142,6 @@ export function handleSetSocketMode(
 	}
 
 	return {
-		fetchMode: 'socket',
+		fetchMode: 'polling',
 	};
 }
