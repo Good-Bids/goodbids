@@ -170,9 +170,7 @@ class AllAuctions extends ACFBlock {
 				)
 			)
 			->sortBy(
-				function ( $data ) {
-					return goodbids()->auctions->get_start_date_time( $data['post_id'] );
-				}
+				fn ( $data ) =>  goodbids()->auctions->get_start_date_time( $data['post_id'] )
 			)
 			->all();
 	}
@@ -184,9 +182,7 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_start_date( array $auctions ): array {
 		return collect( $auctions )->sortBy(
-			function ( $data ) {
-				return goodbids()->auctions->get_start_date_time( $data['post_id'] );
-			}
+			fn ( $data ) => goodbids()->auctions->get_start_date_time( $data['post_id'] )
 		)->all();
 	}
 
@@ -199,9 +195,7 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_end_date( array $auctions ): array {
 		return collect( $auctions )->sortBy(
-			function ( $data ) {
-				return goodbids()->auctions->get_end_date_time( $data['post_id'] );
-			}
+			fn ( $data ) => goodbids()->auctions->get_end_date_time( $data['post_id'] )
 		)->all();
 	}
 
@@ -214,9 +208,7 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_lowbid( array $auctions ): array {
 		return collect( $auctions )->sortBy(
-			function ( $data ) {
-				return goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' );
-			}
+			fn ( $data ) => goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' )
 		)->all();
 	}
 
@@ -240,9 +232,7 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_starting_bid( array $auctions ): array {
 		return collect( $auctions )->sortBy(
-			function ( $data ) {
-				return goodbids()->auctions->calculate_starting_bid( $data['post_id'] );
-			}
+			fn ( $data ) => goodbids()->auctions->calculate_starting_bid( $data['post_id'] )
 		)->all();
 	}
 
