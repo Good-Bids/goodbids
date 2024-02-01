@@ -105,6 +105,7 @@ export function handleSetSocketAuction(
 	if (message.type === 'not-found') {
 		return {
 			fetchMode: 'polling',
+			hasSocketError: true,
 		};
 	}
 
@@ -113,6 +114,7 @@ export function handleSetSocketAuction(
 			...message.payload,
 			startTime: new Date(message.payload.startTime),
 			endTime: new Date(message.payload.endTime),
+			hasSocketError: false,
 		};
 	}
 
@@ -121,6 +123,7 @@ export function handleSetSocketAuction(
 		startTime: new Date(message.payload.startTime),
 		endTime: new Date(message.payload.endTime),
 		fetchMode: 'no-socket',
+		hasSocketError: false,
 	};
 }
 
