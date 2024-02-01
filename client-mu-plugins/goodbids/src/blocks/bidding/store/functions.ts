@@ -55,7 +55,9 @@ export const handleSetAuctionStatus = (
 
 export function handelSetFetchAuction(
 	data: AuctionResponse,
-): Partial<UrlsType & TimingType & BidsType & FetchingType> {
+	lastBid: BidsType['lastBid'],
+	isLastBidder: UserType['isLastBidder'],
+): Partial<UrlsType & TimingType & BidsType & FetchingType & UserType> {
 	if (data.auctionStatus === 'upcoming') {
 		const startTime = new Date(data.startTime);
 		const bufferedStartTime = startTime.getTime() - START_TIME_BUFFER;
@@ -84,13 +86,26 @@ export function handelSetFetchAuction(
 	}
 
 	if (data.auctionStatus === 'live') {
-		return {
+		const response = {
 			...data,
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
 			initialFetchComplete: true,
-			fetchMode: 'socket',
+			fetchMode: 'socket' as FetchingType['fetchMode'],
 		};
+
+		if (lastBid !== data.lastBid && isLastBidder) {
+			client.invalidateQueries({
+				queryKey: ['user'],
+			});
+
+			return {
+				...response,
+				isLastBidder: false,
+			};
+		}
+
+		return response;
 	}
 
 	return {
@@ -103,7 +118,9 @@ export function handelSetFetchAuction(
 
 export function handleSetSocketAuction(
 	message: SocketMessage,
-): Partial<TimingType & BidsType & FetchingType> {
+	lastBid: BidsType['lastBid'],
+	isLastBidder: UserType['isLastBidder'],
+): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
 			fetchMode: 'polling',
@@ -112,12 +129,23 @@ export function handleSetSocketAuction(
 	}
 
 	if (message.type === 'update') {
-		return {
+		const response = {
 			...message.payload,
 			startTime: new Date(message.payload.startTime),
 			endTime: new Date(message.payload.endTime),
 			hasSocketError: false,
 		};
+
+		if (lastBid !== message.payload.lastBid && isLastBidder) {
+			client.invalidateQueries({
+				queryKey: ['user'],
+			});
+
+			return {
+				...response,
+				isLastBidder: false,
+			};
+		}
 	}
 
 	return {

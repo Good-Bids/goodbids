@@ -54,7 +54,9 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setFetchAuction: (data) => {
-		set(handelSetFetchAuction(data));
+		set((state) =>
+			handelSetFetchAuction(data, state.lastBid, state.isLastBidder),
+		);
 	},
 
 	setSocketError: () => {
@@ -62,7 +64,9 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setSocketAuction: (message) => {
-		set(handleSetSocketAuction(message));
+		set((state) =>
+			handleSetSocketAuction(message, state.lastBid, state.isLastBidder),
+		);
 	},
 
 	setSocketMode: (override) => {
