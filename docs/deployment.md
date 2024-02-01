@@ -69,3 +69,11 @@ The full pipeline looks like this:
 2. `main` is pushed to `vip:develop`
 3. `vip:develop` is built in Circle CI and pushed to `vip:develop-built`
 4. `vip:develop-built` is deployed to the develop environment
+
+## Syncing Releases
+
+Typically, we should try to keep releases synced between the GoodBids Node repo and this one.
+
+Since these two releases _will not_ deploy at the exact same time, breaking changes should be released during low traffic times.
+
+[You can view the Node release docs here.](https://github.com/Good-Bids/goodbids-node/blob/main/docs/deployment.md)
