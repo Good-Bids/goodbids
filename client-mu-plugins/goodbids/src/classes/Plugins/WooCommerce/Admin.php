@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use GoodBids\Utilities\Log;
+
 /**
  * Class for Admin Methods
  *
@@ -105,22 +107,23 @@ class Admin {
 					return;
 				}
 
-				$auth_page_id = wp_insert_post(
-					[
-						'post_title'     => __( 'Authentication', 'goodbids' ),
-						'post_name'      => 'authentication',
-						'post_status'    => 'publish',
-						'post_type'      => 'page',
-						'comment_status' => 'closed',
-						'ping_status'    => 'closed',
-						'post_content'   => '<!-- wp:acf/authentication {"name":"acf/authentication","mode":"preview"} /-->',
-						'post_parent'    => $page_id,
-					],
-					true
-				);
+				$auth_page = [
+					'post_title'     => __( 'Authentication', 'goodbids' ),
+					'post_name'      => 'authentication',
+					'post_status'    => 'publish',
+					'post_type'      => 'page',
+					'comment_status' => 'closed',
+					'ping_status'    => 'closed',
+					'post_content'   => '<!-- wp:acf/authentication {"name":"acf/authentication","mode":"preview"} /-->',
+					'post_parent'    => $page_id,
+				];
 
-				if ( ! $auth_page_id ) {
-					// TODO: Log Error.
+				$auth_page_id = wp_insert_post( $auth_page, true );
+
+				if ( is_wp_error( $auth_page_id ) ) {
+					Log::error( $auth_page_id->get_error_message(), compact( 'auth_page' ), );
+				} elseif ( ! $auth_page_id ) {
+					Log::warning( 'Failed to create Authentication Page.', compact( 'auth_page' ) );
 					return;
 				}
 

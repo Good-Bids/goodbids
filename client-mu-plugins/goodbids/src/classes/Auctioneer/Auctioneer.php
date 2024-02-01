@@ -11,6 +11,7 @@ namespace GoodBids\Auctioneer;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use GoodBids\Auctioneer\Endpoints\Auctions;
+use GoodBids\Utilities\Log;
 
 /**
  * Class for Auctioneer, our Node.js server
@@ -207,7 +208,7 @@ class Auctioneer {
 			]
 		);
 
-		// TODO: Log Response.
+		Log::debug( '[Auctioneer] Response', compact( 'response' ) );
 		$this->last_response = $response;
 
 		if ( $this->is_invalid_response( $response ) ) {
@@ -259,19 +260,17 @@ class Auctioneer {
 		}
 
 		if ( is_wp_error( $response ) ) {
-			// TODO: Log error.
-			error_log( '[GB Auctioneer] Invalid Response: ' . $response->get_error_message() );
+			Log::debug( '[Auctioneer] Invalid Response: ' . $response->get_error_message(), compact( 'response' ) );
 			return true;
 		}
 
 		if ( ! is_array( $response ) || empty( $response ) ) {
-			// TODO: Log error.
+			Log::warning( '[Auctioneer] Invalid or Empty Response.', compact( 'response' ) );
 			return true;
 		}
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			// TODO: Log Errors.
-			error_log( '[GB Auctioneer] Bad Response: ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
+			Log::debug( '[Auctioneer] Bad Response: ' . wp_strip_all_tags( $this->get_response_message( $response ) ), compact( 'response' ) );
 			return true;
 		}
 

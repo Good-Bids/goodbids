@@ -40,7 +40,7 @@ class Utilities {
 		try {
 			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
 		} catch ( \Exception $e ) {
-			// TODO: Log error.
+			Log::error( $e->getMessage(), compact( 'datetime', 'format' ) );
 		}
 
 		return $formatted;

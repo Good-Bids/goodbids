@@ -13,6 +13,7 @@ namespace GoodBids\Plugins\WooCommerce\API;
 
 defined( 'ABSPATH' ) || exit;
 
+use GoodBids\Utilities\Log;
 use WC_REST_Controller;
 use WP_Error;
 use WP_REST_Request;
@@ -126,14 +127,14 @@ class Credentials extends WC_REST_Controller {
 		$keys_id = $this->lookup_credentials( $site_id );
 
 		if ( $keys_id && ! $this->delete_credentials( $site_id, $keys_id ) ) {
-			// TODO: Log Error
+			Log::error( 'There was a problem revoking the previous site credentials.', compact( 'site_id', 'keys_id' ) );
 			return new WP_Error( 'goodbids_credentials_malfunction', __( 'There was a problem revoking the previous site credentials.', 'goodbids' ) );
 		}
 
 		$data = $this->generate_credentials( $site_id );
 
 		if ( ! $data ) {
-			// TODO: Log Error
+			Log::error( 'There was a problem generating the site credentials.', compact( 'data' ) );
 			return new WP_Error( 'goodbids_credentials_malfunction', __( 'There was a problem generating the site credentials.', 'goodbids' ) );
 		}
 
@@ -153,18 +154,18 @@ class Credentials extends WC_REST_Controller {
 		$site_id = get_blog_id_from_url( $domain );
 
 		if ( ! $site_id ) {
-			// TODO: Log Error.
+			Log::error( 'Invalid site ID', compact( 'domain' ) );
 			return false;
 		}
 
 		if ( ! is_main_site() ) {
-			// TODO: Log Error.
+			Log::emergency( 'Attempted to generate credentials on Main Site', compact( 'domain', 'site_id' ) );
 			return false;
 		}
 
 		// Do not generate credentials for the main site.
 		if ( $site_id === get_main_site_id() ) {
-			// TODO: Log Error.
+			Log::emergency( 'Attempted to generate credentials for Main Site', compact( 'domain', 'site_id' ) );
 			return false;
 		}
 
@@ -183,7 +184,7 @@ class Credentials extends WC_REST_Controller {
 	private function lookup_credentials( int $site_id ): ?int {
 		// Do not allow on main site.
 		if ( ! is_main_site() ) {
-			// TODO: Log error.
+			Log::emergency( 'Attempted to lookup credentials on Main Site', compact( 'site_id' ) );
 			return null;
 		}
 
@@ -255,12 +256,12 @@ class Credentials extends WC_REST_Controller {
 	private function generate_credentials( int $site_id ): ?array {
 		// Do not allow on main site.
 		if ( ! is_main_site() ) {
-			// TODO: Log error.
+			Log::emergency( 'Attempted to generate credentials on Main Site', compact( 'site_id' ) );
 			return null;
 		}
 
 		return goodbids()->sites->swap(
-			function (): ?array {
+			function () use ( $site_id ): ?array {
 				global $wpdb;
 
 				$consumer_key    = 'ck_' . wc_rand_hash();
@@ -294,7 +295,7 @@ class Credentials extends WC_REST_Controller {
 				$insert_id = $wpdb->insert_id;
 
 				if ( 0 === $insert_id ) {
-					// TODO: Log error.
+					Log::critical( 'Error generating credentials for site', compact( 'data', 'site_id' ) );
 					return null;
 				}
 

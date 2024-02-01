@@ -165,7 +165,7 @@ class Core {
 	 */
 	public function init(): void {
 		if ( ! $this->load_config() ) {
-			// TODO: Log error.
+			Log::error( 'Failed to load config.json' );
 			return;
 		}
 
@@ -276,9 +276,9 @@ class Core {
 				$plugin_slug = str_contains( $plugin, '/' ) ? $plugin : $plugin . '/' . $plugin . '.php';
 				$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_slug;
 				if ( ! file_exists( $plugin_path ) ) {
-					error_log(
+					Log::warning(
 						sprintf(
-							'[GB] Attempted to load plugin %s but the file %s was not found in the plugin directory.',
+							'Attempted to load plugin %s but the file %s was not found in the plugin directory.',
 							$plugin,
 							$plugin_slug
 						)
@@ -396,11 +396,9 @@ class Core {
 		add_filter(
 			'rest_endpoints',
 			function ( $endpoints ) {
-				if ( is_user_logged_in() ) {
-					// Allow access to the secure REST API endpoints for the roles specified above.
-					if ( current_user_can( 'edit_posts' ) ) {
-						return $endpoints;
-					}
+				// Allow permission-based access to the secure REST API endpoints.
+				if ( current_user_can( 'edit_posts' ) ) {
+					return $endpoints;
 				}
 
 				$restricted = [

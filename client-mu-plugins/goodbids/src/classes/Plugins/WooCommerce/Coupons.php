@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\Notices;
+use GoodBids\Utilities\Log;
 use WC_Coupon;
 use WC_Product;
 
@@ -237,7 +238,7 @@ class Coupons {
 				if ( $coupon_code && ! WC()->cart->has_discount( $coupon_code ) ) {
 					// Apply the Coupon.
 					if ( ! WC()->cart->add_discount( $coupon_code ) ) {
-						// TODO: Log Error.
+						Log::error( 'There was a problem adding the discount coupon', compact( 'coupon_code' ) );
 						return add_query_arg( 'gb-notice', Notices::APPLY_COUPON_ERROR, $redirect_url );
 					}
 				}

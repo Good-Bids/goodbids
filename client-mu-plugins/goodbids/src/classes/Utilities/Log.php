@@ -106,9 +106,13 @@ class Log {
 	 *
 	 * @return void
 	 */
-	private static function log( string $message, array $context = [], Level $level = Level::Debug ): void {
+	private static function log( string $message, mixed $context = null, Level $level = Level::Debug ): void {
 		if ( ! self::$monolog ) {
 			self::init_monolog();
+		}
+
+		if ( null !== $context && ! is_array( $context ) ) {
+			$context = [ 'context' => $context ];
 		}
 
 		$source    = self::get_source();

@@ -10,6 +10,7 @@ namespace GoodBids\Network;
 
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
+use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
 use WP_Post;
 use WP_Site;
@@ -314,7 +315,7 @@ class Sites {
 			 */
 			function ( WP_Site $new_site ) {
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) { // phpcs:ignore
-					// TODO: Log error.
+					Log::error( 'Missing required Nonprofit data.', compact( 'new_site' ) );
 					return;
 				}
 
@@ -354,7 +355,7 @@ class Sites {
 				}
 
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) {
-					// TODO: Log error.
+					Log::error( 'Missing required Nonprofit data.', compact( 'new_site' ) );
 					return;
 				}
 
