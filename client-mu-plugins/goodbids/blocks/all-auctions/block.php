@@ -30,43 +30,89 @@ class AllAuctions extends ACFBlock {
 	 */
 	const UPCOMING_QUERY_ARG = 'gba-upcoming';
 
-
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const POPULAR_QUERY_ARG = 'gba-popular';
+	const SORT_QUERY_ARG = 'gba-sort';
 
 	/**
+	 * Get popular query arg
+	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var array
 	 */
-	const NEWEST_QUERY_ARG = 'gba-newest';
+	public static function popular_query_arg(): array {
+		return [
+			'label' => __( 'Most Popular', 'goodbids' ),
+			'value' => __( 'popular', 'goodbids' ),
+		];
+	}
 
 	/**
+	 * Get newest query arg
+	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var array
 	 */
-	const ENDING_QUERY_ARG = 'gba-ending';
+	public static function newest_query_arg(): array {
+		return [
+			'label' => __( 'Newest', 'goodbids' ),
+			'value' => __( 'newest', 'goodbids' ),
+		];
+	}
 
 	/**
+	 * Get lowbid query arg
+	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var array
 	 */
-	const LOWBID_QUERY_ARG = 'gba-lowbid';
-
+	public static function lowbid_query_arg(): array {
+		return [
+			'label' => __( 'Lowest Current Bid', 'goodbids' ),
+			'value' => __( 'lowbid', 'goodbids' ),
+		];
+	}
 
 	/**
+	 * Get opening soon query arg
+	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var array
 	 */
-	const OPENING_QUERY_ARG = 'gba-opening-soon';
+	public static function opening_query_arg(): array {
+		return [
+			'label' => __( 'Opening Soon', 'goodbids' ),
+			'value' => __( 'opening', 'goodbids' ),
+		];
+	}
 
 	/**
+	 * Get lowbid query arg
+	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var array
 	 */
-	const STARTBID_QUERY_ARG = 'gba-startbid';
+	public static function start_bid_query_arg(): array {
+		return [
+			'label' => __( 'Lowest Starting Bid', 'goodbids' ),
+			'value' => __( 'startbid', 'goodbids' ),
+		];
+	}
+
+	/**
+	 * Get ending soon query arg
+	 *
+	 * @since 1.0.0
+	 * @var array
+	 */
+	public static function ending_query_arg(): array {
+		return [
+			'label' => __( 'Ending Soon', 'goodbids' ),
+			'value' => __( 'ending', 'goodbids' ),
+		];
+	}
 
 	/**
 	 * Returns the amount of Auctions to display per page
@@ -106,11 +152,11 @@ class AllAuctions extends ACFBlock {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return bool
-	 * @param $query_arg
+	 * @return string
 	 */
-	public function is_sortby( string $query_arg ): bool {
-		return ! empty( $_GET[ $query_arg ] ) ? boolval( $_GET[ $query_arg ] ) : false;
+	public function is_sortby(): string {
+		$sort = $_GET[ self::SORT_QUERY_ARG ] ?? '';
+		return $sort;
 	}
 
 	/**
@@ -140,12 +186,12 @@ class AllAuctions extends ACFBlock {
 		}
 
 		return collect( $all_auctions )
-			->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
-					$auction['site_id']
-				)
-			)->all();
+		->filter(
+			fn ( array $auction ) => goodbids()->sites->swap(
+				fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
+				$auction['site_id']
+			)
+		)->all();
 	}
 
 	/**
@@ -163,19 +209,19 @@ class AllAuctions extends ACFBlock {
 
 		// default to get all auctions from the current site TODO maybe good to make this a transient as well
 		return collect( ( goodbids()->auctions->get_all() )->posts )
-				->map(
-					fn ( int $post_id ) => [
-						'post_id' => $post_id,
-						'site_id' => get_current_blog_id(),
-					]
-				)
-				->sortByDesc(
-					fn ( array $auction ) => [
-						'bid_count'    => fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
-						'total_raised' => fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
-					]
-				)
-				->all();
+			->map(
+				fn ( int $post_id ) => [
+					'post_id' => $post_id,
+					'site_id' => get_current_blog_id(),
+				]
+			)
+			->sortByDesc(
+				fn ( array $auction ) => [
+					'bid_count'    => fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
+					'total_raised' => fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
+				]
+			)
+			->all();
 	}
 
 	/**
@@ -193,16 +239,16 @@ class AllAuctions extends ACFBlock {
 		}
 
 		return collect( $all_auctions )
-			->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
-					$auction['site_id']
-				)
+		->filter(
+			fn ( array $auction ) => goodbids()->sites->swap(
+				fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
+				$auction['site_id']
 			)
-			->sortBy(
-				fn ( $data ) =>  goodbids()->auctions->get_start_date_time( $data['post_id'] )
-			)
-			->all();
+		)
+		->sortBy(
+			fn ( $data ) =>  goodbids()->auctions->get_start_date_time( $data['post_id'] )
+		)
+		->all();
 	}
 
 	/**
@@ -212,15 +258,15 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_start_date( array $auctions ): array {
 		return collect( $auctions )
-				->sortBy(
-					fn ( array $data ) => goodbids()->sites->swap(
-						function () use ( &$data ) {
-							return goodbids()->auctions->get_start_date_time( $data['post_id'] );
-						},
-						$data['site_id']
-					)
+			->sortBy(
+				fn ( array $data ) => goodbids()->sites->swap(
+					function () use ( &$data ) {
+						return goodbids()->auctions->get_start_date_time( $data['post_id'] );
+					},
+					$data['site_id']
 				)
-				->all();
+			)
+			->all();
 	}
 
 	/**
@@ -232,14 +278,14 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_end_date( array $auctions ): array {
 		return collect( $auctions )
-			->sortBy(
-				fn ( array $data ) => goodbids()->sites->swap(
-					function () use ( &$data ) {
-						return goodbids()->auctions->get_end_date_time( $data['post_id'] );
-					},
-					$data['site_id']
-				)
-			)->all();
+		->sortBy(
+			fn ( array $data ) => goodbids()->sites->swap(
+				function () use ( &$data ) {
+					return goodbids()->auctions->get_end_date_time( $data['post_id'] );
+				},
+				$data['site_id']
+			)
+		)->all();
 	}
 
 	/**
@@ -251,14 +297,14 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_lowbid( array $auctions ): array {
 		return collect( $auctions )
-			->sortBy(
-				fn ( array $data ) => goodbids()->sites->swap(
-					function () use ( &$data ) {
-						return goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' );
-					},
-					$data['site_id']
-				)
-			)->all();
+		->sortBy(
+			fn ( array $data ) => goodbids()->sites->swap(
+				function () use ( &$data ) {
+					return goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' );
+				},
+				$data['site_id']
+			)
+		)->all();
 	}
 
 	/**
@@ -272,6 +318,7 @@ class AllAuctions extends ACFBlock {
 		// TODO once we have watch auctions set up we can sort by most watched
 	}
 
+
 	/**
 	 * Sort Auctions by starting bid
 	 *
@@ -281,14 +328,14 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function sortby_starting_bid( array $auctions ): array {
 		return collect( $auctions )
-			->sortBy(
-				fn ( array $data ) => goodbids()->sites->swap(
-					function () use ( &$data ) {
-						return goodbids()->auctions->calculate_starting_bid( $data['post_id'] );
-					},
-					$data['site_id']
-				)
-			)->all();
+		->sortBy(
+			fn ( array $data ) => goodbids()->sites->swap(
+				function () use ( &$data ) {
+					return goodbids()->auctions->calculate_starting_bid( $data['post_id'] );
+				},
+				$data['site_id']
+			)
+		)->all();
 	}
 
 	/**
@@ -301,19 +348,19 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function apply_filters( array $auctions ): array {
-		if ( $this->is_sortby( self::NEWEST_QUERY_ARG ) ) {
+		if ( $this->is_sortby() == $this->newest_query_arg()['value'] ) {
 			return $this->sortby_start_date( $auctions );
 		}
 
-		if ( $this->is_sortby( self::ENDING_QUERY_ARG ) ) {
+		if ( $this->is_sortby() == $this->ending_query_arg()['value'] ) {
 			return $this->sortby_end_date( $auctions );
 		}
 
-		if ( $this->is_sortby( self::LOWBID_QUERY_ARG ) ) {
+		if ( $this->is_sortby() == $this->lowbid_query_arg()['value'] ) {
 			return $this->sortby_lowbid( $auctions );
 		}
 
-		if ( $this->is_sortby( self::STARTBID_QUERY_ARG ) ) {
+		if ( $this->is_sortby() == $this->start_bid_query_arg()['value'] ) {
 			return $this->sortby_starting_bid( $auctions );
 		}
 
@@ -343,30 +390,12 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_live_sort_options(): array {
-		$options = [
-			[
-				'label'    => __( 'Most Popular', 'goodbids' ),
-				'value'    => self::POPULAR_QUERY_ARG,
-				'selected' => '',
-			],
-			[
-				'label'    => __( 'Newest', 'goodbids' ),
-				'value'    => self::NEWEST_QUERY_ARG,
-				'selected' => $this->is_sortby( self::NEWEST_QUERY_ARG ),
-			],
-			[
-				'label'    => __( 'Ending Soon', 'goodbids' ),
-				'value'    => self::ENDING_QUERY_ARG,
-				'selected' => $this->is_sortby( self::ENDING_QUERY_ARG ),
-			],
-			[
-				'label'    => __( 'Lowest Current Bid', 'goodbids' ),
-				'value'    => self::LOWBID_QUERY_ARG,
-				'selected' => $this->is_sortby( self::LOWBID_QUERY_ARG ),
-			],
+		return [
+			$this->popular_query_arg(),
+			$this->newest_query_arg(),
+			$this->ending_query_arg(),
+			$this->lowbid_query_arg(),
 		];
-
-		return $options;
 	}
 
 	/**
@@ -377,24 +406,9 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_upcoming_sort_options(): array {
-
 		$options = [
-			[
-				'label'    => __( 'Opening Soon', 'goodbids' ),
-				'value'    => self::OPENING_QUERY_ARG,
-				'selected' => '',
-			],
-			// TODO finish once we have most watched set up
-			// [
-			// 'label'    => __( 'Most Watched', 'goodbids' ),
-			// 'value'    => '',
-			// 'selected' => false,
-			// ],
-			[
-				'label'    => __( 'Lowest Starting Bid', 'goodbids' ),
-				'value'    => self::STARTBID_QUERY_ARG,
-				'selected' => $this->is_sortby( self::STARTBID_QUERY_ARG ),
-			],
+			$this->opening_query_arg(),
+			$this->start_bid_query_arg(),
 		];
 
 		return $options;
