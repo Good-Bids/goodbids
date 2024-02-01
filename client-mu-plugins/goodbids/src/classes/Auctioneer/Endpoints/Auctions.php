@@ -39,6 +39,7 @@ class Auctions {
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
 			[
+				'bidUrl',
 				'currentBid',
 				'endTime',
 				'freeBidsAllowed',
@@ -106,6 +107,7 @@ class Auctions {
 		// Set up the payload data with defaults.
 		$payload_data = $this->setup_payload_data(
 			[
+				'bidUrl',
 				'currentBid',
 				'endTime',
 				'freeBidsAllowed',
