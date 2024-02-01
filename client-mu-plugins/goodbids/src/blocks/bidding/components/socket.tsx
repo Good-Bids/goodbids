@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import { SocketMessage } from '../utils/types';
 import { useBiddingState } from '../store';
 
@@ -13,7 +13,7 @@ type SocketProps = {
 export function Socket({ auctionId }: SocketProps) {
 	const { socketUrl, setSocketError, setSocketAuction } = useBiddingState();
 
-	const { readyState, lastJsonMessage } = useWebSocket<SocketMessage>(
+	const { lastJsonMessage } = useWebSocket<SocketMessage>(
 		`${
 			process.env.NODE_ENV === 'development'
 				? socketUrlOverride
@@ -27,17 +27,11 @@ export function Socket({ auctionId }: SocketProps) {
 	);
 
 	useEffect(() => {
-		if (readyState === ReadyState.OPEN) {
-			if (lastJsonMessage) {
-				setSocketAuction(lastJsonMessage);
-			}
-		}
-
-		if (readyState === ReadyState.CLOSED) {
-			setSocketError();
+		if (lastJsonMessage) {
+			setSocketAuction(lastJsonMessage);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [lastJsonMessage, readyState, setSocketError]);
+	}, [lastJsonMessage, setSocketError]);
 
 	return null;
 }
