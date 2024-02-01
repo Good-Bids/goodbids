@@ -50,6 +50,7 @@
 		"cweagans/composer-patches": "^1.7",
 		"firebase/php-jwt": "^6.10",
 		"illuminate/collections": "^10.38",
+		"monolog/monolog": "^3.5",
 		"oomphinc/composer-installers-extender": "^2.0",
 		"vlucas/phpdotenv": "^5.5",
 		"wpackagist-plugin/accessibility-checker": "^1.8",

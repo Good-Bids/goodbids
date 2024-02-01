@@ -249,7 +249,7 @@ class Core {
 	 *
 	 * @return bool
 	 */
-	public function is_dev_env(): bool {
+	public static function is_dev_env(): bool {
 		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
 	}
 

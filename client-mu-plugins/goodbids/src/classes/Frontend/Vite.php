@@ -12,6 +12,8 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Core;
+
 /**
  * This class handles loading Vite assets.
  */
@@ -170,7 +172,7 @@ class Vite {
 	 * @return string
 	 */
 	public function vite( string $entry ): string {
-		if ( goodbids()->is_dev_env() ) {
+		if ( Core::is_dev_env() ) {
 			$scripts = [
 				"<script type=\"module\">
 					import RefreshRuntime from 'http://localhost:5173/@react-refresh'
@@ -481,7 +483,7 @@ class Vite {
 
 		$script_url = $this->get_asset_url( $file );
 
-		if ( goodbids()->is_dev_env() ) {
+		if ( Core::is_dev_env() ) {
 			$vite_client = $this->dev_server . '/@vite/client';
 			$vite_entry  = $this->dev_server . '/' . $entry;
 
