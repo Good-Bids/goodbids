@@ -118,6 +118,7 @@ class Details extends WC_REST_Controller {
 					'totalRaised',
 					'currentBid',
 					'lastBid',
+					'lastBidder',
 					'freeBidsAvailable',
 					'freeBidsAllowed',
 				]
@@ -127,6 +128,7 @@ class Details extends WC_REST_Controller {
 				$payload_data,
 				[
 					'bidUrl',
+					'lastBidder',
 					'totalBids',
 					'totalRaised',
 					'currentBid',

@@ -111,6 +111,7 @@ class Auctions {
 				'freeBidsAllowed',
 				'freeBidsAvailable',
 				'lastBid',
+				'lastBidder',
 				'startTime',
 				'totalBids',
 				'totalRaised',
