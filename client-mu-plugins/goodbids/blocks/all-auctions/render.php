@@ -29,12 +29,12 @@ if ( $block_auctions->is_displaying_upcoming() || ! $live_auctions ) {
 	$auctions     = $upcoming_auctions;
 	$live_btn     = false;
 	$upcoming_btn = true;
-	$sort_url     = $upcoming_url . '&';
+	$sort_url     = $upcoming_url;
 } else {
 	$auctions     = $live_auctions;
 	$live_btn     = true;
 	$upcoming_btn = false;
-	$sort_url     = $page_url . '?';
+	$sort_url     = $page_url;
 }
 
 // Apply filters and pagination.
@@ -71,14 +71,20 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 		<?php if ( ! empty( $block_auctions->get_sort_dropdown_options() ) ) : ?>
 			<div class="flex justify-end">
 				<select
-					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
 					aria-label="Sort Auctions"
-					onchange="window.location.href = '<?php echo esc_url( $sort_url ); ?>' + this.value + '=1'"
+					name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
+					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
+					hx-get="<?php echo esc_url( $sort_url ); ?>"
+					hx-select="#all-auctions"
+					hx-target="#all-auctions"
+					hx-swap="outerHTML"
+					hx-trigger="change"
+					hx-push-url="true"
 				>
 					<?php foreach ( $block_auctions->get_sort_dropdown_options() as $option ) : ?>
 						<option
 							value="<?php echo esc_attr( $option['value'] ); ?>"
-							<?php selected( $option['selected'] ); ?>
+							<?php echo $option['value'] === $block_auctions->is_sortby() ? esc_attr( 'selected' ) : ''; ?>
 						>
 							<?php echo esc_html( $option['label'] ); ?>
 						</option>
@@ -103,4 +109,9 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 		endif;
 	endif;
 	?>
+
 </section>
+
+<script src="https://unpkg.com/htmx.org@1.9.10"
+		integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+		crossorigin="anonymous"></script>

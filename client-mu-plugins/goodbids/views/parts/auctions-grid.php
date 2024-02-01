@@ -9,7 +9,7 @@
  */
 
 ?>
-<ul class="grid grid-cols-1 gap-8 list-none lg:grid-cols-3 sm:grid-cols-2">
+<ul class="grid grid-cols-1 gap-8 list-none lg:grid-cols-3 sm:grid-cols-2" id="all-auctions">
 	<?php
 	foreach ( $auctions as $auction ) :
 		goodbids()->sites->swap(
