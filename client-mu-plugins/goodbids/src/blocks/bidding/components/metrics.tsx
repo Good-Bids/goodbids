@@ -46,6 +46,7 @@ export function Metrics() {
 	if (
 		auctionStatus === 'initializing' ||
 		auctionStatus === 'upcoming' ||
+		auctionStatus === 'prelive' ||
 		auctionStatus === 'starting'
 	) {
 		return null;

@@ -22,26 +22,28 @@ export function handleSetUser(data: UserResponse): UserType {
 export const handleSetAuctionStatus = (
 	newStatus: AuctionStatus,
 	currentStatus: AuctionStatus,
-	fetchMode: FetchingType['fetchMode'],
-) => {
+): Partial<TimingType & FetchingType> => {
 	if (newStatus !== currentStatus) {
+		if (newStatus === 'closing') {
+			client.invalidateQueries({
+				queryKey: ['auction'],
+			});
+
+			client.invalidateQueries({
+				queryKey: ['user'],
+			});
+
+			return {
+				auctionStatus: newStatus,
+				fetchMode: 'polling',
+			};
+		}
+
 		// If the auction is starting, invalidate the auction query
 		// and re-fetch it to ensure startTime hasn't changed
 		if (newStatus === 'starting' || newStatus === 'live') {
 			client.invalidateQueries({
 				queryKey: ['auction'],
-			});
-		}
-
-		if (newStatus === 'closing') {
-			if (fetchMode === 'polling') {
-				client.invalidateQueries({
-					queryKey: ['auction'],
-				});
-			}
-
-			client.invalidateQueries({
-				queryKey: ['user'],
 			});
 		}
 	}

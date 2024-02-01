@@ -2,7 +2,10 @@ import { TimeRemaining } from './time-remaining';
 import { useEffect, useState } from 'react';
 import { useBiddingState } from '../../store';
 import { AuctionStatus } from '../../store/types';
-import { START_TIME_BUFFER } from '../../utils/constants';
+import {
+	LIVE_AND_CLOSING_DELAY,
+	START_TIME_BUFFER,
+} from '../../utils/constants';
 
 type TimeRemainingType = {
 	status: AuctionStatus;
@@ -33,8 +36,16 @@ function getCountdownTime(
 		return { status: 'upcoming', timeRemainingMs: startTime - now };
 	}
 
+	if (now < startTime + LIVE_AND_CLOSING_DELAY) {
+		return { status: 'prelive', timeRemainingMs: 0 };
+	}
+
 	if (now < endTime) {
 		return { status: 'live', timeRemainingMs: endTime - now };
+	}
+
+	if (now < endTime + LIVE_AND_CLOSING_DELAY) {
+		return { status: 'preclosing', timeRemainingMs: 0 };
 	}
 
 	if (auctionStatus === 'closed') {

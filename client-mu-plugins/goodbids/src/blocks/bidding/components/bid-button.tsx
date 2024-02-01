@@ -7,6 +7,7 @@ export function BidButton() {
 
 	const disabled =
 		isLastBidder ||
+		auctionStatus === 'preclosing' ||
 		auctionStatus === 'closed' ||
 		auctionStatus === 'closing';
 
@@ -18,7 +19,11 @@ export function BidButton() {
 
 	const rewardClasses = clsx('btn-fill text-center');
 
-	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
+	if (
+		auctionStatus === 'upcoming' ||
+		auctionStatus === 'starting' ||
+		auctionStatus === 'prelive'
+	) {
 		return null;
 	}
 
