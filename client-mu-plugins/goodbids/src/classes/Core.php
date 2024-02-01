@@ -20,6 +20,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Users;
+use GoodBids\Utilities\Log;
 use GoodBids\Utilities\Utilities;
 
 /**
@@ -171,6 +172,7 @@ class Core {
 		$this->load_dependencies();
 		$this->load_plugins();
 		$this->load_modules();
+		$this->init_modules();
 		$this->restrict_rest_api_access();
 
 		$this->initialized = true;
@@ -328,6 +330,18 @@ class Core {
 				$this->users       = new Users();
 			}
 		);
+	}
+
+	/**
+	 * Perform any manual module initialization.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function init_modules(): void {
+		// Initialize Logging.
+		Log::init();
 	}
 
 	/**
