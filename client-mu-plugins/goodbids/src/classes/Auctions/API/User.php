@@ -96,9 +96,9 @@ class User extends WC_REST_Controller {
 		}
 
 		$payload_data = [
-			'isLastBidder',
 			'rewardUrl',
 			'userFreeBids',
+			'userId',
 			'userTotalBids',
 			'userTotalDonated',
 		];

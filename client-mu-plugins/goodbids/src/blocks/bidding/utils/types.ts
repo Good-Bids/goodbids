@@ -9,6 +9,7 @@ type AuctionType = {
 	totalRaised: number;
 	currentBid: number;
 	lastBid: number;
+	lastBidder?: number;
 	auctionStatus: AuctionStatus;
 };
 

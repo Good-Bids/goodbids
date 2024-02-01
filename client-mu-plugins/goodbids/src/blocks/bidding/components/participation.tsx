@@ -11,7 +11,7 @@ function formatBids(bids: number) {
 function ParticipationContent() {
 	const {
 		auctionStatus,
-		isUserLoggedIn,
+		userId,
 		userTotalBids,
 		userTotalDonated,
 		accountUrl,
@@ -22,7 +22,7 @@ function ParticipationContent() {
 		auctionStatus === 'starting' ||
 		auctionStatus === 'prelive'
 	) {
-		if (isUserLoggedIn) {
+		if (userId) {
 			return (
 				<p className="m-0 text-center">
 					Watch this auction to be notified when bidding starts.
@@ -55,7 +55,7 @@ function ParticipationContent() {
 		return <p>You did not bid in this auction.</p>;
 	}
 
-	if (isUserLoggedIn) {
+	if (userId) {
 		if (userTotalBids > 0) {
 			return (
 				<p className="m-0 text-center">

@@ -6,6 +6,7 @@ import {
 	LIVE_AND_CLOSING_DELAY,
 	START_TIME_BUFFER,
 } from '../../utils/constants';
+import { getIsLastBidder } from '../../utils/get-is-last-bidder';
 
 type TimeRemainingType = {
 	status: AuctionStatus;
@@ -59,7 +60,8 @@ export function CountdownTimer() {
 	const {
 		startTime,
 		endTime,
-		isLastBidder,
+		userId,
+		lastBidder,
 		auctionStatus,
 		userTotalBids,
 		setAuctionStatus,
@@ -68,6 +70,8 @@ export function CountdownTimer() {
 	const [countdownStatus, setCountdownStatus] = useState<TimeRemainingType>(
 		getCountdownTime(startTime, endTime, auctionStatus),
 	);
+
+	const isLastBidder = getIsLastBidder(userId, lastBidder);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
