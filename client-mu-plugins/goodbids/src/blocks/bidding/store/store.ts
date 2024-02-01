@@ -35,12 +35,12 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	totalRaised: 0,
 	currentBid: 0,
 	lastBid: 0,
+	lastBidder: undefined,
 	freeBidsAvailable: 0,
 	freeBidsAllowed: false,
 
-	isUserLoggedIn: false,
-	isLastBidder: false,
 	rewardUrl: undefined,
+	userId: undefined,
 	userFreeBids: 0,
 	userTotalBids: 0,
 	userTotalDonated: 0,
@@ -54,9 +54,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setFetchAuction: (data) => {
-		set((state) =>
-			handelSetFetchAuction(data, state.lastBid, state.isLastBidder),
-		);
+		set(handelSetFetchAuction(data));
 	},
 
 	setSocketError: () => {
@@ -64,9 +62,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setSocketAuction: (message) => {
-		set((state) =>
-			handleSetSocketAuction(message, state.lastBid, state.isLastBidder),
-		);
+		set(handleSetSocketAuction(message));
 	},
 
 	setSocketMode: (override) => {

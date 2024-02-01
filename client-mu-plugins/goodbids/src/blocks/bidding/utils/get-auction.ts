@@ -23,6 +23,9 @@ const liveAuctionSchema = z.object({
 	totalRaised: z.number(),
 	currentBid: z.number(),
 	lastBid: z.number().default(0),
+	lastBidder: z.number().nullable(),
+	freeBidsAvailable: z.number(),
+	freeBidsAllowed: z.boolean(),
 });
 
 const closedAuctionSchema = z.object({
@@ -33,6 +36,7 @@ const closedAuctionSchema = z.object({
 	totalBids: z.number(),
 	totalRaised: z.number(),
 	lastBid: z.number().default(0),
+	lastBidder: z.number().nullable(),
 });
 
 const auctionSchema = z.discriminatedUnion('auctionStatus', [

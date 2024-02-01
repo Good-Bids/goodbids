@@ -25,14 +25,14 @@ export type BidsType = {
 	totalRaised: number;
 	currentBid: number;
 	lastBid: number;
+	lastBidder?: number | null;
 	freeBidsAvailable: number;
 	freeBidsAllowed: boolean;
 };
 
 export type UserType = {
-	isUserLoggedIn: boolean;
-	isLastBidder: boolean;
 	rewardUrl?: string;
+	userId?: number;
 	userFreeBids: number;
 	userTotalBids: number;
 	userTotalDonated: number;

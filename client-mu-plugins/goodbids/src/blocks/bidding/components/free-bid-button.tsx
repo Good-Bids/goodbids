@@ -1,17 +1,18 @@
 import clsx from 'clsx';
 import { useBiddingState } from '../store';
+import { getIsLastBidder } from '../utils/get-is-last-bidder';
 
 export function FreeBidButton() {
 	const {
-		isLastBidder,
 		userFreeBids,
 		auctionStatus,
 		bidUrl,
 		freeBidsAllowed,
-		isUserLoggedIn,
+		userId,
+		lastBidder,
 	} = useBiddingState();
 
-	const disabled = isLastBidder || userFreeBids < 1 || !isUserLoggedIn;
+	const disabled = getIsLastBidder(userId, lastBidder) || userFreeBids < 1;
 
 	const classes = clsx('btn-fill-secondary text-center', {
 		'pointer-events-none cursor-not-allowed !text-contrast-4': disabled,
@@ -26,7 +27,7 @@ export function FreeBidButton() {
 				aria-disabled={disabled}
 			>
 				{`Place free bid ${
-					isUserLoggedIn ? `(${userFreeBids} available)` : ''
+					userId ? `(${userFreeBids} available)` : ''
 				}`}
 			</a>
 		);

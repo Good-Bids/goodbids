@@ -13,10 +13,7 @@ import {
 } from './types';
 
 export function handleSetUser(data: UserResponse): UserType {
-	return {
-		...data,
-		isUserLoggedIn: true,
-	};
+	return data;
 }
 
 export const handleSetAuctionStatus = (
@@ -55,8 +52,6 @@ export const handleSetAuctionStatus = (
 
 export function handelSetFetchAuction(
 	data: AuctionResponse,
-	lastBid: BidsType['lastBid'],
-	isLastBidder: UserType['isLastBidder'],
 ): Partial<UrlsType & TimingType & BidsType & FetchingType & UserType> {
 	if (data.auctionStatus === 'upcoming') {
 		const startTime = new Date(data.startTime);
@@ -86,26 +81,13 @@ export function handelSetFetchAuction(
 	}
 
 	if (data.auctionStatus === 'live') {
-		const response = {
+		return {
 			...data,
 			startTime: new Date(data.startTime),
 			endTime: new Date(data.endTime),
 			initialFetchComplete: true,
-			fetchMode: 'socket' as FetchingType['fetchMode'],
+			fetchMode: 'socket',
 		};
-
-		if (lastBid !== data.lastBid && isLastBidder) {
-			client.invalidateQueries({
-				queryKey: ['user'],
-			});
-
-			return {
-				...response,
-				isLastBidder: false,
-			};
-		}
-
-		return response;
 	}
 
 	return {
@@ -118,8 +100,6 @@ export function handelSetFetchAuction(
 
 export function handleSetSocketAuction(
 	message: SocketMessage,
-	lastBid: BidsType['lastBid'],
-	isLastBidder: UserType['isLastBidder'],
 ): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
@@ -129,23 +109,12 @@ export function handleSetSocketAuction(
 	}
 
 	if (message.type === 'update') {
-		const response = {
+		return {
 			...message.payload,
 			startTime: new Date(message.payload.startTime),
 			endTime: new Date(message.payload.endTime),
 			hasSocketError: false,
 		};
-
-		if (lastBid !== message.payload.lastBid && isLastBidder) {
-			client.invalidateQueries({
-				queryKey: ['user'],
-			});
-
-			return {
-				...response,
-				isLastBidder: false,
-			};
-		}
 	}
 
 	return {
