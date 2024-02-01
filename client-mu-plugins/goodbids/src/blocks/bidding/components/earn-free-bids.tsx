@@ -5,7 +5,11 @@ function FreeBidsContent() {
 	const { auctionStatus, currentBid, freeBidsAvailable, isUserLoggedIn } =
 		useBiddingState();
 
-	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
+	if (
+		auctionStatus === 'upcoming' ||
+		auctionStatus === 'starting' ||
+		auctionStatus === 'prelive'
+	) {
 		if (isUserLoggedIn) {
 			return (
 				<p className="m-0">

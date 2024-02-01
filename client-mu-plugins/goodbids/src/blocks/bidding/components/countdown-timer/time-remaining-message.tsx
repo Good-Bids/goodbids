@@ -24,6 +24,14 @@ export function TimeRemainingMessage({
 		);
 	}
 
+	if (auctionStatus === 'prelive') {
+		return (
+			<span>
+				<b>Auction starting.</b> Please stand by!
+			</span>
+		);
+	}
+
 	if (auctionStatus === 'live') {
 		if (isLastBidder) {
 			return (
@@ -41,7 +49,7 @@ export function TimeRemainingMessage({
 		);
 	}
 
-	if (auctionStatus === 'closing') {
+	if (auctionStatus === 'closing' || auctionStatus === 'preclosing') {
 		return (
 			<span>
 				<b>Auction closing.</b> Please stand by while we check for any

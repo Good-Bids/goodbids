@@ -32,7 +32,11 @@ export function TimeRemaining({
 
 	return (
 		<div className="flex items-center gap-3 px-4 h-12">
-			{auctionStatus === 'closing' ? <LoadingIcon spin /> : <ClockIcon />}
+			{auctionStatus === 'closing' || auctionStatus === 'preclosing' ? (
+				<LoadingIcon spin />
+			) : (
+				<ClockIcon />
+			)}
 
 			<div className="relative w-full">
 				<span className={placeholderClasses}>

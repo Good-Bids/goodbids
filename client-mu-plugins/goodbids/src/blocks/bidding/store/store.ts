@@ -50,13 +50,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	hasSocketError: false,
 
 	setAuctionStatus: (status) => {
-		set((state) =>
-			handleSetAuctionStatus(
-				status,
-				state.auctionStatus,
-				state.fetchMode,
-			),
-		);
+		set((state) => handleSetAuctionStatus(status, state.auctionStatus));
 	},
 
 	setFetchAuction: (data) => {

@@ -17,7 +17,11 @@ function ParticipationContent() {
 		accountUrl,
 	} = useBiddingState();
 
-	if (auctionStatus === 'upcoming' || auctionStatus === 'starting') {
+	if (
+		auctionStatus === 'upcoming' ||
+		auctionStatus === 'starting' ||
+		auctionStatus === 'prelive'
+	) {
 		if (isUserLoggedIn) {
 			return (
 				<p className="m-0 text-center">
@@ -34,7 +38,11 @@ function ParticipationContent() {
 		);
 	}
 
-	if (auctionStatus === 'closed' || auctionStatus === 'closing') {
+	if (
+		auctionStatus === 'closed' ||
+		auctionStatus === 'closing' ||
+		auctionStatus === 'preclosing'
+	) {
 		if (userTotalBids > 0) {
 			return (
 				<p className="m-0 text-center">
