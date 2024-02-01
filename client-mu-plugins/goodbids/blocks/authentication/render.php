@@ -16,6 +16,6 @@ if ( is_admin() ) :
 	return;
 endif;
 ?>
-<section <?php block_attr( $block ); ?>>
+<section <?php block_attr( $block, 'woocommerce-account woocommerce-page' ); ?>>
 	<?php echo do_shortcode( '[woocommerce_my_account]' ); ?>
 </section>
