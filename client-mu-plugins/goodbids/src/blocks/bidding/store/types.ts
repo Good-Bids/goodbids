@@ -2,7 +2,9 @@ export type AuctionStatus =
 	| 'initializing'
 	| 'upcoming'
 	| 'starting'
+	| 'prelive'
 	| 'live'
+	| 'preclosing'
 	| 'closing'
 	| 'closed';
 

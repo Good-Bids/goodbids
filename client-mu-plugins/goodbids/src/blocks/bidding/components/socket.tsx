@@ -23,6 +23,7 @@ export function Socket({ auctionId }: SocketProps) {
 			onError: () => {
 				setSocketError();
 			},
+			share: true,
 		},
 	);
 
