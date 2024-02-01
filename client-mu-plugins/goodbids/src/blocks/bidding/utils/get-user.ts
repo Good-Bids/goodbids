@@ -3,8 +3,8 @@ import { apiHandler } from './api-handler';
 import { z } from 'zod';
 
 const userSchema = z.object({
-	isLastBidder: z.boolean().default(false),
 	rewardUrl: z.string().optional(),
+	userId: z.number(),
 	userFreeBids: z.number().default(0),
 	userTotalBids: z.number().default(0),
 	userTotalDonated: z.number().default(0),

@@ -13,10 +13,7 @@ import {
 } from './types';
 
 export function handleSetUser(data: UserResponse): UserType {
-	return {
-		...data,
-		isUserLoggedIn: true,
-	};
+	return data;
 }
 
 export const handleSetAuctionStatus = (
@@ -55,7 +52,7 @@ export const handleSetAuctionStatus = (
 
 export function handelSetFetchAuction(
 	data: AuctionResponse,
-): Partial<UrlsType & TimingType & BidsType & FetchingType> {
+): Partial<UrlsType & TimingType & BidsType & FetchingType & UserType> {
 	if (data.auctionStatus === 'upcoming') {
 		const startTime = new Date(data.startTime);
 		const bufferedStartTime = startTime.getTime() - START_TIME_BUFFER;
@@ -103,7 +100,7 @@ export function handelSetFetchAuction(
 
 export function handleSetSocketAuction(
 	message: SocketMessage,
-): Partial<TimingType & BidsType & FetchingType> {
+): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
 			fetchMode: 'polling',

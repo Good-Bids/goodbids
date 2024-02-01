@@ -23,7 +23,7 @@
   "auctions": {
     "default-free-bids": 5,
     "rest-api": {
-      "cache-timeout": 10
+      "cache-timeout": 0
     }
   },
   "sites": {

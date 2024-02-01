@@ -2,7 +2,7 @@ import { useBiddingState } from '../store';
 import { WaveIcon } from './wave-icon';
 
 function FreeBidsContent() {
-	const { auctionStatus, currentBid, freeBidsAvailable, isUserLoggedIn } =
+	const { auctionStatus, currentBid, freeBidsAvailable, userId } =
 		useBiddingState();
 
 	if (
@@ -10,7 +10,7 @@ function FreeBidsContent() {
 		auctionStatus === 'starting' ||
 		auctionStatus === 'prelive'
 	) {
-		if (isUserLoggedIn) {
+		if (userId) {
 			return (
 				<p className="m-0">
 					Place one of the first five <b>paid bids</b> in this auction
@@ -24,7 +24,7 @@ function FreeBidsContent() {
 		}
 	}
 
-	if (isUserLoggedIn) {
+	if (userId) {
 		if (freeBidsAvailable) {
 			return (
 				<p className="m-0">

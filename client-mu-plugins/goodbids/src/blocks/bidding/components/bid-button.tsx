@@ -1,9 +1,12 @@
 import clsx from 'clsx';
 import { useBiddingState } from '../store';
+import { getIsLastBidder } from '../utils/get-is-last-bidder';
 
 export function BidButton() {
-	const { isLastBidder, auctionStatus, currentBid, rewardUrl, bidUrl } =
+	const { userId, lastBidder, auctionStatus, currentBid, rewardUrl, bidUrl } =
 		useBiddingState();
+
+	const isLastBidder = getIsLastBidder(userId, lastBidder);
 
 	const disabled =
 		isLastBidder ||
