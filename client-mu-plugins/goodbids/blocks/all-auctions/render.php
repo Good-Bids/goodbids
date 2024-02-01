@@ -12,7 +12,7 @@ use GoodBids\Blocks\AllAuctions;
 use GoodBids\Auctions\Auctions;
 
 $block_auctions    = new GoodBids\Blocks\AllAuctions( $block );
-$all_auctions      = goodbids()->sites->get_all_auctions();
+$all_auctions      = $block_auctions->get_all_auctions();
 $live_auctions     = $block_auctions->get_live_auctions( $all_auctions );
 $upcoming_auctions = $block_auctions->get_upcoming_auctions( $all_auctions );
 

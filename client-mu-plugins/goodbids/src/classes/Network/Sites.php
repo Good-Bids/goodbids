@@ -742,15 +742,13 @@ class Sites {
 
 		add_action(
 			'wp_trash_post',
-			function ( int $post_id, string $previous_status ): void {
+			function ( int $post_id ): void {
 				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
 				}
 
 				delete_transient( self::ALL_AUCTIONS_TRANSIENT );
-			},
-			10,
-			2
+			}
 		);
 	}
 

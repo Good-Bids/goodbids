@@ -149,6 +149,36 @@ class AllAuctions extends ACFBlock {
 	}
 
 	/**
+	 * Get the auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_all_auctions(): array {
+		// if on the main site, get all auctions from all site
+		if ( is_main_site() ) {
+			return goodbids()->sites->get_all_auctions();
+		}
+
+		// default to get all auctions from the current site TODO maybe good to make this a transient as well
+		return collect( ( goodbids()->auctions->get_all() )->posts )
+				->map(
+					fn ( int $post_id ) => [
+						'post_id' => $post_id,
+						'site_id' => get_current_blog_id(),
+					]
+				)
+				->sortByDesc(
+					fn ( array $auction ) => [
+						'bid_count'    => fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
+						'total_raised' => fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
+					]
+				)
+				->all();
+	}
+
+	/**
 	 * Get the upcoming auctions
 	 *
 	 * @since 1.0.0
