@@ -72,7 +72,8 @@ class Log {
 		$formatter = new LineFormatter( $output );
 		$formatter->ignoreEmptyContextAndExtra();
 
-		$handler = new StreamHandler( self::$logs_dir . 'goodbids.log', Level::Debug );
+		$date    = date( 'Y-m-d' ); // phpcs:ignore
+		$handler = new StreamHandler( self::$logs_dir . 'goodbids' . $date . '.log', Level::Debug );
 		$handler->setFormatter( $formatter );
 
 		self::$monolog = new Logger( 'GoodBids' );
@@ -134,7 +135,7 @@ class Log {
 			if ( self::$new_relic_loaded && function_exists( 'newrelic_notice_error' ) ) {
 				newrelic_notice_error( $message );
 			}
-		} elseif ( Core::is_dev_env() ) {
+		} elseif ( Core::is_dev_env() && E_USER_NOTICE !== $php_level ) {
 			// Log to console.
 			error_log( $console_message ); // phpcs:ignore
 
