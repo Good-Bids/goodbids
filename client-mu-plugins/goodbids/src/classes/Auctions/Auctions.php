@@ -57,12 +57,6 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const GUID_META_KEY = 'gb_guid';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
 	const PRODUCT_AUCTION_META_KEY = '_gb_auction_id';
 
 	/**
