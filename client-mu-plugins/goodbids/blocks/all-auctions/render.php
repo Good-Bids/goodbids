@@ -43,7 +43,7 @@ $total_query = count( $auctions );
 $total_pages = ceil( $total_query / $block_auctions->get_auctions_per_page() );
 $auctions    = $block_auctions->apply_pagination( $auctions );
 ?>
-<section <?php block_attr( $block ); ?>>
+<section <?php block_attr( $block, 'relative' ); ?>>
 	<div class="mb-12 text-center text-contrast">
 		<ul class="flex flex-wrap px-0 py-4 mt-0 mb-4 list-none border-b-2 border-solid border-contrast border-t-transparent border-x-transparent">
 			<?php if ( $live_auctions ) : ?>
@@ -68,15 +68,17 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 				</li>
 			<?php endif; ?>
 		</ul>
+
 		<?php if ( ! empty( $block_auctions->get_sort_dropdown_options() ) ) : ?>
 			<div class="flex justify-end">
 				<select
 					aria-label="Sort Auctions"
-					name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
 					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
+					name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
 					hx-get="<?php echo esc_url( $sort_url ); ?>"
-					hx-select="[data-all-auction]"
-					hx-target="[data-all-auction]"
+					hx-select="[data-auction-grid]"
+					hx-target="[data-auction-grid]"
+					hx-indicator="[data-auctions-spinner]"
 					hx-swap="outerHTML"
 					hx-trigger="change"
 					hx-push-url="true"
@@ -95,7 +97,11 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 	</div>
 
 
-	<div data-all-auction="true">
+	<div data-auctions-spinner class="flex justify-center group">
+		<svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 animate-spin hidden group-[.htmx-request]:block" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
+	</div>
+
+	<div data-auction-grid>
 	<?php
 	if ( ! count( $auctions ) ) :
 		printf(
@@ -113,7 +119,3 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 	</div>
 
 </section>
-
-<script src="https://unpkg.com/htmx.org@1.9.10"
-		integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-		crossorigin="anonymous"></script>
