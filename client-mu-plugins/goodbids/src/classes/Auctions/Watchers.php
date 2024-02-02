@@ -252,6 +252,23 @@ class Watchers {
 		return true;
 	}
 
+	/**
+	 * Toggle Watching an Auction for a given User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @param ?int $user_id
+	 *
+	 * @return bool
+	 */
+	public function toggle_watching( ?int $auction_id = null, ?int $user_id = null ): bool {
+		if ( $this->is_watching( $auction_id, $user_id ) ) {
+			return $this->stop_watching( $user_id, $auction_id );
+		}
+
+		return $this->start_watching( $auction_id, $user_id );
+	}
 
 	/**
 	 * Get all Watchers for a given User

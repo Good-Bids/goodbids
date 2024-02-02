@@ -19,6 +19,9 @@ Starts Watching an Auction for the given User ID.
 `goodbids()->watchers->stop_watching( int $auction_id, int $user_id )`  
 Stops Watching an Auction for the given User ID.  
 
+`goodbids()->watchers->toggle_watching( int $auction_id, int $user_id )`  
+Starts or Stops Watching an Auction for the given User ID, based on if it's currently being watched.  
+
 `goodbids()->watchers->get_watchers_by_user( int $user_id )`  
 Returns an array of IDs of Watchers for the given User ID.  
 
