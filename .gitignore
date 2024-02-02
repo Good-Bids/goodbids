@@ -71,3 +71,6 @@ build
 
 # Log files
 private/logs/
+
+# Local config file
+client-mu-plugins/goodbids/config.local.json

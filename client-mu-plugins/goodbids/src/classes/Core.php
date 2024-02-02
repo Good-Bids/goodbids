@@ -180,21 +180,35 @@ class Core {
 
 	/**
 	 * Sets the Plugin Config.
+	 * Override the default config with a local config file (config.local.json).
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
 	private function load_config(): bool {
-		$json_path = GOODBIDS_PLUGIN_PATH . 'config.json';
-		if ( ! file_exists( $json_path ) ) {
+		$json_path  = GOODBIDS_PLUGIN_PATH . 'config.json';
+		$local_json = GOODBIDS_PLUGIN_PATH . 'config.local.json';
+
+		if ( ! file_exists( $json_path ) && ! file_exists( $local_json ) ) {
+			Log::warning( 'Missing config.json file' );
 			return false;
 		}
 
-		$json = json_decode( file_get_contents( $json_path ), true ); // phpcs:ignore
+		$json = [];
 
-		if ( ! is_array( $json ) ) {
-			return false;
+		if ( file_exists( $json_path ) ) {
+			$base = json_decode( file_get_contents( $json_path ), true ); // phpcs:ignore
+			if ( is_array( $base ) ) {
+				$json = $base;
+			}
+		}
+
+		if ( file_exists( $local_json ) ) {
+			$local = json_decode( file_get_contents( $local_json ), true ); // phpcs:ignore
+			if ( is_array( $local ) ) {
+				$json = array_merge( $json, $local );
+			}
 		}
 
 		$this->config = $json;

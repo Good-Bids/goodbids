@@ -25,7 +25,6 @@ class Log {
 	 * Logger instance.
 	 *
 	 * @since 1.0.0
-	 *
 	 * @var ?Logger $log
 	 */
 	private static ?Logger $monolog = null;
@@ -34,7 +33,6 @@ class Log {
 	 * New Relic loaded flag.
 	 *
 	 * @since 1.0.0
-	 *
 	 * @var bool
 	 */
 	private static bool $new_relic_loaded = false;
@@ -43,7 +41,6 @@ class Log {
 	 * Logs directory.
 	 *
 	 * @since 1.0.0
-	 *
 	 * @var string
 	 */
 	private static string $logs_dir = WPCOM_VIP_PRIVATE_DIR . '/logs/';
@@ -57,6 +54,14 @@ class Log {
 	private static bool $debug_mode = false;
 
 	/**
+	 * Empty constructor to clear warning on log() method.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function __construct() {}
+
+	/**
 	 * Initialize
 	 *
 	 * @since 1.0.0
@@ -64,6 +69,7 @@ class Log {
 	 * @return void
 	 */
 	public static function init(): void {
+		self::set_debug_mode();
 		self::init_monolog();
 		self::init_new_relic();
 	}
@@ -105,12 +111,28 @@ class Log {
 	}
 
 	/**
+	 * Check config for debug mode.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private static function set_debug_mode(): void {
+		add_action(
+			'muplugins_loaded',
+			function() {
+				self::$debug_mode = goodbids()->get_config( 'debug-mode' );
+			}
+		);
+	}
+
+	/**
 	 * Method for logging new messages.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 * @param Level  $level
 	 *
 	 * @return void
