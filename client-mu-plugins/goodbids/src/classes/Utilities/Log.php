@@ -121,7 +121,11 @@ class Log {
 		add_action(
 			'muplugins_loaded',
 			function() {
-				self::$debug_mode = goodbids()->get_config( 'debug-mode' );
+				// Make sure we have a boolean value.
+				$mode = goodbids()->get_config( 'debug-mode' );
+				if ( is_bool( $mode ) ) {
+					self::$debug_mode = $mode;
+				}
 			}
 		);
 	}
