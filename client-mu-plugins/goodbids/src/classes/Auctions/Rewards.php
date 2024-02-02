@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use GoodBids\Plugins\WooCommerce\Coupons;
+use GoodBids\Utilities\Log;
 use WC_Product;
 
 /**
@@ -76,7 +77,7 @@ class Rewards {
 			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
 
 			if ( is_wp_error( $rewards_category ) ) {
-				// TODO: Log error.
+				Log::error( $rewards_category->get_error_message() );
 				return null;
 			}
 
@@ -105,7 +106,7 @@ class Rewards {
 				$reward_id = $this->get_product_id( $post_id );
 
 				if ( ! $reward_id ) {
-					// TODO: Log error.
+					Log::error( 'Auction missing Reward Product.', compact( 'post_id' ) );
 					return;
 				}
 

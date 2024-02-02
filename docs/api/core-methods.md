@@ -17,5 +17,5 @@ Loads the given view name with the given data.
 `goodbids()->is_plugin_active( string $plugin )`  
 Checks if the given plugin (slug) is active. This is not the same as the WordPress `is_plugin_active()` function, all it does is checks if the plugin is in the active_plugins config.
 
-`goodbids()->is_dev_env()`  
+`Core::is_dev_env()`  
 Checks if the current environment is a development environment.

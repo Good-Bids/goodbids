@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Utilities\Log;
 use WC_Order;
 use WC_Product_Variation;
 use WP_Query;
@@ -607,7 +608,7 @@ class Auctions {
 		$start_date_time = $this->get_start_date_time( $auction_id );
 
 		if ( ! $start_date_time ) {
-			// TODO: Log error.
+			Log::warning( 'Auction has no start date/time.', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -627,7 +628,7 @@ class Auctions {
 		$end_date_time = $this->get_end_date_time( $auction_id );
 
 		if ( ! $end_date_time ) {
-			// TODO: Log error.
+			Log::warning( 'Auction has no end date/time.', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -685,7 +686,7 @@ class Auctions {
 			// Subtract seconds from end time to get window start.
 			$window = $end->sub( new \DateInterval( 'PT' . $extension . 'S' ) );
 		} catch ( \Exception $e ) {
-			// TODO: Log error.
+			Log::error( $e->getMessage(), compact( 'end_time' ) );
 			return false;
 		}
 
@@ -706,7 +707,7 @@ class Auctions {
 		$bid_extension = $this->get_setting( 'bid_extension', $auction_id );
 
 		if ( ! $bid_extension ) {
-			// TODO: Log error.
+			Log::error( '[CONFIG] Unable to load Bid Extension' );
 			return null;
 		}
 
@@ -951,13 +952,13 @@ class Auctions {
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $this->has_bid_product( $post_id ) ) {
-					// TODO: Log error.
+					Log::error( 'Auction does not have Bid Product', compact( 'post_id' ) );
 					return;
 				}
 
 				// Only update if Auction hasn't started.
 				if ( $this->has_started( $post_id ) ) {
-					// TODO: Log warning.
+					Log::warning( 'Attempted to update Auction Bid Product after Auction has started', compact( 'post_id' ) );
 					return;
 				}
 
@@ -1600,6 +1601,7 @@ class Auctions {
 				foreach ( $auctions->posts as $auction_id ) {
 					// Skip START Action on Auctions that have ended.
 					if ( $this->has_ended( $auction_id ) ) {
+						Log::debug( 'Auction not started because it has already ended', compact( 'auction_id' ) );
 						continue;
 					}
 
@@ -1608,8 +1610,10 @@ class Auctions {
 					}
 				}
 
-				if ( count( $auctions->posts ) !== $starts ) {
-					// TODO: Log error.
+				$count = count( $auctions->posts );
+
+				if ( $count !== $starts ) {
+					Log::warning( 'Not all Auctions were started', [ 'starts' => $starts, 'expected' => $count, 'posts' => $auctions->posts ] );
 				}
 			}
 		);
@@ -1770,7 +1774,7 @@ class Auctions {
 				}
 
 				if ( ! $this->extend_auction( $auction_id ) ) {
-					// TODO: Log error.
+					Log::error( 'There was a problem extending the Auction', compact( 'auction_id' ) );
 				}
 			},
 			10,
@@ -1820,7 +1824,7 @@ class Auctions {
 
 		// Bail early if missing extension value.
 		if ( ! $extension ) {
-			// TODO: Log error.
+			Log::error( 'Missing Auction Bid Extension', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -1828,7 +1832,7 @@ class Auctions {
 			$close      = current_datetime()->add( new \DateInterval( 'PT' . $extension . 'S' ) );
 			$close_time = $close->format( 'Y-m-d H:i:s' );
 		} catch ( \Exception $e ) {
-			// TODO: Log error.
+			Log::error( $e->getMessage(), compact( 'extension' ) );
 			return false;
 		}
 

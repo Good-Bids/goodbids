@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Utilities\Log;
 
 /**
  * Class for Order Methods
@@ -65,7 +66,7 @@ class Orders {
 		}
 
 		if ( ! $auction_id || ! $order_type ) {
-			// TODO: Log warning.
+			Log::debug( 'No Auction ID or Order Type found', compact( 'order_id' ) );
 			return null;
 		}
 

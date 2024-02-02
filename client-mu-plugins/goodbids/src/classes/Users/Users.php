@@ -11,6 +11,7 @@ namespace GoodBids\Users;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\FreeBid;
 use GoodBids\Plugins\WooCommerce\Coupons;
+use GoodBids\Utilities\Log;
 
 /**
  * User Class
@@ -135,7 +136,7 @@ class Users {
 		$unused_free_bids = $this->get_free_bids( $user_id, Bids::FREE_BID_STATUS_UNUSED );
 
 		if ( ! count( $unused_free_bids ) ) {
-			// TODO: Log error
+			Log::error( 'No available Free Bids to redeem', compact( 'user_id', 'auction_id', 'order_id' ) );
 			return false;
 		}
 
@@ -154,7 +155,7 @@ class Users {
 		}
 
 		if ( ! $redeemed ) {
-			// TODO: Log error.
+			Log::error( 'There was a problem redeeming the free bid.', compact( 'user_id', 'auction_id', 'order_id' ) );
 			return false;
 		}
 

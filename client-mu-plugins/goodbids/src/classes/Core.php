@@ -20,6 +20,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Users;
+use GoodBids\Utilities\Log;
 use GoodBids\Utilities\Utilities;
 
 /**
@@ -164,13 +165,14 @@ class Core {
 	 */
 	public function init(): void {
 		if ( ! $this->load_config() ) {
-			// TODO: Log error.
+			Log::error( 'Failed to load config.json' );
 			return;
 		}
 
 		$this->load_dependencies();
 		$this->load_plugins();
 		$this->load_modules();
+		$this->init_modules();
 		$this->restrict_rest_api_access();
 
 		$this->initialized = true;
@@ -178,21 +180,35 @@ class Core {
 
 	/**
 	 * Sets the Plugin Config.
+	 * Override the default config with a local config file (config.local.json).
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
 	private function load_config(): bool {
-		$json_path = GOODBIDS_PLUGIN_PATH . 'config.json';
-		if ( ! file_exists( $json_path ) ) {
+		$json_path  = GOODBIDS_PLUGIN_PATH . 'config.json';
+		$local_json = GOODBIDS_PLUGIN_PATH . 'config.local.json';
+
+		if ( ! file_exists( $json_path ) && ! file_exists( $local_json ) ) {
+			Log::warning( 'Missing config.json file' );
 			return false;
 		}
 
-		$json = json_decode( file_get_contents( $json_path ), true ); // phpcs:ignore
+		$json = [];
 
-		if ( ! is_array( $json ) ) {
-			return false;
+		if ( file_exists( $json_path ) ) {
+			$base = json_decode( file_get_contents( $json_path ), true ); // phpcs:ignore
+			if ( is_array( $base ) ) {
+				$json = $base;
+			}
+		}
+
+		if ( file_exists( $local_json ) ) {
+			$local = json_decode( file_get_contents( $local_json ), true ); // phpcs:ignore
+			if ( is_array( $local ) ) {
+				$json = array_merge( $json, $local );
+			}
 		}
 
 		$this->config = $json;
@@ -247,7 +263,7 @@ class Core {
 	 *
 	 * @return bool
 	 */
-	public function is_dev_env(): bool {
+	public static function is_dev_env(): bool {
 		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
 	}
 
@@ -274,9 +290,9 @@ class Core {
 				$plugin_slug = str_contains( $plugin, '/' ) ? $plugin : $plugin . '/' . $plugin . '.php';
 				$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_slug;
 				if ( ! file_exists( $plugin_path ) ) {
-					error_log(
+					Log::warning(
 						sprintf(
-							'[GB] Attempted to load plugin %s but the file %s was not found in the plugin directory.',
+							'Attempted to load plugin %s but the file %s was not found in the plugin directory.',
 							$plugin,
 							$plugin_slug
 						)
@@ -331,6 +347,18 @@ class Core {
 	}
 
 	/**
+	 * Perform any manual module initialization.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function init_modules(): void {
+		// Initialize Logging.
+		Log::init();
+	}
+
+	/**
 	 * Get path to a view file.
 	 *
 	 * @since 1.0.0
@@ -382,11 +410,9 @@ class Core {
 		add_filter(
 			'rest_endpoints',
 			function ( $endpoints ) {
-				if ( is_user_logged_in() ) {
-					// Allow access to the secure REST API endpoints for the roles specified above.
-					if ( current_user_can( 'edit_posts' ) ) {
-						return $endpoints;
-					}
+				// Allow permission-based access to the secure REST API endpoints.
+				if ( current_user_can( 'edit_posts' ) ) {
+					return $endpoints;
 				}
 
 				$restricted = [

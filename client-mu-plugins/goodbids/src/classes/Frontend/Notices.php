@@ -8,6 +8,8 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Utilities\Log;
+
 /**
  * Display Front-end Notices
  *
@@ -288,7 +290,7 @@ class Notices {
 		}
 
 		if ( empty( $this->notices[ $notice_id ] ) ) {
-			// TODO: Log error.
+			Log::warning( 'Notice not found.', compact( 'notice_id' ) );
 			return null;
 		}
 
