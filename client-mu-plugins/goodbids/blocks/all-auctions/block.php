@@ -261,11 +261,12 @@ class AllAuctions extends ACFBlock {
 	public function sortby_start_date( array $auctions ): array {
 		return collect( $auctions )
 				->sortBy(
-					function ( array $auction ) {
-						$start_date = goodbids()->auctions->get_start_date_time( $auction['post_id'] );
-						$site_id    = $auction['site_id'];
-						return goodbids()->sites->swap( fn() => $start_date, $site_id );
-					}
+					fn( array $auction ) => goodbids()->sites->swap(
+						function () use ( &$auction ) {
+							return goodbids()->auctions->get_start_date_time( $auction['post_id'] );
+						},
+						$auction['site_id']
+					)
 				)
 				->all();
 	}
