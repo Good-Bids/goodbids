@@ -261,7 +261,8 @@ class Log {
 		];
 
 		if ( isset( $backtrace[ $limit - 1 ] ) ) {
-			$caller = $backtrace[ $limit - 1 ];
+			// Merge with defaults.
+			$caller = array_merge( $caller, $backtrace[ $limit - 1 ] );
 		}
 
 		return $caller;
