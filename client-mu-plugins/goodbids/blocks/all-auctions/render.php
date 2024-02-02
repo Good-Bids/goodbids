@@ -43,14 +43,14 @@ $total_query = count( $auctions );
 $total_pages = ceil( $total_query / $block_auctions->get_auctions_per_page() );
 $auctions    = $block_auctions->apply_pagination( $auctions );
 ?>
-<section <?php block_attr( $block, 'relative' ); ?>>
+<section <?php block_attr( $block ); ?>>
 	<div class="mb-12 text-center text-contrast">
-		<ul class="flex flex-wrap px-0 py-4 mt-0 mb-4 list-none border-b-2 border-solid border-contrast border-t-transparent border-x-transparent">
+		<ul class="flex flex-wrap px-0 py-4 mt-0 mb-4 text-sm list-none border-b-2 border-solid border-contrast border-t-transparent border-x-transparent lg:text-base">
 			<?php if ( $live_auctions ) : ?>
 				<li class="me-2">
 					<a
 						href="<?php echo esc_url( $page_url ); ?>"
-						class="<?php echo esc_attr( $live_btn ? 'btn-fill-secondary' : 'btn-fill' ); ?>"
+						class="<?php echo esc_attr( $live_btn ? 'btn-fill-secondary' : 'btn-fill' ); ?> block my-1"
 					>
 						<?php esc_html_e( 'Live', 'goodbids' ); ?>
 					</a>
@@ -61,7 +61,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 				<li class="me-2">
 					<a
 						href="<?php echo esc_url( $upcoming_url ); ?>"
-						class="<?php echo esc_attr( $upcoming_btn ? 'btn-fill-secondary' : 'btn-fill' ); ?>"
+						class="<?php echo esc_attr( $upcoming_btn ? 'btn-fill-secondary' : 'btn-fill' ); ?> block my-1"
 					>
 						<?php esc_html_e( 'Coming Soon', 'goodbids' ); ?>
 					</a>
@@ -86,7 +86,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 					<?php foreach ( $block_auctions->get_sort_dropdown_options() as $option ) : ?>
 						<option
 							value="<?php echo esc_attr( $option['value'] ); ?>"
-							<?php echo $option['value'] === $block_auctions->is_sortby() ? esc_attr( 'selected' ) : ''; ?>
+							<?php selected( $option['value'], $block_auctions->is_sortby() ); ?>
 						>
 							<?php echo esc_html( $option['label'] ); ?>
 						</option>
@@ -101,7 +101,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 		<svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 animate-spin hidden group-[.htmx-request]:block" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
 	</div>
 
-	<div data-auction-grid>
+	<div data-auction-grid role="region" aria-live="polite">
 	<?php
 	if ( ! count( $auctions ) ) :
 		printf(
