@@ -49,6 +49,14 @@ class Log {
 	private static string $logs_dir = WPCOM_VIP_PRIVATE_DIR . '/logs/';
 
 	/**
+	 * Enable this flag to log ALL messages to the console.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	private static bool $debug_mode = false;
+
+	/**
 	 * Initialize
 	 *
 	 * @since 1.0.0
@@ -135,7 +143,7 @@ class Log {
 			if ( self::$new_relic_loaded && function_exists( 'newrelic_notice_error' ) ) {
 				newrelic_notice_error( $message );
 			}
-		} elseif ( Core::is_dev_env() && E_USER_NOTICE !== $php_level ) {
+		} elseif ( Core::is_dev_env() && ( self::$debug_mode || E_USER_NOTICE !== $php_level ) ) {
 			// Log to console.
 			error_log( $console_message ); // phpcs:ignore
 
