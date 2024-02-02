@@ -40,6 +40,9 @@ class Coupons {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Fixes a known issue with WP VIP and WooCoupons.
+		$this->wp_vip_db_fix();
+
 		// Automatically apply coupons at checkout.
 		$this->apply_cart_coupons();
 	}
@@ -247,6 +250,38 @@ class Coupons {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * From WP VIP Support:
+	 * This fixes an error that is a known issue of WP VIP (specifically an incompatibility between HyperDB and Woo Coupons).
+	 *
+	 * While we're still waiting on an official fix here, this filter is being used as a workaround where at least two other scenarios the errors have appeared.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function wp_vip_db_fix(): void {
+		add_filter(
+			'query',
+			function ( string $query ): string {
+				if ( ! str_contains( $query, 'SELECT' ) || ! str_contains( $query, 'FOR UPDATE' ) ) {
+					return $query;
+				}
+
+				/** @var \hyperdb $wpdb */
+				global $wpdb;
+
+				if ( ! method_exists( $wpdb, 'send_reads_to_master' ) ) {
+					return $query;
+				}
+
+				$wpdb->send_reads_to_master();
+
+				return $query;
+			}
 		);
 	}
 }
