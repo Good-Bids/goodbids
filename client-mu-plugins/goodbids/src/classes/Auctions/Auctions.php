@@ -1425,7 +1425,7 @@ class Auctions {
 
 		add_action(
 			'manage_' . $this->get_post_type() . '_posts_custom_column',
-			function ( $column, $post_id ) {
+			function ( string $column, int $post_id ) {
 				// Columns that require a "published" status.
 				$published_cols = [
 					'starting_bid',

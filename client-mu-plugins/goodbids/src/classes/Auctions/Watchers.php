@@ -31,6 +31,12 @@ class Watchers {
 	const AUCTION_ID_META_KEY = '_auction_id';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const USER_ID_META_KEY = '_user_id';
+
+	/**
 	 * Initialize Watchers
 	 *
 	 * @since 1.0.0
@@ -38,6 +44,12 @@ class Watchers {
 	public function __construct() {
 		// Register Post Type.
 		$this->register_post_type();
+
+		// Add custom Admin Columns for Watchers.
+		$this->add_admin_columns();
+
+		// Handle Toggle via AJAX.
+		$this->ajax_handle_toggle();
 	}
 
 	/**
@@ -109,6 +121,67 @@ class Watchers {
 	}
 
 	/**
+	 * Insert custom admin columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_admin_columns(): void {
+		add_filter(
+			'manage_' . $this->get_post_type() . '_posts_columns',
+			function ( array $columns ): array {
+				$new_columns = [];
+
+				foreach ( $columns as $column => $label ) {
+					$new_columns[ $column ] = $label;
+
+					// Insert Custom Columns after the Title column.
+					if ( 'title' === $column ) {
+						$new_columns['auction'] = __( 'Auction', 'goodbids' );
+						$new_columns['user']    = __( 'User', 'goodbids' );
+					}
+				}
+
+				return $new_columns;
+			}
+		);
+
+		add_action(
+			'manage_' . $this->get_post_type() . '_posts_custom_column',
+			function ( string $column, int $post_id ) {
+				// Output the column values.
+				if ( 'user' === $column ) {
+					$user_id = get_post_meta( $post_id, self::USER_ID_META_KEY, true );
+					$user    = get_user_by( 'ID', $user_id );
+
+					if ( $user ) {
+						printf(
+							'<a href="%s">%s</a>',
+							esc_url( get_edit_user_link( $user_id ) ),
+							esc_html( $user->display_name )
+						);
+					} else {
+						echo esc_html( $user_id );
+					}
+				} elseif ( 'auction' === $column ) {
+					$auction_id = get_post_meta( $post_id, self::AUCTION_ID_META_KEY, true );
+
+					printf(
+						'<a href="%s">%s</a> (<a href="%s" target="_blank">%s</a>)',
+						esc_url( get_edit_post_link( $auction_id ) ),
+						esc_html( get_the_title( $auction_id ) ),
+						esc_url( get_permalink( $auction_id ) ),
+						esc_html__( 'View', 'goodbids' )
+					);
+				}
+			},
+			10,
+			2
+		);
+	}
+
+	/**
 	 * Returns the Watcher post type slug.
 	 *
 	 * @since 1.0.0
@@ -146,12 +219,16 @@ class Watchers {
 			[
 				'post_type'      => $this->get_post_type(),
 				'posts_per_page' => 1,
-				'author'         => $user_id,
+				'post_status'    => [ 'publish' ],
 				'fields'         => 'ids',
 				'meta_query'     => [
 					[
 						'key'   => self::AUCTION_ID_META_KEY,
 						'value' => $auction_id,
+					],
+					[
+						'key'   => self::USER_ID_META_KEY,
+						'value' => $user_id,
 					],
 				],
 			]
@@ -211,7 +288,7 @@ class Watchers {
 				'post_type'   => $this->get_post_type(),
 				'post_title'  => $watch_title,
 				'post_status' => 'publish',
-				'post_author' => $user_id,
+				'post_author' => 1,
 			]
 		);
 
@@ -221,6 +298,7 @@ class Watchers {
 		}
 
 		update_post_meta( $watcher_id, self::AUCTION_ID_META_KEY, $auction_id );
+		update_post_meta( $watcher_id, self::USER_ID_META_KEY, $user_id );
 
 		return true;
 	}
@@ -230,15 +308,16 @@ class Watchers {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $user_id
 	 * @param ?int $auction_id
+	 * @param ?int $user_id
 	 *
 	 * @return bool
 	 */
-	public function stop_watching( ?int $user_id = null, ?int $auction_id = null ): bool {
-		$watcher_id = $this->get_watcher( $user_id, $auction_id );
+	public function stop_watching( ?int $auction_id = null, ?int $user_id = null ): bool {
+		$watcher_id = $this->get_watcher( $auction_id, $user_id );
 
 		if ( is_null( $watcher_id ) ) {
+			Log::warning( 'No Watcher found', compact( 'user_id', 'auction_id' ) );
 			return false;
 		}
 
@@ -264,9 +343,8 @@ class Watchers {
 	 */
 	public function toggle_watching( ?int $auction_id = null, ?int $user_id = null ): bool {
 		if ( $this->is_watching( $auction_id, $user_id ) ) {
-			return $this->stop_watching( $user_id, $auction_id );
+			return $this->stop_watching( $auction_id, $user_id );
 		}
-
 		return $this->start_watching( $auction_id, $user_id );
 	}
 
@@ -293,8 +371,14 @@ class Watchers {
 			[
 				'post_type'      => $this->get_post_type(),
 				'posts_per_page' => -1,
-				'author'         => $user_id,
+				'post_status'    => [ 'publish' ],
 				'fields'         => 'ids',
+				'meta_query'     => [
+					[
+						'key'   => self::USER_ID_META_KEY,
+						'value' => $user_id,
+					],
+				],
 			]
 		);
 
@@ -328,6 +412,7 @@ class Watchers {
 			[
 				'post_type'      => $this->get_post_type(),
 				'posts_per_page' => -1,
+				'post_status'    => [ 'publish' ],
 				'fields'         => 'ids',
 				'meta_query'     => [
 					[
@@ -356,5 +441,54 @@ class Watchers {
 	 */
 	public function get_watcher_count( ?int $auction_id = null ): int {
 		return count( $this->get_watchers_by_auction( $auction_id ) );
+	}
+
+	/**
+	 * Handle the AJAX request to toggle watching an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function ajax_handle_toggle(): void {
+		add_action(
+			'wp_ajax_goodbids_toggle_watching',
+			function () {
+				if ( empty( $_POST['auction'] ) ) {
+					wp_send_json_error(
+						[
+							'message' => esc_html__( 'Missing Auction ID.', 'goodbids' ),
+						]
+					);
+				}
+
+				$user_id    = get_current_user_id();
+				$auction_id = intval( sanitize_text_field( $_POST['auction'] ) );
+
+				if ( ! $auction_id || ! $user_id ) {
+					wp_send_json_error(
+						[
+							'message' => esc_html__( 'Invalid Auction ID or User ID.', 'goodbids' ),
+						]
+					);
+				}
+
+				$watching = $this->toggle_watching( $auction_id, $user_id );
+
+				if ( ! $watching ) {
+					wp_send_json_error(
+						[
+							'message' => esc_html__( 'There was a problem toggling the Watcher.', 'goodbids' ),
+						]
+					);
+				}
+
+				wp_send_json_success(
+					[
+						'isWatching' => $this->is_watching( $auction_id, $user_id ),
+						'totalWatchers' => $this->get_watcher_count( $auction_id ),
+					] );
+			}
+		);
 	}
 }

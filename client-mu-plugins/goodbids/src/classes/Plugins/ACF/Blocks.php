@@ -31,9 +31,17 @@ class Blocks {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Register our custom block category.
 		$this->register_block_category();
+
+		// Register custom blocks.
 		$this->register_blocks();
+
+		// Set block render callback.
 		$this->set_block_callback();
+
+		// Restrict blocks to specific post types.
+		$this->restrict_to_post_type();
 	}
 
 	/**
@@ -76,6 +84,7 @@ class Blocks {
 
 		foreach ( $locations as $location ) {
 			$group = glob( trailingslashit( $location ) . '**/block.json' );
+			$group = array_merge( $group, glob( trailingslashit( $location ) . '**/**/block.json' ) );
 
 			foreach ( $group as $block_path ) {
 				$block = json_decode( file_get_contents( $block_path ), true ); // phpcs:ignore
@@ -312,5 +321,50 @@ class Blocks {
 		$class = apply_filters( 'goodbids_block_class', $class, $block );
 
 		return trim( implode( ' ', array_unique( $class ) ) );
+	}
+
+	/**
+	 * Restrict blocks to specific post types.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function restrict_to_post_type(): void {
+		add_filter(
+			'allowed_block_types_all',
+			function ( $allowed_block_types ) {
+				$blocks = goodbids()->get_config( 'blocks' );
+
+				if ( ! $blocks ) {
+					return $allowed_block_types;
+				}
+
+				$disabled = [];
+
+				foreach ( $blocks as $block_name => $block_config ) {
+					if ( empty( $block_config['post-types'] ) ) {
+						continue;
+					}
+
+					if ( in_array( get_post_type(), $block_config['post-types'], true ) ) {
+						continue;
+					}
+
+					$disabled[] = 'acf/' . $block_name;
+				}
+
+				if ( empty( $disabled ) ) {
+					return $allowed_block_types;
+				}
+
+				if ( ! is_array( $allowed_block_types ) ) {
+					$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+				}
+
+				// Remove the block from the allowed blocks.
+				return array_values( array_diff( $allowed_block_types, $disabled ) );
+			}
+		);
 	}
 }

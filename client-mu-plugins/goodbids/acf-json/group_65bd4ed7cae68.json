@@ -27,6 +27,27 @@
             "bidirectional": 0,
             "ui": 1,
             "bidirectional_target": []
+        },
+        {
+            "key": "field_65bd71c8aac51",
+            "label": "User",
+            "name": "_user_id",
+            "aria-label": "",
+            "type": "user",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "role": "",
+            "return_format": "id",
+            "multiple": 0,
+            "allow_null": 0,
+            "bidirectional": 0,
+            "bidirectional_target": []
         }
     ],
     "location": [
@@ -47,6 +68,6 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1706905536,
+    "modified": 1706914267,
     "private": true
 }
