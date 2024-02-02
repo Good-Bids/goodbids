@@ -75,8 +75,8 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 					name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
 					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
 					hx-get="<?php echo esc_url( $sort_url ); ?>"
-					hx-select="#all-auctions"
-					hx-target="#all-auctions"
+					hx-select="[data-all-auction]"
+					hx-target="[data-all-auction]"
 					hx-swap="outerHTML"
 					hx-trigger="change"
 					hx-push-url="true"
@@ -95,6 +95,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 	</div>
 
 
+	<div data-all-auction="true">
 	<?php
 	if ( ! count( $auctions ) ) :
 		printf(
@@ -109,6 +110,7 @@ $auctions    = $block_auctions->apply_pagination( $auctions );
 		endif;
 	endif;
 	?>
+	</div>
 
 </section>
 
