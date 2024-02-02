@@ -10,7 +10,7 @@
 
 $watching = goodbids()->watchers->is_watching();
 $icon     = $watching ? 'visibility' : 'hidden';
-$watchers = goodbids()->watchers->get_watcher_count()
+$watchers = goodbids()->watchers->get_watcher_count();
 ?>
 <div <?php block_attr( $block ); ?>>
 	<a href="#gb-toggle-watching"
