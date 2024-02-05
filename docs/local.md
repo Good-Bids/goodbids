@@ -84,4 +84,6 @@ Once that is all set up, copy the file `phpcs.xml.dist` in the goodbids repo and
 
 Set your `phpcs` standard to point to `/Absolute/Path/To/goodbids/.phpcs.xml",`
 
-## Bidding Block and Assets
+## Local Config Override
+
+You can override the default local config by adding a `client-mu-plugins/goodbids/config.local.json` file. This will allow you to override specific settings without risk of committing to the repository.

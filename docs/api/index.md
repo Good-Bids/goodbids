@@ -18,3 +18,4 @@ Call the API using the `goodbids()` function.
 * [Auctioneer Methods](auctioneer-methods.md)
 * [Users Methods](users-methods.md)
 * [Utility Methods](utility-methods.md)
+  * [Log Methods](log-methods.md)

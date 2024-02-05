@@ -8,6 +8,8 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Utilities\Log;
+
 /**
  * Class for patterns
  *
@@ -189,7 +191,7 @@ class Patterns {
 		unset( $pattern['path'], $pattern['name'] );
 
 		if ( str_starts_with( $path, 'http' ) ) {
-			// TODO: Log warning.
+			Log::warning( 'Block pattern path is a URL and not a file path.', $pattern );
 			return false;
 		}
 

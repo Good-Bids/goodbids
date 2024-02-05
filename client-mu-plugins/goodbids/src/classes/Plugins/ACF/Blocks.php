@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\ACF;
 
+use GoodBids\Utilities\Log;
+
 /**
  * ACF Blocks Class
  *
@@ -212,7 +214,7 @@ class Blocks {
 					$render = $block['path'] . '/render.php';
 
 					if ( ! file_exists( $render ) ) {
-						// TODO: Log error.
+						Log::warning( 'Block render file not found.', compact( 'render' ) );
 						return;
 					}
 

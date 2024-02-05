@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce;
 use GoodBids\Auctions\Bids;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Utilities\Log;
 
 /**
  * Class for Checkout Methods
@@ -52,7 +53,7 @@ class Checkout {
 				$info = goodbids()->woocommerce->orders->get_auction_info( $order_id );
 
 				if ( ! $info ) {
-					// TODO: Log warning.
+					Log::warning( 'Unable to store Auction info on Order Meta.', compact( 'order_id' ) );
 					return;
 				}
 
@@ -94,7 +95,7 @@ class Checkout {
 				$info = goodbids()->woocommerce->orders->get_auction_info( $order->get_id() );
 
 				if ( ! $info ) {
-					// TODO: Log warning.
+					Log::warning( 'Unable to retrieve Auction info from Order Meta.', compact( 'order' ) );
 					return;
 				}
 

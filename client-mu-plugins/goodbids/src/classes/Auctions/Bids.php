@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use GoodBids\Frontend\Notices;
+use GoodBids\Utilities\Log;
 use WC_Product;
 use WC_Product_Attribute;
 use WC_Product_Variable;
@@ -119,14 +120,14 @@ class Bids {
 
 				// Make sure this meta value has been saved.
 				if ( ! $starting_bid ) {
-					// TODO: Log error.
+					Log::error( 'Starting Bid not calculated', compact( 'post_id' ) );
 					return;
 				}
 
 				$bid_product = $this->create_new_bid_product( $post_id );
 
 				if ( ! $bid_product->save() ) {
-					// TODO: Log error.
+					Log::error( 'There was a problem saving the Bid Product', compact( 'post_id' ) );
 					return;
 				}
 
@@ -136,7 +137,7 @@ class Bids {
 				$variation = $this->create_new_bid_variation( $bid_product->get_id(), $starting_bid, $post_id );
 
 				if ( ! $variation->save() ) {
-					// TODO: Log error.
+					Log::error( 'There was a problem saving the Bid Variation', compact( 'post_id' ) );
 					return;
 				}
 
@@ -260,7 +261,7 @@ class Bids {
 			$bids_category = wp_insert_term( 'Bids', 'product_cat' );
 
 			if ( is_wp_error( $bids_category ) ) {
-				// TODO: Log error.
+				Log::error( $bids_category->get_error_message() );
 				return null;
 			}
 
@@ -399,7 +400,7 @@ class Bids {
 				}
 
 				if ( ! $this->increase_bid( $auction_id ) ) {
-					// TODO: Log error.
+					Log::error( 'There was a problem trying to increase the Bid Amount', compact( 'auction_id' ) );
 				}
 			},
 			10,
@@ -421,7 +422,7 @@ class Bids {
 		$bid_variation = $this->get_variation( $auction_id );
 
 		if ( ! $bid_product || ! $bid_variation ) {
-			// TODO: Log error.
+			Log::error( 'Auction missing Bid Product or Variation', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -436,7 +437,7 @@ class Bids {
 		$new_variation = $this->create_new_bid_variation( $bid_product->get_id(), $new_price, $auction_id );
 
 		if ( ! $new_variation->save() ) {
-			// TODO: Log error.
+			Log::error( 'There was a problem saving the new Bid Variation', compact( 'auction_id' ) );
 			return false;
 		}
 
