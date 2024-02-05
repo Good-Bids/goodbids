@@ -144,25 +144,27 @@ class AllAuctions extends ACFBlock {
 			$auctions = $this->get_all_auctions();
 		}
 
-		$collection = collect( $auctions );
-
 		if ( 'upcoming' === $filter ) {
-			$collection->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
-					$auction['site_id']
+			return collect( $auctions )
+				->filter(
+					fn ( array $auction ) => goodbids()->sites->swap(
+						fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
+						$auction['site_id']
+					)
 				)
-			);
+				->all();
 		} elseif ( 'live' === $filter ) {
-			$collection->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
-					$auction['site_id']
+			return collect( $auctions )
+				->filter(
+					fn ( array $auction ) => goodbids()->sites->swap(
+						fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
+						$auction['site_id']
+					)
 				)
-			);
+				->all();
 		}
 
-		return $collection->all();
+		return $auctions;
 	}
 
 	/**
@@ -225,43 +227,49 @@ class AllAuctions extends ACFBlock {
 			$auctions = $this->get_all_auctions();
 		}
 
-		$collection = collect( $auctions );
-
 		if ( 'newest' === $sort ) {
-			$collection->sortBy(
-				fn( array $auction ) => goodbids()->sites->swap(
-					function () use ( &$auction ) {
-						return goodbids()->auctions->get_start_date_time( $auction['post_id'] );
-					},
-					$auction['site_id']
+			return collect( $auctions )
+				->sortBy(
+					fn( array $auction ) => goodbids()->sites->swap(
+						function () use ( &$auction ) {
+							return goodbids()->auctions->get_start_date_time( $auction['post_id'] );
+						},
+						$auction['site_id']
+					)
 				)
-			);
+				->all();
 		} elseif ( 'starting' === $sort ) {
-			$collection->sortBy(
-				fn( array $auction ) => goodbids()->sites->swap(
-					fn() => goodbids()->auctions->calculate_starting_bid( $auction['post_id'] ),
-					$auction['site_id']
+			return collect( $auctions )
+				->sortBy(
+					fn( array $auction ) => goodbids()->sites->swap(
+						fn() => goodbids()->auctions->calculate_starting_bid( $auction['post_id'] ),
+						$auction['site_id']
+					)
 				)
-			);
+				->all();
 		} elseif ( 'ending' === $sort ) {
-			$collection->sortBy(
-				fn( array $auction ) => goodbids()->sites->swap(
-					fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
-					$auction['site_id']
+			return collect( $auctions )
+				->sortBy(
+					fn( array $auction ) => goodbids()->sites->swap(
+						fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
+						$auction['site_id']
+					)
 				)
-			);
+				->all();
 		} elseif ( 'low_bid' === $sort ) {
-			$collection->sortBy(
-				fn ( array $data ) => goodbids()->sites->swap(
-					fn() => goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' ),
-					$data['site_id']
+			return collect( $auctions )
+				->sortBy(
+					fn ( array $auction ) => goodbids()->sites->swap(
+						fn() => goodbids()->auctions->bids->get_variation( $auction['post_id'] )?->get_price( 'edit' ),
+						$auction['site_id']
+					)
 				)
-			);
+				->all();
 		} elseif ( 'popular' === $sort ) {
 			// TODO: once we have watch auctions set up we can sort by most watched
 		}
 
-		return $collection->all();
+		return $auctions;
 	}
 
 	/**
