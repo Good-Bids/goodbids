@@ -10,8 +10,8 @@ export default {
 	],
 	theme: {
 		borderRadius: {
-			DEFAULT: '1.5rem',
-			sm: '1rem',
+			DEFAULT: 'var(--wp--preset--spacing--20)',
+			sm: 'var(--wp--preset--spacing--10)',
 		},
 		borderWidth: {
 			DEFAULT: '1px',
