@@ -39,7 +39,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Site Name */
 		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-		'{site_title}',
+		'{site_name}',
 	);
 	?>
 </p>
@@ -49,7 +49,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Auction page url, %2$s: Bid Now */
 		'<a class="button" href="%1$s">%2$s</a>',
-		'{auction.url}',
+		esc_html( $auction_url ),
 		esc_html( $button_text )
 	);
 	?>

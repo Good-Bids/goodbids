@@ -10,30 +10,16 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
 
-use GoodBids\Plugins\WooCommerce\Emails\AuctionBaseEmail;
+use WC_Email;
 use WP_User;
 
 /**
- * Auction Watchers Live extend AuctionBaseEmail
+ * Auction Watchers Live extend WC_Email
  *
  * @since 1.0.0
- * @extends AuctionBaseEmail
+ * @extends WC_Email
  */
-class AuctionClosed extends AuctionBaseEmail {
-
-	/**
-	 * Site Name
-	 *
-	 * @var string
-	 */
-	public $site_name;
-
-	/**
-	 * User login name.
-	 *
-	 * @var string
-	 */
-	public $user_name;
+class AuctionClosed extends WC_Email {
 
 	/**
 	 * User ID.
@@ -69,8 +55,8 @@ class AuctionClosed extends AuctionBaseEmail {
 	public function get_default_subject() {
 		return sprintf(
 			'%s %s has ended',
-			esc_html( $this->get_site_name() ),
-			esc_html( $this->get_auction_title() )
+			'{site_name}',
+			'{auction.title}'
 		);
 	}
 
@@ -81,7 +67,11 @@ class AuctionClosed extends AuctionBaseEmail {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'You helped {site.name} raise {auction.totalRaised}!', 'goodbids' );
+		return sprintf(
+			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
+			'{site_name}',
+			'{auction.totalRaised}'
+		);
 	}
 
 	/**
@@ -93,7 +83,6 @@ class AuctionClosed extends AuctionBaseEmail {
 	public function get_default_button_text() {
 		return __( 'See Auction Results', 'goodbids' );
 	}
-
 
 	/**
 	 * Get the email recipients
@@ -153,16 +142,8 @@ class AuctionClosed extends AuctionBaseEmail {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'email_heading'          => $this->get_default_heading(),
-				'user_name'              => $this->get_user_name(),
-				'site_name'              => $this->get_site_name(),
-				'auction_title'          => $this->get_auction_title(),
-				'auction_total_bids'     => $this->get_auction_total_bids(),
-				'auction_total_raised'   => $this->get_auction_total_raised(),
-				'auction_total_user_bid' => $this->get_auction_total_user_bids(),
-				'auction_url'            => $this->get_auction_url(),
-				'button_text'            => $this->get_default_button_text(),
-				'main_site_url'          => $this->get_default_button_text(),
+				'email_heading' => $this->get_default_heading(),
+				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}
@@ -178,16 +159,8 @@ class AuctionClosed extends AuctionBaseEmail {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'email_heading'          => $this->get_default_heading(),
-				'user_name'              => $this->get_user_name(),
-				'site_name'              => $this->get_site_name(),
-				'auction_title'          => $this->get_auction_title(),
-				'auction_total_bids'     => $this->get_auction_total_bids(),
-				'auction_total_raised'   => $this->get_auction_total_raised(),
-				'auction_total_user_bid' => $this->get_auction_total_user_bids(),
-				'auction_url'            => $this->get_auction_url(),
-				'button_text'            => $this->get_default_button_text(),
-				'main_site_url'          => $this->get_default_button_text(),
+				'email_heading' => $this->get_default_heading(),
+				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}

@@ -14,7 +14,7 @@ use WC_Email;
 use WP_User;
 
 /**
- * Auction Admin Live extend the custom WooCommerce email class
+ * Auction Admin Live extend WC_Email
  *
  * @since 1.0.0
  * @extends WC_Email

@@ -14,7 +14,7 @@ use WC_Email;
 use WP_User;
 
 /**
- * Auction Watchers Live extend the custom WooCommerce email class
+ * Auction Watchers Live extend WC_Email
  *
  * @since 1.0.0
  * @extends WC_Email
@@ -55,7 +55,7 @@ class AuctionWatchersLive extends WC_Email {
 	public function get_default_subject() {
 		return sprintf(
 			'%s %s is live',
-			'{site_title}',
+			'{site_name}',
 			'{auction.title}'
 		);
 	}
