@@ -10,30 +10,16 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
 
-use GoodBids\Plugins\WooCommerce\Emails\AuctionBaseEmail;
+use WC_Email;
 use WP_User;
 
 /**
- * Auction Watchers Live extend AuctionBaseEmail
+ * Auction Watchers Live extend WC_Email
  *
  * @since 1.0.0
- * @extends AuctionBaseEmail
+ * @extends WC_Email
  */
-class AuctionWatchersLive extends AuctionBaseEmail {
-
-	/**
-	 * Site Name
-	 *
-	 * @var string
-	 */
-	public $site_name;
-
-	/**
-	 * User login name.
-	 *
-	 * @var string
-	 */
-	public $user_name;
+class AuctionWatchersLive extends WC_Email {
 
 	/**
 	 * User ID.
@@ -69,8 +55,8 @@ class AuctionWatchersLive extends AuctionBaseEmail {
 	public function get_default_subject() {
 		return sprintf(
 			'%s %s is live',
-			esc_html( $this->get_site_name() ),
-			esc_html( $this->get_auction_title() )
+			'{site_name}',
+			'{auction.title}'
 		);
 	}
 
@@ -128,9 +114,8 @@ class AuctionWatchersLive extends AuctionBaseEmail {
 
 		// TODO set up check before sending email
 		if ( $user_id ) {
-			$this->object    = new WP_User( $user_id );
-			$this->user_id   = $this->object->ID;
-			$this->user_name = stripslashes( $this->get_user_name() );
+			$this->object  = new WP_User( $user_id );
+			$this->user_id = $this->object->ID;
 		}
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
@@ -153,14 +138,8 @@ class AuctionWatchersLive extends AuctionBaseEmail {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'email_heading'        => $this->get_default_heading(),
-				'user_name'            => $this->get_user_name(),
-				'site_name'            => $this->get_site_name(),
-				'auction_title'        => $this->get_auction_title(),
-				'auction_goal'         => $this->get_auction_goal(),
-				'auction_url'          => $this->get_auction_url(),
-				'auction_starting_bid' => $this->get_auction_starting_bid(),
-				'button_text'          => $this->get_default_button_text(),
+				'email_heading' => $this->get_default_heading(),
+				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}
@@ -176,14 +155,8 @@ class AuctionWatchersLive extends AuctionBaseEmail {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'email_heading'        => $this->get_default_heading(),
-				'user_name'            => $this->get_user_name(),
-				'site_name'            => $this->get_site_name(),
-				'auction_title'        => $this->get_auction_title(),
-				'auction_goal'         => $this->get_auction_goal(),
-				'auction_url'          => $this->get_auction_url(),
-				'auction_starting_bid' => $this->get_auction_starting_bid(),
-				'button_text'          => $this->get_default_button_text(),
+				'email_heading' => $this->get_default_heading(),
+				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}

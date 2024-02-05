@@ -10,30 +10,16 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
 
-use GoodBids\Plugins\WooCommerce\Emails\AuctionBaseEmail;
+use WC_Email;
 use WP_User;
 
 /**
- * Auction Admin Live extend AuctionBaseEmail
+ * Auction Admin Live extend WC_Email
  *
  * @since 1.0.0
- * @extends AuctionBaseEmail
+ * @extends WC_Email
  */
-class AuctionAdminLive extends AuctionBaseEmail {
-
-	/**
-	 * Site Name
-	 *
-	 * @var string
-	 */
-	public $site_name;
-
-	/**
-	 * User login name.
-	 *
-	 * @var string
-	 */
-	public $user_name;
+class AuctionAdminLive extends WC_Email {
 
 	/**
 	 * User ID.
@@ -70,8 +56,8 @@ class AuctionAdminLive extends AuctionBaseEmail {
 	public function get_default_subject() {
 		return sprintf(
 			'%s %s auction is live',
-			esc_html( $this->get_site_name() ),
-			esc_html( $this->get_auction_title() )
+			'{site_title}',
+			'{auction.title}'
 		);
 	}
 
@@ -128,9 +114,8 @@ class AuctionAdminLive extends AuctionBaseEmail {
 
 		// TODO set up check before sending email
 		if ( $user_id ) {
-			$this->object    = new WP_User( $user_id );
-			$this->user_id   = $this->object->ID;
-			$this->user_name = stripslashes( $this->get_user_name() );
+			$this->object  = new WP_User( $user_id );
+			$this->user_id = $this->object->ID;
 		}
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
@@ -153,23 +138,8 @@ class AuctionAdminLive extends AuctionBaseEmail {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'email_heading'         => $this->get_default_heading(),
-				'user_name'             => $this->get_user_name(),
-				'site_name'             => $this->get_site_name(),
-				'auction_title'         => $this->get_auction_title(),
-				'auction_start_date'    => $this->get_auction_start_date(),
-				'auction_end_date'      => $this->get_auction_end_date(),
-				'auction_bid_increment' => $this->get_auction_bid_increment(),
-				'auction_starting_bid'  => $this->get_auction_starting_bid(),
-				'auction_high_bid'      => $this->get_auction_high_bid(),
-				'auction_bid_extension' => $this->get_auction_bid_extension(),
-				'auction_goal'          => $this->get_auction_goal(),
-				'auction_url'           => $this->get_auction_url(),
-				'auction_reward_title'  => $this->get_auction_reward_title(),
-				'auction_reward_type'   => $this->get_auction_reward_type(),
-				'auction_market_value'  => $this->get_auction_market_value(),
-				'button_text'           => $this->get_default_button_text(),
-				'login_url'             => $this->get_default_login_url(),
+				'email_heading' => $this->get_default_heading(),
+				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}
@@ -187,23 +157,8 @@ class AuctionAdminLive extends AuctionBaseEmail {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'email_heading'         => $this->get_default_heading(),
-				'user_name'             => $this->get_user_name(),
-				'site_name'             => $this->get_site_name(),
-				'auction_title'         => $this->get_auction_title(),
-				'auction_start_date'    => $this->get_auction_start_date(),
-				'auction_end_date'      => $this->get_auction_end_date(),
-				'auction_bid_increment' => $this->get_auction_bid_increment(),
-				'auction_starting_bid'  => $this->get_auction_starting_bid(),
-				'auction_high_bid'      => $this->get_auction_high_bid(),
-				'auction_bid_extension' => $this->get_auction_bid_extension(),
-				'auction_goal'          => $this->get_auction_goal(),
-				'auction_url'           => $this->get_auction_url(),
-				'auction_reward_title'  => $this->get_auction_reward_title(),
-				'auction_reward_type'   => $this->get_auction_reward_type(),
-				'auction_market_value'  => $this->get_auction_market_value(),
-				'button_text'           => $this->get_default_button_text(),
-				'login_url'             => $this->get_default_login_url(),
+				'email_heading' => $this->get_default_heading(),
+				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}

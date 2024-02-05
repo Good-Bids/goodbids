@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live email
+ * Auction Outbid email
  *
  * @version 1.0.0
  */
@@ -25,22 +25,11 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
-		esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
+		/* translators: %1$s: Auction title, %2$s: Auction Reward, %3$s: Auction End Date */
+		esc_html__( 'You’re no longer the highest bidder for the %1$s auction. Visit the auction to place a new bid for your chance to win the %2$s. The auction will end on %3$s if no additional bids are placed.', 'goodbids' ),
 		'{auction.title}',
-		'{site_name}',
-		'{auction.goal}',
-		esc_html( $auction_url )
-	);
-	?>
-</p>
-
-<p>
-	<?php
-	printf(
-		/* translators: %1$s: Auction Start Date/Time */
-		esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-		'{auction.startingBid}',
+		'{auction.rewardTitle}',
+		'{auction.endTime}',
 	);
 	?>
 </p>
