@@ -8,6 +8,12 @@
  * @package GoodBids
  */
 
+if ( ! count( $auctions ) ) :
+	printf(
+		'<p>%s</p>',
+		esc_html__( 'No auctions found.', 'goodbids' )
+	);
+endif;
 ?>
 <ul class="grid grid-cols-1 gap-8 p-0 list-none lg:grid-cols-3 sm:grid-cols-2">
 	<?php
