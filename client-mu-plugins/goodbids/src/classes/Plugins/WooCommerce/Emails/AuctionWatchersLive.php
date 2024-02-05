@@ -10,16 +10,16 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
 
-use WC_Email;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionBaseEmail;
 use WP_User;
 
 /**
- * Auction Watchers Live extend the custom WooCommerce email class
+ * Auction Watchers Live extend AuctionBaseEmail
  *
  * @since 1.0.0
- * @extends WC_Email
+ * @extends AuctionBaseEmail
  */
-class AuctionWatchersLive extends WC_Email {
+class AuctionWatchersLive extends AuctionBaseEmail {
 
 	/**
 	 * Site Name
@@ -61,17 +61,6 @@ class AuctionWatchersLive extends WC_Email {
 	}
 
 	/**
-	 * Get site name.
-	 *
-	 * @since  1.0.0
-	 * @return string
-	 */
-	public function get_site_name() {
-		return get_bloginfo( 'name' );
-	}
-
-
-	/**
 	 * Get email subject.
 	 *
 	 * @since  1.0.0
@@ -103,64 +92,6 @@ class AuctionWatchersLive extends WC_Email {
 	 */
 	public function get_default_button_text() {
 		return __( 'Bid Now', 'goodbids' );
-	}
-
-	/**
-	 * Get the auction title
-	 *
-	 * @since   1.0.0
-	 * @return string
-	 */
-	public function get_auction_title() {
-		return __( '{auction_title}', 'goodbids' );
-	}
-
-	/**
-	 * Get the auction goal
-	 *
-	 * @since   1.0.0
-	 * @return string
-	 */
-	public function get_auction_goal() {
-		return __( '{auction_goal}', 'goodbids' );
-	}
-
-	/**
-	 * Get the auction url
-	 *
-	 * @since   1.0.0
-	 * @return string
-	 */
-	public function get_auction_url() {
-		return __( '{auction_url}', 'goodbids' );
-	}
-
-
-	/**
-	 * Get the auction starting bid
-	 *
-	 * @since   1.0.0
-	 * @return string
-	 */
-	public function get_auction_starting_bid() {
-		return __( '{auction_starting_bid}', 'goodbids' );
-	}
-
-	/**
-	 * Get user name.
-	 *
-	 * @since   1.0.0
-	 * @param mixed $id
-	 * @return string
-	 */
-	public function get_user_name() {
-		if ( ! $this->user_id ) {
-			return;
-		}
-
-		$user_first_name = get_user_meta( $this->user_id, 'first_name', true );
-
-		return $user_first_name ? $user_first_name : $this->object->user_login;
 	}
 
 
