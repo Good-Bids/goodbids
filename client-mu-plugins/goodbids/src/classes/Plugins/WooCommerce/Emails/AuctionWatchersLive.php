@@ -55,7 +55,7 @@ class AuctionWatchersLive extends WC_Email {
 	public function get_default_subject() {
 		return sprintf(
 			'%s %s is live',
-			'{site_name}',
+			'{site_title}',
 			'{auction.title}'
 		);
 	}

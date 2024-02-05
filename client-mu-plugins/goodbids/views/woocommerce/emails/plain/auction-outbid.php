@@ -33,7 +33,7 @@ echo "\n\n----------------------------------------\n\n";
 printf(
 	/* translators: %1$s: Site Name */
 	esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-	'{site_name}',
+	'{site_title}',
 );
 
 echo "\n\n----------------------------------------\n\n";
@@ -42,7 +42,7 @@ printf(
 	/* translators: %1$s: Bid Now, %2$s: Auction page url */
 	'%1$s at %2$s',
 	esc_html( $button_text ),
-	esc_html( $auction_url )
+	'{auction.url}'
 );
 
 /**

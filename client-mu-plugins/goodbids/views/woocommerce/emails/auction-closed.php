@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live email
+ * Auction Closed email
  *
  * @version 1.0.0
  */
@@ -125,7 +125,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Login URL */
 		'<a href="%1$s">Login to your site</a> to view additional auction information.',
-		'{auction.loginUrl}',
+		esc_html( $login_url ),
 	);
 	?>
 </p>
