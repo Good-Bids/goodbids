@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live: Send an email to the users that are watching when an auction goes live.
+ * Auction Admin Live: Send an email to the site Admin when an auction goes live.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -14,12 +14,12 @@ use WC_Email;
 use WP_User;
 
 /**
- * Auction Watchers Live extend the custom WooCommerce email class
+ * Auction Admin Live extend the custom WooCommerce email class
  *
  * @since 1.0.0
  * @extends WC_Email
  */
-class AuctionWatchersLive extends WC_Email {
+class AuctionAdminLive extends WC_Email {
 
 	/**
 	 * User ID.
@@ -34,17 +34,18 @@ class AuctionWatchersLive extends WC_Email {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'goodbids_auction_watchers_live';
-		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Auction Watchers Live Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-watchers-live.php';
-		$this->template_plain = 'emails/plain/auction-watchers-live.php';
+		$this->id             = 'goodbids_auction_admin_live';
+		$this->title          = __( 'Auction Admin Live', 'goodbids' );
+		$this->description    = __( 'Notification is sent to the site admin when an auction goes live.', 'goodbids' );
+		$this->template_html  = 'emails/auction-admin-live.php';
+		$this->template_plain = 'emails/plain/auction-admin-live.php';
 
 		// TODO: Trigger this email.
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
 	}
+
 
 	/**
 	 * Get email subject.
@@ -54,7 +55,7 @@ class AuctionWatchersLive extends WC_Email {
 	 */
 	public function get_default_subject() {
 		return sprintf(
-			'%s %s is live',
+			'%s %s auction is live',
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -67,7 +68,7 @@ class AuctionWatchersLive extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Ready to GOODBID?', 'goodbids' );
+		return __( 'Let the GOODBIDs begin!', 'goodbids' );
 	}
 
 	/**
@@ -77,9 +78,41 @@ class AuctionWatchersLive extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_button_text() {
-		return __( 'Bid Now', 'goodbids' );
+		return __( 'Track this Auction', 'goodbids' );
 	}
 
+	/**
+	 * Do we have the auction goal
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_goal(): string {
+		// TODO replace string with a varable to get goal value
+		return '{auction_goal}';
+	}
+
+	/**
+	 * Do we have the auction high bid
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_high_bid(): string {
+		// TODO replace string with a varable to get high big
+		return '{auction_high_bid}';
+	}
+
+	/**
+	 * Do we have the auction estimated value
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_estimated_value(): string {
+		// TODO replace string with a varable to get estiamted value
+		return '{auction_estimated_value}';
+	}
 
 	/**
 	 * Get the email recipients
@@ -138,12 +171,17 @@ class AuctionWatchersLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
+				'instance'                => $this,
+				'email_heading'           => $this->get_default_heading(),
+				'button_text'             => $this->get_default_button_text(),
+				'auction_goal'            => $this->get_auction_goal(),
+				'auction_high_bid'        => $this->get_auction_high_bid(),
+				'auction_estimated_value' => $this->get_auction_estimated_value(),
 			]
 		);
 	}
+
+
 
 
 	/**
@@ -156,9 +194,12 @@ class AuctionWatchersLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
+				'this'                    => $this,
+				'email_heading'           => $this->get_default_heading(),
+				'button_text'             => $this->get_default_button_text(),
+				'auction_goals'           => $this->is_auction_goals(),
+				'auction_high_bid'        => $this->is_auction_high_bid(),
+				'auction_estimated_value' => $this->is_auction_estimated_value(),
 			]
 		);
 	}
