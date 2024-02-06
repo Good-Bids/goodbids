@@ -70,6 +70,11 @@ class Bids {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Disable Bids on Main Site.
+		if ( is_main_site() ) {
+			return;
+		}
+
 		// Create a Bid product when an Auction is created.
 		$this->create_bid_product_for_auction();
 

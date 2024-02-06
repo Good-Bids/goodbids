@@ -175,7 +175,9 @@ class Invoices {
 							return $actions;
 						}
 
-						$actions['edit'] = str_replace( __( 'Edit' ), __( 'View' ), $actions['edit'] );
+						if ( array_key_exists( 'edit', $actions ) ) {
+							$actions['edit'] = str_replace( __( 'Edit' ), __( 'View' ), $actions['edit'] );
+						}
 
 						unset( $actions['inline hide-if-no-js'] );
 						unset( $actions['inline'] );
@@ -208,16 +210,18 @@ class Invoices {
 	}
 
 	/**
-	 * Get an Invoice by ID
+	 * Get an Invoice by ID.
+	 * Pass Auction ID to initialize the Invoice.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $post_id
+	 * @param int  $post_id
+	 * @param ?int $auction_id
 	 *
 	 * @return ?Invoice
 	 */
-	public function get_invoice( int $post_id ): ?Invoice {
-		return new Invoice( $post_id );
+	public function get_invoice( int $post_id, ?int $auction_id = null ): ?Invoice {
+		return new Invoice( $post_id, $auction_id );
 	}
 
 	/**
@@ -313,31 +317,47 @@ class Invoices {
 					return;
 				}
 
-				// Generate the Invoice.
-				$invoice_id = wp_insert_post(
-					[
-						'post_title'  => sprintf(
-							// translators: %s is the Auction Title.
-							__( 'Invoice for %s', 'goodbids' ),
-							get_the_title( $auction_id )
-						),
-						'post_type'   => $this->get_post_type(),
-						'post_status' => 'publish',
-						'post_author' => 1,
-					]
-				);
-
-				if ( ! $invoice_id ) {
-					Log::error( 'Error generating invoice.', compact( 'auction_id' ) );
-					return;
-				}
-
-				$invoice = $this->get_invoice( $invoice_id );
-
-				if ( ! $invoice->init( $auction_id ) ) {
-					Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
-				}
+				$this->generate( $auction_id );
 			}
 		);
+	}
+
+	/**
+	 * Generate the invoice.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return void
+	 */
+	public function generate( int $auction_id ): void {
+		// Generate the Invoice.
+		$invoice_id = wp_insert_post(
+			[
+				'post_title'  => sprintf(
+					// translators: %s is the Auction Title.
+					__( 'Invoice for %s', 'goodbids' ),
+					get_the_title( $auction_id )
+				),
+				'post_type'   => $this->get_post_type(),
+				'post_status' => 'publish',
+				'post_author' => 1,
+			]
+		);
+
+		if ( is_wp_error( $invoice_id ) ) {
+			Log::error( 'Error generating invoice: ' . $invoice_id->get_error_message(), compact( 'auction_id' ) );
+			return;
+		}
+
+		if ( ! $invoice_id ) {
+			Log::error( 'Unknown error generating invoice.', compact( 'auction_id' ) );
+			return;
+		}
+
+		if ( ! $this->get_invoice( $invoice_id, $auction_id ) ) {
+			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
+		}
 	}
 }

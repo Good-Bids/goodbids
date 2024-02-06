@@ -75,19 +75,19 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id;
+	private ?int $auction_id = null;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?float
 	 */
-	private ?float $amount;
+	private ?float $amount = null;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?string
 	 */
-	private ?string $due_date;
+	private ?string $due_date = null;
 
 	/**
 	 * @since 1.0.0
@@ -105,7 +105,7 @@ class Invoice {
 
 		if ( null !== $auction_id ) {
 			if ( ! $this->init( $auction_id ) ) {
-				Log::error( 'Could not initialize invoice.', [ 'invoice_id' => $this->get_id() ] );
+				Log::error( 'Could not initialize invoice.', [ 'invoice_id' => $this->get_id(), 'auction_id' => $auction_id ] );
 				return null;
 			}
 		}
@@ -150,6 +150,9 @@ class Invoice {
 			return false;
 		}
 
+		// Add Invoice ID to Auction.
+		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
+
 		// Set the Auction ID.
 		$this->set_auction_id( $auction_id );
 
@@ -157,7 +160,9 @@ class Invoice {
 		$this->set_amount();
 
 		// Set the invoice due date last.
-		return $this->set_due_date();
+		$this->set_due_date();
+
+		return true;
 	}
 
 	/**
@@ -165,14 +170,18 @@ class Invoice {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_auction_id(): int {
+	public function get_auction_id(): ?int {
 		if ( ! is_null( $this->auction_id ) ) {
 			return $this->auction_id;
 		}
 
-		$this->auction_id = get_post_meta( $this->get_id(), self::AUCTION_ID_META_KEY, true );
+		$auction_id = get_post_meta( $this->get_id(), self::AUCTION_ID_META_KEY, true );
+
+		if ( $auction_id ) {
+			$this->auction_id = intval( $auction_id );
+		}
 
 		return $this->auction_id;
 	}
@@ -188,9 +197,6 @@ class Invoice {
 	 */
 	private function set_auction_id( int $auction_id ): bool|int {
 		$this->auction_id = $auction_id;
-
-		// Add Invoice ID to Auction.
-		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
 
 		// Set the invoice auction ID.
 		return update_post_meta( $this->get_id(), self::AUCTION_ID_META_KEY, $this->auction_id );
@@ -228,11 +234,11 @@ class Invoice {
 	 */
 	private function set_amount(): bool|int {
 		$total_raised = goodbids()->auctions->get_total_raised( $this->get_auction_id() );
-		$percent      = goodbids()->get_config( 'invoices.percent' );
+		$percent      = intval( goodbids()->get_config( 'invoices.percent' ) );
 		$amount       = $total_raised * ( $percent / 100 );
 
 		// Set invoice amount.
-		return update_post_meta( $this->get_id(), self::AUCTION_ID_META_KEY, $amount );
+		return update_post_meta( $this->get_id(), self::AMOUNT_META_KEY, $amount );
 	}
 
 	/**

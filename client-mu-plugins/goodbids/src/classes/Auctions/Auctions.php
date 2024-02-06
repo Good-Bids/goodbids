@@ -146,14 +146,14 @@ class Auctions {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Initialize Submodules.
+		$this->bids    = new Bids();
+		$this->rewards = new Rewards();
+
 		// Disable Auctions on Main Site.
 		if ( is_main_site() ) {
 			return;
 		}
-
-		// Initialize Submodules.
-		$this->bids    = new Bids();
-		$this->rewards = new Rewards();
 
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
@@ -470,8 +470,8 @@ class Auctions {
 	public function get_invoice_id( int $auction_id ): ?int {
 		$invoice_id = get_post_meta( $auction_id, Invoices::INVOICE_ID_META_KEY, true );
 
-		if ( $invoice_id ) {
-			return intval( $invoice_id );
+		if ( $invoice_id && get_post_type( $invoice_id ) === goodbids()->invoices->get_post_type() ) {
+			return $invoice_id;
 		}
 
 		return null;
@@ -978,7 +978,7 @@ class Auctions {
 			'save_post',
 			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) ) {
+				if ( ! $post_id || wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) || wp_doing_ajax() ) {
 					return;
 				}
 
@@ -1854,10 +1854,18 @@ class Auctions {
 
 				// TODO: Move to background process.
 
-				if ( $this->has_ended( $auction_id ) && ! $this->end_triggered( $auction_id ) ) {
-					$this->trigger_auction_close( $auction_id );
-				} elseif ( $this->has_started( $auction_id ) && ! $this->start_triggered( $auction_id ) ) {
+				if ( $this->has_started( $auction_id ) && ! $this->start_triggered( $auction_id ) ) {
 					$this->trigger_auction_start( $auction_id );
+				}
+
+				if ( $this->has_ended( $auction_id ) ) {
+					if ( ! $this->end_triggered( $auction_id ) ) {
+						$this->trigger_auction_close( $auction_id );
+					}
+
+					if ( ! $this->get_invoice_id( $auction_id ) ) {
+						goodbids()->invoices->generate( $auction_id );
+					}
 				}
 			}
 		);

@@ -37,6 +37,11 @@ class Rewards {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Disable Rewards on Main Site.
+		if ( is_main_site() ) {
+			return;
+		}
+
 		// Init Rewards Category.
 		$this->init_category();
 
