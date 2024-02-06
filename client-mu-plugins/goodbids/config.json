@@ -42,5 +42,9 @@
     "all-auctions": {
       "auctions-per-page": 9
     }
+  },
+  "invoices": {
+    "payment-terms": "30D",
+    "percent": 10
   }
 }

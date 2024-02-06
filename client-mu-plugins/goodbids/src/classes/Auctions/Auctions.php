@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Nonprofits\Invoices;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 use WC_Order;
@@ -145,6 +146,11 @@ class Auctions {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Disable Auctions on Main Site.
+		if ( is_main_site() ) {
+			return;
+		}
+
 		// Initialize Submodules.
 		$this->bids    = new Bids();
 		$this->rewards = new Rewards();
@@ -169,6 +175,9 @@ class Auctions {
 
 		// Reduce the REST API cache time for Auction Requests.
 		$this->adjust_rest_timeout();
+
+		// Attempt to trigger events for opened/closed auctions.
+		$this->maybe_trigger_events();
 
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
@@ -432,6 +441,10 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_auction_id(): ?int {
+		if ( ! did_action( 'init' ) ) {
+			_doing_it_wrong( __METHOD__, 'Method should not be called before the init hook.', '1.0.0' );
+		}
+
 		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
 
 		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) { // phpcs:ignore
@@ -443,6 +456,25 @@ class Auctions {
 		}
 
 		return $auction_id;
+	}
+
+	/**
+	 * Get the Invoice ID for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return ?int
+	 */
+	public function get_invoice_id( int $auction_id ): ?int {
+		$invoice_id = get_post_meta( $auction_id, Invoices::INVOICE_ID_META_KEY, true );
+
+		if ( $invoice_id ) {
+			return intval( $invoice_id );
+		}
+
+		return null;
 	}
 
 	/**
@@ -1450,7 +1482,22 @@ class Auctions {
 
 				// Output the column values.
 				if ( 'status' === $column ) {
-					echo esc_html( $this->get_status( $post_id ) );
+					$title = $this->get_status( $post_id );
+
+					if ( self::STATUS_LIVE === $this->get_status( $post_id ) ) {
+						$title = __( 'Ends', 'goodbids' ) . ': ' . $this->get_end_date_time( $post_id );
+					} elseif ( self::STATUS_UPCOMING === $this->get_status( $post_id ) ) {
+						$title = __( 'Starts', 'goodbids' ) . ': ' . $this->get_start_date_time( $post_id );
+					} elseif ( self::STATUS_CLOSED === $this->get_status( $post_id ) ) {
+						$title = __( 'Ended', 'goodbids' ) . ': ' . $this->get_end_date_time( $post_id );
+					}
+
+					printf(
+						'<span title="%s" class="goodbids-status status-%s">%s</span>',
+						esc_attr( $title ),
+						esc_attr( strtolower( $this->get_status( $post_id ) ) ),
+						esc_html( $this->get_status( $post_id ) )
+					);
 				} elseif ( 'starting_bid' === $column ) {
 					echo wp_kses_post( wc_price( $this->calculate_starting_bid( $post_id ) ) );
 				} elseif ( 'bid_increment' === $column ) {
@@ -1719,6 +1766,11 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_start( int $auction_id ): bool {
+		/**
+		 * @param int $auction_id
+		 */
+		do_action( 'goodbids_auction_start', $auction_id );
+
 		$result = goodbids()->auctioneer->auctions->start( $auction_id );
 
 		if ( true !== $result ) {
@@ -1729,9 +1781,20 @@ class Auctions {
 		// This is used for the sole purposes of filtering started auctions from get_starting_auctions() method.
 		update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
 
-		do_action( 'goodbids_auction_start', $auction_id );
-
 		return true;
+	}
+
+	/**
+	 * Check if the Auction Start event has been triggered.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function start_triggered( int $auction_id ): bool {
+		return boolval( get_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, true ) );
 	}
 
 	/**
@@ -1744,6 +1807,11 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_close( int $auction_id ): bool {
+		/**
+		 * @param int $auction_id
+		 */
+		do_action( 'goodbids_auction_close', $auction_id );
+
 		$result = goodbids()->auctioneer->auctions->end( $auction_id );
 
 		if ( true !== $result ) {
@@ -1751,6 +1819,48 @@ class Auctions {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if the Auction End event has been triggered.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function end_triggered( int $auction_id ): bool {
+		return boolval( get_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, true ) );
+	}
+
+	/**
+	 * Additional attempt to trigger Auction events.
+	 * Useful when Cron Jobs are slow or not firing.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_trigger_events(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				$auction_id = $this->get_auction_id();
+
+				if ( ! $auction_id ) {
+					return;
+				}
+
+				// TODO: Move to background process.
+
+				if ( $this->has_ended( $auction_id ) && ! $this->end_triggered( $auction_id ) ) {
+					$this->trigger_auction_close( $auction_id );
+				} elseif ( $this->has_started( $auction_id ) && ! $this->start_triggered( $auction_id ) ) {
+					$this->trigger_auction_start( $auction_id );
+				}
+			}
+		);
 	}
 
 	/**

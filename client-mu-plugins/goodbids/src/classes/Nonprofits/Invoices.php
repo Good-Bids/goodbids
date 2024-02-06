@@ -8,6 +8,8 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Utilities\Log;
+
 /**
  * Invoices Class
  *
@@ -25,17 +27,28 @@ class Invoices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const AUCTION_ID_META_KEY = '_auction_id';
+	const INVOICE_ID_META_KEY = '_invoice_id';
 
 	/**
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Disable Invoices on Main Site.
+		if ( is_main_site() ) {
+			return;
+		}
+
 		// Register Post Type.
 		$this->register_post_type();
 
+		// Prevent Deletion of Invoices.
+		$this->disable_delete();
+
 		// Add custom Admin Columns for Watchers.
 		$this->add_admin_columns();
+
+		// Generate Invoice on Auction Close.
+		$this->maybe_generate_invoice();
 	}
 
 	/**
@@ -111,6 +124,79 @@ class Invoices {
 	}
 
 	/**
+	 * Prevent users from deleting Invoices
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_delete(): void {
+		add_action(
+			'admin_init',
+			function () {
+				/**
+				 * Prevent Non-Super Admins from deleting Invoices
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param mixed $delete
+				 * @param \WP_Post $post
+				 *
+				 * @return mixed
+				 */
+				$prevent_delete = function ( mixed $delete, \WP_Post $post ): mixed {
+					if ( $this->get_post_type() !== get_post_type( $post ) ) {
+						return $delete;
+					}
+
+					add_action(
+						'admin_notices',
+						function () {
+							?>
+							<div class="notice notice-error">
+								<p><?php esc_html_e( 'Invoices cannot be deleted.', 'goodbids' ); ?></p>
+							</div>
+							<?php
+						}
+					);
+
+					return false;
+				};
+
+				if ( ! is_super_admin() ) {
+					add_filter( 'pre_delete_post', $prevent_delete, 10, 2 );
+					add_filter( 'pre_trash_post', $prevent_delete, 10, 2 );
+				}
+
+				add_filter(
+					'post_row_actions',
+					function ( array $actions, $post ) {
+						if ( $this->get_post_type() !== get_post_type( $post ) ) {
+							return $actions;
+						}
+
+						$actions['edit'] = str_replace( __( 'Edit' ), __( 'View' ), $actions['edit'] );
+
+						unset( $actions['inline hide-if-no-js'] );
+						unset( $actions['inline'] );
+
+						if ( is_super_admin() ) {
+							return $actions;
+						}
+
+						unset( $actions['trash'] );
+						unset( $actions['clone'] );
+
+						return $actions;
+					},
+					10,
+					2
+				);
+			}
+		);
+	}
+
+	/**
 	 * Returns the Invoice post type slug.
 	 *
 	 * @since 1.0.0
@@ -119,6 +205,19 @@ class Invoices {
 	 */
 	public function get_post_type(): string {
 		return self::POST_TYPE;
+	}
+
+	/**
+	 * Get an Invoice by ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id
+	 *
+	 * @return ?Invoice
+	 */
+	public function get_invoice( int $post_id ): ?Invoice {
+		return new Invoice( $post_id );
 	}
 
 	/**
@@ -149,6 +248,7 @@ class Invoices {
 						$new_columns['stripe_id'] = __( 'Invoice ID', 'goodbids' );
 						$new_columns['status']    = __( 'Status', 'goodbids' );
 						$new_columns['pay']       = __( 'Pay', 'goodbids' );
+						$new_columns['due_date']  = __( 'Due Date', 'goodbids' );
 					}
 				}
 
@@ -159,9 +259,15 @@ class Invoices {
 		add_action(
 			'manage_' . $this->get_post_type() . '_posts_custom_column',
 			function ( string $column, int $post_id ) {
+				$invoice = $this->get_invoice( $post_id );
+
+				if ( ! $invoice ) {
+					return;
+				}
+
 				// Output the column values.
 				if ( 'auction' === $column ) {
-					$auction_id = get_post_meta( $post_id, self::AUCTION_ID_META_KEY, true );
+					$auction_id = $invoice->get_auction_id();
 
 					printf(
 						'<a href="%s">%s</a> (<a href="%s" target="_blank">%s</a>)',
@@ -171,21 +277,67 @@ class Invoices {
 						esc_html__( 'View', 'goodbids' )
 					);
 				} elseif ( 'amount' === $column ) {
-					echo '$TBD';
+					echo wp_kses_post( wc_price( $invoice->get_amount() ) );
 				} elseif ( 'stripe_id' === $column ) {
 					echo '#TBD';
 				} elseif ( 'status' === $column ) {
-					esc_html_e( 'Unpaid', 'goodbids' );
+					echo esc_html( $invoice->get_status() );
 				} elseif ( 'pay' === $column ) {
 					printf(
 						'<a href="%s" class="button button-primary">%s</a>',
 						esc_url( '#' ),
 						esc_html__( 'Pay Now', 'goodbids' )
 					);
+				} elseif ( 'due_date' === $column ) {
+					echo esc_html( $invoice->get_due_date( 'n/j/Y g:i a' ) );
 				}
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Generate a new Invoice for an Auction when Auction closes
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_generate_invoice(): void {
+		add_action(
+			'goodbids_auction_close',
+			function ( int $auction_id ): void {
+				// Bail early if invoice already exists.
+				if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+					return;
+				}
+
+				// Generate the Invoice.
+				$invoice_id = wp_insert_post(
+					[
+						'post_title'  => sprintf(
+							// translators: %s is the Auction Title.
+							__( 'Invoice for %s', 'goodbids' ),
+							get_the_title( $auction_id )
+						),
+						'post_type'   => $this->get_post_type(),
+						'post_status' => 'publish',
+						'post_author' => 1,
+					]
+				);
+
+				if ( ! $invoice_id ) {
+					Log::error( 'Error generating invoice.', compact( 'auction_id' ) );
+					return;
+				}
+
+				$invoice = $this->get_invoice( $invoice_id );
+
+				if ( ! $invoice->init( $auction_id ) ) {
+					Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
+				}
+			}
 		);
 	}
 }
