@@ -18,6 +18,7 @@ use GoodBids\Frontend\Vite;
 use GoodBids\Network\Dashboard;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
+use GoodBids\Nonprofits\Invoices;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
@@ -107,6 +108,12 @@ class Core {
 	 * @var Partners
 	 */
 	public Partners $partners;
+
+	/**
+	 * @since 1.0.0
+	 * @var Invoices
+	 */
+	public Invoices $invoices;
 
 	/**
 	 * @since 1.0.0
@@ -350,6 +357,7 @@ class Core {
 				$this->auctioneer  = new Auctioneer();
 				$this->auctions    = new Auctions();
 				$this->partners    = new Partners();
+				$this->invoices    = new Invoices();
 				$this->patterns    = new Patterns();
 				$this->dashboard   = new Dashboard();
 				$this->settings    = new Settings();
