@@ -82,6 +82,39 @@ class AuctionAdminLive extends WC_Email {
 	}
 
 	/**
+	 * Do we have the auction goal
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_goal(): string {
+		// TODO replace string with a varable to get goal value
+		return '{auction_goal}';
+	}
+
+	/**
+	 * Do we have the auction high bid
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_high_bid(): string {
+		// TODO replace string with a varable to get high big
+		return '{auction_high_bid}';
+	}
+
+	/**
+	 * Do we have the auction estimated value
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_auction_estimated_value(): string {
+		// TODO replace string with a varable to get estiamted value
+		return '{auction_estimated_value}';
+	}
+
+	/**
 	 * Get the email recipients
 	 *
 	 * @return string
@@ -138,8 +171,12 @@ class AuctionAdminLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
+				'instance'                => $this,
+				'email_heading'           => $this->get_default_heading(),
+				'button_text'             => $this->get_default_button_text(),
+				'auction_goal'            => $this->get_auction_goal(),
+				'auction_high_bid'        => $this->get_auction_high_bid(),
+				'auction_estimated_value' => $this->get_auction_estimated_value(),
 			]
 		);
 	}
@@ -157,8 +194,12 @@ class AuctionAdminLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
+				'this'                    => $this,
+				'email_heading'           => $this->get_default_heading(),
+				'button_text'             => $this->get_default_button_text(),
+				'auction_goals'           => $this->is_auction_goals(),
+				'auction_high_bid'        => $this->is_auction_high_bid(),
+				'auction_estimated_value' => $this->is_auction_estimated_value(),
 			]
 		);
 	}

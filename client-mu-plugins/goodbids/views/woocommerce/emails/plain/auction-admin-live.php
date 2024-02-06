@@ -52,14 +52,14 @@ echo "\n\n----------------------------------------\n\n";
 
 if ( $auction_goal ) :
 	esc_html_e( 'Auction Goal:', 'goodbids' );
-	echo '{auction.goal}';
+	echo esc_html( $auction_goal );
 endif;
 
 echo "\n\n----------------------------------------\n\n";
 
-if ( $auction_high_bid ) :
+if ( $auction_goal ) :
 	esc_html_e( 'Expected High Bid:', 'goodbids' );
-	echo '{auction.expectedHighBid}';
+	echo esc_html( $auction_goal );
 endif;
 
 echo "\n\n----------------------------------------\n\n";
@@ -84,17 +84,18 @@ echo '{auction.rewardType}';
 
 echo "\n\n----------------------------------------\n\n";
 
-if ( $auction_market_value ) :
+if ( $auction_estimated_value ) :
 	esc_html_e( 'Fair Market Value:', 'goodbids' );
-	echo '{auction.estimatedValue}';
+	echo esc_html( $auction_estimated_value );
 endif;
 
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension */
-	esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by 15 minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
+	/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension, %3$s: Auction Bid Extension */
+	esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by %3$s minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
 	'{auction.endTime}',
+	'{auction.bidExtension}',
 	'{auction.bidExtension}',
 );
 

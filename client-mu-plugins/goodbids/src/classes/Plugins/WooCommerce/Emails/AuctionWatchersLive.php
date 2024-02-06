@@ -138,6 +138,7 @@ class AuctionWatchersLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_html,
 			[
+				'instance'      => $this,
 				'email_heading' => $this->get_default_heading(),
 				'button_text'   => $this->get_default_button_text(),
 			]
@@ -155,6 +156,7 @@ class AuctionWatchersLive extends WC_Email {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
+				'instance'      => $this,
 				'email_heading' => $this->get_default_heading(),
 				'button_text'   => $this->get_default_button_text(),
 			]

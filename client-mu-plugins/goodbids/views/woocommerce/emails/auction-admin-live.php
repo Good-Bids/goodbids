@@ -40,54 +40,54 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		<thead>
 			<tr>
 				<th class="td" scope="col"><?php esc_html_e( 'Auction Title', 'goodbids' ); ?></th>
-				<th class="td" scope="col"><?php echo '{auction.title}'; ?></th>
+				<th class="td" scope="col">{auction.title}</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Scheduled Start', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.startTime}'; ?></td>
+				<td class="td">{auction.startTime}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Starting Bid', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.startingBid}'; ?></td>
+				<td class="td">{auction.startingBid}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Bid Increment', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.bidIncrement}'; ?></td>
+				<td class="td">{auction.bidIncrement}</td>
 			</tr>
 			<?php if ( $auction_goal ) : ?>
 				<tr>
 					<td class="td"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></td>
-					<td class="td"><?php echo '{auction.goal}'; ?></td>
+					<td class="td"><?php echo esc_html( $auction_goal ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<?php if ( $auction_high_bid ) : ?>
 				<tr>
 					<td class="td"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></td>
-					<td class="td"><?php echo '{auction.expectedHighBid}'; ?></td>
+					<td class="td"><?php echo esc_html( $auction_high_bid ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Scheduled End', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.endTime}'; ?></td>
+				<td class="td">{auction.endTime}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Bid Extension', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.bidExtension}'; ?></td>
+				<td class="td">{auction.bidExtension}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.rewardTitle}'; ?></td>
+				<td class="td">{auction.rewardTitle}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
-				<td class="td"><?php echo '{auction.rewardType}'; ?></td>
+				<td class="td">{auction.rewardType}</td>
 			</tr>
-			<?php if ( $auction_market_value ) : ?>
+			<?php if ( $auction_estimated_value ) : ?>
 				<tr>
 					<td class="td"><?php esc_html_e( 'Fair Market Value', 'goodbids' ); ?></td>
-					<td class="td"><?php echo '{auction.estimatedValue}'; ?></td>
+					<td class="td"><?php echo esc_html( $auction_estimated_value ); ?></td>
 				</tr>
 			<?php endif; ?>
 		</tbody>
@@ -97,9 +97,10 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension */
-		esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by 15 minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
+		/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension, %2$s: Auction Bid Extension */
+		esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by %3$s minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
 		'{auction.endTime}',
+		'{auction.bidExtension}',
 		'{auction.bidExtension}',
 	);
 	?>
