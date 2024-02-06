@@ -55,7 +55,7 @@ class AuctionAdminSummary extends WC_Email {
 	 */
 	public function get_default_subject() {
 		return sprintf(
-			'%s Auction summary for %s is live',
+			'%s Auction summary for %s',
 			'{site_title}',
 			'{auction.title}'
 		);
