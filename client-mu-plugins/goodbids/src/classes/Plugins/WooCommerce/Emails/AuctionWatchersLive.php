@@ -36,7 +36,7 @@ class AuctionWatchersLive extends WC_Email {
 	public function __construct() {
 		$this->id             = 'goodbids_auction_watchers_live';
 		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Auction Watchers Live Notification emails is sent when an auction goes live.', 'goodbids' );
+		$this->description    = __( 'Notification emails is sent when an auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-watchers-live.php';
 		$this->template_plain = 'emails/plain/auction-watchers-live.php';
 
