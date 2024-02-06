@@ -36,7 +36,7 @@ class AuctionOutbid extends WC_Email {
 	public function __construct() {
 		$this->id             = 'goodbids_auction_outbid';
 		$this->title          = __( 'Auction Outbid', 'goodbids' );
-		$this->description    = __( 'Auction Outbid Notification email is sent user then they are out bid on an auction.', 'goodbids' );
+		$this->description    = __( 'Notification email is sent when a user is out bid on an auction.', 'goodbids' );
 		$this->template_html  = 'emails/auction-outbid.php';
 		$this->template_plain = 'emails/plain/auction-outbid.php';
 
