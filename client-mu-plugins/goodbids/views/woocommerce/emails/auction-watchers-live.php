@@ -28,9 +28,9 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
 		esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
 		'{auction.title}',
-		'{site_name}',
+		'{site_title}',
 		'{auction.goal}',
-		esc_html( $auction_url )
+		'{auction.url}'
 	);
 	?>
 </p>
@@ -50,7 +50,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Site Name */
 		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-		'{site_name}',
+		'{site_title}',
 	);
 	?>
 </p>
@@ -60,7 +60,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Auction page url, %2$s: Bid Now */
 		'<a class="button" href="%1$s">%2$s</a>',
-		esc_html( $auction_url ),
+		'{auction.url}',
 		esc_html( $button_text )
 	);
 	?>

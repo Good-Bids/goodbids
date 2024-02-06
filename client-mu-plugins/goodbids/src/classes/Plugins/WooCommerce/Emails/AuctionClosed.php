@@ -55,7 +55,7 @@ class AuctionClosed extends WC_Email {
 	public function get_default_subject() {
 		return sprintf(
 			'%s %s has ended',
-			'{site_name}',
+			'{site_title}',
 			'{auction.title}'
 		);
 	}
@@ -69,7 +69,7 @@ class AuctionClosed extends WC_Email {
 	public function get_default_heading() {
 		return sprintf(
 			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
-			'{site_name}',
+			'{site_title}',
 			'{auction.totalRaised}'
 		);
 	}
@@ -117,9 +117,8 @@ class AuctionClosed extends WC_Email {
 
 		// TODO set up check before sending email
 		if ( $user_id ) {
-			$this->object    = new WP_User( $user_id );
-			$this->user_id   = $this->object->ID;
-			$this->user_name = stripslashes( $this->get_user_name() );
+			$this->object  = new WP_User( $user_id );
+			$this->user_id = $this->object->ID;
 		}
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
