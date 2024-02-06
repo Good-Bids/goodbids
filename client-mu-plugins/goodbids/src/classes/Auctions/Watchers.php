@@ -396,7 +396,7 @@ class Watchers {
 	 *
 	 * @param ?int $auction_id
 	 *
-	 * @return array
+	 * @return int[]
 	 */
 	public function get_watchers_by_auction( ?int $auction_id = null ): array {
 		if ( is_null( $auction_id ) ) {
