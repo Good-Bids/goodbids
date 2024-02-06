@@ -21,102 +21,37 @@ printf(
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Start Date  */
-	esc_html__( 'Just letting you know that the %1$s auction on the %2$s GOODBIDS site went live on %3$s.', 'goodbids' ),
+	/* translators: %1$s: Auction title, %2$s: Auction total Bids, %3$s: Auction total Raised, %4$s: Site title, %5$s: user Total Bids, %6$s: User Total Donated */
+	esc_html__( 'The %1$s auction has ended with %2$s placed and %3$s raised for %4$s. You supported this auction with %5$s for a total donation of %6$s', 'goodbids' ),
 	'{auction.title}',
+	'{auction.totalBids}',
+	'{auction.totalRaised}',
 	'{site_title}',
-	'{auction.startTime}',
+	'{auction.userTotalBids}',
+	'{auction.userTotalDonated}'
 );
 
 echo "\n\n----------------------------------------\n\n";
 
-esc_html_e( 'Auction Title:', 'goodbids' );
-echo '{auction.title}';
+esc_html_e( 'Check your email or visit the auction page to see if you won!', 'goodbids' );
 
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Scheduled Start:', 'goodbids' );
-echo '{auction.startTime}';
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Starting Bid:', 'goodbids' );
-echo '{auction.startingBid}';
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Bid Increment:', 'goodbids' );
-echo '{auction.bidIncrement}';
-
-echo "\n\n----------------------------------------\n\n";
-
-if ( $auction_goal ) :
-	esc_html_e( 'Auction Goal:', 'goodbids' );
-	echo '{auction.goal}';
-endif;
-
-echo "\n\n----------------------------------------\n\n";
-
-if ( $auction_high_bid ) :
-	esc_html_e( 'Expected High Bid:', 'goodbids' );
-	echo '{auction.expectedHighBid}';
-endif;
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Scheduled End:', 'goodbids' );
-echo '{auction.endTime}';
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Bid Extension:', 'goodbids' );
-echo '{auction.bidExtension}';
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Auction Reward:', 'goodbids' );
-echo '{auction.rewardTitle}';
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Reward Type:', 'goodbids' );
-echo '{auction.rewardType}';
-
-echo "\n\n----------------------------------------\n\n";
-
-if ( $auction_market_value ) :
-	esc_html_e( 'Fair Market Value:', 'goodbids' );
-	echo '{auction.estimatedValue}';
-endif;
 
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension */
-	esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by 15 minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
-	'{auction.endTime}',
-	'{auction.bidExtension}',
-);
-
-echo "\n\n----------------------------------------\n\n";
-
-esc_html_e( 'Keep an eye on the auction page for live bidding updates!', 'goodbids' );
-
-echo "\n\n----------------------------------------\n\n";
-
-printf(
-	/* translators: %1$s: Bid Now, %2$s: Auction page url */
-	'%1$s at %2$s',
-	esc_html( $button_text ),
-	'{auction.url}'
+	/* translators: %1$s: Auction page url, %2$s: Bid Now */
+	'<a class="button" href="%1$s">%2$s</a>',
+	'{auction.url}',
+	esc_html( $button_text )
 );
 
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Login URL */
-	'Login to your site to view additional auction information: %1$s',
-	esc_html( $login_url ),
+	/* translators: %1$s: Main site All Auctions page url */
+	'Want to support another great GoodBids? <a class="button" href="%1$s">View all auctions</a>',
+	'{auction.url}',
+	'{main.allAuctionsUrl}'
 );
 
 /**
