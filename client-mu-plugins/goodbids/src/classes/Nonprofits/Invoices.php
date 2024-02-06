@@ -135,11 +135,20 @@ class Invoices {
 				$new_columns = [];
 
 				foreach ( $columns as $column => $label ) {
+					// Customize the Date column label.
+					if ( 'date' === $column ) {
+						$label = __( 'Date Created', 'goodbids' );
+					}
+
 					$new_columns[ $column ] = $label;
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
-						$new_columns['auction'] = __( 'Auction', 'goodbids' );
+						$new_columns['auction']   = __( 'Auction', 'goodbids' );
+						$new_columns['amount']    = __( 'Amount', 'goodbids' );
+						$new_columns['stripe_id'] = __( 'Invoice ID', 'goodbids' );
+						$new_columns['status']    = __( 'Status', 'goodbids' );
+						$new_columns['pay']       = __( 'Pay', 'goodbids' );
 					}
 				}
 
@@ -160,6 +169,18 @@ class Invoices {
 						esc_html( get_the_title( $auction_id ) ),
 						esc_url( get_permalink( $auction_id ) ),
 						esc_html__( 'View', 'goodbids' )
+					);
+				} elseif ( 'amount' === $column ) {
+					echo '$TBD';
+				} elseif ( 'stripe_id' === $column ) {
+					echo '#TBD';
+				} elseif ( 'status' === $column ) {
+					esc_html_e( 'Unpaid', 'goodbids' );
+				} elseif ( 'pay' === $column ) {
+					printf(
+						'<a href="%s" class="button button-primary">%s</a>',
+						esc_url( '#' ),
+						esc_html__( 'Pay Now', 'goodbids' )
 					);
 				}
 			},
