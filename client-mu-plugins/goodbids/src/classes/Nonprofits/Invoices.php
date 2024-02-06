@@ -23,10 +23,19 @@ class Invoices {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_ID_META_KEY = '_auction_id';
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		// Register Post Type.
 		$this->register_post_type();
+
+		// Add custom Admin Columns for Watchers.
+		$this->add_admin_columns();
 	}
 
 	/**
@@ -112,4 +121,50 @@ class Invoices {
 		return self::POST_TYPE;
 	}
 
+	/**
+	 * Insert custom admin columns
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_admin_columns(): void {
+		add_filter(
+			'manage_' . $this->get_post_type() . '_posts_columns',
+			function ( array $columns ): array {
+				$new_columns = [];
+
+				foreach ( $columns as $column => $label ) {
+					$new_columns[ $column ] = $label;
+
+					// Insert Custom Columns after the Title column.
+					if ( 'title' === $column ) {
+						$new_columns['auction'] = __( 'Auction', 'goodbids' );
+					}
+				}
+
+				return $new_columns;
+			}
+		);
+
+		add_action(
+			'manage_' . $this->get_post_type() . '_posts_custom_column',
+			function ( string $column, int $post_id ) {
+				// Output the column values.
+				if ( 'auction' === $column ) {
+					$auction_id = get_post_meta( $post_id, self::AUCTION_ID_META_KEY, true );
+
+					printf(
+						'<a href="%s">%s</a> (<a href="%s" target="_blank">%s</a>)',
+						esc_url( get_edit_post_link( $auction_id ) ),
+						esc_html( get_the_title( $auction_id ) ),
+						esc_url( get_permalink( $auction_id ) ),
+						esc_html__( 'View', 'goodbids' )
+					);
+				}
+			},
+			10,
+			2
+		);
+	}
 }
