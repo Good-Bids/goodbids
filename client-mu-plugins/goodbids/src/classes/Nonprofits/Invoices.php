@@ -446,12 +446,19 @@ class Invoices {
 				} elseif ( 'amount' === $column ) {
 					echo wp_kses_post( wc_price( $invoice->get_amount() ) );
 				} elseif ( 'stripe_id' === $column ) {
-					echo '#TBD';
+					if ( ! $invoice->get_stripe_invoice_id() ) {
+						echo '&mdash';
+					}
+
+					printf(
+						'<code title="%1$s" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;display: block;">%1$s</code>',
+						esc_attr( $invoice->get_stripe_invoice_id() )
+					);
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );
 				} elseif ( 'pay' === $column ) {
 					printf(
-						'<a href="%s" class="button button-primary">%s</a>',
+						'<a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a>',
 						esc_url( '#' ),
 						esc_html__( 'Pay Now', 'goodbids' )
 					);

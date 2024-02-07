@@ -227,6 +227,13 @@ class Stripe {
 			'collection_method' => 'send_invoice',
 			'description'       => get_the_title( $this->invoice->get_auction_id() ),
 			'days_until_due'    => intval( goodbids()->get_config( 'invoices.payment-terms-days' ) ),
+			'metadata'          => [
+				'gb_invoice_id' => $this->invoice->get_id(),
+				'gb_auction_id' => $this->invoice->get_auction_id(),
+			],
+
+			// This allows the invoice to be created without any items, even though the documentation says "exclude" is the default.
+			'pending_invoice_items_behavior' => 'exclude',
 		];
 
 		$stripe_invoice_id = goodbids()->sites->swap(
