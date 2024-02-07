@@ -32,28 +32,12 @@ class Stripe {
 	private bool $initialized = false;
 
 	/**
-	 * Instance of WooCommerce Stripe plugin.
-	 *
-	 * @since 1.0.0
-	 * @var ?WC_Stripe
-	 */
-	private ?WC_Stripe $stripe = null;
-
-	/**
 	 * The Stripe Customer ID
 	 *
 	 * @since 1.0.0
 	 * @var string
 	 */
 	private string $customer_id = '';
-
-	/**
-	 * The Stripe API Secret Key
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private string $secret_key = '';
 
 	/**
 	 * @since 1.0.0
@@ -85,16 +69,12 @@ class Stripe {
 	 * @return void
 	 */
 	private function init(): void {
-		$this->stripe = woocommerce_gateway_stripe();
-
-		if ( ! $this->stripe ) {
+		if ( ! woocommerce_gateway_stripe() ) {
 			Log::warning( 'Could not initialize the Stripe gateway.' );
 			return;
 		}
 
-		$this->secret_key = \WC_Stripe_API::get_secret_key();
-
-		if ( ! $this->secret_key ) {
+		if ( ! \WC_Stripe_API::get_secret_key() ) {
 			Log::warning( 'Stripe is not configured.' );
 			return;
 		}

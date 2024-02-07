@@ -91,9 +91,9 @@ class Invoice {
 
 	/**
 	 * @since 1.0.0
-	 * @var ?int
+	 * @var ?string
 	 */
-	private ?string $stripe_invoice_id;
+	private ?string $stripe_invoice_id = null;
 
 	/**
 	 * @since 1.0.0
