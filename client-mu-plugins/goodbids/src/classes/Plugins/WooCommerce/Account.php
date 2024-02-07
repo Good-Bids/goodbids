@@ -214,7 +214,7 @@ class Account {
 		$limit = ! empty( $query_args['limit'] ) ? $query_args['limit'] : -1;
 		unset( $query_args['limit'] );
 
-		$args  = [
+		$args = [
 			'limit'    => $limit,
 			'return'   => 'ids',
 			'orderby'  => 'date',
@@ -244,7 +244,7 @@ class Account {
 					'key'     => WooCommerce::TYPE_META_KEY,
 					'compare' => '=',
 					'value'   => Bids::ITEM_TYPE,
-				]
+				],
 			],
 		];
 
@@ -277,7 +277,7 @@ class Account {
 					'key'     => WooCommerce::TYPE_META_KEY,
 					'compare' => '=',
 					'value'   => Rewards::ITEM_TYPE,
-				]
+				],
 			],
 		];
 
