@@ -11,6 +11,7 @@ namespace GoodBids;
 use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
+use GoodBids\Auctions\Watchers;
 use GoodBids\Blocks\Blocks;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
@@ -138,6 +139,12 @@ class Core {
 	 * @var Users
 	 */
 	public Users $users;
+
+	/**
+	 * @since 1.0.0
+	 * @var Watchers
+	 */
+	public Watchers $watchers;
 
 	/**
 	 * Constructor
@@ -366,6 +373,7 @@ class Core {
 				$this->blocks      = new Blocks();
 				$this->notices     = new Notices();
 				$this->users       = new Users();
+				$this->watchers    = new Watchers();
 			}
 		);
 	}
