@@ -1,4 +1,4 @@
-export type AuctionStatus = 'upcoming' | 'live' | 'closed';
+type APIAuctionStatus = 'upcoming' | 'live' | 'closed';
 
 type MessageType = 'update' | 'end';
 
@@ -10,7 +10,7 @@ type AuctionType = {
 	currentBid: number;
 	lastBid: number;
 	lastBidder?: number;
-	auctionStatus: AuctionStatus;
+	auctionStatus: APIAuctionStatus;
 };
 
 type SocketSuccessMessage = {

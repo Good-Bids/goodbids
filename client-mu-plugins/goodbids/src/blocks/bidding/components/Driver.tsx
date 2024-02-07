@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { BidButton } from './bid-button';
 import { CountdownTimer } from './countdown-timer';
-import { EarnFreeBids } from './earn-free-bids';
 import { FreeBidButton } from './free-bid-button';
 import { Metrics } from './metrics';
 import { Participation } from './participation';
@@ -11,6 +10,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Fetcher } from './fetcher';
 import { useBiddingState } from '../store';
 import { SocketError } from './socket-error';
+import { FreeBidsPromo } from './free-bids-promo';
 
 type DriverProps = {
 	auctionId: number;
@@ -23,6 +23,7 @@ export function Driver({ auctionId }: DriverProps) {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="flex flex-col w-full gap-6 text-md">
+				<FreeBidsPromo />
 				<Fetcher auctionId={auctionId}>
 					{fetchMode === 'socket' && <Socket auctionId={auctionId} />}
 					<Metrics />
@@ -30,8 +31,8 @@ export function Driver({ auctionId }: DriverProps) {
 					<BidButton />
 					<FreeBidButton />
 					<Participation />
-					<EarnFreeBids />
 					<SocketError />
+					<div />
 				</Fetcher>
 			</div>
 		</QueryClientProvider>
