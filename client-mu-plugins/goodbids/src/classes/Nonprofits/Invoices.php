@@ -44,6 +44,15 @@ class Invoices {
 		// Prevent Deletion of Invoices.
 		$this->disable_delete();
 
+		// Disable the "Private" post state on invoices.
+		$this->clear_post_state();
+
+		// Modify the Invoice Meta Boxes.
+		$this->customize_meta_boxes();
+
+		// Make Post Title readonly.
+		$this->disable_post_title_input();
+
 		// Add custom Admin Columns for Watchers.
 		$this->add_admin_columns();
 
@@ -74,9 +83,9 @@ class Invoices {
 					'add_new_item'          => __( 'Add New Invoice', 'goodbids' ),
 					'add_new'               => __( 'Add New', 'goodbids' ),
 					'new_item'              => __( 'New Invoice', 'goodbids' ),
-					'edit_item'             => __( 'Edit Invoice', 'goodbids' ),
+					'edit_item'             => __( 'View Invoice', 'goodbids' ),
 					'update_item'           => __( 'Update Invoice', 'goodbids' ),
-					'view_item'             => __( 'View Invoice', 'goodbids' ),
+					'view_item'             => __( 'Invoice Details', 'goodbids' ),
 					'view_items'            => __( 'View Invoices', 'goodbids' ),
 					'search_items'          => __( 'Search Invoices', 'goodbids' ),
 					'not_found'             => __( 'No Invoices have been generated yet.', 'goodbids' ),
@@ -113,7 +122,6 @@ class Invoices {
 					'capability_type'     => 'manage_options',
 					'capabilities'        => [
 						'create_posts' => 'do_not_allow',
-						'delete_posts' => 'do_not_allow',
 					],
 					'show_in_rest'        => false,
 				];
@@ -131,69 +139,211 @@ class Invoices {
 	 * @return void
 	 */
 	private function disable_delete(): void {
+		/**
+		 * Prevent Non-Super Admins from deleting Invoices
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param mixed $delete
+		 * @param \WP_Post $post
+		 *
+		 * @return mixed
+		 */
+		$prevent_delete = function ( mixed $delete, \WP_Post $post ): mixed {
+			if ( $this->get_post_type() !== get_post_type( $post ) ) {
+				return $delete;
+			}
+
+			add_action(
+				'admin_notices',
+				function () {
+					?>
+					<div class="notice notice-error">
+						<p><?php esc_html_e( 'Invoices cannot be deleted.', 'goodbids' ); ?></p>
+					</div>
+					<?php
+				}
+			);
+
+			return false;
+		};
+
 		add_action(
 			'admin_init',
-			function () {
-				/**
-				 * Prevent Non-Super Admins from deleting Invoices
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param mixed $delete
-				 * @param \WP_Post $post
-				 *
-				 * @return mixed
-				 */
-				$prevent_delete = function ( mixed $delete, \WP_Post $post ): mixed {
-					if ( $this->get_post_type() !== get_post_type( $post ) ) {
-						return $delete;
-					}
-
-					add_action(
-						'admin_notices',
-						function () {
-							?>
-							<div class="notice notice-error">
-								<p><?php esc_html_e( 'Invoices cannot be deleted.', 'goodbids' ); ?></p>
-							</div>
-							<?php
-						}
-					);
-
-					return false;
-				};
-
-				if ( ! is_super_admin() ) {
-					add_filter( 'pre_delete_post', $prevent_delete, 10, 2 );
-					add_filter( 'pre_trash_post', $prevent_delete, 10, 2 );
+			function () use ( $prevent_delete ): void {
+				if ( is_super_admin() ) {
+					return;
 				}
 
-				add_filter(
-					'post_row_actions',
-					function ( array $actions, $post ) {
-						if ( $this->get_post_type() !== get_post_type( $post ) ) {
-							return $actions;
-						}
+				add_filter( 'pre_delete_post', $prevent_delete, 10, 2 );
+				add_filter( 'pre_trash_post', $prevent_delete, 10, 2 );
+			}
+		);
 
-						if ( array_key_exists( 'edit', $actions ) ) {
-							$actions['edit'] = str_replace( __( 'Edit' ), __( 'View' ), $actions['edit'] );
-						}
+		add_filter(
+			'post_row_actions',
+			function ( array $actions, $post ) {
+				if ( $this->get_post_type() !== get_post_type( $post ) ) {
+					return $actions;
+				}
 
-						unset( $actions['inline hide-if-no-js'] );
-						unset( $actions['inline'] );
+				if ( array_key_exists( 'edit', $actions ) ) {
+					$actions['edit'] = str_replace( __( 'Edit' ), __( 'View' ), $actions['edit'] );
+				}
 
-						if ( is_super_admin() ) {
-							return $actions;
-						}
+				unset( $actions['inline hide-if-no-js'] );
+				unset( $actions['inline'] );
 
-						unset( $actions['trash'] );
-						unset( $actions['clone'] );
+				if ( is_super_admin() ) {
+					return $actions;
+				}
 
-						return $actions;
-					},
-					10,
-					2
+				unset( $actions['trash'] );
+				unset( $actions['clone'] );
+
+				return $actions;
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'user_has_cap',
+			function ( array $all_caps, array $caps ): array {
+				if ( is_super_admin() ) {
+					return $all_caps;
+				}
+
+				$screen = get_current_screen();
+
+				if ( ! $screen || $screen->base !== 'post' || $this->get_post_type() !== $screen->post_type ) {
+					return $all_caps;
+				}
+
+				if ( ! in_array( $caps['delete_post'], $caps, true )|| ! in_array( $caps['delete_posts'], $caps, true ) ) {
+					return $all_caps;
+				}
+
+				unset( $all_caps['delete_post'] );
+				unset( $all_caps['delete_posts'] );
+
+				return $all_caps;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Clear the Private post state for invoices.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function clear_post_state(): void {
+		add_filter(
+			'display_post_states',
+			function ( array $post_states, \WP_Post $post ): array {
+				if ( $this->get_post_type() !== get_post_type( $post ) ) {
+					return $post_states;
+				}
+
+				unset( $post_states['private'] );
+
+				return $post_states;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Remove the default Aside Meta box. Add 2 new meta boxes.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function customize_meta_boxes(): void {
+		add_action(
+			'add_meta_boxes',
+			function (): void {
+				remove_meta_box(
+					'submitdiv',
+					$this->get_post_type(),
+					'side'
 				);
+
+				add_meta_box(
+					'goodbids-invoice-details',
+					__( 'Invoice Details', 'goodbids' ),
+					function ( \WP_Post $post ): void {
+						$invoice = $this->get_invoice( $post->ID );
+
+						if ( ! $invoice ) {
+							return;
+						}
+
+						$auction_id = $invoice->get_auction_id();
+						goodbids()->load_view( 'admin/invoices/details.php', compact( 'invoice', 'auction_id' ) );
+					},
+					$this->get_post_type(),
+					'normal',
+					'high'
+				);
+
+				add_meta_box(
+					'goodbids-invoice-actions',
+					__( 'Actions', 'goodbids' ),
+					function ( \WP_Post $post ): void {
+						$invoice = $this->get_invoice( $post->ID );
+
+						if ( ! $invoice ) {
+							return;
+						}
+						?>
+						<div style="display: flex; justify-content: space-between; align-items: center;margin-top: 0.5rem;">
+							<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . $this->get_post_type() ) ); ?>" class="button button-secondary">
+								<?php esc_html_e( 'Back to Invoices', 'goodbids' ); ?>
+							</a>
+
+							<a href="<?php echo esc_url( '#' ); ?>" class="button button-primary">
+								<?php esc_html_e( 'Pay Now', 'goodbids' ); ?>
+							</a>
+						</div>
+						<?php
+					},
+					$this->get_post_type(),
+					'side',
+					'high'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Disable the Post Title Field.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_post_title_input(): void {
+		add_action(
+			'edit_form_before_permalink',
+			function (): void {
+				$screen = get_current_screen();
+
+				if ( ! $screen || 'post' !== $screen->base || $this->get_post_type() !== $screen->post_type ) {
+					return;
+				}
+				?>
+				<script>
+					// Make the post_title input box readonly and disabled.
+					jQuery('input[name="post_title"]').attr('readonly', true).attr('disabled', true);
+				</script>
+				<?php
 			}
 		);
 	}
@@ -293,7 +443,7 @@ class Invoices {
 						esc_html__( 'Pay Now', 'goodbids' )
 					);
 				} elseif ( 'due_date' === $column ) {
-					echo esc_html( $invoice->get_due_date( 'n/j/Y g:i a' ) );
+					echo esc_html( $invoice->get_due_date( 'n/j/Y' ) );
 				}
 			},
 			10,
@@ -341,7 +491,7 @@ class Invoices {
 					get_the_title( $auction_id )
 				),
 				'post_type'   => $this->get_post_type(),
-				'post_status' => 'publish',
+				'post_status' => 'private',
 				'post_author' => 1,
 			]
 		);
