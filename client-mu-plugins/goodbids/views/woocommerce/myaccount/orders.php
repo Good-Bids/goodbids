@@ -31,7 +31,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 	<?php goodbids()->load_view( 'woocommerce/myaccount/orders-header.php' ); ?>
 
-	<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
+	<table class="bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 		<thead>
 			<tr class="bg-base-3">
 				<?php foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) : ?>

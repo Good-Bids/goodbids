@@ -18,6 +18,20 @@
 
 		.woocommerce-MyAccount-content {
 			@apply w-3/4;
+
+			.woocommerce-Address-title.title {
+				h3 {
+					@apply !float-none !mb-3;
+				}
+
+				a.edit {
+					@apply !inline-block !float-none btn-fill-sm mb-4;
+				}
+			}
+
+			input.input-text {
+				@apply !border-contrast;
+			}
 		}
 	}
 }
