@@ -45,6 +45,12 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const STRIPE_INVOICE_ID_META_KEY = '_stripe_invoice_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const STATUS_UNPAID = 'Unpaid';
 
 	/**
@@ -58,12 +64,6 @@ class Invoice {
 	 * @var string
 	 */
 	const STATUS_OVERDUE = 'Overdue';
-
-	/**
-	 * @since 1.0.0
-	 * @var ?int
-	 */
-	private ?int $invoice_id;
 
 	/**
 	 * @since 1.0.0
@@ -88,6 +88,12 @@ class Invoice {
 	 * @var ?string
 	 */
 	private ?string $due_date = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?int
+	 */
+	private ?string $stripe_invoice_id;
 
 	/**
 	 * @since 1.0.0
@@ -266,10 +272,10 @@ class Invoice {
 	 * @return bool|int
 	 */
 	private function set_due_date(): bool|int {
-		$payment_terms = goodbids()->get_config( 'invoices.payment-terms' );
+		$payment_terms = intval( goodbids()->get_config( 'invoices.payment-terms-days' ) );
 
 		try {
-			$due_date = current_datetime()->add( new \DateInterval( 'P' . $payment_terms ) )->format( 'Y-m-d H:i:s' );
+			$due_date = current_datetime()->add( new \DateInterval( 'P' . $payment_terms . 'D' ) )->format( 'Y-m-d H:i:s' );
 		} catch ( \Exception $e ) {
 			// Log the error.
 			Log::error( 'Error setting invoice due date: ' . $e->getMessage(), [ 'invoice_id' => $this->get_id() ] );
@@ -311,5 +317,41 @@ class Invoice {
 	 */
 	public function is_paid(): bool {
 		return boolval( get_post_meta( $this->get_id(), self::PAYMENT_META_KEY, true ) );
+	}
+
+	/**
+	 * Set the Stripe Invoice ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $stripe_invoice_id
+	 *
+	 * @return bool|int
+	 */
+	public function set_stripe_invoice_id( string $stripe_invoice_id ): bool|int {
+		$this->stripe_invoice_id = $stripe_invoice_id;
+		return update_post_meta( $this->get_id(), self::STRIPE_INVOICE_ID_META_KEY, $this->stripe_invoice_id );
+	}
+
+	/**
+	 * Returns the Stripe Invoice ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_stripe_invoice_id(): ?string {
+		if ( $this->stripe_invoice_id ) {
+			return $this->stripe_invoice_id;
+		}
+
+		$stripe_invoice_id = get_post_meta( $this->get_id(), self::STRIPE_INVOICE_ID_META_KEY, true );
+
+		if ( ! $stripe_invoice_id ) {
+			return null;
+		}
+
+		$this->stripe_invoice_id = $stripe_invoice_id;
+		return $this->stripe_invoice_id;
 	}
 }
