@@ -51,6 +51,12 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const STRIPE_INVOICE_URL_META_KEY = '_stripe_invoice_url';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const STATUS_UNPAID = 'Unpaid';
 
 	/**
@@ -94,6 +100,12 @@ class Invoice {
 	 * @var ?string
 	 */
 	private ?string $stripe_invoice_id = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $stripe_invoice_url = null;
 
 	/**
 	 * @since 1.0.0
@@ -353,5 +365,41 @@ class Invoice {
 
 		$this->stripe_invoice_id = $stripe_invoice_id;
 		return $this->stripe_invoice_id;
+	}
+
+	/**
+	 * Set the Stripe Invoice URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $stripe_invoice_url
+	 *
+	 * @return bool|int
+	 */
+	public function set_stripe_invoice_url( string $stripe_invoice_url ): bool|int {
+		$this->stripe_invoice_url = $stripe_invoice_url;
+		return update_post_meta( $this->get_id(), self::STRIPE_INVOICE_URL_META_KEY, $this->stripe_invoice_url );
+	}
+
+	/**
+	 * Returns the Stripe Invoice URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_stripe_invoice_url(): ?string {
+		if ( $this->stripe_invoice_url ) {
+			return $this->stripe_invoice_url;
+		}
+
+		$stripe_invoice_url = get_post_meta( $this->get_id(), self::STRIPE_INVOICE_URL_META_KEY, true );
+
+		if ( ! $stripe_invoice_url ) {
+			return null;
+		}
+
+		$this->stripe_invoice_url = $stripe_invoice_url;
+		return $this->stripe_invoice_url;
 	}
 }

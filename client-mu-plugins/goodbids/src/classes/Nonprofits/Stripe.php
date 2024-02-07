@@ -328,7 +328,7 @@ class Stripe {
 
 		Log::debug( 'Sending Stripe Invoice.', $context );
 
-		$send_id = goodbids()->sites->swap(
+		$invoice_url = goodbids()->sites->swap(
 			function() use ( $invoice_id, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/send', $invoice_id ) );
@@ -342,15 +342,17 @@ class Stripe {
 					return null;
 				}
 
-				return $response->id;
+				return $response->hosted_invoice_url;
 			},
 			get_main_site_id()
 		);
 
-		if ( ! $send_id ) {
+		if ( ! $invoice_url ) {
 			Log::error( 'Unable to send Stripe Invoice.', $context );
 			return false;
 		}
+
+		$this->invoice->set_stripe_invoice_url( $invoice_url );
 
 		return true;
 	}

@@ -317,7 +317,7 @@ class Invoices {
 								<?php esc_html_e( 'Back to Invoices', 'goodbids' ); ?>
 							</a>
 
-							<a href="<?php echo esc_url( '#' ); ?>" class="button button-primary">
+							<a href="<?php echo esc_url( $invoice->get_stripe_invoice_url() ); ?>" class="button button-primary">
 								<?php esc_html_e( 'Pay Now', 'goodbids' ); ?>
 							</a>
 						</div>
@@ -374,7 +374,7 @@ class Invoices {
 
 	/**
 	 * Get an Invoice by ID.
-	 * Pass Auction ID to initialize the Invoice.
+	 * Pass Auction ID to initialize a new Invoice.
 	 *
 	 * @since 1.0.0
 	 *
@@ -384,6 +384,11 @@ class Invoices {
 	 * @return ?Invoice
 	 */
 	public function get_invoice( int $post_id, ?int $auction_id = null ): ?Invoice {
+		if ( null !== $auction_id && goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+			_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
+			return null;
+		}
+
 		return new Invoice( $post_id, $auction_id );
 	}
 
@@ -459,7 +464,7 @@ class Invoices {
 				} elseif ( 'pay' === $column ) {
 					printf(
 						'<a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a>',
-						esc_url( '#' ),
+						esc_url( $invoice->get_stripe_invoice_url() ),
 						esc_html__( 'Pay Now', 'goodbids' )
 					);
 				} elseif ( 'due_date' === $column ) {
