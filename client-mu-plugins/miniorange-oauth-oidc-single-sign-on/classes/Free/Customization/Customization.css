@@ -1,0 +1,349 @@
+.without_hover{display: inline-block ;}
+.with_hover{display: none;}
+.mo_oauth_hover_icon_preview:hover .without_hover{display: none !important;}
+.mo_oauth_hover_icon_preview:hover .with_hover{display: inline-block !important}
+.mo_oauth_custom_hover_icon_preview:hover .without_hover{display: none}
+.mo_oauth_custom_hover_icon_preview:hover .with_hover{display: inline-block !important}
+
+.mo_oauth_def_btn_facebook{background:#1877F2;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_facebook{color:#1877F2;background: #FFFFFF; }
+.mo_oauth_hov_btn_facebook{color:#1877F2;background: #FFFFFF;}.mo_oauth_hov_btn_facebook:hover{background:#1877F2;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_login_button_font{
+    vertical-align: 8px	; 
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Oxygen, Ubuntu, Droid Sans, Helvetica Neue, sans-serif;
+}
+.mo_oauth_btn_scale:hover{
+    transform: scale(1.1);
+    transition: 0.3s;
+}
+.circle{
+    border-radius: 999px;
+}
+.oval{
+    border-radius: 10px;
+}
+.mo_oauth_btn_shadow{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.mo_oauth_def_btn_google{background:#DB4437;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_google{color:#DB4437;background: #FFFFFF; }
+.mo_oauth_hov_btn_google{color:#DB4437;background: #FFFFFF;}.mo_oauth_hov_btn_google:hover{background:#DB4437;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_vkontakte{background:#466482;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_vkontakte{color:#466482;background: #FFFFFF; }
+.mo_oauth_hov_btn_vkontakte{color:#466482;background: #FFFFFF;}.mo_oauth_hov_btn_vkontakte:hover{background:#466482;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_twitter{background:#2795e9;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_twitter{color:#2795e9;background: #FFFFFF; }
+.mo_oauth_hov_btn_twitter{color:#2795e9;background: #FFFFFF;}.mo_oauth_hov_btn_twitter:hover{background:#2795e9;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_yahoo{background:#430297;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_yahoo{color:#430297;background: #FFFFFF; }
+.mo_oauth_hov_btn_yahoo{color:#430297;background: #FFFFFF;}.mo_oauth_hov_btn_yahoo:hover{background:#430297;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_linkedin{background:#007bb6;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_linkedin{color:#007bb6;background: #FFFFFF; }
+.mo_oauth_hov_btn_linkedin{color:#007bb6;background: #FFFFFF;}.mo_oauth_hov_btn_linkedin:hover{background:#007bb6;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_paypal{background:#0d127a;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_paypal{color:#0d127a;background: #FFFFFF; }
+.mo_oauth_hov_btn_paypal{color:#0d127a;background: #FFFFFF;}.mo_oauth_hov_btn_paypal:hover{background:#0d127a;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_apple{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_apple{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_apple{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_apple:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_wordpress{background:#587ea3;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_wordpress{color:#587ea3;background: #FFFFFF; }
+.mo_oauth_hov_btn_wordpress{color:#587ea3;background: #FFFFFF;}.mo_oauth_hov_btn_wordpress:hover{background:#587ea3;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_pinterest{background:#cb2027;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_pinterest{color:#cb2027;background: #FFFFFF; }
+.mo_oauth_hov_btn_pinterest{color:#cb2027;background: #FFFFFF;}.mo_oauth_hov_btn_pinterest:hover{background:#cb2027;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_spotify{background:#19bf61;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_spotify{color:#19bf61;background: #FFFFFF; }
+.mo_oauth_hov_btn_spotify{color:#19bf61;background: #FFFFFF;}.mo_oauth_hov_btn_spotify:hover{background:#19bf61;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_twitch{background:#720e9e;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_twitch{color:#720e9e;background: #FFFFFF; }
+.mo_oauth_hov_btn_twitch{color:#720e9e;background: #FFFFFF;}.mo_oauth_hov_btn_twitch:hover{background:#720e9e;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_github{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_github{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_github{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_github:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_reddit{background:#ff4301;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_reddit{color:#ff4301;background: #FFFFFF; }
+.mo_oauth_hov_btn_reddit{color:#ff4301;background: #FFFFFF;}.mo_oauth_hov_btn_reddit:hover{background:#ff4301;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_vimeo{background:#1ab7ea;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_vimeo{color:#1ab7ea;background: #FFFFFF; }
+.mo_oauth_hov_btn_vimeo{color:#1ab7ea;background: #FFFFFF;}.mo_oauth_hov_btn_vimeo:hover{background:#1ab7ea;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_discord{background:#7289da;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_discord{color:#7289da;background: #FFFFFF; }
+.mo_oauth_hov_btn_discord{color:#7289da;background: #FFFFFF;}.mo_oauth_hov_btn_discord:hover{background:#7289da;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_meetup{background:#e51937;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_meetup{color:#e51937;background: #FFFFFF; }
+.mo_oauth_hov_btn_meetup{color:#e51937;background: #FFFFFF;}.mo_oauth_hov_btn_meetup:hover{background:#e51937;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_gitlab{background:#30353e;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_gitlab{color:#30353e;background: #FFFFFF; }
+.mo_oauth_hov_btn_gitlab{color:#30353e;background: #FFFFFF;}.mo_oauth_hov_btn_gitlab:hover{background:#30353e;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_slack{background:#4c154d;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_slack{color:#4c154d;background: #FFFFFF; }
+.mo_oauth_hov_btn_slack{color:#4c154d;background: #FFFFFF;}.mo_oauth_hov_btn_slack:hover{background:#4c154d;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_deviantart{background:#00DE96;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_deviantart{color:#00DE96;background: #FFFFFF; }
+.mo_oauth_hov_btn_deviantart{color:#00DE96;background: #FFFFFF;}.mo_oauth_hov_btn_deviantart:hover{background:#00DE96;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_office365{background:#DC3C00;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_office365{color:#DC3C00;background: #FFFFFF; }
+.mo_oauth_hov_btn_office365{color:#DC3C00;background: #FFFFFF;}.mo_oauth_hov_btn_office365:hover{background:#DC3C00;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_azure{background:#1673B9;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_azure{color:#1673B9;background: #FFFFFF; }
+.mo_oauth_hov_btn_azure{color:#1673B9;background: #FFFFFF;}.mo_oauth_hov_btn_azure:hover{background:#1673B9;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_azureb2c{background:#1673B9;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_azureb2c{color:#1673B9;background: #FFFFFF; }
+.mo_oauth_hov_btn_azureb2c{color:#1673B9;background: #FFFFFF;}.mo_oauth_hov_btn_azureb2c:hover{background:#1673B9;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_cognito{background:#793D63;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_cognito{color:#793D63;background: #FFFFFF; }
+.mo_oauth_hov_btn_cognito{color:#793D63;background: #FFFFFF;}.mo_oauth_hov_btn_cognito:hover{background:#793D63;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_adfs{background:#337EA3;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_adfs{color:#337EA3;background: #FFFFFF; }
+.mo_oauth_hov_btn_adfs{color:#337EA3;background: #FFFFFF;}.mo_oauth_hov_btn_adfs:hover{background:#337EA3;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_whmcs{background:#7ECF1E;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_whmcs{color:#7ECF1E;background: #FFFFFF; }
+.mo_oauth_hov_btn_whmcs{color:#7ECF1E;background: #FFFFFF;}.mo_oauth_hov_btn_whmcs:hover{background:#7ECF1E;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_keyclock{background:#E6E6E6;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_keyclock{color:#E6E6E6;background: #FFFFFF; }
+.mo_oauth_hov_btn_keyclock{color:#E6E6E6;background: #FFFFFF;}.mo_oauth_hov_btn_keyclock:hover{background:#E6E6E6;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_zoho{background:#C22234;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_zoho{color:#C22234;background: #FFFFFF; }
+.mo_oauth_hov_btn_zoho{color:#C22234;background: #FFFFFF;}.mo_oauth_hov_btn_zoho:hover{background:#C22234;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_invisioncommunity{background:#235C93;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_invisioncommunity{color:#235C93;background: #FFFFFF; }
+.mo_oauth_hov_btn_invisioncommunity{color:#235C93;background: #FFFFFF;}.mo_oauth_hov_btn_invisioncommunity:hover{background:#235C93;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_bitrix24{background:#2FC7F7;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_bitrix24{color:#2FC7F7;background: #FFFFFF; }
+.mo_oauth_hov_btn_bitrix24{color:#2FC7F7;background: #FFFFFF;}.mo_oauth_hov_btn_bitrix24:hover{background:#2FC7F7;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_onelogin{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_onelogin{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_onelogin{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_onelogin:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_identityserver{background:#F0931C;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_identityserver{color:#F0931C;background: #FFFFFF; }
+.mo_oauth_hov_btn_identityserver{color:#F0931C;background: #FFFFFF;}.mo_oauth_hov_btn_identityserver:hover{background:#F0931C;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_wso2{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_wso2{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_wso2{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_wso2:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_salesforce{background:#1ab7ea;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_salesforce{color:#1ab7ea;background: #FFFFFF; }
+.mo_oauth_hov_btn_salesforce{color:#1ab7ea;background: #FFFFFF;}.mo_oauth_hov_btn_salesforce:hover{background:#1ab7ea;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_ping{background:#B8232F;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_ping{color:#B8232F;background: #FFFFFF; }
+.mo_oauth_hov_btn_ping{color:#B8232F;background: #FFFFFF;}.mo_oauth_hov_btn_ping:hover{background:#B8232F;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_invisioncommunity{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_invisioncommunity{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_invisioncommunity{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_invisioncommunity:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_clever{background:#4260F7;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_clever{color:#4260F7;background: #FFFFFF; }
+.mo_oauth_hov_btn_clever{color:#4260F7;background: #FFFFFF;}.mo_oauth_hov_btn_clever:hover{background:#4260F7;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_classlink{background:#26ABCD;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_classlink{color:#26ABCD;background: #FFFFFF; }
+.mo_oauth_hov_btn_classlink{color:#26ABCD;background: #FFFFFF;}.mo_oauth_hov_btn_classlink:hover{background:#26ABCD;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_auth0{background:#EC531F;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_auth0{color:#EC531F;background: #FFFFFF; }
+.mo_oauth_hov_btn_auth0{color:#EC531F;background: #FFFFFF;}.mo_oauth_hov_btn_auth0:hover{background:#EC531F;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_canvas{background:#E03C27;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_canvas{color:#E03C27;background: #FFFFFF; }
+.mo_oauth_hov_btn_canvas{color:#E03C27;background: #FFFFFF;}.mo_oauth_hov_btn_canvas:hover{background:#E03C27;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_frejaeid{background:#4D009A;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_frejaeid{color:#4D009A;background: #FFFFFF; }
+.mo_oauth_hov_btn_frejaeid{color:#4D009A;background: #FFFFFF;}.mo_oauth_hov_btn_frejaeid:hover{background:#4D009A;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_idaptive{background:#004E9B;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_idaptive{color:#004E9B;background: #FFFFFF; }
+.mo_oauth_hov_btn_idaptive{color:#004E9B;background: #FFFFFF;}.mo_oauth_hov_btn_idaptive:hover{background:#004E9B;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_ibmappid{background:#379BD2;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_ibmappid{color:#379BD2;background: #FFFFFF; }
+.mo_oauth_hov_btn_ibmappid{color:#379BD2;background: #FFFFFF;}.mo_oauth_hov_btn_ibmappid:hover{background:#379BD2;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_servicenow{background:#032D42;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_servicenow{color:#032D42;background: #FFFFFF; }
+.mo_oauth_hov_btn_servicenow{color:#032D42;background: #FFFFFF;}.mo_oauth_hov_btn_servicenow:hover{background:#032D42;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_blizzard{background:#032D42;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_blizzard{color:#032D42;background: #FFFFFF; }
+.mo_oauth_hov_btn_blizzard{color:#032D42;background: #FFFFFF;}.mo_oauth_hov_btn_blizzard:hover{background:#032D42;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_intuit{background:#0079CB;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_intuit{color:#0079CB;background: #FFFFFF; }
+.mo_oauth_hov_btn_intuit{color:#0079CB;background: #FFFFFF;}.mo_oauth_hov_btn_intuit:hover{background:#0079CB;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_vatsim{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_vatsim{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_vatsim{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_vatsim:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_coil{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_coil{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_coil{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_coil:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_did{background:#395258;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_did{color:#395258;background: #FFFFFF; }
+.mo_oauth_hov_btn_did{color:#395258;background: #FFFFFF;}.mo_oauth_hov_btn_did:hover{background:#395258;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_timezynk{background:#F47529;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_timezynk{color:#F47529;background: #FFFFFF; }
+.mo_oauth_hov_btn_timezynk{color:#F47529;background: #FFFFFF;}.mo_oauth_hov_btn_timezynk:hover{background:#F47529;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_diaspora{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_diaspora{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_diaspora{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_diaspora:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_orcid{background:#A6CE39;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_orcid{color:#A6CE39;background: #FFFFFF; }
+.mo_oauth_hov_btn_orcid{color:#A6CE39;background: #FFFFFF;}.mo_oauth_hov_btn_orcid:hover{background:#A6CE39;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_connect2id{background:#B2C901;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_connect2id{color:#B2C901;background: #FFFFFF; }
+.mo_oauth_hov_btn_connect2id{color:#B2C901;background: #FFFFFF;}.mo_oauth_hov_btn_connect2id:hover{background:#B2C901;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_wildapricot{background:#81B839;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_wildapricot{color:#81B839;background: #FFFFFF; }
+.mo_oauth_hov_btn_wildapricot{color:#81B839;background: #FFFFFF;}.mo_oauth_hov_btn_wildapricot:hover{background:#81B839;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_nextcloud{background:#007EC3;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_nextcloud{color:#007EC3;background: #FFFFFF; }
+.mo_oauth_hov_btn_nextcloud{color:#007EC3;background: #FFFFFF;}.mo_oauth_hov_btn_nextcloud:hover{background:#007EC3;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_laravel{background:#EB4D43;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_laravel{color:#EB4D43;background: #FFFFFF; }
+.mo_oauth_hov_btn_laravel{color:#EB4D43;background: #FFFFFF;}.mo_oauth_hov_btn_laravel:hover{background:#EB4D43;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_zendesk{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_zendesk{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_zendesk{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_zendesk:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_autodesk{background:#0D57AE;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_autodesk{color:#0D57AE;background: #FFFFFF; }
+.mo_oauth_hov_btn_autodesk{color:#0D57AE;background: #FFFFFF;}.mo_oauth_hov_btn_autodesk:hover{background:#0D57AE;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_dailymotion{background:#00C7F6;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_dailymotion{color:#00C7F6;background: #FFFFFF; }
+.mo_oauth_hov_btn_dailymotion{color:#00C7F6;background: #FFFFFF;}.mo_oauth_hov_btn_dailymotion:hover{background:#00C7F6;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_eveonlinenew{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_eveonlinenew{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_eveonlinenew{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_eveonlinenew:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_keycloak{background:#000000;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_keycloak{color:#000000;background: #FFFFFF; }
+.mo_oauth_hov_btn_keycloak{color:#000000;background: #FFFFFF;}.mo_oauth_hov_btn_keycloak:hover{background:#000000;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_invision{background:#23456C;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_invision{color:#23456C;background: #FFFFFF; }
+.mo_oauth_hov_btn_invision{color:#23456C;background: #FFFFFF;}.mo_oauth_hov_btn_invision:hover{background:#23456C;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_okta{background:#002876;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_okta{color:#002876;background: #FFFFFF; }
+.mo_oauth_hov_btn_okta{color:#002876;background: #FFFFFF;}.mo_oauth_hov_btn_okta:hover{background:#002876;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_gluu{background:#059B5F;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_gluu{color:#059B5F;background: #FFFFFF; }
+.mo_oauth_hov_btn_gluu{color:#059B5F;background: #FFFFFF;}.mo_oauth_hov_btn_gluu:hover{background:#059B5F;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_strava{background:#F44A02;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_strava{color:#F44A02;background: #FFFFFF; }
+.mo_oauth_hov_btn_strava{color:#F44A02;background: #FFFFFF;}.mo_oauth_hov_btn_strava:hover{background:#F44A02;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_fitbit{background:#00ACB6;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_fitbit{color:#00ACB6;background: #FFFFFF; }
+.mo_oauth_hov_btn_fitbit{color:#00ACB6;background: #FFFFFF;}.mo_oauth_hov_btn_fitbit:hover{background:#00ACB6;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_box{background:#0061D4;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_box{color:#0061D4;background: #FFFFFF; }
+.mo_oauth_hov_btn_box{color:#0061D4;background: #FFFFFF;}.mo_oauth_hov_btn_box:hover{background:#0061D4;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_swissrx{background:#D82725;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_swissrx{color:#D82725;background: #FFFFFF; }
+.mo_oauth_hov_btn_swissrx{color:#D82725;background: #FFFFFF;}.mo_oauth_hov_btn_swissrx:hover{background:#D82725;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_miniorange{background:#008ec2;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_miniorange{color:#008ec2;background: #FFFFFF; }
+.mo_oauth_hov_btn_miniorange{color:#008ec2;background: #FFFFFF;}.mo_oauth_hov_btn_miniorange:hover{background:#008ec2;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_oauth1{background:#008ec2;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_oauth1{color:#008ec2;background: #FFFFFF; }
+.mo_oauth_hov_btn_oauth1{color:#008ec2;background: #FFFFFF;}.mo_oauth_hov_btn_oauth1:hover{background:#008ec2;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_other{background:#008ec2;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_other{color:#008ec2;background: #FFFFFF; }
+.mo_oauth_hov_btn_other{color:#008ec2;background: #FFFFFF;}.mo_oauth_hov_btn_other:hover{background:#008ec2;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_openidconnect{background:#008ec2;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_openidconnect{color:#008ec2;background: #FFFFFF; }
+.mo_oauth_hov_btn_openidconnect{color:#008ec2;background: #FFFFFF;}.mo_oauth_hov_btn_openidconnect:hover{background:#008ec2;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_windowslive{background:#c5d331f0;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_windowslive{color:#c5d331f0;background: #FFFFFF; }
+.mo_oauth_hov_btn_windowslive{color:#c5d331f0;background: #FFFFFF;}.mo_oauth_hov_btn_windowslive:hover{background:#c5d331f0;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_imisasi{background:#147c4fc7;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_imisasi{color:#147c4fc7;background: #FFFFFF; }
+.mo_oauth_hov_btn_imisasi{color:#147c4fc7;background: #FFFFFF;}.mo_oauth_hov_btn_imisasi:hover{background:#147c4fc7;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_minecraft{background:#51806bb8;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_minecraft{color:#51806bb8;background: #FFFFFF; }
+.mo_oauth_hov_btn_minecraft{color:#51806bb8;background: #FFFFFF;}.mo_oauth_hov_btn_minecraft:hover{background:#51806bb8;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_drupal{background:#9292d7a6;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_drupal{color:#9292d7a6;background: #FFFFFF; }
+.mo_oauth_hov_btn_drupal{color:#9292d7a6;background: #FFFFFF;}.mo_oauth_hov_btn_drupal:hover{background:#9292d7a6;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_shopify{background:#c6d937d1;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_shopify{color:#c6d937d1;background: #FFFFFF; }
+.mo_oauth_hov_btn_shopify{color:#c6d937d1;background: #FFFFFF;}.mo_oauth_hov_btn_shopify:hover{background:#c6d937d1;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_microsoftteams{background:#2928c0ab;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_microsoftteams{color:#2928c0ab;background: #FFFFFF; }
+.mo_oauth_hov_btn_microsoftteams{color:#2928c0ab;background: #FFFFFF;}.mo_oauth_hov_btn_microsoftteams:hover{background:#2928c0ab;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_hubspot{background:#1c1c4fb8;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_hubspot{color:#1c1c4fb8;background: #FFFFFF; }
+.mo_oauth_hov_btn_hubspot{color:#1c1c4fb8;background: #FFFFFF;}.mo_oauth_hov_btn_hubspot:hover{background:#1c1c4fb8;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_joomla{background:#ac592bb8;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_joomla{color:#ac592bb8;background: #FFFFFF; }
+.mo_oauth_hov_btn_joomla{color:#ac592bb8;background: #FFFFFF;}.mo_oauth_hov_btn_joomla:hover{background:#ac592bb8;color: #FFFFFF;transition: .2s}
+
+.mo_oauth_def_btn_imiscsi{background:#349d9bc4;color: #FFFFFF !important; border: 1px solid; }
+.mo_oauth_white_btn_imiscsi{color:#349d9bc4;background: #FFFFFF; }
+.mo_oauth_hov_btn_imiscsi{color:#349d9bc4;background: #FFFFFF;}.mo_oauth_hov_btn_imiscsi:hover{background:#349d9bc4;color: #FFFFFF;transition: .2s}
