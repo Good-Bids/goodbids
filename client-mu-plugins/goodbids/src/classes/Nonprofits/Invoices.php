@@ -492,6 +492,7 @@ class Invoices {
 	public function generate( int $auction_id ): void {
 		// Bail early if invoice already exists.
 		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
 			return;
 		}
 
@@ -520,8 +521,12 @@ class Invoices {
 		}
 
 		// This initializes the invoice.
-		if ( ! $this->get_invoice( $invoice_id, $auction_id ) ) {
+		$invoice = $this->get_invoice( $invoice_id, $auction_id );
+		if ( ! $invoice ) {
 			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
+			return;
 		}
+
+		$stripe_invoice = $this->stripe->create_invoice( $invoice_id );
 	}
 }
