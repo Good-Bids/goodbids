@@ -31,8 +31,17 @@ class Invoices {
 
 	/**
 	 * @since 1.0.0
+	 * @var ?Stripe
+	 */
+	public ?Stripe $stripe = null;
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Initialize Submodules.
+		$this->stripe = new Stripe();
+
 		// Disable Invoices on Main Site.
 		if ( is_main_site() ) {
 			return;
@@ -57,7 +66,7 @@ class Invoices {
 		$this->add_admin_columns();
 
 		// Generate Invoice on Auction Close.
-		$this->maybe_generate_invoice();
+		$this->auto_generate();
 	}
 
 	/**
@@ -210,7 +219,7 @@ class Invoices {
 		add_filter(
 			'user_has_cap',
 			function ( array $all_caps, array $caps ): array {
-				if ( is_super_admin() ) {
+				if ( is_super_admin() || ! function_exists( 'get_current_screen' ) ) {
 					return $all_caps;
 				}
 
@@ -458,15 +467,10 @@ class Invoices {
 	 *
 	 * @return void
 	 */
-	private function maybe_generate_invoice(): void {
+	private function auto_generate(): void {
 		add_action(
 			'goodbids_auction_close',
 			function ( int $auction_id ): void {
-				// Bail early if invoice already exists.
-				if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
-					return;
-				}
-
 				$this->generate( $auction_id );
 			}
 		);
@@ -482,6 +486,11 @@ class Invoices {
 	 * @return void
 	 */
 	public function generate( int $auction_id ): void {
+		// Bail early if invoice already exists.
+		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+			return;
+		}
+
 		// Generate the Invoice.
 		$invoice_id = wp_insert_post(
 			[
@@ -506,6 +515,7 @@ class Invoices {
 			return;
 		}
 
+		// This initializes the invoice.
 		if ( ! $this->get_invoice( $invoice_id, $auction_id ) ) {
 			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
 		}
