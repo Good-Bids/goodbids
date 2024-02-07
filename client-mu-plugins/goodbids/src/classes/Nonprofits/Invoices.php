@@ -342,6 +342,10 @@ class Invoices {
 		add_action(
 			'edit_form_before_permalink',
 			function (): void {
+				if ( ! function_exists( 'get_current_screen' ) ) {
+					return;
+				}
+
 				$screen = get_current_screen();
 
 				if ( ! $screen || 'post' !== $screen->base || $this->get_post_type() !== $screen->post_type ) {
