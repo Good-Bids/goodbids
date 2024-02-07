@@ -48,7 +48,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 			<?php
 			foreach ( $goodbids_orders as $goodbids_order ) {
 				goodbids()->sites->swap(
-					function () use ( $goodbids_order, $wp_button_class ) {
+					function () use ( $goodbids_order ) {
 						$order = wc_get_order( $goodbids_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 						?>
 						<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">

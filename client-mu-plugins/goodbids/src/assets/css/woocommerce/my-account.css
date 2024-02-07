@@ -6,4 +6,18 @@
 			@apply w-full max-w-md;
 		}
 	}
+
+	.woocommerce-account {
+		.woocommerce-MyAccount-navigation {
+			@apply w-1/4;
+
+			.woocommerce-MyAccount-navigation-link {
+				@apply py-2;
+			}
+		}
+
+		.woocommerce-MyAccount-content {
+			@apply w-3/4;
+		}
+	}
 }
