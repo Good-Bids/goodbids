@@ -508,6 +508,11 @@ class Invoices {
 			return;
 		}
 
+		if ( ! goodbids()->auctions->get_total_raised( $auction_id ) ) {
+			Log::warning( 'No funds were raised for Auction.', compact( 'auction_id' ) );
+			return;
+		}
+
 		// Generate the Invoice.
 		$invoice_id = wp_insert_post(
 			[
@@ -534,11 +539,16 @@ class Invoices {
 
 		// This initializes the invoice.
 		$invoice = $this->get_invoice( $invoice_id, $auction_id );
+
 		if ( ! $invoice ) {
 			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
 			return;
 		}
 
-		$stripe_invoice = $this->stripe->create_invoice( $invoice_id );
+		$this->stripe->create_invoice( $invoice );
+
+		if ( ! $invoice->get_stripe_invoice_id() ) {
+			Log::error( 'There was a problem creating the Stripe Invoice.', compact( 'auction_id', 'invoice' ) );
+		}
 	}
 }
