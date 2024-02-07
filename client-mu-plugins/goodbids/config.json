@@ -41,6 +41,9 @@
   "blocks": {
     "all-auctions": {
       "auctions-per-page": 9
+    },
+    "watch-auction": {
+      "post-types": [ "gb-auction" ]
     }
   }
 }
