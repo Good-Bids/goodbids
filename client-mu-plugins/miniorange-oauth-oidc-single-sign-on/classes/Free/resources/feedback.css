@@ -1,0 +1,127 @@
+/*Included for the feedback form*/
+.mo_modal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	padding-top: 100px;
+	left: 100px;
+	top: 0;
+	margin-left:220px;
+	width: 50%;
+	height: 100%;
+}
+.mo_modal-content {
+	background-color: #fefefe;
+	margin: auto;
+	padding: 20px;
+	border: 1px solid #cccccc;
+    width: 55%;
+    transition: 0.5s ease-in-out all;
+}
+
+.mo_modal-content:hover {
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.mo_close {
+	color: #aaaaaa;
+	float: right;
+	font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@-webkit-keyframes mo_fadein {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes mo_fadein {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@-webkit-keyframes mo_fadeout {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+@keyframes mo_fadeout {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+.modal-header {
+	padding: 15px;
+	border-bottom: 1px solid #e5e5e5;
+}
+.modal-header .close {
+	margin-top: -2px;
+}
+.modal-title {
+	margin: 0;
+	line-height: 1.42857143;
+	font-size: large;
+}
+.modal-body {
+	position: relative;
+	padding: 15px;
+}
+.modal-dialog {
+	position: relative;
+	width: auto;
+	margin: 10px;
+}
+.modal.fade .modal-dialog {
+	-webkit-transform: translate(0, -25%);
+	-ms-transform: translate(0, -25%);
+	-o-transform: translate(0, -25%);
+	transform: translate(0, -25%);
+	-webkit-transition: -webkit-transform 0.3s ease-out;
+	-o-transition: -o-transform 0.3s ease-out;
+	transition: transform 0.3s ease-out;
+}
+.modal.in .modal-dialog {
+	-webkit-transform: translate(0, 0);
+	-ms-transform: translate(0, 0);
+	-o-transform: translate(0, 0);
+	transform: translate(0, 0);
+}
+.mo_modal-footer {
+	padding: 15px;
+	text-align: right;
+	border-top: 1px solid #e5e5e5;
+}
+.mo_modal-footer .btn + .btn {
+	margin-left: 5px;
+	margin-bottom: 0;
+}
+.mo_modal-footer .btn-group .btn + .btn {
+	margin-left: -1px;
+}
+.mo_modal-footer .btn-block + .btn-block {
+	margin-left: 0;
+}
+.mo_modal-footer::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+.mo_close {
+	float: right;
+	font-size: 21px;
+	font-weight: bold;
+	line-height: 1;
+	color: #000000;
+	text-shadow: 0 1px 0 #212121;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+.mo_close:hover,
+.mo_close:focus {
+	color: #000000;
+	text-decoration: none;
+	cursor: pointer;
+	opacity: 0.8;
+	filter: alpha(opacity=80);
+}

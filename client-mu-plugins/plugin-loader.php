@@ -10,11 +10,19 @@
  */
 
 if ( defined( 'WPCOM_VIP_CLIENT_MU_PLUGIN_DIR' ) ) {
-	$plugin_path = WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
-	if ( file_exists( $plugin_path ) ) {
-		require_once $plugin_path;
+	// Main GoodBids plugin
+	$goodbids_plugin_path = WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/goodbids/goodbids.php';
+	if ( file_exists( $goodbids_plugin_path ) ) {
+		require_once $goodbids_plugin_path;
+	}
+
+	// Mini Orange OAuth plugin
+	$oauth_plugin_path = WPCOM_VIP_CLIENT_MU_PLUGIN_DIR . '/miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php';
+	if ( file_exists( $oauth_plugin_path ) ) {
+		require_once $oauth_plugin_path;
 	}
 }
+
 
 /**
  * The above example requires the plugin to use a specific naming structure: /plugin-name/plugin-name.php
