@@ -17,7 +17,7 @@
 	<?php else : ?>
 		<?php goodbids()->load_view( 'woocommerce/myaccount/my-auctions-header.php' ); ?>
 
-		<table class="goodbids-auctions-table woocommerce-MyAccount-auctions shop_table shop_table_responsive my_account_auctions account-auctions-table">
+		<table class="bg-base-2 goodbids-auctions-table woocommerce-MyAccount-auctions shop_table shop_table_responsive my_account_auctions account-auctions-table">
 			<thead>
 				<tr class="text-xs bg-base-3">
 					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-auction-title"><span class="nobr"><?php esc_html_e( 'Auction', 'goodbids' ); ?></span></th>
