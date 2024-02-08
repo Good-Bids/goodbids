@@ -358,7 +358,7 @@ class Auctions {
 	 */
 	public function get_all( array $query_args = [] ): WP_Query {
 		$args = [
-			'post_type'      => goodbids()->auctions->get_post_type(),
+			'post_type'      => $this->get_post_type(),
 			'post_status'    => [ 'publish' ],
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
