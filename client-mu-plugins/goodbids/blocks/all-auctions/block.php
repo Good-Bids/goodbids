@@ -341,8 +341,8 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function apply_pagination( array $auctions ): array {
 		return collect( $auctions )
-			->slice( $this->get_offset(), $this->get_auctions_per_page() )
-			->all();
+				->slice( $this->get_offset(), $this->get_auctions_per_page() )
+				->all();
 	}
 
 	/**
