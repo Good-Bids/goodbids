@@ -217,11 +217,11 @@ class Invoice {
 			return false;
 		}
 
-		// Add Invoice ID to Auction.
-		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
-
 		// Set the Auction ID.
 		$this->set_auction_id( $auction_id );
+
+		// Add Invoice ID to Auction.
+		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
 
 		// Set the invoice amount.
 		$this->set_amount();
