@@ -19,14 +19,14 @@
 
 		<table class="goodbids-auctions-table woocommerce-MyAccount-auctions shop_table shop_table_responsive my_account_auctions account-auctions-table">
 			<thead>
-				<tr>
+				<tr class="text-xs bg-base-3">
 					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-auction-title"><span class="nobr"><?php esc_html_e( 'Auction', 'goodbids' ); ?></span></th>
 					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Nonprofit', 'goodbids' ); ?></span></th>
 					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-status"><span class="nobr"><?php esc_html_e( 'Status', 'goodbids' ); ?></span></th>
-					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-bids"><span class="nobr"><?php esc_html_e( 'Bids', 'goodbids' ); ?></span></th>
-					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-donated"><span class="nobr"><?php esc_html_e( 'Donated', 'goodbids' ); ?></span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-bids"><span class="nobr"><?php esc_html_e( 'Your Bids', 'goodbids' ); ?></span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-donated"><span class="nobr"><?php esc_html_e( 'Your Donation', 'goodbids' ); ?></span></th>
 					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-high-bidder"><span class="nobr"><?php esc_html_e( 'High Bidder', 'goodbids' ); ?></span></th>
-					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-view"><span class="nobr">&nbsp;</span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-view"><span class="sr-only"><?php esc_html_e( 'Action', 'goodbids' ); ?></span></th>
 				</tr>
 			</thead>
 
@@ -45,7 +45,7 @@
 							$total_donated = collect( $bid_orders )
 								->sum( fn( $order ) => $order->get_total( 'edit' ) );
 							?>
-							<tr class="goodbids-auctions-table__row goodbids-auctions-table__row--status-<?php echo esc_attr( sanitize_title( $status ) ); ?> auction">
+							<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-auctions-table__row goodbids-auctions-table__row--status-<?php echo esc_attr( sanitize_title( $status ) ); ?> auction">
 								<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-auction-title" data-title="<?php esc_attr_e( 'Auction', 'goodbids' ); ?>">
 									<span><?php echo esc_html( get_the_title( $auction_id ) ); ?></span>
 								</td>
@@ -65,7 +65,7 @@
 									<span><?php $is_winning ? esc_html_e( 'Yes', 'goodbids' ) : esc_html_e( 'No', 'goodbids' ); ?></span>
 								</td>
 								<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-view" data-title="<?php esc_attr_e( 'View', 'goodbids' ); ?>">
-									<span><a href="<?php echo esc_url( get_permalink( $auction_id ) ); ?>"><?php esc_html_e( 'View', 'goodbids' ); ?></a></span>
+									<span><a href="<?php echo esc_url( get_permalink( $auction_id ) ); ?>" class="btn-fill-sm"><?php esc_html_e( 'View', 'goodbids' ); ?></a></span>
 								</td>
 							</tr>
 							<?php
