@@ -17,7 +17,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Customizations
-$disabled_columns = ['order-total'];
+$disabled_columns = [ 'order-total' ];
 
 // Handle pagination.
 $max_per_page  = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
