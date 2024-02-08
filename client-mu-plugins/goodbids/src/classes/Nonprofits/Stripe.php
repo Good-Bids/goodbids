@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Nonprofits\Stripe\Webhooks;
 use GoodBids\Utilities\Log;
 use stdClass;
 use WC_Stripe_API;
@@ -24,6 +25,11 @@ class Stripe {
 	 * @var string
 	 */
 	const STRIPE_CUSTOMER_ID_OPT = '_goodbids_stripe_customer_id';
+
+	/**
+	 * @var ?Webhooks
+	 */
+	private ?Webhooks $webhooks = null;
 
 	/**
 	 * @since 1.0.0
@@ -70,7 +76,8 @@ class Stripe {
 	}
 
 	/**
-	 * Initialize the Stripe gateway
+	 * Initialize the Stripe gateway.
+	 * This only happens on the main site.
 	 *
 	 * @since 1.0.0
 	 *
@@ -85,6 +92,13 @@ class Stripe {
 		if ( ! \WC_Stripe_API::get_secret_key() ) {
 			Log::warning( 'Stripe is not configured.' );
 			return;
+		}
+
+		// Initialize webhooks.
+		if ( class_exists( '\WC_Stripe_Webhook_Handler' ) ) {
+			$this->webhooks = new Webhooks();
+		} else {
+			Log::warning( 'Could not initialize Stripe Webhooks.' );
 		}
 
 		$this->initialized = true;

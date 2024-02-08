@@ -40,7 +40,19 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const PAYMENT_META_KEY = '_payment';
+	const SENT_DATE_META_KEY = '_sent_date';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const PAYMENT_DATE_META_KEY = '_payment_date';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const PAYMENT_ID_META_KEY = '_stripe_payment_id';
 
 	/**
 	 * @since 1.0.0
@@ -64,19 +76,25 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const STATUS_UNSENT = 'Unsent';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const STATUS_UNPAID = 'Unpaid';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const STATUS_PAID = 'Paid';
+	const STATUS_OVERDUE = 'Overdue';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const STATUS_OVERDUE = 'Overdue';
+	const STATUS_PAID = 'Paid';
 
 	/**
 	 * @since 1.0.0
@@ -101,6 +119,24 @@ class Invoice {
 	 * @var ?string
 	 */
 	private ?string $due_date = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $sent_date = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $payment_date = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $stripe_payment_id = null;
 
 	/**
 	 * @since 1.0.0
@@ -330,18 +366,32 @@ class Invoice {
 			return self::STATUS_OVERDUE;
 		}
 
+		if ( ! $this->is_sent() ) {
+			return self::STATUS_UNSENT;
+		}
+
 		return self::STATUS_UNPAID;
 	}
 
 	/**
-	 * Check if an Invoice is paid
+	 * Check if an Invoice has been sent
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
-	public function is_paid(): bool {
-		return boolval( get_post_meta( $this->get_id(), self::PAYMENT_META_KEY, true ) );
+	public function is_sent(): bool {
+		return boolval( $this->get_sent_date() );
+	}
+
+	/**
+	 * Mark an Invoice as Sent
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function mark_as_sent(): void {
+		$this->set_sent_date( current_datetime()->format( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
@@ -459,5 +509,145 @@ class Invoice {
 	 */
 	public function get_stripe_invoice(): ?stdClass {
 		return goodbids()->invoices->stripe->lookup_invoice( $this->get_stripe_invoice_id() );
+	}
+
+	/**
+	 * Check if an Invoice is paid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_paid(): bool {
+		return boolval( $this->get_payment_date() );
+	}
+
+	/**
+	 * Mark an Invoice as Paid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $stripe_payment_id
+	 *
+	 * @return void
+	 */
+	public function mark_as_paid( string $stripe_payment_id ): void {
+		$this->set_payment_date( current_datetime()->format( 'Y-m-d H:i:s' ) );
+		$this->set_payment_id( $stripe_payment_id );
+	}
+
+	/**
+	 * Set the Invoice Payment Date
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $payment_date
+	 *
+	 * @return bool|int
+	 */
+	public function set_payment_date( string $payment_date ): bool|int {
+		$this->payment_date = $payment_date;
+		return update_post_meta( $this->get_id(), self::PAYMENT_DATE_META_KEY, $this->payment_date );
+	}
+
+	/**
+	 * Get the Date when Invoice was Paid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $format
+	 *
+	 * @return ?string
+	 */
+	public function get_payment_date( string $format = 'n/j/Y' ): ?string {
+		if ( $this->payment_date ) {
+			return goodbids()->utilities->format_date_time( $this->payment_date, $format );
+		}
+
+		$payment_date = get_post_meta( $this->get_id(), self::PAYMENT_DATE_META_KEY, true );
+
+		if ( ! $payment_date ) {
+			return null;
+		}
+
+		$this->payment_date = $payment_date;
+
+		return goodbids()->utilities->format_date_time( $this->payment_date, $format );
+	}
+
+	/**
+	 * Set the Stripe Payment ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $stripe_payment_id
+	 *
+	 * @return bool|int
+	 */
+	public function set_payment_id( string $stripe_payment_id ): bool|int {
+		$this->stripe_payment_id = $stripe_payment_id;
+		return update_post_meta( $this->get_id(), self::PAYMENT_ID_META_KEY, $this->stripe_payment_id );
+	}
+
+	/**
+	 * Get the Stripe Payment ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_payment_id(): ?string {
+		if ( $this->stripe_payment_id ) {
+			return $this->stripe_payment_id;
+		}
+
+		$stripe_payment_id = get_post_meta( $this->get_id(), self::PAYMENT_ID_META_KEY, true );
+
+		if ( ! $stripe_payment_id ) {
+			return null;
+		}
+
+		$this->stripe_payment_id = $stripe_payment_id;
+
+		return $this->stripe_payment_id;
+	}
+
+	/**
+	 * Set the Invoice Sent Date
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $sent_date
+	 *
+	 * @return bool|int
+	 */
+	public function set_sent_date( string $sent_date ): bool|int {
+		$this->sent_date = $sent_date;
+		return update_post_meta( $this->get_id(), self::SENT_DATE_META_KEY, $this->sent_date );
+	}
+
+	/**
+	 * Get the Date when Invoice was Sent.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $format
+	 *
+	 * @return ?string
+	 */
+	public function get_sent_date( string $format = 'n/j/Y' ): ?string {
+		if ( $this->sent_date ) {
+			return goodbids()->utilities->format_date_time( $this->sent_date, $format );
+		}
+
+		$sent_date = get_post_meta( $this->get_id(), self::SENT_DATE_META_KEY, true );
+
+		if ( ! $sent_date ) {
+			return null;
+		}
+
+		$this->sent_date = $sent_date;
+
+		return goodbids()->utilities->format_date_time( $this->sent_date, $format );
 	}
 }
