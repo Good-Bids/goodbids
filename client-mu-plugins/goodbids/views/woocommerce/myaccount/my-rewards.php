@@ -33,7 +33,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 <?php if ( $has_orders ) : ?>
 	<?php goodbids()->load_view( 'woocommerce/myaccount/rewards-header.php' ); ?>
 
-	<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
+	<table class="bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 		<thead>
 			<tr class="bg-base-3">
 				<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Reward', 'goodbids' ); ?></span></th>

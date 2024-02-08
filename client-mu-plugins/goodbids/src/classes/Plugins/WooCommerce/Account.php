@@ -94,7 +94,7 @@ class Account {
 	 * @return void
 	 */
 	private function add_rewards_tab( int $current_page = 1 ): void {
-		$slug = 'rewards';
+		$slug = 'my-rewards';
 
 		add_filter(
 			'goodbids_account_' . $slug . '_args',
