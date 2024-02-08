@@ -1,4 +1,4 @@
 # Plugins
 
-* [Installing Plugins](plugins/installing.md)
-* [Activating Plugins](plugins/activating.md)
+* [Installing Plugins](installing.md)
+* [Activating Plugins](activating.md)
