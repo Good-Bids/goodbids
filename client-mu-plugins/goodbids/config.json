@@ -3,6 +3,7 @@
   "debug-mode": false,
   "active-plugins": [
     "advanced-custom-fields-pro/acf.php",
+    "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
     "woocommerce",
     "woocommerce-gateway-stripe",
     "woocommerce-services",
