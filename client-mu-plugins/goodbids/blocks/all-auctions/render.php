@@ -52,7 +52,7 @@ $auctions    = $the_block->apply_pagination( $auctions );
 				hx-select="[data-auction-grid]"
 				hx-target="[data-auction-grid]"
 				hx-indicator="[data-auctions-spinner]"
-				hx-swap="outerHTML"
+				hx-swap="outerHTML transition:true settle:0s"
 				hx-trigger="change"
 				hx-push-url="true"
 			>
@@ -68,18 +68,20 @@ $auctions    = $the_block->apply_pagination( $auctions );
 		</div>
 	</div>
 
-	<div data-auctions-spinner class="flex justify-center group">
-		<svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 animate-spin hidden group-[.htmx-request]:block" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
-	</div>
+	<div data-auctions-spinner class="relative group">
+		<div class="absolute flex justify-center w-full -translate-y-full">
+			<svg xmlns="http://www.w3.org/2000/svg" class="relative inset-0 htmx-indicator w-14 h-14 animate-spin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
+		</div>
 
-	<div data-auction-grid role="region" aria-live="polite">
-		<?php
-		goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) );
+		<div data-auction-grid role="region" aria-live="polite" class="opacity-100 group-[.htmx-request]:opacity-50 transition-opacity">
+			<?php
+			goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) );
 
-		if ( $total_pages > 1 ) :
-			echo wp_kses_post( $the_block->get_pagination( $total_pages ) );
-		endif;
-		?>
+			if ( $total_pages > 1 ) :
+				echo wp_kses_post( $the_block->get_pagination( $total_pages ) );
+			endif;
+			?>
+		</div>
 	</div>
 
 </section>
