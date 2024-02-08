@@ -415,12 +415,12 @@ class Invoices {
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
-						$new_columns['auction']   = __( 'Auction', 'goodbids' );
-						$new_columns['amount']    = __( 'Amount', 'goodbids' );
-						$new_columns['stripe_id'] = __( 'Invoice ID', 'goodbids' );
-						$new_columns['status']    = __( 'Status', 'goodbids' );
-						$new_columns['pay']       = __( 'Pay', 'goodbids' );
-						$new_columns['due_date']  = __( 'Due Date', 'goodbids' );
+						$new_columns['auction']     = __( 'Auction', 'goodbids' );
+						$new_columns['amount']      = __( 'Amount', 'goodbids' );
+						$new_columns['invoice_num'] = __( 'Invoice #', 'goodbids' );
+						$new_columns['status']      = __( 'Status', 'goodbids' );
+						$new_columns['pay']         = __( 'Pay', 'goodbids' );
+						$new_columns['due_date']    = __( 'Due Date', 'goodbids' );
 					}
 				}
 
@@ -450,14 +450,14 @@ class Invoices {
 					);
 				} elseif ( 'amount' === $column ) {
 					echo wp_kses_post( wc_price( $invoice->get_amount() ) );
-				} elseif ( 'stripe_id' === $column ) {
-					if ( ! $invoice->get_stripe_invoice_id() ) {
-						echo '&mdash';
+				} elseif ( 'invoice_num' === $column ) {
+					if ( ! $invoice->get_stripe_invoice_number() ) {
+						echo '&mdash;';
 					}
 
 					printf(
 						'<code title="%1$s" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;display: block;">%1$s</code>',
-						esc_attr( $invoice->get_stripe_invoice_id() )
+						esc_attr( $invoice->get_stripe_invoice_number() )
 					);
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );

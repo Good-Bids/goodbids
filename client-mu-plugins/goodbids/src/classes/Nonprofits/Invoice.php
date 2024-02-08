@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Utilities\Log;
+use stdClass;
 
 /**
  * Invoice Class
@@ -46,6 +47,12 @@ class Invoice {
 	 * @var string
 	 */
 	const STRIPE_INVOICE_ID_META_KEY = '_stripe_invoice_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STRIPE_INVOICE_NUM_META_KEY = '_stripe_invoice_number';
 
 	/**
 	 * @since 1.0.0
@@ -100,6 +107,12 @@ class Invoice {
 	 * @var ?string
 	 */
 	private ?string $stripe_invoice_id = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private ?string $stripe_invoice_number = null;
 
 	/**
 	 * @since 1.0.0
@@ -368,6 +381,42 @@ class Invoice {
 	}
 
 	/**
+	 * Set the Stripe Invoice Number
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $stripe_invoice_number
+	 *
+	 * @return bool|int
+	 */
+	public function set_stripe_invoice_number( string $stripe_invoice_number ): bool|int {
+		$this->stripe_invoice_number = $stripe_invoice_number;
+		return update_post_meta( $this->get_id(), self::STRIPE_INVOICE_NUM_META_KEY, $this->stripe_invoice_number );
+	}
+
+	/**
+	 * Returns the Stripe Invoice ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_stripe_invoice_number(): ?string {
+		if ( $this->stripe_invoice_number ) {
+			return $this->stripe_invoice_number;
+		}
+
+		$stripe_invoice_number = get_post_meta( $this->get_id(), self::STRIPE_INVOICE_NUM_META_KEY, true );
+
+		if ( ! $stripe_invoice_number ) {
+			return null;
+		}
+
+		$this->stripe_invoice_number = $stripe_invoice_number;
+		return $this->stripe_invoice_number;
+	}
+
+	/**
 	 * Set the Stripe Invoice URL
 	 *
 	 * @since 1.0.0
@@ -385,7 +434,6 @@ class Invoice {
 	 * Returns the Stripe Invoice URL
 	 *
 	 * @since 1.0.0
-	 *
 	 * @return ?string
 	 */
 	public function get_stripe_invoice_url(): ?string {
@@ -401,5 +449,15 @@ class Invoice {
 
 		$this->stripe_invoice_url = $stripe_invoice_url;
 		return $this->stripe_invoice_url;
+	}
+
+	/**
+	 * Get the Stripe Invoice
+	 *
+	 * @since 1.0.0
+	 * @return ?stdClass
+	 */
+	public function get_stripe_invoice(): ?stdClass {
+		return goodbids()->invoices->stripe->lookup_invoice( $this->get_stripe_invoice_id() );
 	}
 }

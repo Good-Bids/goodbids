@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Utilities\Log;
+use stdClass;
 use WC_Stripe_API;
 
 /**
@@ -90,6 +91,30 @@ class Stripe {
 	}
 
 	/**
+	 * Sets the Invoice for use with Stripe.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param Invoice $invoice
+	 *
+	 * @return void
+	 */
+	public function set_invoice( Invoice $invoice ) {
+		$this->invoice = $invoice;
+	}
+
+	/**
+	 * Gets the Invoice for use with Stripe.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?Invoice
+	 */
+	public function get_invoice(): ?Invoice {
+		return $this->invoice;
+	}
+
+	/**
 	 * Create a Stripe Invoice
 	 *
 	 * @since 1.0.0
@@ -111,8 +136,9 @@ class Stripe {
 			}
 		}
 
-		$this->invoice = $invoice;
-		$context       = [ 'invoice' => $this->invoice ];
+		$this->set_invoice( $invoice );
+
+		$context = [ 'invoice' => $this->get_invoice() ];
 
 		// Generate the Invoice.
 		$stripe_invoice_id = $this->initialize_invoice();
@@ -123,6 +149,11 @@ class Stripe {
 
 		if ( ! $this->add_invoice_item() ) {
 			Log::error( 'Could not add item to invoice', $context );
+			return null;
+		}
+
+		if ( ! $this->finalize_invoice() ) {
+			Log::error( 'Could not finalize invoice', $context );
 			return null;
 		}
 
@@ -213,7 +244,12 @@ class Stripe {
 	 * @return ?string
 	 */
 	private function initialize_invoice(): ?string {
-		$context = [ 'invoice' => $this->invoice ];
+		if ( ! $this->get_invoice() ) {
+			Log::error( 'No Invoice found.' );
+			return null;
+		}
+
+		$context = [ 'invoice' => $this->get_invoice() ];
 
 		if ( $this->invoice->get_stripe_invoice_id() ) {
 			Log::warning( 'Stripe Invoice already exists.', $context );
@@ -241,7 +277,7 @@ class Stripe {
 				try {
 					$response = WC_Stripe_API::request( $params, 'invoices' );
 				} catch ( \WC_Stripe_Exception $e ) {
-					Log::error( 'Could not create a Stripe Invoice: ' . $e->getMessage(), $context );
+					Log::error( 'Could not create Stripe Invoice: ' . $e->getMessage(), $context );
 					return null;
 				}
 
@@ -256,7 +292,7 @@ class Stripe {
 		);
 
 		if ( ! $stripe_invoice_id ) {
-			Log::error( 'Unable to create a Stripe Invoice.', $context );
+			Log::error( 'Unable to create Stripe Invoice.', $context );
 			return false;
 		}
 
@@ -273,14 +309,19 @@ class Stripe {
 	 * @return bool
 	 */
 	private function add_invoice_item(): bool {
-		$context = [ 'invoice' => $this->invoice ];
+		if ( ! $this->get_invoice() ) {
+			Log::error( 'No Invoice found.' );
+			return false;
+		}
+
+		$context = [ 'invoice' => $this->get_invoice() ];
 
 		Log::debug( 'Creating new Stripe Invoice Item.', $context );
 
 		$params = [
 			'customer' => $this->get_customer_id(),
 			'invoice'  => $this->invoice->get_stripe_invoice_id(),
-			'amount'   => $this->invoice->get_amount(),
+			'amount'   => $this->invoice->get_amount() * 100, // Convert to cents.
 		];
 
 		$item_id = goodbids()->sites->swap(
@@ -288,7 +329,7 @@ class Stripe {
 				try {
 					$response = WC_Stripe_API::request( $params, 'invoiceitems' );
 				} catch ( \WC_Stripe_Exception $e ) {
-					Log::error( 'Could not create a Stripe Invoice Item: ' . $e->getMessage(), $context );
+					Log::error( 'Could not create Stripe Invoice Item: ' . $e->getMessage(), $context );
 					return null;
 				}
 
@@ -303,9 +344,61 @@ class Stripe {
 		);
 
 		if ( ! $item_id ) {
-			Log::error( 'Unable to create a Stripe Invoice Item.', $context );
+			Log::error( 'Unable to create Stripe Invoice Item.', $context );
 			return false;
 		}
+
+		return true;
+	}
+
+	/**
+	 * Finalize the invoice to prepare it for sending.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function finalize_invoice(): bool {
+		if ( ! $this->get_invoice() ) {
+			Log::error( 'No Invoice found.' );
+			return false;
+		}
+
+		$context           = [ 'invoice' => $this->get_invoice() ];
+		$stripe_invoice_id = $this->invoice->get_stripe_invoice_id();
+
+		if ( ! $stripe_invoice_id ) {
+			Log::error( 'Can\'t finalize Stripe Invoice. No Stripe Invoice ID found.', $context );
+			return false;
+		}
+
+		Log::debug( 'Finalizing Stripe Invoice.', $context );
+
+		$stripe_invoice = goodbids()->sites->swap(
+			function() use ( $stripe_invoice_id, $context ): ?stdClass {
+				try {
+					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/finalize', $stripe_invoice_id ) );
+				} catch ( \WC_Stripe_Exception $e ) {
+					Log::error( 'Could not finalize Stripe Invoice: ' . $e->getMessage(), $context );
+					return null;
+				}
+
+				if ( ! empty( $response->error ) ) {
+					Log::error( 'Error finalizing Stripe Invoice: ' . $response->error->message, $context );
+					return null;
+				}
+
+				return $response;
+			},
+			get_main_site_id()
+		);
+
+		if ( ! $stripe_invoice ) {
+			Log::error( 'Unable to finalize Stripe Invoice.', $context );
+			return false;
+		}
+
+		$this->invoice->set_stripe_invoice_number( $stripe_invoice->number );
 
 		return true;
 	}
@@ -318,10 +411,15 @@ class Stripe {
 	 * @return bool
 	 */
 	public function send_invoice(): bool {
-		$context    = [ 'invoice' => $this->invoice ];
-		$invoice_id = $this->invoice->get_stripe_invoice_id();
+		if ( ! $this->get_invoice() ) {
+			Log::error( 'No Invoice found.' );
+			return false;
+		}
 
-		if ( ! $invoice_id ) {
+		$context           = [ 'invoice' => $this->get_invoice() ];
+		$stripe_invoice_id = $this->invoice->get_stripe_invoice_id();
+
+		if ( ! $stripe_invoice_id ) {
 			Log::error( 'Can\'t send Stripe Invoice. No Stripe Invoice ID found.', $context );
 			return false;
 		}
@@ -329,11 +427,11 @@ class Stripe {
 		Log::debug( 'Sending Stripe Invoice.', $context );
 
 		$invoice_url = goodbids()->sites->swap(
-			function() use ( $invoice_id, $context ): ?string {
+			function() use ( $stripe_invoice_id, $context ): ?string {
 				try {
-					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/send', $invoice_id ) );
+					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/send', $stripe_invoice_id ) );
 				} catch ( \WC_Stripe_Exception $e ) {
-					Log::error( 'Could not send a Stripe Invoice: ' . $e->getMessage(), $context );
+					Log::error( 'Could not send Stripe Invoice: ' . $e->getMessage(), $context );
 					return null;
 				}
 
@@ -355,5 +453,77 @@ class Stripe {
 		$this->invoice->set_stripe_invoice_url( $invoice_url );
 
 		return true;
+	}
+
+	/**
+	 * Get all Stripe Invoices
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_invoices(): array {
+		$stripe_invoices = goodbids()->sites->swap(
+			function() {
+				try {
+					$response = WC_Stripe_API::request( [], 'invoices', 'GET' );
+				} catch ( \WC_Stripe_Exception $e ) {
+					Log::error( 'Could not get Stripe Invoices: ' . $e->getMessage() );
+					return [];
+				}
+
+				if ( ! empty( $response->error ) ) {
+					Log::error( 'Error getting Stripe Invoices: ' . $response->error->message );
+					return [];
+				}
+
+				return $response->data;
+			},
+			get_main_site_id()
+		);
+
+		if ( ! $stripe_invoices ) {
+			Log::error( 'Unable to get Stripe Invoices.' );
+			return [];
+		}
+
+		return $stripe_invoices;
+	}
+
+	/**
+	 * Look up a Stripe Invoice by ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $stripe_invoice_id
+	 *
+	 * @return ?stdClass
+	 */
+	public function lookup_invoice( string $stripe_invoice_id ): ?stdClass {
+		$stripe_invoice = goodbids()->sites->swap(
+			function() use ( $stripe_invoice_id ): ?stdClass {
+				try {
+					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s', $stripe_invoice_id ), 'GET' );
+				} catch ( \WC_Stripe_Exception $e ) {
+					Log::error( 'Could not lookup Stripe Invoice: ' . $e->getMessage(), compact( 'stripe_invoice_id' ) );
+					return null;
+				}
+
+				if ( ! empty( $response->error ) ) {
+					Log::error( 'Error looking up Stripe Invoice: ' . $response->error->message, compact( 'stripe_invoice_id' ) );
+					return null;
+				}
+
+				return $response;
+			},
+			get_main_site_id()
+		);
+
+		if ( ! $stripe_invoice ) {
+			Log::error( 'Unable to lookup Stripe Invoice.', compact( 'stripe_invoice_id' ) );
+			return null;
+		}
+
+		return $stripe_invoice;
 	}
 }
