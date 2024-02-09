@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Utilities\Log;
+use WP_Query;
 
 /**
  * Invoices Class
@@ -390,6 +391,26 @@ class Invoices {
 		}
 
 		return new Invoice( $post_id, $auction_id );
+	}
+
+	/**
+	 * Get All Invoice IDs
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WP_Query
+	 */
+	public function get_all_ids(): WP_Query {
+		return new WP_Query(
+			[
+				'post_type'      => $this->get_post_type(),
+				'posts_per_page' => -1,
+				'post_status'    => [ 'publish', 'private' ],
+				'order'          => 'ASC',
+				'orderby'        => 'date',
+				'fields'         => 'ids',
+			]
+		);
 	}
 
 	/**
