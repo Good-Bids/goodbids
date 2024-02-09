@@ -427,11 +427,6 @@ class Invoices {
 				$new_columns = [];
 
 				foreach ( $columns as $column => $label ) {
-					// Customize the Date column label.
-					if ( 'date' === $column ) {
-						$label = __( 'Date Created', 'goodbids' );
-					}
-
 					$new_columns[ $column ] = $label;
 
 					// Insert Custom Columns after the Title column.
@@ -440,10 +435,12 @@ class Invoices {
 						$new_columns['amount']      = __( 'Amount', 'goodbids' );
 						$new_columns['invoice_num'] = __( 'Invoice #', 'goodbids' );
 						$new_columns['status']      = __( 'Status', 'goodbids' );
-						$new_columns['payment']     = __( 'Payment', 'goodbids' );
 						$new_columns['due_date']    = __( 'Due Date', 'goodbids' );
 					}
 				}
+
+				// Insert Payment Column last.
+				$new_columns['payment'] = __( 'Payment', 'goodbids' );
 
 				return $new_columns;
 			}
