@@ -654,8 +654,8 @@ class WooCommerce {
 			function () {
 				if ( ! is_user_logged_in() ) {
 					printf(
-						'<div class="mo-oauth-login"><p class="font-extrabold">%s</p>%s</div>',
-						esc_html__( 'Social Login', 'goodbids' ),
+						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full font-extrabold">%s</p>%s</div>',
+						esc_html__( 'Or login with one of these providers', 'goodbids' ),
 						do_shortcode( '[mo_oauth_login]' ),
 					);
 				}
