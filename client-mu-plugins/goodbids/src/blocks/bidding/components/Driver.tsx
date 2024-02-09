@@ -11,6 +11,7 @@ import { Fetcher } from './fetcher';
 import { useBiddingState } from '../store';
 import { SocketError } from './socket-error';
 import { FreeBidsPromo } from './free-bids-promo';
+import { motion } from 'framer-motion';
 
 type DriverProps = {
 	auctionId: number;
@@ -22,11 +23,15 @@ export function Driver({ auctionId }: DriverProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<div className="flex flex-col w-full gap-6 text-md">
+			<motion.div
+				layout
+				transition={{ duration: 0.2 }}
+				className="flex flex-col w-full gap-6 text-md"
+			>
+				<Metrics />
 				<FreeBidsPromo />
 				<Fetcher auctionId={auctionId}>
 					{fetchMode === 'socket' && <Socket auctionId={auctionId} />}
-					<Metrics />
 					<CountdownTimer />
 					<BidButton />
 					<FreeBidButton />
@@ -34,7 +39,7 @@ export function Driver({ auctionId }: DriverProps) {
 					<SocketError />
 					<div />
 				</Fetcher>
-			</div>
+			</motion.div>
 		</QueryClientProvider>
 	);
 }
