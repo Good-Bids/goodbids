@@ -75,15 +75,17 @@ class Dashboard {
 					[ $this, 'invoices_page' ]
 				);
 
-				// Logs Page
-				add_submenu_page(
-					'goodbids',
-					esc_html__( 'Logs', 'goodbids' ),
-					esc_html__( 'Logs', 'goodbids' ),
-					'manage_network',
-					Logs::PAGE_SLUG,
-					[ $this, 'logs_page' ]
-				);
+				if ( goodbids()->get_config( 'advanced.logging' ) ) {
+					// Logs Page
+					add_submenu_page(
+						'goodbids',
+						esc_html__( 'Logs', 'goodbids' ),
+						esc_html__( 'Logs', 'goodbids' ),
+						'manage_network',
+						Logs::PAGE_SLUG,
+						[ $this, 'logs_page' ]
+					);
+				}
 			}
 		);
 	}

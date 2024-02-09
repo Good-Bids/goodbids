@@ -11,6 +11,7 @@ namespace GoodBids\Network;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use GoodBids\Utilities\Log;
+use Illuminate\Support\Collection;
 
 /**
  * Network Admin Logs Class
@@ -34,6 +35,19 @@ class Logs {
 	 * @var string
 	 */
 	const DOWNLOAD_SLUG = 'gb-log';
+
+	/**
+	 * Query string parameter for pagination
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const PAGINATION_PARAM = 'gb-page';
+
+	/**
+	 * @var int
+	 */
+	private int $total_files = 0;
 
 	/**
 	 * @since 1.0.0
@@ -70,13 +84,58 @@ class Logs {
 			$logs[ $hash ] = Log::get_logs_dir() . $file_name;
 		}
 
-		return collect( $logs )
+		$this->total_files = count( $logs );
+
+		// Collect and Sort.
+		$collection = collect( $logs )
 			->sort(
 				function ( $file_path ) {
 					return filemtime( $file_path );
 				}
-			)
+			);
+
+		return $this->apply_pagination( $collection );
+	}
+
+	/**
+	 * Get Current Page
+	 *
+	 * @since 1.0.0
+	 * @return int
+	 */
+	public function get_current_page(): int {
+		return ! empty( $_GET[ self::PAGINATION_PARAM ] ) ? intval( sanitize_text_field( $_GET[ self::PAGINATION_PARAM ] ) ) : 1; // phpcs:ignore
+	}
+
+	/**
+	 * Apply pagination to logs collection.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param Collection $collection
+	 *
+	 * @return array
+	 */
+	private function apply_pagination( Collection $collection ): array {
+		$per_page = goodbids()->get_config( 'network.logs.per-page' );
+		$current  = $this->get_current_page();
+		$offset   = ( $current - 1 ) * $per_page;
+
+		return $collection
+			->slice( $offset, $per_page )
 			->all();
+	}
+
+	/**
+	 * Get total pages of logs.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_total_pages(): int {
+		$per_page = goodbids()->get_config( 'network.logs.per-page' );
+		return ceil( $this->total_files / $per_page );
 	}
 
 	/**

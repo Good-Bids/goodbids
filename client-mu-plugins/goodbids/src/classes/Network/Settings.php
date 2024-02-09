@@ -8,6 +8,8 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Utilities\Log;
+
 /**
  * Network Admin Settings Class
  *
@@ -60,6 +62,9 @@ class Settings {
 
 		// Maybe save settings.
 		$this->maybe_save_settings();
+
+		// Override the Config file values.
+		$this->override_config();
 	}
 
 	/**
@@ -74,7 +79,7 @@ class Settings {
 			'environment' => [
 				'label'       => __( 'Environment', 'goodbids' ),
 				'type'        => 'select',
-				'default'     => 'staging',
+				'default'     => goodbids()->get_config( 'auctioneer.environment', false ),
 				'required'    => true,
 				'section'     => 'auctioneer',
 				'options'     => [
@@ -92,6 +97,18 @@ class Settings {
 					],
 				],
 			],
+			'logging' => [
+				'label'    => __( 'Logging', 'goodbids' ),
+				'type'     => 'toggle',
+				'default'  => goodbids()->get_config( 'advanced.logging', false ),
+				'section'  => 'advanced',
+			],
+			'debug-mode' => [
+				'label'    => __( 'Debug Mode', 'goodbids' ),
+				'type'     => 'toggle',
+				'default'  => goodbids()->get_config( 'advanced.debug-mode', false ),
+				'section'  => 'advanced',
+			],
 		];
 
 		add_action(
@@ -102,6 +119,13 @@ class Settings {
 				add_settings_section(
 					'auctioneer',
 					__( 'Auctioneer', 'goodbids' ),
+					'__return_empty_string',
+					self::PAGE_SLUG
+				);
+
+				add_settings_section(
+					'advanced',
+					__( 'Advanced', 'goodbids' ),
 					'__return_empty_string',
 					self::PAGE_SLUG
 				);
@@ -134,6 +158,33 @@ class Settings {
 	}
 
 	/**
+	 * Checks if a config value is is overridden.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $key
+	 * @param mixed $config_value
+	 *
+	 * @return bool
+	 */
+	private function is_overridden( string $key, mixed $config_value = null ): bool {
+		$stored = $this->get_setting( $key );
+
+		if ( is_null( $config_value ) ) {
+			$config_value = goodbids()->get_config( $key, false );
+		}
+
+		$stored_has_value = $stored || '0' === $stored;
+		$stored_is_bool   = $stored_has_value && in_array( $stored, [ '1', '0' ], true );
+
+		if ( $stored_is_bool ) {
+			$stored = boolval( $stored );
+		}
+
+		return $stored_has_value && $stored !== $config_value;
+	}
+
+	/**
 	 * Handle Overridden field values.
 	 *
 	 * @since 1.0.0
@@ -144,9 +195,7 @@ class Settings {
 	 * @return array
 	 */
 	private function handle_overridden( array $setting, string $key ): array {
-		$stored = $this->get_setting( $key );
-
-		if ( $stored && $stored !== goodbids()->get_config( $key ) ) {
+		if ( $this->is_overridden( $key ) ) {
 			$setting['after'] = sprintf(
 				'<span class="dashicons dashicons-saved" style="margin-top:4px" title="%s"></span>',
 				esc_attr__( 'The config.json setting has been overridden.', 'goodbids' )
@@ -161,9 +210,11 @@ class Settings {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param bool $use_post
+	 *
 	 * @return void
 	 */
-	private function load_settings(): void {
+	private function load_settings( bool $use_post = false ): void {
 		$settings = get_site_meta( get_main_site_id(), self::SETTINGS_META_KEY, true );
 
 		if ( ! is_array( $settings ) ) {
@@ -173,10 +224,20 @@ class Settings {
 		$defaults = [];
 
 		foreach ( array_keys( $settings ) as $key ) {
-			$defaults[ $key ] = goodbids()->get_config( $key );
+			$defaults[ $key ] = goodbids()->get_config( $key, false );
 		}
 
 		$this->data = array_merge( $defaults, $settings );
+
+		if ( ! $use_post || empty( $_POST ) ) { // phpcs:ignore
+			return;
+		}
+
+		if ( ! empty( $_POST[ self::SETTINGS_META_KEY ] ) && is_array( $_POST[ self::SETTINGS_META_KEY ] ) ) { // phpcs:ignore
+			foreach ( $_POST[ self::SETTINGS_META_KEY ] as $key => $value ) { // phpcs:ignore
+				$this->data[ $key ] = sanitize_text_field( $value );
+			}
+		}
 	}
 
 	/**
@@ -189,6 +250,10 @@ class Settings {
 	 * @return mixed
 	 */
 	public function get_setting( string $key ): mixed {
+		if ( empty( $this->data ) ) {
+			$this->load_settings( true );
+		}
+
 		return $this->data[ $key ] ?? null;
 	}
 
@@ -242,6 +307,32 @@ class Settings {
 					);
 				}
 			}
+		);
+	}
+
+	/**
+	 * Override Config values with Network Admin Settings.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function override_config(): void {
+		add_filter(
+			'goodbids_config_var',
+			function ( mixed $value, string $config_key ): mixed {
+				$setting = $this->get_setting( $config_key );
+
+				if ( ! $this->is_overridden( $config_key, $value ) ) {
+					return $value;
+				}
+
+				Log::info( 'Network Admin Setting overriding Config for: ' . $config_key, compact( 'value', 'setting' ) );
+
+				return $setting;
+			},
+			10,
+			2
 		);
 	}
 }

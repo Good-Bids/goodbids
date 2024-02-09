@@ -254,13 +254,16 @@ class Core {
 	/**
 	 * Get a config value. You can use dot notation to get nested values.
 	 *
-	 * @param string $key Config Key.
+	 * @param string $config_key    Config Key.
+	 * @param bool   $apply_filters Whether to apply_filters to the value.
 	 *
 	 * @return mixed
 	 */
-	public function get_config( string $key ): mixed {
-		if ( str_contains( $key, '.' ) ) {
-			$keys  = explode( '.', $key );
+	public function get_config( string $config_key, bool $apply_filters = true ): mixed {
+		$return = $this->config[ $config_key ] ?? null;
+
+		if ( str_contains( $config_key, '.' ) ) {
+			$keys  = explode( '.', $config_key );
 			$value = $this->config;
 
 			foreach ( $keys as $key ) {
@@ -271,10 +274,14 @@ class Core {
 				$value = $value[ $key ];
 			}
 
-			return $value;
+			$return = $value;
 		}
 
-		return $this->config[ $key ] ?? null;
+		if ( ! $apply_filters ) {
+			return $return;
+		}
+
+		return apply_filters( 'goodbids_config_var', $return, $config_key );
 	}
 
 	/**

@@ -45,20 +45,23 @@ class Admin {
 	 * @return void
 	 */
 	public function render_field( string $key, array $field, string $prefix = '', array $data = [], bool $wrap = true ) : void {
-		$view_file   = 'unsupported';
 		$required    = ! empty( $field['required'] ) && true === $field['required'];
 		$placeholder = $field['placeholder'] ?? '';
 		$field_id    = $prefix ? $prefix . '-' . $key : $key;
-		$value       = ! empty( $data[ $key ] ) ? $data[ $key ] : '';
+		$value       = $data[ $key ] ?? '';
 
-		if ( ! empty( $field['default'] ) && ! $value ) {
+		if ( ! empty( $field['default'] ) && ! $value && '0' !== $value ) {
 			$value = $field['default'];
 		}
 
 		if ( in_array( $field['type'], [ 'text', 'url', 'email', 'tel', 'password', 'number' ], true ) ) {
 			$view_file = 'text';
-		} elseif ( 'select' === $field['type'] ) {
-			$view_file = 'select';
+		} else {
+			$view_file = $field['type'];
+		}
+
+		if ( ! file_exists( GOODBIDS_PLUGIN_PATH . 'views/admin/fields/' . $view_file . '.php' ) ) {
+			$view_file = 'unsupported';
 		}
 
 		goodbids()->load_view(

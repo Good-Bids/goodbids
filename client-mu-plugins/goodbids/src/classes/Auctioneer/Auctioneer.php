@@ -194,13 +194,8 @@ class Auctioneer {
 			'init',
 			function () {
 				$environment = goodbids()->get_config( 'auctioneer.environment' );
-				$setting     = goodbids()->settings->get_setting( 'auctioneer.environment' );
 
-				if ( $setting && $setting !== $environment ) {
-					Log::debug( '[Auctioneer] Setting environment from Network Admin value.', compact( 'environment', 'setting' ) );
-					$environment = $setting;
-				}
-
+				// Validate Setting.
 				if ( ! in_array( $environment, [ 'develop', 'staging', 'production' ], true ) ) {
 					return;
 				}
