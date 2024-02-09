@@ -17,6 +17,7 @@ use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
 use GoodBids\Network\Dashboard;
+use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
 use GoodBids\Nonprofits\Invoices;
@@ -73,6 +74,12 @@ class Core {
 	 * @var Settings
 	 */
 	public Settings $settings;
+
+	/**
+	 * @since 1.0.0
+	 * @var Network
+	 */
+	public Network $network;
 
 	/**
 	 * @since 1.0.0
@@ -368,6 +375,7 @@ class Core {
 				$this->patterns    = new Patterns();
 				$this->dashboard   = new Dashboard();
 				$this->settings    = new Settings();
+				$this->network     = new Network();
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
 				$this->blocks      = new Blocks();

@@ -75,6 +75,16 @@ class Log {
 	}
 
 	/**
+	 * Returns the path to the log directory with a trailing slash.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public static function get_logs_dir(): string {
+		return self::$logs_dir;
+	}
+
+	/**
 	 * Initialize Monolog.
 	 *
 	 * @since 1.0.0
@@ -87,7 +97,7 @@ class Log {
 		$formatter->ignoreEmptyContextAndExtra();
 
 		$date    = date( 'Y-m-d' ); // phpcs:ignore
-		$handler = new StreamHandler( self::$logs_dir . 'goodbids' . $date . '.log', Level::Debug );
+		$handler = new StreamHandler( self::get_logs_dir() . 'goodbids' . $date . '.log', Level::Debug );
 		$handler->setFormatter( $formatter );
 
 		self::$monolog = new Logger( 'GoodBids' );

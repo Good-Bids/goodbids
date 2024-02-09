@@ -8,8 +8,6 @@
 
 namespace GoodBids\Network;
 
-use GoodBids\Utilities\Log;
-
 /**
  * Network Admin Dashboard Class
  *
@@ -66,6 +64,26 @@ class Dashboard {
 					Settings::PAGE_SLUG,
 					[ $this, 'settings_page' ]
 				);
+
+				// Invoices Page
+				add_submenu_page(
+					'goodbids',
+					esc_html__( 'Invoices', 'goodbids' ),
+					esc_html__( 'Invoices', 'goodbids' ),
+					'manage_network',
+					Invoices::PAGE_SLUG,
+					[ $this, 'invoices_page' ]
+				);
+
+				// Logs Page
+				add_submenu_page(
+					'goodbids',
+					esc_html__( 'Logs', 'goodbids' ),
+					esc_html__( 'Logs', 'goodbids' ),
+					'manage_network',
+					Logs::PAGE_SLUG,
+					[ $this, 'logs_page' ]
+				);
 			}
 		);
 	}
@@ -90,5 +108,27 @@ class Dashboard {
 	 */
 	public function settings_page(): void {
 		require GOODBIDS_PLUGIN_PATH . 'views/network/settings.php';
+	}
+
+	/**
+	 * Network Admin Invoices Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function invoices_page(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/network/invoices.php';
+	}
+
+	/**
+	 * Network Admin Logs Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function logs_page(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/network/logs.php';
 	}
 }
