@@ -1,5 +1,6 @@
 function copyToClipboard(text, element) {
-	navigator.clipboard.writeText(text)
+	navigator.clipboard
+		.writeText(text)
 		.then(() => {
 			const original = element.textContent;
 			element.textContent = 'Copied!';
@@ -10,7 +11,9 @@ function copyToClipboard(text, element) {
 				element.textContent = original;
 			}, 3000);
 		})
-		.catch((err) => {console.log(err)});
+		.catch((err) => {
+			console.log(err);
+		});
 }
 
 document.addEventListener('DOMContentLoaded', function () {
