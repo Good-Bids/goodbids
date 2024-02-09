@@ -19,6 +19,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminSummary;
 use GoodBids\Plugins\WooCommerce\Orders;
 use WC_Product;
 use WP_Error;
@@ -445,6 +446,7 @@ class WooCommerce {
 				$email_classes['AuctionClosed']       = new AuctionClosed();
 				$email_classes['AuctionOutbid']       = new AuctionOutbid();
 				$email_classes['AuctionWatchersLive'] = new AuctionWatchersLive();
+				$email_classes['AuctionAdminSummary'] = new AuctionAdminSummary();
 
 
 				return $email_classes;
