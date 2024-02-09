@@ -33,3 +33,5 @@ export const nonClosedStatuses: AuctionStatus[] = [
 	...upcomingStatuses,
 	...liveStatuses,
 ];
+
+export const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];

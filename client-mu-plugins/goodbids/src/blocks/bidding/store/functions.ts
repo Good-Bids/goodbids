@@ -1,8 +1,9 @@
-import { START_TIME_BUFFER } from '../utils/constants';
 import { AuctionResponse } from '../utils/get-auction';
+import { getIsLastBidder } from '../utils/get-is-last-bidder';
 import { UserResponse } from '../utils/get-user';
 import { client } from '../utils/query-client';
 import { SocketMessage } from '../utils/types';
+import { StatusAndTimeRemainingType } from './timing';
 import {
 	TimingType,
 	UserType,
@@ -10,6 +11,7 @@ import {
 	BidsType,
 	FetchingType,
 	AuctionStatus,
+	BiddingActions,
 } from './types';
 
 export function handleSetUser(data: UserResponse): UserType {
@@ -17,11 +19,17 @@ export function handleSetUser(data: UserResponse): UserType {
 }
 
 export const handleSetAuctionStatus = (
-	newStatus: AuctionStatus,
+	newStatus: StatusAndTimeRemainingType,
 	currentStatus: AuctionStatus,
 ): Partial<TimingType & FetchingType> => {
-	if (newStatus !== currentStatus) {
-		if (newStatus === 'closing') {
+	// If the auction status has changed, invalidate queries and re-fetch
+	// unless the change is from initializing so that we don't immediately
+	// re-fetch the fresh auction data
+	if (
+		newStatus.auctionStatus !== currentStatus &&
+		currentStatus !== 'initializing'
+	) {
+		if (newStatus.auctionStatus === 'closing') {
 			client.invalidateQueries({
 				queryKey: ['auction'],
 			});
@@ -29,77 +37,48 @@ export const handleSetAuctionStatus = (
 			client.invalidateQueries({
 				queryKey: ['user'],
 			});
-
-			return {
-				auctionStatus: newStatus,
-				fetchMode: 'polling',
-			};
 		}
 
 		// If the auction is starting, invalidate the auction query
 		// and re-fetch it to ensure startTime hasn't changed
-		if (newStatus === 'starting' || newStatus === 'live') {
+		if (
+			newStatus.auctionStatus === 'starting' ||
+			newStatus.auctionStatus === 'live'
+		) {
 			client.invalidateQueries({
 				queryKey: ['auction'],
 			});
 		}
 	}
 
-	return {
-		auctionStatus: newStatus,
-	};
+	return newStatus;
 };
 
 export function handelSetFetchAuction(
 	data: AuctionResponse,
+	userId: UserType['userId'],
+	setInterval: BiddingActions['setInterval'],
 ): Partial<UrlsType & TimingType & BidsType & FetchingType & UserType> {
-	if (data.auctionStatus === 'upcoming') {
-		const startTime = new Date(data.startTime);
-		const bufferedStartTime = startTime.getTime() - START_TIME_BUFFER;
-		const now = new Date().getTime();
+	const startTime = new Date(data.startTime);
+	const endTime = new Date(data.endTime);
 
-		// If the auction is starting in the next minute set the auction
-		// status to starting to prevent an unnecessary extra request
-		if (now >= bufferedStartTime) {
-			return {
-				...data,
-				auctionStatus: 'starting',
-				startTime: new Date(data.startTime),
-				endTime: new Date(data.endTime),
-				initialFetchComplete: true,
-				fetchMode: 'no-socket',
-			};
-		}
+	const isLastBidder = getIsLastBidder(userId, data.lastBidder);
 
-		return {
-			...data,
-			startTime: new Date(data.startTime),
-			endTime: new Date(data.endTime),
-			initialFetchComplete: true,
-			fetchMode: 'no-socket',
-		};
-	}
-
-	if (data.auctionStatus === 'live') {
-		return {
-			...data,
-			startTime: new Date(data.startTime),
-			endTime: new Date(data.endTime),
-			initialFetchComplete: true,
-			fetchMode: 'socket',
-		};
-	}
+	setInterval(startTime, endTime);
 
 	return {
 		...data,
-		endTime: new Date(data.endTime),
+		startTime,
+		endTime,
+		isLastBidder,
 		initialFetchComplete: true,
-		fetchMode: 'no-socket',
 	};
 }
 
 export function handleSetSocketAuction(
 	message: SocketMessage,
+	userId: UserType['userId'],
+	setInterval: BiddingActions['setInterval'],
 ): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
@@ -109,10 +88,21 @@ export function handleSetSocketAuction(
 	}
 
 	if (message.type === 'update') {
+		const isLastBidder = getIsLastBidder(
+			userId,
+			message.payload.lastBidder,
+		);
+
+		const startTime = new Date(message.payload.startTime);
+		const endTime = new Date(message.payload.endTime);
+
+		setInterval(startTime, endTime);
+
 		return {
 			...message.payload,
-			startTime: new Date(message.payload.startTime),
-			endTime: new Date(message.payload.endTime),
+			startTime,
+			endTime,
+			isLastBidder,
 			hasSocketError: false,
 		};
 	}
@@ -130,20 +120,5 @@ export function handleSetSocketError(): Partial<FetchingType> {
 	return {
 		fetchMode: 'polling',
 		hasSocketError: true,
-	};
-}
-
-export function handleSetSocketMode(
-	fetchMode: FetchingType['fetchMode'],
-	override?: boolean,
-): Partial<FetchingType> {
-	if (fetchMode === 'polling' && !override) {
-		return {
-			fetchMode: 'polling',
-		};
-	}
-
-	return {
-		fetchMode: 'socket',
 	};
 }

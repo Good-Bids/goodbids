@@ -29,10 +29,10 @@ export function Driver({ auctionId }: DriverProps) {
 				className="flex flex-col w-full gap-6 text-md"
 			>
 				<Metrics />
+				<CountdownTimer />
 				<FreeBidsPromo />
 				<Fetcher auctionId={auctionId}>
 					{fetchMode === 'socket' && <Socket auctionId={auctionId} />}
-					<CountdownTimer />
 					<BidButton />
 					<FreeBidButton />
 					<Participation />

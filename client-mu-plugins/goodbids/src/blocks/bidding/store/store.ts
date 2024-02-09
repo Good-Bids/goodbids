@@ -1,26 +1,14 @@
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { create } from 'zustand';
-import { AuctionStatus, BiddingState } from './types';
-import { UserResponse } from '../utils/get-user';
+import { BiddingActions, BiddingState } from './types';
 import {
 	handelSetFetchAuction,
 	handleSetUser,
 	handleSetSocketAuction,
-	handleSetSocketMode,
 	handleSetAuctionStatus,
 	handleSetSocketError,
 } from './functions';
-import { AuctionResponse } from '../utils/get-auction';
-import { SocketMessage } from '../utils/types';
-
-type BiddingActions = {
-	setAuctionStatus: (status: AuctionStatus) => void;
-	setFetchAuction: (data: AuctionResponse) => void;
-	setSocketError: () => void;
-	setSocketAuction: (message: SocketMessage) => void;
-	setSocketMode: (override?: boolean) => void;
-	setUser: (data: UserResponse) => void;
-};
+import { handleSetInterval } from './timing';
 
 export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	socketUrl: '',
@@ -28,6 +16,8 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	bidUrl: '',
 
 	auctionStatus: 'initializing',
+	timeRemainingMs: undefined,
+	interval: undefined,
 	startTime: new Date(),
 	endTime: new Date(),
 
@@ -44,6 +34,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	userFreeBids: 0,
 	userTotalBids: 0,
 	userTotalDonated: 0,
+	isLastBidder: false,
 
 	initialFetchComplete: false,
 	fetchMode: 'no-socket',
@@ -54,7 +45,9 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setFetchAuction: (data) => {
-		set(handelSetFetchAuction(data));
+		set((state) =>
+			handelSetFetchAuction(data, state.userId, state.setInterval),
+		);
 	},
 
 	setSocketError: () => {
@@ -62,15 +55,21 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	},
 
 	setSocketAuction: (message) => {
-		set(handleSetSocketAuction(message));
-	},
-
-	setSocketMode: (override) => {
-		set((state) => handleSetSocketMode(state.fetchMode, override));
+		set((state) =>
+			handleSetSocketAuction(message, state.userId, state.setInterval),
+		);
 	},
 
 	setUser: (data) => {
 		set(handleSetUser(data));
+	},
+
+	setTimeRemaining: (timeRemainingMs) => {
+		set({ timeRemainingMs });
+	},
+
+	setInterval: (startTime, endTime) => {
+		set((state) => handleSetInterval({ ...state, startTime, endTime }));
 	},
 }));
 

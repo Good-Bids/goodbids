@@ -17,7 +17,7 @@ export function Metrics() {
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
-					className="grid grid-cols-3 gap-2 mb-4 -mt-[0.75rem]"
+					className="grid grid-cols-3 gap-2 -mt-[0.75rem]"
 				>
 					<MetricBlock type="raised" value={totalRaised} />
 					<MetricBlock

@@ -98,44 +98,19 @@ class Details extends WC_REST_Controller {
 		}
 
 		$payload_data = [
-			'auctionStatus',
 			'socketUrl',
 			'accountUrl',
 			'endTime',
+			'startTime',
+			'bidUrl',
+			'totalBids',
+			'totalRaised',
+			'currentBid',
+			'lastBid',
+			'lastBidder',
+			'freeBidsAvailable',
+			'freeBidsAllowed',
 		];
-
-		$status = strtolower( goodbids()->auctions->get_status( $auction_id ) );
-
-		if ( strtolower( Auctions::STATUS_UPCOMING ) === $status ) {
-			$payload_data[] = 'startTime';
-		} elseif ( strtolower( Auctions::STATUS_LIVE ) === $status ) {
-			$payload_data = array_merge(
-				$payload_data,
-				[
-					'startTime',
-					'bidUrl',
-					'totalBids',
-					'totalRaised',
-					'currentBid',
-					'lastBid',
-					'lastBidder',
-					'freeBidsAvailable',
-					'freeBidsAllowed',
-				]
-			);
-		} elseif ( strtolower( Auctions::STATUS_CLOSED ) === $status ) {
-			$payload_data = array_merge(
-				$payload_data,
-				[
-					'bidUrl',
-					'lastBidder',
-					'totalBids',
-					'totalRaised',
-					'currentBid',
-					'lastBid',
-				]
-			);
-		}
 
 		$data = ( new Payload( $request['id'], $payload_data ) )->get_data();
 
