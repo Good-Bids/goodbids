@@ -40,10 +40,11 @@ class Admin {
 	 * @param array  $field
 	 * @param string $prefix
 	 * @param array  $data
+	 * @param bool   $wrap
 	 *
 	 * @return void
 	 */
-	public function render_field( string $key, array $field, string $prefix = '', array $data = [] ) : void {
+	public function render_field( string $key, array $field, string $prefix = '', array $data = [], bool $wrap = true ) : void {
 		$view_file   = 'unsupported';
 		$required    = ! empty( $field['required'] ) && true === $field['required'];
 		$placeholder = $field['placeholder'] ?? '';
@@ -62,7 +63,7 @@ class Admin {
 
 		goodbids()->load_view(
 			'admin/fields/' . $view_file . '.php',
-			compact( 'key', 'field', 'prefix', 'data', 'required', 'placeholder', 'field_id', 'value' )
+			compact( 'key', 'field', 'prefix', 'data', 'required', 'placeholder', 'field_id', 'value', 'wrap' )
 		);
 	}
 }

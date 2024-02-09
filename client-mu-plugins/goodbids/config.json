@@ -21,6 +21,9 @@
       "api-key": "GOODBIDS_AUCTIONEER_API_KEY"
     }
   },
+  "auctioneer": {
+    "environment": "develop"
+  },
   "auctions": {
     "default-free-bids": 5,
     "rest-api": {

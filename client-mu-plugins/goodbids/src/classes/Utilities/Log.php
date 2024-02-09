@@ -185,11 +185,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function info( string $message, array $context = [] ): void {
+	public static function info( string $message, mixed $context = [] ): void {
 		self::log( $message, $context, Level::Info );
 	}
 
@@ -199,11 +199,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function warning( string $message, array $context = [] ): void {
+	public static function warning( string $message, mixed $context = [] ): void {
 		self::log( $message, $context, Level::Warning );
 	}
 
@@ -213,11 +213,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function error( string $message, array $context = [] ): void {
+	public static function error( string $message, mixed $context = [] ): void {
 		self::log( $message, $context, Level::Error );
 	}
 
@@ -227,11 +227,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function debug( string $message, array $context = [] ): void {
+	public static function debug( string $message, mixed $context = [] ): void {
 		self::log( $message, $context );
 	}
 
@@ -241,11 +241,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function alert( string $message, array $context = [] ): void {
+	public static function alert( string $message, mixed $context = [] ): void {
 		self::log( $message, $context, Level::Alert );
 	}
 
@@ -255,11 +255,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function critical( string $message, array $context = [] ): void {
+	public static function critical( string $message, mixed $context = [] ): void {
 		self::log( $message, $context, Level::Critical );
 	}
 
@@ -269,11 +269,11 @@ class Log {
 	 * @since 1.0.0
 	 *
 	 * @param string $message
-	 * @param array  $context
+	 * @param mixed  $context
 	 *
 	 * @return void
 	 */
-	public static function emergency( string $message, array $context = [] ): void {
+	public static function emergency( string $message, mixed $context = [] ): void {
 		self::log( $message, $context, Level::Emergency );
 	}
 
