@@ -170,6 +170,9 @@ class Auctioneer {
 		// Init Auctions Endpoint.
 		$this->auctions = new Auctions();
 
+		// Set the environment based on settings.
+		$this->set_environment();
+
 		// Create a custom session cookie readable by Auctioneer.
 		$this->create_session_cookie();
 
@@ -177,6 +180,34 @@ class Auctioneer {
 		$this->destroy_session_cookie();
 
 		$this->initialized = true;
+	}
+
+	/**
+	 * Determine which environment to use.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_environment(): void {
+		add_action(
+			'init',
+			function () {
+				$environment = goodbids()->get_config( 'auctioneer.environment' );
+				$setting     = goodbids()->settings->get_setting( 'auctioneer.environment' );
+
+				if ( $setting && $setting !== $environment ) {
+					Log::debug( '[Auctioneer] Setting environment from Network Admin value.', compact( 'environment', 'setting' ) );
+					$environment = $setting;
+				}
+
+				if ( ! in_array( $environment, [ 'develop', 'staging', 'production' ], true ) ) {
+					return;
+				}
+
+				$this->environment = $environment;
+			}
+		);
 	}
 
 	/**

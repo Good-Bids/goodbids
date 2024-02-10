@@ -16,6 +16,8 @@ use GoodBids\Blocks\Blocks;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
+use GoodBids\Network\Dashboard;
+use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
@@ -58,6 +60,18 @@ class Core {
 	 * @var ACF
 	 */
 	public ACF $acf;
+
+	/**
+	 * @since 1.0.0
+	 * @var Dashboard
+	 */
+	public Dashboard $dashboard;
+
+	/**
+	 * @since 1.0.0
+	 * @var Settings
+	 */
+	public Settings $settings;
 
 	/**
 	 * @since 1.0.0
@@ -344,6 +358,8 @@ class Core {
 				$this->auctions    = new Auctions();
 				$this->partners    = new Partners();
 				$this->patterns    = new Patterns();
+				$this->dashboard   = new Dashboard();
+				$this->settings    = new Settings();
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
 				$this->blocks      = new Blocks();
