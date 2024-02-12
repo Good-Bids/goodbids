@@ -161,7 +161,7 @@ class Log {
 		WP_Filesystem();
 
 		$date     = current_datetime()->format( 'Y-m-d' );
-		$log_file = self::get_logs_dir() . 'goodbids' . $date . '.log';
+		$log_file = self::get_logs_dir() . 'goodbids-' . $date . '.log';
 
 		if ( ! $wp_filesystem->exists( $log_file ) ) {
 			$wp_filesystem->touch( $log_file );
