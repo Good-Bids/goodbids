@@ -419,7 +419,7 @@ class Invoices {
 						$new_columns['amount']      = __( 'Amount', 'goodbids' );
 						$new_columns['invoice_num'] = __( 'Invoice #', 'goodbids' );
 						$new_columns['status']      = __( 'Status', 'goodbids' );
-						$new_columns['pay']         = __( 'Pay', 'goodbids' );
+						$new_columns['payment']     = __( 'Payment', 'goodbids' );
 						$new_columns['due_date']    = __( 'Due Date', 'goodbids' );
 					}
 				}
@@ -461,12 +461,17 @@ class Invoices {
 					);
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );
-				} elseif ( 'pay' === $column ) {
-					printf(
-						'<a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a>',
-						esc_url( $invoice->get_stripe_invoice_url() ),
-						esc_html__( 'Pay Now', 'goodbids' )
-					);
+				} elseif ( 'payment' === $column ) {
+					if ( $invoice->is_paid() ) {
+						echo esc_html__( 'Paid on', 'goodbids' ) . ' ';
+						echo esc_html( $invoice->get_payment_date() );
+					} else {
+						printf(
+							'<a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a>',
+							esc_url( $invoice->get_stripe_invoice_url() ),
+							esc_html__( 'Pay Now', 'goodbids' )
+						);
+					}
 				} elseif ( 'due_date' === $column ) {
 					echo esc_html( $invoice->get_due_date( 'n/j/Y' ) );
 				}
