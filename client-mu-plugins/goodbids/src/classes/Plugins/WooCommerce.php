@@ -547,7 +547,7 @@ class WooCommerce {
 
 				return $template;
 			},
-			10,
+			8,
 			3
 		);
 	}

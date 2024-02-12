@@ -320,15 +320,8 @@ class Account {
 		add_filter(
 			'woocommerce_order_item_get_formatted_meta_data',
 			function ( $formatted_meta ) {
-				foreach ( $formatted_meta as $key => $meta ) {
-					if ( in_array( $meta->key, array( 'bid_instance' ) ) ) {
-						unset( $formatted_meta[ $key ] );
-					}
-				}
-				return $formatted_meta;
-			},
-			10,
-			2
+				unset( $formatted_meta['bid_instance'] );
+			}
 		);
 	}
 }
