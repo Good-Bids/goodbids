@@ -299,7 +299,6 @@ class Account {
 	}
 
 
-
 	/**
 	 * Removes the "Order Again" button from the order details.
 	 *
@@ -320,7 +319,7 @@ class Account {
 	private function remove_bid_instance_from_order() {
 		add_filter(
 			'woocommerce_order_item_get_formatted_meta_data',
-			function ( $formatted_meta, $item ) {
+			function ( $formatted_meta ) {
 				foreach ( $formatted_meta as $key => $meta ) {
 					if ( in_array( $meta->key, array( 'bid_instance' ) ) ) {
 						unset( $formatted_meta[ $key ] );

@@ -34,14 +34,30 @@ if ( $show_downloads ) {
 ?>
 <section class="woocommerce-order-details">
 	<?php do_action( 'woocommerce_order_details_before_order_table', $order ); ?>
-
-	<h2 class="woocommerce-order-details__title"><?php esc_html_e( 'Donation details', 'woocommerce' ); ?></h2>
+	<h2 class="woocommerce-order-details__title">
+		<?php if ( goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) : ?>
+			<?php esc_html_e( 'Donation Details', 'woocommerce' ); ?>
+		<?php elseif ( goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) : ?>
+			<?php esc_html_e( 'Reward Claim Details', 'woocommerce' ); ?>
+		<?php else : ?>
+			<?php esc_html_e( 'Details', 'woocommerce' ); ?>
+		<?php endif; ?>
+	</h2>
 
 	<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
 
 		<thead>
 			<tr>
-				<th class="woocommerce-table__product-name product-name"><?php esc_html_e( 'Auction', 'woocommerce' ); ?></th>
+				<th class="woocommerce-table__product-name product-name">
+					<?php if ( goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) : ?>
+						<?php esc_html_e( 'Auction', 'woocommerce' ); ?>
+					<?php elseif ( goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) : ?>
+						<?php esc_html_e( 'Reward', 'woocommerce' ); ?>
+					<?php else : ?>
+						<?php esc_html_e( 'Product', 'woocommerce' ); ?>
+					<?php endif; ?>
+
+				</th>
 				<th class="woocommerce-table__product-table product-total"><?php esc_html_e( 'Total', 'woocommerce' ); ?></th>
 			</tr>
 		</thead>
