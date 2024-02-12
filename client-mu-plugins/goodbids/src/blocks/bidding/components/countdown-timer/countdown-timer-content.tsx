@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
 import { formatTimeRemaining } from './format-time-remaining';
 import { AuctionStatus } from '../../store/types';
@@ -11,7 +11,7 @@ export function CountdownTimerContent() {
 	const { auctionStatus, isLastBidder, userTotalBids } = useBiddingState();
 
 	return (
-		<AnimatePresence>
+		<>
 			{upcomingStatuses.includes(auctionStatus) && (
 				<UpcomingAndStarting />
 			)}
@@ -35,7 +35,7 @@ export function CountdownTimerContent() {
 			)}
 
 			{auctionStatus === 'closed' && <Closed />}
-		</AnimatePresence>
+		</>
 	);
 }
 

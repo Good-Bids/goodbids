@@ -83,7 +83,7 @@ export function handleSetSocketAuction(
 	if (message.type === 'not-found') {
 		return {
 			fetchMode: 'polling',
-			hasSocketError: true,
+			error: undefined,
 		};
 	}
 
@@ -103,7 +103,7 @@ export function handleSetSocketAuction(
 			startTime,
 			endTime,
 			isLastBidder,
-			hasSocketError: false,
+			error: undefined,
 		};
 	}
 
@@ -112,13 +112,19 @@ export function handleSetSocketAuction(
 		startTime: new Date(message.payload.startTime),
 		endTime: new Date(message.payload.endTime),
 		fetchMode: 'no-socket',
-		hasSocketError: false,
+		error: undefined,
 	};
 }
 
 export function handleSetSocketError(): Partial<FetchingType> {
 	return {
 		fetchMode: 'polling',
-		hasSocketError: true,
+		error: undefined,
+	};
+}
+
+export function handleSetFetchingError(): Partial<FetchingType> {
+	return {
+		error: 'fetch',
 	};
 }

@@ -1,6 +1,6 @@
 import { useBiddingState } from '../../store';
 import { Skeleton } from '../skeleton';
-import { WaveIcon } from '../wave-icon';
+import { WaveIcon } from '../icons/wave-icon';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export function FreeBidsHeading() {

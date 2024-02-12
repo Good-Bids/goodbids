@@ -22,7 +22,7 @@ export function FreeBidsContent() {
 					userId &&
 					!freeBidsAvailable && <LiveAndUser />}
 
-				{liveStatuses.includes(auctionStatus) && !userId && <Live />}
+				{auctionStatus !== 'initializing' && !userId && <NoUser />}
 			</AnimatePresence>
 		</div>
 	);
@@ -86,7 +86,7 @@ function LiveAndUser() {
 	);
 }
 
-function Live() {
+function NoUser() {
 	return (
 		<motion.p
 			key="fbp-live-user"

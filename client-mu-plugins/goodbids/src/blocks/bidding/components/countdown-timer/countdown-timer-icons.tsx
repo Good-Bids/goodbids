@@ -1,7 +1,7 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
-import { LoadingIcon } from '../loading-icon';
-import { ClockIcon } from '../clock-icon';
+import { LoadingIcon } from '../icons/loading-icon';
+import { ClockIcon } from '../icons/clock-icon';
 import { AuctionStatus } from '../../store/types';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
@@ -18,13 +18,13 @@ export function CountdownTimerIcons() {
 	const { auctionStatus } = useBiddingState();
 
 	return (
-		<AnimatePresence>
+		<>
 			{closingStatuses.includes(auctionStatus) && (
 				<ClosingAndPreclosing />
 			)}
 
 			{nonInitializingStatus.includes(auctionStatus) && <AllOther />}
-		</AnimatePresence>
+		</>
 	);
 }
 

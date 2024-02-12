@@ -3,15 +3,12 @@ import { BidButton } from './bid-button';
 import { CountdownTimer } from './countdown-timer';
 import { FreeBidButton } from './free-bid-button';
 import { Metrics } from './metrics';
-import { Participation } from './participation';
-import { Socket } from './socket';
 import { client } from '../utils/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Fetcher } from './fetcher';
-import { useBiddingState } from '../store';
-import { SocketError } from './socket-error';
 import { FreeBidsPromo } from './free-bids-promo';
-import { motion } from 'framer-motion';
+import { LayoutGroup, motion } from 'framer-motion';
+import { ParticipationNotice } from './participation-notice';
+import { DataHandler } from './data-handler';
 
 type DriverProps = {
 	auctionId: number;
@@ -19,7 +16,6 @@ type DriverProps = {
 
 export function Driver({ auctionId }: DriverProps) {
 	const [queryClient] = useState(() => client);
-	const { fetchMode } = useBiddingState();
 
 	return (
 		<QueryClientProvider client={queryClient}>
@@ -28,17 +24,16 @@ export function Driver({ auctionId }: DriverProps) {
 				transition={{ duration: 0.2 }}
 				className="flex flex-col w-full gap-6 text-md"
 			>
-				<Metrics />
-				<CountdownTimer />
-				<FreeBidsPromo />
-				<Fetcher auctionId={auctionId}>
-					{fetchMode === 'socket' && <Socket auctionId={auctionId} />}
-					<BidButton />
-					<FreeBidButton />
-					<Participation />
-					<SocketError />
-					<div />
-				</Fetcher>
+				<DataHandler auctionId={auctionId}>
+					<LayoutGroup>
+						<Metrics />
+						<CountdownTimer />
+						<BidButton />
+						<FreeBidButton />
+						<ParticipationNotice />
+						<FreeBidsPromo />
+					</LayoutGroup>
+				</DataHandler>
 			</motion.div>
 		</QueryClientProvider>
 	);

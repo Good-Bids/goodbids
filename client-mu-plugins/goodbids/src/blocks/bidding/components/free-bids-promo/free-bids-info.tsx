@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
-import { InfoIcon } from '../info-icon';
+import { InfoIcon } from '../icons/info-icon';
 import { Skeleton } from '../skeleton';
 
 export function FreeBidsInfo() {
