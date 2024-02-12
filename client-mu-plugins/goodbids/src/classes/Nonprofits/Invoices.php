@@ -31,8 +31,17 @@ class Invoices {
 
 	/**
 	 * @since 1.0.0
+	 * @var ?Stripe
+	 */
+	public ?Stripe $stripe = null;
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Initialize Submodules.
+		$this->stripe = new Stripe();
+
 		// Disable Invoices on Main Site.
 		if ( is_main_site() ) {
 			return;
@@ -57,7 +66,7 @@ class Invoices {
 		$this->add_admin_columns();
 
 		// Generate Invoice on Auction Close.
-		$this->maybe_generate_invoice();
+		$this->auto_generate();
 	}
 
 	/**
@@ -308,7 +317,7 @@ class Invoices {
 								<?php esc_html_e( 'Back to Invoices', 'goodbids' ); ?>
 							</a>
 
-							<a href="<?php echo esc_url( '#' ); ?>" class="button button-primary">
+							<a href="<?php echo esc_url( $invoice->get_stripe_invoice_url() ); ?>" class="button button-primary">
 								<?php esc_html_e( 'Pay Now', 'goodbids' ); ?>
 							</a>
 						</div>
@@ -365,7 +374,7 @@ class Invoices {
 
 	/**
 	 * Get an Invoice by ID.
-	 * Pass Auction ID to initialize the Invoice.
+	 * Pass Auction ID to initialize a new Invoice.
 	 *
 	 * @since 1.0.0
 	 *
@@ -375,6 +384,11 @@ class Invoices {
 	 * @return ?Invoice
 	 */
 	public function get_invoice( int $post_id, ?int $auction_id = null ): ?Invoice {
+		if ( null !== $auction_id && goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+			_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
+			return null;
+		}
+
 		return new Invoice( $post_id, $auction_id );
 	}
 
@@ -401,12 +415,12 @@ class Invoices {
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
-						$new_columns['auction']   = __( 'Auction', 'goodbids' );
-						$new_columns['amount']    = __( 'Amount', 'goodbids' );
-						$new_columns['stripe_id'] = __( 'Invoice ID', 'goodbids' );
-						$new_columns['status']    = __( 'Status', 'goodbids' );
-						$new_columns['pay']       = __( 'Pay', 'goodbids' );
-						$new_columns['due_date']  = __( 'Due Date', 'goodbids' );
+						$new_columns['auction']     = __( 'Auction', 'goodbids' );
+						$new_columns['amount']      = __( 'Amount', 'goodbids' );
+						$new_columns['invoice_num'] = __( 'Invoice #', 'goodbids' );
+						$new_columns['status']      = __( 'Status', 'goodbids' );
+						$new_columns['pay']         = __( 'Pay', 'goodbids' );
+						$new_columns['due_date']    = __( 'Due Date', 'goodbids' );
 					}
 				}
 
@@ -436,14 +450,21 @@ class Invoices {
 					);
 				} elseif ( 'amount' === $column ) {
 					echo wp_kses_post( wc_price( $invoice->get_amount() ) );
-				} elseif ( 'stripe_id' === $column ) {
-					echo '#TBD';
+				} elseif ( 'invoice_num' === $column ) {
+					if ( ! $invoice->get_stripe_invoice_number() ) {
+						echo '&mdash;';
+					}
+
+					printf(
+						'<code title="%1$s" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;display: block;">%1$s</code>',
+						esc_attr( $invoice->get_stripe_invoice_number() )
+					);
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );
 				} elseif ( 'pay' === $column ) {
 					printf(
-						'<a href="%s" class="button button-primary">%s</a>',
-						esc_url( '#' ),
+						'<a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a>',
+						esc_url( $invoice->get_stripe_invoice_url() ),
 						esc_html__( 'Pay Now', 'goodbids' )
 					);
 				} elseif ( 'due_date' === $column ) {
@@ -462,15 +483,10 @@ class Invoices {
 	 *
 	 * @return void
 	 */
-	private function maybe_generate_invoice(): void {
+	private function auto_generate(): void {
 		add_action(
 			'goodbids_auction_close',
 			function ( int $auction_id ): void {
-				// Bail early if invoice already exists.
-				if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
-					return;
-				}
-
 				$this->generate( $auction_id );
 			}
 		);
@@ -486,6 +502,17 @@ class Invoices {
 	 * @return void
 	 */
 	public function generate( int $auction_id ): void {
+		// Bail early if invoice already exists.
+		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
+			return;
+		}
+
+		if ( ! goodbids()->auctions->get_total_raised( $auction_id ) ) {
+			Log::warning( 'No funds were raised for Auction.', compact( 'auction_id' ) );
+			return;
+		}
+
 		// Generate the Invoice.
 		$invoice_id = wp_insert_post(
 			[
@@ -510,8 +537,18 @@ class Invoices {
 			return;
 		}
 
-		if ( ! $this->get_invoice( $invoice_id, $auction_id ) ) {
+		// This initializes the invoice.
+		$invoice = $this->get_invoice( $invoice_id, $auction_id );
+
+		if ( ! $invoice ) {
 			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
+			return;
+		}
+
+		$this->stripe->create_invoice( $invoice );
+
+		if ( ! $invoice->get_stripe_invoice_id() ) {
+			Log::error( 'There was a problem creating the Stripe Invoice.', compact( 'auction_id', 'invoice' ) );
 		}
 	}
 }

@@ -47,7 +47,7 @@
     }
   },
   "invoices": {
-    "payment-terms": "30D",
+    "payment-terms-days": 30,
     "percent": 10
   }
 }
