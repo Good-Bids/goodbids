@@ -41,9 +41,17 @@ class Log {
 	 * Logs directory.
 	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var ?string
 	 */
-	private static string $logs_dir = WPCOM_VIP_PRIVATE_DIR . '/logs/';
+	private static ?string $logs_dir = null;
+
+	/**
+	 * Log file.
+	 *
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	private static ?string $log_file = null;
 
 	/**
 	 * If Logging is Enabled.
@@ -86,10 +94,92 @@ class Log {
 	 * Returns the path to the log directory with a trailing slash.
 	 *
 	 * @since 1.0.0
-	 * @return string
+	 * @return ?string
 	 */
-	public static function get_logs_dir(): string {
+	public static function get_logs_dir(): ?string {
+		if ( null === self::$logs_dir ) {
+			if ( ! self::create_logs_dir() ) {
+				return null;
+			}
+		}
+
 		return self::$logs_dir;
+	}
+
+	/**
+	 * Attempt to create the logs directory.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private static function create_logs_dir(): bool {
+		global $wp_filesystem;
+		WP_Filesystem();
+
+		$logs_dir = WPCOM_VIP_PRIVATE_DIR . '/logs/';
+
+		if ( ! $wp_filesystem->is_dir( $logs_dir ) ) {
+			$wp_filesystem->mkdir( $logs_dir );
+		}
+
+		if ( ! $wp_filesystem->is_dir( $logs_dir ) ) {$uploads_dir = wp_get_upload_dir();
+			$logs_dir = $uploads_dir['basedir'] . '/goodbids-logs/';
+
+			if ( ! $wp_filesystem->is_dir( $logs_dir ) ) {
+				$wp_filesystem->mkdir( $logs_dir );
+			}
+		}
+
+		if ( $wp_filesystem->is_dir( $logs_dir ) && $wp_filesystem->is_writable( $logs_dir ) ) {
+			self::$logs_dir = $logs_dir;
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the path to the log file.
+	 *
+	 * @since 1.0.0.
+	 *
+	 * @return ?string
+	 */
+	public static function get_log_file(): ?string {
+		if ( null === self::$log_file ) {
+			if ( ! self::create_log_file() ) {
+				return null;
+			}
+		}
+
+		return self::$log_file;
+	}
+
+	/**
+	 * Create the log file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private static function create_log_file(): bool {
+		global $wp_filesystem;
+		WP_Filesystem();
+
+		$date     = current_datetime()->format( 'Y-m-d' );
+		$log_file = self::get_logs_dir() . 'goodbids' . $date . '.log';
+
+		if ( ! $wp_filesystem->exists( $log_file ) ) {
+			$wp_filesystem->touch( $log_file );
+
+			if ( ! $wp_filesystem->is_writable( $log_file ) ) {
+				return false;
+			}
+		}
+
+		self::$log_file = $log_file;
+		return true;
 	}
 
 	/**
@@ -100,22 +190,15 @@ class Log {
 	 * @return void
 	 */
 	private static function init_monolog(): void {
+		if ( ! self::get_log_file() ) {
+			return;
+		}
+
 		$output    = "%datetime% | %level_name% %message% %context% %extra%" . PHP_EOL;
 		$formatter = new LineFormatter( $output );
 		$formatter->ignoreEmptyContextAndExtra();
 
-		$date     = date( 'Y-m-d' ); // phpcs:ignore
-		$log_file = self::get_logs_dir() . 'goodbids' . $date . '.log';
-
-		if ( ! file_exists( $log_file ) ) {
-			$wpfs = new \WP_Filesystem_Direct( null );
-			$wpfs->touch( $log_file );
-			if ( ! $wpfs->is_writable( $log_file ) ) {
-				return;
-			}
-		}
-
-		$handler = new StreamHandler( $log_file, Level::Debug );
+		$handler = new StreamHandler( self::get_log_file(), Level::Debug );
 		$handler->setFormatter( $formatter );
 
 		self::$monolog = new Logger( 'GoodBids' );
