@@ -8,7 +8,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { FreeBidsPromo } from './free-bids-promo';
 import { LayoutGroup, motion } from 'framer-motion';
 import { ParticipationNotice } from './participation-notice';
-import { DataHandler } from './data-handler';
+import { Fetcher } from './fetcher';
+import { Socket } from './socket';
+import { SocketError } from './socket-error';
 
 type DriverProps = {
 	auctionId: number;
@@ -19,12 +21,13 @@ export function Driver({ auctionId }: DriverProps) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<motion.div
-				layout
-				transition={{ duration: 0.2 }}
-				className="flex flex-col w-full gap-6 text-md"
-			>
-				<DataHandler auctionId={auctionId}>
+			<Fetcher auctionId={auctionId}>
+				<Socket auctionId={auctionId} />
+				<motion.div
+					layout
+					transition={{ duration: 0.2 }}
+					className="flex flex-col w-full gap-6 text-md"
+				>
 					<LayoutGroup>
 						<Metrics />
 						<CountdownTimer />
@@ -32,9 +35,10 @@ export function Driver({ auctionId }: DriverProps) {
 						<FreeBidButton />
 						<ParticipationNotice />
 						<FreeBidsPromo />
+						<SocketError />
 					</LayoutGroup>
-				</DataHandler>
-			</motion.div>
+				</motion.div>
+			</Fetcher>
 		</QueryClientProvider>
 	);
 }

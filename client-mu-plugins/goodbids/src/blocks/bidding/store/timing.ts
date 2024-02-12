@@ -1,15 +1,9 @@
 import { LIVE_AND_CLOSING_DELAY, START_TIME_BUFFER } from '../utils/constants';
-import {
-	AuctionStatus,
-	BiddingActions,
-	FetchingType,
-	TimingType,
-} from './types';
+import { AuctionStatus, BiddingActions, TimingType } from './types';
 
 export type StatusAndTimeRemainingType = {
 	auctionStatus: AuctionStatus;
 	timeRemainingMs: number | undefined;
-	fetchMode: FetchingType['fetchMode'];
 };
 
 function getStatusAndTimeRemaining(
@@ -21,7 +15,6 @@ function getStatusAndTimeRemaining(
 		return {
 			auctionStatus: 'initializing',
 			timeRemainingMs: undefined,
-			fetchMode: 'no-socket',
 		};
 	}
 
@@ -36,7 +29,6 @@ function getStatusAndTimeRemaining(
 		return {
 			auctionStatus: 'starting',
 			timeRemainingMs: startTime - now,
-			fetchMode: 'no-socket',
 		};
 	}
 
@@ -44,7 +36,6 @@ function getStatusAndTimeRemaining(
 		return {
 			auctionStatus: 'upcoming',
 			timeRemainingMs: startTime - now,
-			fetchMode: 'no-socket',
 		};
 	}
 
@@ -52,7 +43,6 @@ function getStatusAndTimeRemaining(
 		return {
 			auctionStatus: 'prelive',
 			timeRemainingMs: 0,
-			fetchMode: 'socket',
 		};
 	}
 
@@ -60,7 +50,6 @@ function getStatusAndTimeRemaining(
 		return {
 			auctionStatus: 'live',
 			timeRemainingMs: endTime - now,
-			fetchMode: 'socket',
 		};
 	}
 
@@ -68,22 +57,26 @@ function getStatusAndTimeRemaining(
 		return {
 			auctionStatus: 'preclosing',
 			timeRemainingMs: 0,
-			fetchMode: 'no-socket',
 		};
 	}
 
-	if (auctionStatus === 'closed') {
+	// Catch if the auction is closed when the user
+	// arrives on the page or if the auction was closing
+	// during the last update.
+	if (
+		auctionStatus === 'initializing' ||
+		auctionStatus === 'closing' ||
+		auctionStatus === 'closed'
+	) {
 		return {
 			auctionStatus: 'closed',
 			timeRemainingMs: 0,
-			fetchMode: 'no-socket',
 		};
 	}
 
 	return {
 		auctionStatus: 'closing',
 		timeRemainingMs: 0,
-		fetchMode: 'no-socket',
 	};
 }
 

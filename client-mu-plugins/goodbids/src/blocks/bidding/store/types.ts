@@ -48,8 +48,7 @@ export type UserType = {
 
 export type FetchingType = {
 	initialFetchComplete: boolean;
-	fetchMode: 'no-socket' | 'socket' | 'polling';
-	error: 'socket' | 'fetch' | undefined;
+	hasSocketError: boolean;
 };
 
 export type BiddingActions = {
@@ -60,7 +59,6 @@ export type BiddingActions = {
 	setUser: (data: UserResponse) => void;
 	setTimeRemaining: (timeRemainingMs: number | undefined) => void;
 	setInterval: (startTime: Date, endTime: Date) => void;
-	setFetchingError: () => void;
 };
 
 export type BiddingState = UrlsType &

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { SocketMessage } from '../../utils/types';
-import { useBiddingState } from '../../store';
+import { SocketMessage } from '../utils/types';
+import { useBiddingState } from '../store';
 
 // TODO: Remove once WP sends appropriate url in dev mode
 const socketUrlOverride = 'ws://localhost:3000/_ws/connect';
@@ -11,7 +11,18 @@ type SocketProps = {
 };
 
 export function Socket({ auctionId }: SocketProps) {
-	const { socketUrl, setSocketError, setSocketAuction } = useBiddingState();
+	const { auctionStatus } = useBiddingState();
+
+	if (auctionStatus === 'live') {
+		return <SocketHandler auctionId={auctionId} />;
+	}
+
+	return null;
+}
+
+function SocketHandler({ auctionId }: SocketProps) {
+	const { socketUrl, setSocketError, setSocketAuction, auctionStatus } =
+		useBiddingState();
 
 	const { lastJsonMessage } = useWebSocket<SocketMessage>(
 		`${
@@ -23,7 +34,8 @@ export function Socket({ auctionId }: SocketProps) {
 			onError: () => {
 				setSocketError();
 			},
-			share: true,
+			reconnectInterval: 30000,
+			shouldReconnect: () => auctionStatus === 'live',
 		},
 	);
 
@@ -32,7 +44,7 @@ export function Socket({ auctionId }: SocketProps) {
 			setSocketAuction(lastJsonMessage);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [lastJsonMessage, setSocketError]);
+	}, [lastJsonMessage]);
 
 	return null;
 }

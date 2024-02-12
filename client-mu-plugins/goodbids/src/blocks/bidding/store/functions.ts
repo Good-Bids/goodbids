@@ -22,28 +22,19 @@ export const handleSetAuctionStatus = (
 	newStatus: StatusAndTimeRemainingType,
 	currentStatus: AuctionStatus,
 ): Partial<TimingType & FetchingType> => {
-	// If the auction status has changed, invalidate queries and re-fetch
+	// If the auction status has changed, invalidate queries and re-fetch,
 	// unless the change is from initializing so that we don't immediately
 	// re-fetch the fresh auction data
 	if (
 		newStatus.auctionStatus !== currentStatus &&
 		currentStatus !== 'initializing'
 	) {
-		if (newStatus.auctionStatus === 'closing') {
-			client.invalidateQueries({
-				queryKey: ['auction'],
-			});
-
-			client.invalidateQueries({
-				queryKey: ['user'],
-			});
-		}
-
-		// If the auction is starting, invalidate the auction query
-		// and re-fetch it to ensure startTime hasn't changed
+		// If the auction is starting or closing, invalidate the auction query
+		// and re-fetch it to ensure data has not changed
 		if (
 			newStatus.auctionStatus === 'starting' ||
-			newStatus.auctionStatus === 'live'
+			newStatus.auctionStatus === 'live' ||
+			newStatus.auctionStatus === 'closing'
 		) {
 			client.invalidateQueries({
 				queryKey: ['auction'],
@@ -82,8 +73,7 @@ export function handleSetSocketAuction(
 ): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
-			fetchMode: 'polling',
-			error: undefined,
+			hasSocketError: true,
 		};
 	}
 
@@ -103,7 +93,7 @@ export function handleSetSocketAuction(
 			startTime,
 			endTime,
 			isLastBidder,
-			error: undefined,
+			hasSocketError: false,
 		};
 	}
 
@@ -111,20 +101,12 @@ export function handleSetSocketAuction(
 		...message.payload,
 		startTime: new Date(message.payload.startTime),
 		endTime: new Date(message.payload.endTime),
-		fetchMode: 'no-socket',
-		error: undefined,
+		hasSocketError: false,
 	};
 }
 
 export function handleSetSocketError(): Partial<FetchingType> {
 	return {
-		fetchMode: 'polling',
-		error: undefined,
-	};
-}
-
-export function handleSetFetchingError(): Partial<FetchingType> {
-	return {
-		error: 'fetch',
+		hasSocketError: true,
 	};
 }

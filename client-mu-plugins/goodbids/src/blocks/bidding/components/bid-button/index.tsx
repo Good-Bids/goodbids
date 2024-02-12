@@ -41,7 +41,7 @@ function LiveAndClosing() {
 
 	const disabled = isLastBidder || closingStatuses.includes(auctionStatus);
 
-	const classes = clsx('btn-fill text-center transition-all', {
+	const classes = clsx('btn-fill text-center transition-colors', {
 		'pointer-events-none cursor-not-allowed !bg-base-3 !text-contrast-4':
 			disabled,
 	});

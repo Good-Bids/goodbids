@@ -7,7 +7,6 @@ import {
 	handleSetSocketAuction,
 	handleSetAuctionStatus,
 	handleSetSocketError,
-	handleSetFetchingError,
 } from './functions';
 import { handleSetInterval } from './timing';
 
@@ -38,8 +37,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	isLastBidder: false,
 
 	initialFetchComplete: false,
-	fetchMode: 'no-socket',
-	error: undefined,
+	hasSocketError: false,
 
 	setAuctionStatus: (status) => {
 		set((state) => handleSetAuctionStatus(status, state.auctionStatus));
@@ -71,10 +69,6 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 
 	setInterval: (startTime, endTime) => {
 		set((state) => handleSetInterval({ ...state, startTime, endTime }));
-	},
-
-	setFetchingError: () => {
-		set(handleSetFetchingError());
 	},
 }));
 
