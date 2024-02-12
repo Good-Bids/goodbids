@@ -1015,6 +1015,13 @@ class Sites {
 		return $this->get_user_orders( $user_id, $status, Rewards::ITEM_TYPE );
 	}
 
+	/**
+	 * Display custom content on Network Sites page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
 	private function customize_sites_columns(): void {
 		add_filter(
 			'wpmu_blogs_columns',
@@ -1026,19 +1033,23 @@ class Sites {
 
 		add_action(
 			'manage_sites_custom_column',
-			function ( $column, $site_id ) {
+			function ( string $column, string $site_id ) {
 				if ( 'standing' === $column ) {
-					goodbids()->sites->swap(
-						function() {
-							if ( goodbids()->invoices->has_overdue_invoices() ) {
-								esc_html_e( 'Delinquent', 'goodbids' );
-								return;
-							}
+					if ( get_main_site_id() !== intval( $site_id ) ) {
+						goodbids()->sites->swap(
+							function() {
+								if ( goodbids()->invoices->has_overdue_invoices() ) {
+									esc_html_e( 'Delinquent', 'goodbids' );
+									return;
+								}
 
-							esc_html_e( 'Good', 'goodbids' );
-						},
-						$site_id
-					);
+								esc_html_e( 'Good', 'goodbids' );
+							},
+							intval( $site_id )
+						);
+					} else {
+						esc_html_e( 'N/A', 'goodbids' );
+					}
 				}
 			},
 			10,

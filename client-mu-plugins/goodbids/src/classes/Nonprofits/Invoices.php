@@ -68,6 +68,9 @@ class Invoices {
 
 		// Generate Invoice on Auction Close.
 		$this->auto_generate();
+
+		// Add an Admin Notice when Nonprofit is delinquent.
+		$this->alert_when_delinquent();
 	}
 
 	/**
@@ -563,6 +566,11 @@ class Invoices {
 	 * @return void
 	 */
 	public function generate( int $auction_id ): void {
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			Log::warning( 'Auction not published yet.', compact( 'auction_id' ) );
+			return;
+		}
+
 		// Bail early if invoice already exists.
 		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
 			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
@@ -611,5 +619,29 @@ class Invoices {
 		if ( ! $invoice->get_stripe_invoice_id() ) {
 			Log::error( 'There was a problem creating the Stripe Invoice.', compact( 'auction_id', 'invoice' ) );
 		}
+	}
+
+	/**
+	 * Add an Admin Notice when Nonprofit is delinquent.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function alert_when_delinquent(): void {
+		add_action(
+			'admin_notices',
+			function (): void {
+				if ( ! $this->has_overdue_invoices() ) {
+					return;
+				}
+
+				?>
+				<div class="notice notice-error">
+					<p><?php esc_html_e( 'There are currently delinquent invoices on this account. Please take action to restore full site functionality.', 'goodbids' ); ?></p>
+				</div>
+				<?php
+			}
+		);
 	}
 }
