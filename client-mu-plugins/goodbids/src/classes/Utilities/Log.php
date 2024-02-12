@@ -104,8 +104,15 @@ class Log {
 		$formatter = new LineFormatter( $output );
 		$formatter->ignoreEmptyContextAndExtra();
 
-		$date    = date( 'Y-m-d' ); // phpcs:ignore
-		$handler = new StreamHandler( self::get_logs_dir() . 'goodbids' . $date . '.log', Level::Debug );
+		$date     = date( 'Y-m-d' ); // phpcs:ignore
+		$log_file = self::get_logs_dir() . 'goodbids' . $date . '.log';
+
+		if ( ! file_exists( $log_file ) ) {
+			$wpfs = new \WP_Filesystem_Direct( null );
+			$wpfs->touch( $log_file );
+		}
+
+		$handler = new StreamHandler( $log_file, Level::Debug );
 		$handler->setFormatter( $formatter );
 
 		self::$monolog = new Logger( 'GoodBids' );
