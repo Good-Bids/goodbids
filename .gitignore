@@ -70,7 +70,7 @@ dist
 build
 
 # Log files
-private/logs/
+private/logs/*.log
 
 # Local config file
 client-mu-plugins/goodbids/config.local.json
