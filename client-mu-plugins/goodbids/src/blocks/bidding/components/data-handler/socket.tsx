@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { SocketMessage } from '../utils/types';
-import { useBiddingState } from '../store';
+import { SocketMessage } from '../../utils/types';
+import { useBiddingState } from '../../store';
 
 // TODO: Remove once WP sends appropriate url in dev mode
 const socketUrlOverride = 'ws://localhost:3000/_ws/connect';

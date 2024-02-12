@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
-import { useGetAuction } from '../utils/get-auction';
+import { useEffect } from 'react';
+import { useGetAuction } from '../../utils/get-auction';
 import { useCookies } from 'react-cookie';
-import { useGetUser } from '../utils/get-user';
-import { useBiddingState } from '../store';
+import { useGetUser } from '../../utils/get-user';
+import { useBiddingState } from '../../store';
 
 const SESSION_COOKIE = 'goodbids_auctioneer_session';
 
 type FetcherProps = {
 	auctionId: number;
-	children: React.ReactNode;
 };
 
-export function Fetcher({ auctionId, children }: FetcherProps) {
-	const { setUser, setFetchAuction, fetchMode } = useBiddingState();
+export function Fetcher({ auctionId }: FetcherProps) {
+	const { setUser, setFetchAuction, fetchMode, setFetchingError } =
+		useBiddingState();
 
 	const [cookies] = useCookies([SESSION_COOKIE]);
 	const cookie = cookies[SESSION_COOKIE] as string | undefined;
@@ -35,7 +35,7 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 		}
 
 		if (auctionStatus === 'error') {
-			console.error(auctionError);
+			setFetchingError();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [auctionData, auctionError, auctionStatus]);
@@ -46,18 +46,10 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 		}
 
 		if (userError) {
-			console.error(userError);
+			setFetchingError();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userData, userError, userStatus]);
 
-	if (auctionStatus === 'pending' || (userStatus === 'pending' && cookie)) {
-		return <p>Loading...</p>;
-	}
-
-	if (auctionStatus === 'error' || userStatus === 'error') {
-		return <p>Something went wrong</p>;
-	}
-
-	return children;
+	return null;
 }
