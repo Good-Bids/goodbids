@@ -110,6 +110,9 @@ class Log {
 		if ( ! file_exists( $log_file ) ) {
 			$wpfs = new \WP_Filesystem_Direct( null );
 			$wpfs->touch( $log_file );
+			if ( ! $wpfs->is_writable( $log_file ) ) {
+				return;
+			}
 		}
 
 		$handler = new StreamHandler( $log_file, Level::Debug );
