@@ -17,6 +17,7 @@ use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
 use GoodBids\Network\Dashboard;
+use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
 use GoodBids\Nonprofits\Invoices;
@@ -73,6 +74,12 @@ class Core {
 	 * @var Settings
 	 */
 	public Settings $settings;
+
+	/**
+	 * @since 1.0.0
+	 * @var Network
+	 */
+	public Network $network;
 
 	/**
 	 * @since 1.0.0
@@ -247,13 +254,16 @@ class Core {
 	/**
 	 * Get a config value. You can use dot notation to get nested values.
 	 *
-	 * @param string $key Config Key.
+	 * @param string $config_key    Config Key.
+	 * @param bool   $apply_filters Whether to apply_filters to the value.
 	 *
 	 * @return mixed
 	 */
-	public function get_config( string $key ): mixed {
-		if ( str_contains( $key, '.' ) ) {
-			$keys  = explode( '.', $key );
+	public function get_config( string $config_key, bool $apply_filters = true ): mixed {
+		$return = $this->config[ $config_key ] ?? null;
+
+		if ( str_contains( $config_key, '.' ) ) {
+			$keys  = explode( '.', $config_key );
 			$value = $this->config;
 
 			foreach ( $keys as $key ) {
@@ -264,10 +274,14 @@ class Core {
 				$value = $value[ $key ];
 			}
 
-			return $value;
+			$return = $value;
 		}
 
-		return $this->config[ $key ] ?? null;
+		if ( ! $apply_filters ) {
+			return $return;
+		}
+
+		return apply_filters( 'goodbids_config_var', $return, $config_key );
 	}
 
 	/**
@@ -368,6 +382,7 @@ class Core {
 				$this->patterns    = new Patterns();
 				$this->dashboard   = new Dashboard();
 				$this->settings    = new Settings();
+				$this->network     = new Network();
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
 				$this->blocks      = new Blocks();

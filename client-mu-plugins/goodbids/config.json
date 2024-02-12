@@ -1,6 +1,9 @@
 {
   "version": "1.0",
-  "debug-mode": false,
+  "advanced": {
+    "debug-mode": false,
+    "logging": true
+  },
   "active-plugins": [
     "advanced-custom-fields-pro/acf.php",
     "woocommerce",
@@ -49,5 +52,10 @@
   "invoices": {
     "payment-terms-days": 30,
     "percent": 10
+  },
+  "network": {
+    "logs": {
+      "per-page": 20
+    }
   }
 }

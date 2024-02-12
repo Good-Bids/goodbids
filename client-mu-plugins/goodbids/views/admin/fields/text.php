@@ -56,5 +56,5 @@
 <?php if ( $wrap ) : ?>
 		</td>
 	</tr>
-<?php endif; ?>
-
+	<?php
+endif;

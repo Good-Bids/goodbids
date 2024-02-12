@@ -46,6 +46,14 @@ class Log {
 	private static string $logs_dir = WPCOM_VIP_PRIVATE_DIR . '/logs/';
 
 	/**
+	 * If Logging is Enabled.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	private static bool $enabled = true;
+
+	/**
 	 * Enable this flag to log ALL messages to the console.
 	 *
 	 * @since 1.0.0
@@ -69,9 +77,19 @@ class Log {
 	 * @return void
 	 */
 	public static function init(): void {
-		self::set_debug_mode();
+		self::set_config();
 		self::init_monolog();
 		self::init_new_relic();
+	}
+
+	/**
+	 * Returns the path to the log directory with a trailing slash.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public static function get_logs_dir(): string {
+		return self::$logs_dir;
 	}
 
 	/**
@@ -87,7 +105,7 @@ class Log {
 		$formatter->ignoreEmptyContextAndExtra();
 
 		$date    = date( 'Y-m-d' ); // phpcs:ignore
-		$handler = new StreamHandler( self::$logs_dir . 'goodbids' . $date . '.log', Level::Debug );
+		$handler = new StreamHandler( self::get_logs_dir() . 'goodbids' . $date . '.log', Level::Debug );
 		$handler->setFormatter( $formatter );
 
 		self::$monolog = new Logger( 'GoodBids' );
@@ -117,14 +135,18 @@ class Log {
 	 *
 	 * @return void
 	 */
-	private static function set_debug_mode(): void {
+	private static function set_config(): void {
 		add_action(
 			'muplugins_loaded',
 			function() {
-				// Make sure we have a boolean value.
-				$mode = goodbids()->get_config( 'debug-mode' );
-				if ( is_bool( $mode ) ) {
-					self::$debug_mode = $mode;
+				$enabled = goodbids()->get_config( 'advanced.logging' );
+				if ( ! is_null( $enabled ) ) {
+					self::$enabled = boolval( $enabled );
+				}
+
+				$debug_mode = goodbids()->get_config( 'advanced.debug-mode' );
+				if ( ! is_null( $debug_mode ) ) {
+					self::$debug_mode = boolval( $debug_mode );
 				}
 			}
 		);
@@ -142,6 +164,10 @@ class Log {
 	 * @return void
 	 */
 	private static function log( string $message, mixed $context = null, Level $level = Level::Debug ): void {
+		if ( ! self::$enabled ) {
+			return;
+		}
+
 		if ( ! self::$monolog ) {
 			self::init_monolog();
 		}

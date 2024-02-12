@@ -63,6 +63,7 @@
 		?>
 
 <?php if ( $wrap ) : ?>
-	</td>
-</tr>
-<?php endif; ?>
+		</td>
+	</tr>
+	<?php
+endif;

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .form-field #gbnp-legal-name,
 .form-field #gbnp-ein,
 .form-field #gbnp-website {
@@ -5,17 +9,101 @@
 }
 
 .warning-message {
+	@apply inline-block;
 	background: #fff;
 	border: 1px solid #c3c4c7;
 	border-left: 4px solid #dba617;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-	display: inline-block;
 	margin: 5px 0 15px;
 	padding: 1px 12px;
 }
+
 .warning-message p {
 	font-size: 13px;
 	line-height: 1.5;
 	margin: 0.5em 0;
 	padding: 2px;
+}
+
+/**
+ * Network Dashboard Log Files
+ */
+.gb-log-files li {
+	@apply flex items-center;
+	gap: 0.25rem;
+
+	a[download] {
+		@apply no-underline inline-block;
+		border-radius: 3px;
+		margin-left: -8px;
+		padding: 3px 8px;
+		transition: all 200ms ease-in-out;
+
+		&:hover {
+			background: #2271b1;
+			color: #fff;
+		}
+	}
+
+	.file-size {
+		font-size: 12px;
+		opacity: 0.85;
+	}
+}
+
+/**
+ * Network Dashboard Log File Pagination
+ */
+.gb-logs ul.page-numbers {
+	@apply flex;
+	border-top: 1px solid #3c434a;
+	gap: 0.25rem;
+	margin: 1rem 0;
+	padding: 1rem 0;
+
+	& span,
+	& a {
+		@apply block whitespace-nowrap text-center;
+		-webkit-appearance: none;
+		border-radius: 3px;
+		font-size: 13px;
+		line-height: 2.15384615;
+		min-height: 30px;
+		min-width: 12px;
+		padding: 0 8px;
+	}
+
+	& span {
+		font-weight: bold;
+		margin-bottom: 1px;
+		margin-top: 1px;
+	}
+
+	& a:not(.next):not(.prev) {
+		@apply border border-solid;
+		background: #fff;
+	}
+
+	& a {
+		@apply no-underline;
+		border-color: #2271b1;
+		color: #2271b1;
+		transition: all 200ms ease-in-out;
+	}
+
+	& a:hover,
+	& a:not(.next):not(.prev):hover {
+		background: #2271b1;
+		color: #fff;
+	}
+
+	& a.next,
+	& a.prev {
+		padding-bottom: 1px;
+		padding-top: 1px;
+	}
+}
+
+.gb-toggle {
+	@apply inline-block;
 }

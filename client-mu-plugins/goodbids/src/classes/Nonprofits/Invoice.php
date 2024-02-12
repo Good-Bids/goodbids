@@ -98,6 +98,12 @@ class Invoice {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const INTEGRITY_PASS = 'pass';
+
+	/**
+	 * @since 1.0.0
 	 * @var ?\WP_Post
 	 */
 	private ?\WP_Post $post;
@@ -297,15 +303,23 @@ class Invoice {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?int $amount Incoming Amount in Cents from Stripe
+	 *
 	 * @return bool|int
 	 */
-	private function set_amount(): bool|int {
-		$total_raised = goodbids()->auctions->get_total_raised( $this->get_auction_id() );
-		$percent      = intval( goodbids()->get_config( 'invoices.percent' ) );
-		$amount       = $total_raised * ( $percent / 100 );
+	private function set_amount( ?int $amount = null ): bool|int {
+		if ( is_null( $amount ) ) {
+			$total_raised = goodbids()->auctions->get_total_raised( $this->get_auction_id() );
+			$percent      = intval( goodbids()->get_config( 'invoices.percent' ) );
+			$amount       = $total_raised * ( $percent / 100 );
+		} else {
+			$amount = $amount / 100;
+		}
+
+		$this->amount = $amount;
 
 		// Set invoice amount.
-		return update_post_meta( $this->get_id(), self::AMOUNT_META_KEY, $amount );
+		return update_post_meta( $this->get_id(), self::AMOUNT_META_KEY, $this->amount );
 	}
 
 	/**
@@ -330,20 +344,29 @@ class Invoice {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?int $due_date Incoming GMT Timestamp from Stripe
+	 *
 	 * @return bool|int
 	 */
-	private function set_due_date(): bool|int {
-		$payment_terms = intval( goodbids()->get_config( 'invoices.payment-terms-days' ) );
+	private function set_due_date( ?int $due_date = null ): bool|int {
+		if ( is_null( $due_date ) ) {
+			$payment_terms = intval( goodbids()->get_config( 'invoices.payment-terms-days' ) );
 
-		try {
-			$due_date = current_datetime()->add( new \DateInterval( 'P' . $payment_terms . 'D' ) )->format( 'Y-m-d H:i:s' );
-		} catch ( \Exception $e ) {
-			// Log the error.
-			Log::error( 'Error setting invoice due date: ' . $e->getMessage(), [ 'invoice_id' => $this->get_id() ] );
-			return false;
+			try {
+				$due_date = current_datetime()
+					->setTimezone( new \DateTimeZone( 'GMT' ) )
+					->add( new \DateInterval( 'P' . $payment_terms . 'D' ) )
+					->format( 'Y-m-d H:i:s' );
+			} catch ( \Exception $e ) {
+				// Log the error.
+				Log::error( 'Error setting invoice due date: ' . $e->getMessage(), [ 'invoice_id' => $this->get_id() ] );
+				return false;
+			}
+		} else {
+			$due_date = wp_date( 'Y-m-d H:i:s', $due_date, new \DateTimeZone( 'GMT' ) );
 		}
 
-		// Set the invoice due date
+		// Set the invoice due date in GMT
 		return update_post_meta( $this->get_id(), self::DUE_DATE_META_KEY, $due_date );
 	}
 
@@ -360,7 +383,9 @@ class Invoice {
 		}
 
 		$due_date = $this->get_due_date();
-		$now      = current_datetime()->format( 'Y-m-d H:i:s' );
+		$now      = current_datetime()
+			->setTimezone( new \DateTimeZone( 'GMT' ) )
+			->format( 'Y-m-d H:i:s' );
 
 		if ( $now > $due_date ) {
 			return self::STATUS_OVERDUE;
@@ -391,7 +416,11 @@ class Invoice {
 	 * @return void
 	 */
 	public function mark_as_sent(): void {
-		$this->set_sent_date( current_datetime()->format( 'Y-m-d H:i:s' ) );
+		$this->set_sent_date(
+			current_datetime()
+			->setTimezone( new \DateTimeZone( 'GMT' ) )
+			->format( 'Y-m-d H:i:s' )
+		);
 	}
 
 	/**
@@ -613,6 +642,21 @@ class Invoice {
 	}
 
 	/**
+	 * Reset Payment Data (if integrity check fails)
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function reset_payment(): void {
+		$this->stripe_payment_id = null;
+		$this->payment_date      = null;
+
+		delete_post_meta( $this->get_id(), self::PAYMENT_ID_META_KEY );
+		delete_post_meta( $this->get_id(), self::PAYMENT_DATE_META_KEY );
+	}
+
+	/**
 	 * Set the Invoice Sent Date
 	 *
 	 * @since 1.0.0
@@ -649,5 +693,57 @@ class Invoice {
 		$this->sent_date = $sent_date;
 
 		return goodbids()->utilities->format_date_time( $this->sent_date, $format );
+	}
+
+	/**
+	 * Perform an Integrity Check against the Stripe Invoice data
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function integrity_check(): array {
+		$stripe_invoice = $this->get_stripe_invoice();
+
+		$report  = [];
+		$mapping = [
+			'amount_due' => 'set_amount',
+			'paid'       => 'reset_payment',
+			'due_date'   => 'set_due_date',
+			'number'     => 'set_stripe_invoice_number',
+		];
+		$values  = [
+			'amount_due' => intval( $this->get_amount() * 100 ),
+			'paid'       => $this->is_paid(),
+			'due_date'   => strtotime( $this->get_due_date() ),
+			'number'     => $this->get_stripe_invoice_number(),
+		];
+
+		foreach ( $mapping as $field => $method ) {
+			if ( $stripe_invoice->$field !== $values[ $field ] ) {
+				$stripe_value = $stripe_invoice->$field;
+
+				if ( is_null( $stripe_value ) ) {
+					$stripe_value = '[null]';
+				} elseif ( is_bool( $stripe_value ) ) {
+					$stripe_value = intval( $stripe_value );
+				} elseif ( is_array( $stripe_value ) ) {
+					$stripe_value = print_r( $stripe_value, true ); // phpcs:ignore
+				}
+
+				$report[ $field ] = [
+					'stripe'  => $stripe_value,
+					'invoice' => $values[ $field ],
+				];
+
+				if ( $method ) {
+					$this->$method( $stripe_invoice->$field );
+				}
+			} else {
+				$report[ $field ] = self::INTEGRITY_PASS;
+			}
+		}
+
+		return $report;
 	}
 }
