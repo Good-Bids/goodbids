@@ -157,6 +157,10 @@ class Log {
 	 * @return bool
 	 */
 	private static function create_log_file(): bool {
+		if ( ! self::get_logs_dir() ) {
+			return false;
+		}
+
 		global $wp_filesystem;
 		WP_Filesystem();
 
