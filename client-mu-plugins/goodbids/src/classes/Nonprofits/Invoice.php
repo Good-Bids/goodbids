@@ -112,6 +112,12 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
+	private ?int $invoice_id = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?int
+	 */
 	private ?int $auction_id = null;
 
 	/**
@@ -163,6 +169,10 @@ class Invoice {
 	private ?string $stripe_invoice_url = null;
 
 	/**
+	 * Retrieve an instance of an Invoice.
+	 * Passing the Auction ID into the 2nd parameter will initialize the Invoice.
+	 * The Auction ID will be connected to the Invoice during initialization.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return ?self
@@ -209,7 +219,7 @@ class Invoice {
 	}
 
 	/**
-	 * Initialize a New Invoice
+	 * Initialize a New Invoice. This will also connect the Auction to this Invoice.
 	 *
 	 * @since 1.0.0
 	 *
