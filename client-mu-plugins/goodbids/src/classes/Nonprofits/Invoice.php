@@ -341,7 +341,7 @@ class Invoice {
 	 *
 	 * @return string
 	 */
-	public function get_due_date( ?string $format = 'Y-m-d H:i:s' ): string {
+	public function get_due_date( ?string $format = 'Y-m-d' ): string {
 		if ( is_null( $this->due_date ) ) {
 			$this->due_date = get_post_meta( $this->get_id(), self::DUE_DATE_META_KEY, true );
 		}
@@ -366,14 +366,14 @@ class Invoice {
 				$due_date = current_datetime()
 					->setTimezone( new \DateTimeZone( 'GMT' ) )
 					->add( new \DateInterval( 'P' . $payment_terms . 'D' ) )
-					->format( 'Y-m-d H:i:s' );
+					->format( 'Y-m-d' );
 			} catch ( \Exception $e ) {
 				// Log the error.
 				Log::error( 'Error setting invoice due date: ' . $e->getMessage(), [ 'invoice_id' => $this->get_id() ] );
 				return false;
 			}
 		} else {
-			$due_date = wp_date( 'Y-m-d H:i:s', $due_date, new \DateTimeZone( 'GMT' ) );
+			$due_date = wp_date( 'Y-m-d', $due_date, new \DateTimeZone( 'GMT' ) );
 		}
 
 		// Set the invoice due date in GMT
@@ -395,7 +395,7 @@ class Invoice {
 		$due_date = $this->get_due_date();
 		$now      = current_datetime()
 			->setTimezone( new \DateTimeZone( 'GMT' ) )
-			->format( 'Y-m-d H:i:s' );
+			->format( 'Y-m-d' );
 
 		if ( $now > $due_date ) {
 			return self::STATUS_OVERDUE;

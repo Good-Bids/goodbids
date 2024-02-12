@@ -398,10 +398,12 @@ class Invoices {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param array $args
+	 *
 	 * @return WP_Query
 	 */
-	public function get_all_ids(): WP_Query {
-		return new WP_Query(
+	public function get_all_ids( array $args = [] ): WP_Query {
+		$query_args = array_merge(
 			[
 				'post_type'      => $this->get_post_type(),
 				'posts_per_page' => -1,
@@ -409,8 +411,44 @@ class Invoices {
 				'order'          => 'ASC',
 				'orderby'        => 'date',
 				'fields'         => 'ids',
+			],
+			$args
+		);
+		return new WP_Query( $query_args );
+	}
+
+	/**
+	 * Get All Overdue Invoices
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WP_Query
+	 */
+	public function get_overdue_invoices(): WP_Query {
+		return $this->get_all_ids(
+		[
+				'meta_query' => [
+					[
+						'key'     => Invoice::DUE_DATE_META_KEY,
+						'value'   => current_datetime()->format( 'Y-m-d' ),
+						'compare' => '<',
+						'type'    => 'DATE',
+					],
+				],
 			]
 		);
+	}
+
+	/**
+	 * Check if there are any overdue invoices.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function has_overdue_invoices(): bool {
+		$invoices = $this->get_overdue_invoices();
+		return $invoices->have_posts();
 	}
 
 	/**

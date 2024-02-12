@@ -66,6 +66,9 @@ class Sites {
 		$this->create_about_page();
 		$this->lock_block_editor();
 
+		// Sites Custom Columns
+		$this->customize_sites_columns();
+
 		// Auto-register users on new sites.
 		$this->auto_register_user();
 
@@ -1010,5 +1013,36 @@ class Sites {
 	 */
 	public function get_user_reward_orders( ?int $user_id = null, array $status = [] ): array {
 		return $this->get_user_orders( $user_id, $status, Rewards::ITEM_TYPE );
+	}
+
+	private function customize_sites_columns(): void {
+		add_filter(
+			'wpmu_blogs_columns',
+			function ( $columns ) {
+				$columns['standing'] = __( 'Account Standing', 'goodbids' );
+				return $columns;
+			}
+		);
+
+		add_action(
+			'manage_sites_custom_column',
+			function ( $column, $site_id ) {
+				if ( 'standing' === $column ) {
+					goodbids()->sites->swap(
+						function() {
+							if ( goodbids()->invoices->has_overdue_invoices() ) {
+								esc_html_e( 'Delinquent', 'goodbids' );
+								return;
+							}
+
+							esc_html_e( 'Good', 'goodbids' );
+						},
+						$site_id
+					);
+				}
+			},
+			10,
+			2
+		);
 	}
 }
