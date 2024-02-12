@@ -40,6 +40,12 @@ class Account {
 
 		// 0. Rename "Orders" to "Bids"
 		$this->rename_orders_tab();
+
+		// Remove "Order Again" button
+		$this->remove_order_again_button();
+
+		// Remove "Bid Instance" meta from order view
+		$this->remove_bid_instance_from_order();
 	}
 
 	/**
@@ -290,5 +296,40 @@ class Account {
 		}
 
 		return $this->get_user_order_ids( $user_id, $args );
+	}
+
+
+
+	/**
+	 * Removes the "Order Again" button from the order details.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function remove_order_again_button() {
+		remove_action( 'woocommerce_order_details_after_order_table', 'woocommerce_order_again_button' );
+	}
+
+
+	/**
+	 * Removes the "Bid Instance" meta data from the order details.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function remove_bid_instance_from_order() {
+		add_filter(
+			'woocommerce_order_item_get_formatted_meta_data',
+			function ( $formatted_meta, $item ) {
+				foreach ( $formatted_meta as $key => $meta ) {
+					if ( in_array( $meta->key, array( 'bid_instance' ) ) ) {
+						unset( $formatted_meta[ $key ] );
+					}
+				}
+				return $formatted_meta;
+			},
+			10,
+			2
+		);
 	}
 }
