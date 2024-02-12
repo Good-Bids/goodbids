@@ -117,18 +117,11 @@ class Log {
 		global $wp_filesystem;
 		WP_Filesystem();
 
-		$logs_dir = WPCOM_VIP_PRIVATE_DIR . '/logs/';
+		$uploads_dir = wp_get_upload_dir();
+		$logs_dir    = $uploads_dir['basedir'] . '/goodbids-logs/';
 
 		if ( ! $wp_filesystem->is_dir( $logs_dir ) ) {
 			$wp_filesystem->mkdir( $logs_dir );
-		}
-
-		if ( ! $wp_filesystem->is_dir( $logs_dir ) ) {$uploads_dir = wp_get_upload_dir();
-			$logs_dir = $uploads_dir['basedir'] . '/goodbids-logs/';
-
-			if ( ! $wp_filesystem->is_dir( $logs_dir ) ) {
-				$wp_filesystem->mkdir( $logs_dir );
-			}
 		}
 
 		if ( $wp_filesystem->is_dir( $logs_dir ) && $wp_filesystem->is_writable( $logs_dir ) ) {
