@@ -430,7 +430,7 @@ class Invoices {
 				'meta_query' => [
 					[
 						'key'     => Invoice::DUE_DATE_META_KEY,
-						'value'   => current_datetime()->format( 'Y-m-d' ),
+						'value'   => current_datetime()->setTimezone( new \DateTimeZone( 'GMT' ) )->format( 'Y-m-d 23:59:59' ),
 						'compare' => '<',
 						'type'    => 'DATE',
 					],
