@@ -242,7 +242,7 @@ class Core {
 		if ( file_exists( $local_json ) ) {
 			$local = json_decode( file_get_contents( $local_json ), true ); // phpcs:ignore
 			if ( is_array( $local ) ) {
-				$json = array_merge( $json, $local );
+				$json = array_merge_recursive( $json, $local );
 			}
 		}
 
