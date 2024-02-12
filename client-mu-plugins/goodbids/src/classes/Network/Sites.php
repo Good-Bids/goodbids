@@ -514,12 +514,12 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param callable $callback
-	 * @param array    $site_args
+	 * @param callable|array $callback
+	 * @param array          $site_args
 	 *
 	 * @return array
 	 */
-	public function loop( callable $callback, array $site_args = [] ): array {
+	public function loop( callable|array $callback, array $site_args = [] ): array {
 		if ( ! is_callable( $callback ) ) {
 			return [];
 		}
@@ -539,12 +539,12 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param callable $callback
-	 * @param int      $site_id
+	 * @param callable|array $callback
+	 * @param int            $site_id
 	 *
 	 * @return mixed
 	 */
-	public function swap( callable $callback, int $site_id ): mixed {
+	public function swap( callable|array $callback, int $site_id ): mixed {
 		if ( ! is_callable( $callback ) ) {
 			return false;
 		}
@@ -565,12 +565,12 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param callable $callback
+	 * @param callable|array $callback
 	 *
 	 * @return mixed
 	 */
-	public function main( callable $callback ): mixed {
-		if ( ! is_callable( $callback ) ) {
+	public function main( callable|array $callback ): mixed {
+		if ( ! is_callable( $callback ) && ! is_array( $callback ) ) {
 			return false;
 		}
 
