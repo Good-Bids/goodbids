@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Utilities\Log;
@@ -809,10 +810,12 @@ class Sites {
 					}
 
 					return collect( $orders )
-						->map( fn ( $order_id ) => [
-							'order_id' => $order_id,
-							'site_id'  => $site_id,
-						])
+						->map(
+							fn ( $order_id ) => [
+								'order_id' => $order_id,
+								'site_id'  => $site_id,
+							]
+						)
 						->all();
 				}
 			)
@@ -836,7 +839,7 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $user_id
+	 * @param ?int  $user_id
 	 * @param array $status
 	 *
 	 * @return array
@@ -929,6 +932,26 @@ class Sites {
 	}
 
 	/**
+	 * Get all LiveAuctions user is participated in.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_user_live_participating_auctions(): array {
+		return collect( $this->get_user_participating_auctions() )
+			->filter(
+				fn( array $item ) => $this->swap(
+					function () use ( &$item ) {
+						return Auctions::STATUS_LIVE === goodbids()->auctions->get_status( $item['auction_id'] );
+					},
+					$item['site_id']
+				)
+			)
+			->all();
+	}
+
+	/**
 	 * Get Auctions from all Nonprofit sites won by User
 	 *
 	 * @since 1.0.0
@@ -955,7 +978,7 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $user_id
+	 * @param ?int  $user_id
 	 * @param array $status
 	 *
 	 * @return array

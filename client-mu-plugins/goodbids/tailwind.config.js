@@ -92,6 +92,11 @@ export default {
 					'@apply bg-transparent text-contrast border-contrast hover:bg-contrast hover:border-contrast hover:text-contrast-3 focus:bg-contrast focus:border-contrast focus:text-contrast-3':
 						{},
 				},
+				'.btn-fill-sm': {
+					...buttonBase,
+					'@apply text-xs py-1 px-2 bg-contrast text-base-2 hover:bg-contrast-3 hover:text-contrast hover:border-transparent hover:!no-underline focus:bg-contrast-3 focus:text-contrast':
+						{},
+				},
 			});
 		},
 	],

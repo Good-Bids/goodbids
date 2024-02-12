@@ -28,45 +28,27 @@ class AllAuctions extends ACFBlock {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const UPCOMING_QUERY_ARG = 'gba-upcoming';
-
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const POPULAR_QUERY_ARG = 'gba-popular';
+	const FILTER_QUERY_ARG = 'gba-filter';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const NEWEST_QUERY_ARG = 'gba-newest';
+	const SORT_QUERY_ARG = 'gba-sort';
 
 	/**
+	 * Get a query arg value.
+	 *
 	 * @since 1.0.0
-	 * @var string
+	 *
+	 * @param string $query_arg
+	 * @param string $default
+	 *
+	 * @return string
 	 */
-	const ENDING_QUERY_ARG = 'gba-ending';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const LOWBID_QUERY_ARG = 'gba-lowbid';
-
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const OPENING_QUERY_ARG = 'gba-opening-soon';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const STARTBID_QUERY_ARG = 'gba-startbid';
+	private function get_query_arg( string $query_arg, string $default = '' ): string {
+		return ! empty( $_GET[ $query_arg ] ) ? sanitize_text_field( $_GET[ $query_arg ] ) : $default; // phpcs:ignore
+	}
 
 	/**
 	 * Returns the amount of Auctions to display per page
@@ -87,30 +69,21 @@ class AllAuctions extends ACFBlock {
 	 * @return int
 	 */
 	public function get_current_page(): int {
-		return ! empty( $_GET[ self::PAGE_QUERY_ARG ] ) ? intval( $_GET[ self::PAGE_QUERY_ARG ] ) : 1;
+		return intval( $this->get_query_arg( self::PAGE_QUERY_ARG, 1 ) );
 	}
 
 	/**
-	 * Is it for upcoming auctions
+	 * Get the sorting query arg
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return bool
+	 * @return string
 	 */
-	public function is_displaying_upcoming(): bool {
-		return ! empty( $_GET[ self::UPCOMING_QUERY_ARG ] ) ? boolval( $_GET[ self::UPCOMING_QUERY_ARG ] ) : false;
-	}
+	public function get_current_sort(): string {
+		$filter  = $this->get_current_filter();
+		$default = 'upcoming' === $filter ? 'newest' : 'popular';
 
-	/**
-	 * Is it sorting by $query_arg
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool
-	 * @param $query_arg
-	 */
-	public function is_sortby( string $query_arg ): bool {
-		return ! empty( $_GET[ $query_arg ] ) ? boolval( $_GET[ $query_arg ] ) : false;
+		return $this->get_query_arg( self::SORT_QUERY_ARG, $default );
 	}
 
 	/**
@@ -120,32 +93,9 @@ class AllAuctions extends ACFBlock {
 	 *
 	 * @return int
 	 */
-	public function get_offset(): int {
+	private function get_offset(): int {
 		$per_page = $this->get_auctions_per_page();
 		return 1 === $this->get_current_page() ? 0 : intval( $this->get_current_page() * $per_page ) - $per_page;
-	}
-
-	/**
-	 * Get the live auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $all_auctions
-	 *
-	 * @return array
-	 */
-	public function get_live_auctions( array $all_auctions = [] ): array {
-		if ( ! $all_auctions ) {
-			$all_auctions = goodbids()->sites->get_all_auctions();
-		}
-
-		return collect( $all_auctions )
-			->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
-					$auction['site_id']
-				)
-			)->all();
 	}
 
 	/**
@@ -161,109 +111,165 @@ class AllAuctions extends ACFBlock {
 			return goodbids()->sites->get_all_auctions();
 		}
 
-		// default to get all auctions from the current site TODO maybe good to make this a transient as well
+		// default to get all auctions from the current site
+		// TODO: maybe good to make this a transient as well
 		return collect( ( goodbids()->auctions->get_all() )->posts )
-				->map(
-					fn ( int $post_id ) => [
-						'post_id' => $post_id,
-						'site_id' => get_current_blog_id(),
-					]
-				)
-				->sortByDesc(
-					fn ( array $auction ) => [
-						'bid_count'    => fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
-						'total_raised' => fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
-					]
-				)
-				->all();
-	}
-
-	/**
-	 * Get the upcoming auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $all_auctions
-	 *
-	 * @return array
-	 */
-	public function get_upcoming_auctions( array $all_auctions = [] ): array {
-		if ( ! $all_auctions ) {
-			$all_auctions = goodbids()->sites->get_all_auctions();
-		}
-
-		return collect( $all_auctions )
-			->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
-					$auction['site_id']
-				)
+			->map(
+				fn ( int $post_id ) => [
+					'post_id' => $post_id,
+					'site_id' => get_current_blog_id(),
+				]
 			)
-			->sortBy(
-				fn ( $data ) =>  goodbids()->auctions->get_start_date_time( $data['post_id'] )
+			->sortByDesc(
+				fn ( array $auction ) => [
+					'bid_count'    => fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
+					'total_raised' => fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
+				]
 			)
 			->all();
 	}
 
 	/**
-	 * Sort Auctions by start date
+	 * Filter Auctions by filter value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $filter
+	 * @param array  $auctions
 	 *
 	 * @return array
 	 */
-	public function sortby_start_date( array $auctions ): array {
-		return collect( $auctions )->sortBy(
-			fn ( $data ) => goodbids()->auctions->get_start_date_time( $data['post_id'] )
-		)->all();
+	private function filter_auctions_by( string $filter, array $auctions = [] ): array {
+		if ( ! $auctions ) {
+			$auctions = $this->get_all_auctions();
+		}
+
+		if ( 'upcoming' === $filter ) {
+			return collect( $auctions )
+				->filter(
+					fn ( array $auction ) => goodbids()->sites->swap(
+						fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
+						$auction['site_id']
+					)
+				)
+				->all();
+		} elseif ( 'live' === $filter ) {
+			return collect( $auctions )
+				->filter(
+					fn ( array $auction ) => goodbids()->sites->swap(
+						fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
+						$auction['site_id']
+					)
+				)
+				->all();
+		}
+
+		return $auctions;
 	}
 
 	/**
-	 * Sort Auctions by end date
+	 * Apply sorting to the auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $auctions
+	 *
+	 * @return array
+	 */
+	public function apply_sort( array $auctions ): array {
+		return $this->sort_auctions_by( $this->get_current_sort(), $auctions );
+	}
+
+	/**
+	 * Get the sorting options based on if filtered by upcoming or live
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
-	public function sortby_end_date( array $auctions ): array {
-		return collect( $auctions )->sortBy(
-			fn ( $data ) => goodbids()->auctions->get_end_date_time( $data['post_id'] )
-		)->all();
+	public function get_sort_options(): array {
+		if ( 'upcoming' === $this->get_current_filter() ) {
+			return [
+				'newest'   => __( 'Opening Soon', 'goodbids' ),
+				'starting' => __( 'Lowest Starting Bid', 'goodbids' ),
+			];
+		}
+
+		return [
+			'popular' => __( 'Most Popular', 'goodbids' ),
+			'newest'  => __( 'Newest', 'goodbids' ),
+			'ending'  => __( 'Ending Soon', 'goodbids' ),
+			'low_bid' => __( 'Lowest Current Bid', 'goodbids' ),
+		];
 	}
 
 	/**
-	 * Sort Auctions by lowest bid
+	 * Sort Auctions by sort value.
+	 * Sorting options:
+	 *   - Live & Upcoming:
+	 *     - newest: Sort by start date
+	 *   - Upcoming:
+	 *     - starting: Sort by starting bid
+	 *   - Live:
+	 *     - popular: Sort by most popular
+	 *     - ending: Sort by end date
+	 *     - low_bid: Sort by lowest current bid (desc)
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param string $sort
+	 * @param array  $auctions
+	 *
 	 * @return array
 	 */
-	public function sortby_lowbid( array $auctions ): array {
-		return collect( $auctions )->sortBy(
-			fn ( $data ) => goodbids()->auctions->bids->get_variation( $data['post_id'] )?->get_price( 'edit' )
-		)->all();
-	}
+	private function sort_auctions_by( string $sort, array $auctions = [] ): array {
+		if ( ! $auctions ) {
+			$auctions = $this->get_all_auctions();
+		}
 
-	/**
-	 * Sort Auctions by most watched
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function sortby_watched( array $auctions ): array {
-		// TODO once we have watch auctions set up we can sort by most watched
-	}
+		if ( 'newest' === $sort ) {
+			return collect( $auctions )
+				->sortBy(
+					fn( array $auction ) => goodbids()->sites->swap(
+						function () use ( &$auction ) {
+							return goodbids()->auctions->get_start_date_time( $auction['post_id'] );
+						},
+						$auction['site_id']
+					)
+				)
+				->all();
+		} elseif ( 'starting' === $sort ) {
+			return collect( $auctions )
+				->sortBy(
+					fn( array $auction ) => goodbids()->sites->swap(
+						fn() => goodbids()->auctions->calculate_starting_bid( $auction['post_id'] ),
+						$auction['site_id']
+					)
+				)
+				->all();
+		} elseif ( 'ending' === $sort ) {
+			return collect( $auctions )
+				->sortBy(
+					fn( array $auction ) => goodbids()->sites->swap(
+						fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
+						$auction['site_id']
+					)
+				)
+				->all();
+		} elseif ( 'low_bid' === $sort ) {
+			return collect( $auctions )
+				->sortBy(
+					fn ( array $auction ) => goodbids()->sites->swap(
+						fn() => goodbids()->auctions->bids->get_variation( $auction['post_id'] )?->get_price( 'edit' ),
+						$auction['site_id']
+					)
+				)
+				->all();
+		} elseif ( 'popular' === $sort ) {
+			// TODO: once we have watch auctions set up we can sort by most watched
+		}
 
-	/**
-	 * Sort Auctions by starting bid
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function sortby_starting_bid( array $auctions ): array {
-		return collect( $auctions )->sortBy(
-			fn ( $data ) => goodbids()->auctions->calculate_starting_bid( $data['post_id'] )
-		)->all();
+		return $auctions;
 	}
 
 	/**
@@ -275,108 +281,57 @@ class AllAuctions extends ACFBlock {
 	 *
 	 * @return array
 	 */
-	public function apply_filters( array $auctions ): array {
-		if ( $this->is_sortby( self::NEWEST_QUERY_ARG ) ) {
-			return $this->sortby_start_date( $auctions );
-		}
-
-		if ( $this->is_sortby( self::ENDING_QUERY_ARG ) ) {
-			return $this->sortby_end_date( $auctions );
-		}
-
-		if ( $this->is_sortby( self::LOWBID_QUERY_ARG ) ) {
-			return $this->sortby_lowbid( $auctions );
-		}
-
-		if ( $this->is_sortby( self::STARTBID_QUERY_ARG ) ) {
-			return $this->sortby_starting_bid( $auctions );
-		}
-
-		return $auctions;
+	public function apply_filters( array $auctions = [] ): array {
+		return $this->filter_auctions_by( $this->get_current_filter(), $auctions );
 	}
 
 	/**
-	 * Sort options
+	 * Get Auction filters
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_sort_dropdown_options(): array {
-		if ( $this->is_displaying_upcoming() ) {
-			return $this->get_upcoming_sort_options();
-		}
-
-		return $this->get_live_sort_options();
-	}
-
-	/**
-	 * Sort options for live auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_live_sort_options(): array {
-		$options = [
+	public function get_filters(): array {
+		return [
 			[
-				'label'    => __( 'Most Popular', 'goodbids' ),
-				'value'    => self::POPULAR_QUERY_ARG,
-				'selected' => '',
+				'label'   => __( 'Live', 'goodbids' ),
+				'value'   => 'live',
+				'default' => true,
 			],
 			[
-				'label'    => __( 'Newest', 'goodbids' ),
-				'value'    => self::NEWEST_QUERY_ARG,
-				'selected' => $this->is_sortby( self::NEWEST_QUERY_ARG ),
-			],
-			[
-				'label'    => __( 'Ending Soon', 'goodbids' ),
-				'value'    => self::ENDING_QUERY_ARG,
-				'selected' => $this->is_sortby( self::ENDING_QUERY_ARG ),
-			],
-			[
-				'label'    => __( 'Lowest Current Bid', 'goodbids' ),
-				'value'    => self::LOWBID_QUERY_ARG,
-				'selected' => $this->is_sortby( self::LOWBID_QUERY_ARG ),
+				'label'   => __( 'Coming Soon', 'goodbids' ),
+				'value'   => 'upcoming',
+				'default' => false,
 			],
 		];
-
-		return $options;
 	}
 
 	/**
-	 * Sort options for upcoming auctions
+	 * Get the current applied filter
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public function get_upcoming_sort_options(): array {
+	public function get_current_filter(): string {
+		$default = 'live';
+		$filter  = $this->get_query_arg( self::FILTER_QUERY_ARG, $default );
 
-		$options = [
-			[
-				'label'    => __( 'Opening Soon', 'goodbids' ),
-				'value'    => self::OPENING_QUERY_ARG,
-				'selected' => '',
-			],
-			// TODO finish once we have most watched set up
-			// [
-			// 'label'    => __( 'Most Watched', 'goodbids' ),
-			// 'value'    => '',
-			// 'selected' => false,
-			// ],
-			[
-				'label'    => __( 'Lowest Starting Bid', 'goodbids' ),
-				'value'    => self::STARTBID_QUERY_ARG,
-				'selected' => $this->is_sortby( self::STARTBID_QUERY_ARG ),
-			],
-		];
+		foreach ( $this->get_filters() as $option ) {
+			if ( $option['value'] === $filter ) {
+				return $option['value'];
+			}
+			if ( $option['default'] ) {
+				$default = $option['value'];
+			}
+		}
 
-		return $options;
+		return $default;
 	}
 
 	/**
-	 * Apply pagination to the filtered auctions
+	 * Apply pagination to the auctions array
 	 *
 	 * @since 1.0.0
 	 *
@@ -386,22 +341,48 @@ class AllAuctions extends ACFBlock {
 	 */
 	public function apply_pagination( array $auctions ): array {
 		return collect( $auctions )
-			->slice( $this->get_offset(), $this->get_auctions_per_page() )
-			->all();
+				->slice( $this->get_offset(), $this->get_auctions_per_page() )
+				->all();
 	}
 
 	/**
-	 * Pagination for all auctions
+	 * Get the current URL with filters and sorting.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $page_url
-	 * @param int    $total_pages
+	 * @return string
+	 */
+	public function get_current_url(): string {
+		$auction_post_type = goodbids()->auctions->get_post_type();
+		$current_url       = get_permalink( get_queried_object_id() );
+
+		if ( is_post_type_archive( $auction_post_type ) ) {
+			$current_url = get_post_type_archive_link( $auction_post_type );
+		}
+
+		if ( $this->get_current_filter() ) {
+			$current_url = add_query_arg( self::FILTER_QUERY_ARG, $this->get_current_filter(), $current_url );
+		}
+
+		if ( $this->get_current_sort() ) {
+			$current_url = add_query_arg( self::SORT_QUERY_ARG, $this->get_current_sort(), $current_url );
+		}
+
+		return $current_url;
+	}
+
+	/**
+	 * Get pagination
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $total_pages
 	 *
 	 * @return string
 	 */
-	public function get_pagination( string $page_url, int $total_pages ): string {
-		$separator = false === strpos( $page_url, '?' ) ? '?' : '&';
+	public function get_pagination( int $total_pages ): string {
+		$page_url  = $this->get_current_url();
+		$separator = ! str_contains( $page_url, '?' ) ? '?' : '&';
 
 		return paginate_links(
 			[
