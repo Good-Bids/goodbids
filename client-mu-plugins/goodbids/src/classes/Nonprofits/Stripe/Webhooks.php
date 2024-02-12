@@ -128,22 +128,12 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 
 		Log::debug( 'Stripe Webhook Received: ' . $event->type, $context );
 
-		switch ( $event->type ) {
-			case 'invoice.sent':
-				$this->process_webhook_sent();
-				break;
-
-			case 'invoice.paid':
-				$this->process_webhook_paid();
-				break;
-
-			case 'invoice.overdue':
-				$this->process_webhook_overdue();
-				break;
-
-			default:
-				$this->process_webhook_other( $event->type );
-		}
+		match ( $event->type ) {
+			'invoice.sent'    => $this->process_webhook_sent(),
+			'invoice.paid'    => $this->process_webhook_paid(),
+			'invoice.overdue' => $this->process_webhook_overdue(),
+			default           => $this->process_webhook_other( $event->type )
+		};
 
 		parent::process_webhook( $request_body );
 	}
