@@ -104,8 +104,18 @@ class Log {
 		$formatter = new LineFormatter( $output );
 		$formatter->ignoreEmptyContextAndExtra();
 
-		$date    = date( 'Y-m-d' ); // phpcs:ignore
-		$handler = new StreamHandler( self::get_logs_dir() . 'goodbids' . $date . '.log', Level::Debug );
+		$date     = date( 'Y-m-d' ); // phpcs:ignore
+		$log_file = self::get_logs_dir() . 'goodbids' . $date . '.log';
+
+		if ( ! file_exists( $log_file ) ) {
+			$wpfs = new \WP_Filesystem_Direct( null );
+			$wpfs->touch( $log_file );
+			if ( ! $wpfs->is_writable( $log_file ) ) {
+				return;
+			}
+		}
+
+		$handler = new StreamHandler( $log_file, Level::Debug );
 		$handler->setFormatter( $formatter );
 
 		self::$monolog = new Logger( 'GoodBids' );
@@ -179,10 +189,12 @@ class Log {
 		$source    = self::get_source();
 		$php_level = self::convert_monolog_level_to_php( $level );
 
-		$mono_message = sprintf( '| %s', $message );
-		$mono_context = array_merge( $context, [ ':source:' => $source ] );
+		if ( self::$monolog ) {
+			$mono_message = sprintf( '| %s', $message );
+			$mono_context = array_merge( $context, [ ':source:' => $source ] );
 
-		self::$monolog->log( $level, $mono_message, $mono_context );
+			self::$monolog->log( $level, $mono_message, $mono_context );
+		}
 
 		$console_source  = self::get_source_string( $source, false );
 		$console_message = sprintf( '%s' . PHP_EOL . '-> %s', $console_source, $message );
