@@ -472,6 +472,8 @@ class Stripe {
 	/**
 	 * Get all Stripe Invoices
 	 *
+	 * TODO: Verify invoices coming from Stripe aren't paginated.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
