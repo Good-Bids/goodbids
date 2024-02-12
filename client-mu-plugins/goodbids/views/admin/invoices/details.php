@@ -26,11 +26,3 @@
 	<strong><?php esc_html_e( 'Please pay by:', 'goodbids' ); ?></strong>
 	<?php echo esc_html( $invoice->get_due_date( 'n/j/Y' ) ); ?>
 </p>
-
-<?php
-$stripe_invoices = goodbids()->invoices->stripe->get_invoices();
-foreach ( $stripe_invoices as $stripe_invoice ) {
-	echo '<pre>';
-	var_dump( $stripe_invoice );
-	echo '</pre>';
-}
