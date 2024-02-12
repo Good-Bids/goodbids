@@ -132,6 +132,9 @@ class WooCommerce {
 		// Adjust the WooCommerce Checkout Actions block.
 		$this->modify_checkout_actions_block();
 
+		// Adjust the Login page.
+		$this->modify_login_page();
+
 		// Add email notifications.
 		$this->setup_email_notifications();
 
@@ -634,6 +637,29 @@ class WooCommerce {
 				return $css . $custom_css;
 			},
 			10
+		);
+	}
+
+
+	/**
+	 * Modify Login Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_login_page(): void {
+		add_action(
+			'woocommerce_login_form_end',
+			function () {
+				if ( ! is_user_logged_in() ) {
+					printf(
+						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full font-extrabold">%s</p>%s</div>',
+						esc_html__( 'Or login with one of these providers', 'goodbids' ),
+						do_shortcode( '[mo_oauth_login]' ),
+					);
+				}
+			}
 		);
 	}
 }
