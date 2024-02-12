@@ -45,5 +45,9 @@
     "watch-auction": {
       "post-types": [ "gb-auction" ]
     }
+  },
+  "invoices": {
+    "payment-terms": "30D",
+    "percent": 10
   }
 }
