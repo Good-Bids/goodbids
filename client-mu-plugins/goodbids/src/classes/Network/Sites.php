@@ -429,10 +429,10 @@ class Sites {
 					return $html;
 				}
 
-				if ( $this->swap(
-					fn () => get_theme_mod( 'custom_logo' ),
-					get_main_site_id()
-				)
+				if (
+					$this->main(
+						fn () => get_theme_mod( 'custom_logo' )
+					)
 				) {
 					return get_custom_logo( get_main_site_id() );
 				}
@@ -561,6 +561,33 @@ class Sites {
 	}
 
 	/**
+	 * Swap to the main site with a callback function
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param callable $callback
+	 *
+	 * @return mixed
+	 */
+	public function main( callable $callback ): mixed {
+		if ( ! is_callable( $callback ) ) {
+			return false;
+		}
+
+		$main_site_id = get_main_site_id();
+
+		if ( is_main_site() ) {
+			return call_user_func( $callback, $main_site_id );
+		}
+
+		switch_to_blog( $main_site_id );
+		$return = call_user_func( $callback, $main_site_id );
+		restore_current_blog();
+
+		return $return;
+	}
+
+	/**
 	 * Automatically register users as a customer when they visit a new Nonprofit site.
 	 *
 	 * @since 1.0.0
@@ -636,7 +663,7 @@ class Sites {
 			return null;
 		}
 
-		return $this->swap(
+		return $this->main(
 			function (): string {
 				$privacy_policy_link = '';
 				$privacy_policy_id   = get_option( 'wp_page_for_privacy_policy' );
@@ -650,8 +677,7 @@ class Sites {
 				}
 
 				return $privacy_policy_link;
-			},
-			get_main_site_id()
+			}
 		);
 	}
 
@@ -667,7 +693,7 @@ class Sites {
 			return null;
 		}
 
-		return $this->swap(
+		return $this->main(
 			function (): string {
 				$terms_conditions_link = '';
 				$terms_conditions_id   = wc_terms_and_conditions_page_id();
@@ -681,8 +707,7 @@ class Sites {
 				}
 
 				return $terms_conditions_link;
-			},
-			get_main_site_id()
+			}
 		);
 	}
 

@@ -32,7 +32,7 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		goodbids()->sites->swap(
+		goodbids()->sites->main(
 			function () {
 				$this->retry_interval = 2;
 				$stripe_settings      = get_option( 'woocommerce_stripe_settings', [] );
@@ -50,8 +50,7 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 				// This should be roughly the same as the activation time of the version of the
 				// plugin when this code first appears.
 				WC_Stripe_Webhook_State::get_monitoring_began_at();
-			},
-			get_main_site_id()
+			}
 		);
 	}
 
@@ -71,7 +70,7 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 			return;
 		}
 
-		goodbids()->sites->swap(
+		goodbids()->sites->main(
 			function () {
 				$request_body    = file_get_contents( 'php://input' );
 				$request_headers = array_change_key_case( $this->get_request_headers(), CASE_UPPER );
@@ -98,8 +97,7 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 					status_header( 204 );
 					exit;
 				}
-			},
-			get_main_site_id()
+			}
 		);
 	}
 
