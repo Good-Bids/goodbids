@@ -189,10 +189,12 @@ class Log {
 		$source    = self::get_source();
 		$php_level = self::convert_monolog_level_to_php( $level );
 
-		$mono_message = sprintf( '| %s', $message );
-		$mono_context = array_merge( $context, [ ':source:' => $source ] );
+		if ( self::$monolog ) {
+			$mono_message = sprintf( '| %s', $message );
+			$mono_context = array_merge( $context, [ ':source:' => $source ] );
 
-		self::$monolog->log( $level, $mono_message, $mono_context );
+			self::$monolog->log( $level, $mono_message, $mono_context );
+		}
 
 		$console_source  = self::get_source_string( $source, false );
 		$console_message = sprintf( '%s' . PHP_EOL . '-> %s', $console_source, $message );
