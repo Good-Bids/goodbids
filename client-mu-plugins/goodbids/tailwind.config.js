@@ -4,7 +4,7 @@ export default {
 		preflight: false,
 	},
 	content: [
-		'./src/**/*.{css,js,jsx,tsx}',
+		'./src/**/*.{css,js,jsx,tsx,php}',
 		'./blocks/**/*.{php,css,js}',
 		'./views/**/*.{php,html}',
 	],
@@ -22,9 +22,8 @@ export default {
 				'spin-left': 'spin-left 1.5s linear infinite',
 			},
 			borderRadius: {
-				DEFAULT: 'var(--wp--preset--spacing--20)',
-				xs: '0.5rem',
-				sm: 'var(--wp--preset--spacing--10)',
+				DEFAULT: '2rem',
+				sm: '1rem',
 			},
 			borderWidth: {
 				DEFAULT: '1px',
@@ -46,7 +45,6 @@ export default {
 				'accent-3': 'var(--wp--preset--color--accent-3)',
 				'accent-4': 'var(--wp--preset--color--accent-4)',
 				transparent: 'transparent',
-				// warning: '#fcd34d',
 				warning: {
 					text: '#000',
 					bg: '#fcda82',
@@ -54,6 +52,9 @@ export default {
 				error: {
 					text: '#000',
 					bg: '#f87171',
+				},
+				red: {
+					500: '#c70808',
 				},
 			},
 			keyframes: {

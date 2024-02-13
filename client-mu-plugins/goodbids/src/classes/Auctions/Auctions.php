@@ -634,54 +634,40 @@ class Auctions {
 	 *
 	 * @param ?int $auction_id
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public function get_remaining_time( int $auction_id = null ): string {
-		$seconds_in_minute = 60;
-		$seconds_in_hour   = 60 * $seconds_in_minute;
-		$seconds_in_day    = 24 * $seconds_in_hour;
-		$seconds           = floor( $this->get_start_date_time( $auction_id ) / 1000 );
+	public function get_remaining_time( int $auction_id, string $icon = null ): void {
+		$class        = 'flex items-center gap-2 ';
+		$time_zone    = new \DateTimeZone( wp_timezone_string( 'timezone' ) );
+		$current_date = new \DateTime( 'now', $time_zone );
 
-		/* remainder is more than 1 day */
-		if ( $seconds > $seconds_in_day ) {
-			/* remainder is more than 2 days, pluralize */
-			if ( $seconds > 2 * $seconds_in_day ) {
-				return printf( '%d days', esc_html( floor( $seconds / $seconds_in_day ) ) );
+		if ( $this->has_started( $auction_id ) ) {
+			$end_date       = new \DateTime( $this->get_end_date_time( $auction_id ), $time_zone );
+			$remaining_time = $current_date->diff( $end_date );
+
+			if ( $remaining_time->h < 1 ) {
+				$class .= 'text-red-500';
+				$time   = $remaining_time->format( '-%im' );
+			} elseif ( $remaining_time->d < 1 ) {
+				$time = $remaining_time->format( '-%hh %im' );
+			} else {
+				$time = $remaining_time->format( '-%ad' );
 			}
 
-			return printf( '%d days', esc_html( floor( $seconds / $seconds_in_day ) ) );
-		}
-
-		/* remainder is less than a day, but more than 1 hour */
-		if ( $seconds > $seconds_in_hour ) {
-			$minutes = floor(
-				( $seconds % $seconds_in_hour ) / $seconds_in_minute,
+			printf(
+				'<div class="%s">%s %s</div>',
+				esc_attr( $class ),
+				goodbids()->sites->get_svg( $icon ),
+				esc_html( $time )
 			);
 
-			/* if not exactly on the hour, show minutes */
-			if ( $minutes > 0 ) {
-				return printf(
-					'%d hours, %d minutes',
-					esc_html( floor( $seconds / $seconds_in_hour ) ),
-					esc_html( $minutes )
-				);
-
-			}
-				return printf(
-					'%d hours',
-					esc_html( floor( $seconds / $seconds_in_house ) )
-				);
-
+		} else {
+			printf(
+				'<div class="%s">Coming %s</div>',
+				esc_attr( $class ),
+				esc_html( $this->get_start_date_time( $auction_id, 'M d' ) )
+			);
 		}
-
-		/* remainder is less than an hour */
-		$remaining_seconds = ( $seconds / $seconds_in_minute );
-
-		return printf(
-			'%d ',
-			esc_html( floor( $seconds / $seconds_in_minute ) ),
-			esc_html( $remaining_seconds )
-		);
 	}
 
 
