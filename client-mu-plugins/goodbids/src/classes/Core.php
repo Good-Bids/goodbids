@@ -14,6 +14,7 @@ use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Watchers;
 use GoodBids\Blocks\Blocks;
 use GoodBids\Frontend\Notices;
+use GoodBids\Frontend\OneTrust;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
 use GoodBids\Network\Dashboard;
@@ -296,6 +297,8 @@ class Core {
 
 		// Init vite.
 		new Vite();
+		// Init OneTrust.
+		new OneTrust();
 	}
 
 	/**
