@@ -12,6 +12,9 @@ export function ParticipationNoticeContent() {
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.2 }}
 			className="flex flex-col items-center gap-2"
+			role="region"
+			aria-live="polite"
+			aria-atomic="true"
 		>
 			{upcomingStatuses.includes(auctionStatus) && userId && (
 				<UpcomingToPreliveWithUser />
@@ -58,9 +61,6 @@ function ContentWrapper({ children }: ContentWrapperProps) {
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.2 }}
 			className="m-0 text-center"
-			role="region"
-			aria-live="polite"
-			aria-atomic="true"
 		>
 			{children}
 		</motion.p>

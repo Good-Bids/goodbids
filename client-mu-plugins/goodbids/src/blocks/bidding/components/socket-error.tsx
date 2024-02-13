@@ -14,13 +14,12 @@ export function SocketError() {
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
 					className="flex items-start gap-4 bg-warning-bg text-warning-text rounded p-4"
-					role="alert"
 				>
 					<div className="h-6 w-6">
 						<WarningIcon />
 					</div>
 
-					<div className="flex flex-col gap-3">
+					<div className="flex flex-col gap-3" role="alert">
 						<p className="m-0">
 							<b>Live auction updates suspended</b>
 						</p>
