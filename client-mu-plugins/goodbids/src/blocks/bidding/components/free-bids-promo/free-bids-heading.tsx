@@ -1,26 +1,27 @@
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
 import { Skeleton } from '../skeleton';
-import { CountdownTimerContent } from './countdown-timer-content';
-import { CountdownTimerIcons } from './countdown-timer-icons';
+import { WaveIcon } from '../icons/wave-icon';
+import { AnimatePresence, motion } from 'framer-motion';
 import { fadeAnimation } from '../../utils/animations';
 
-export function CountdownTimer() {
+export function FreeBidsHeading() {
 	const { auctionStatus } = useBiddingState();
 
 	return (
 		<div className="relative">
 			<Skeleton visible={auctionStatus === 'initializing'} />
-			<AnimatePresence>
+			<AnimatePresence mode="popLayout">
 				{auctionStatus !== 'initializing' && (
 					<motion.div
 						{...fadeAnimation}
-						className="flex items-center gap-3 px-4"
+						className="flex items-center gap-3"
 					>
-						<LayoutGroup>
-							<CountdownTimerIcons />
-							<CountdownTimerContent />
-						</LayoutGroup>
+						<div className="h-6 w-6">
+							<WaveIcon />
+						</div>
+						<p className="m-0">
+							<b>Earn free bids:</b>
+						</p>
 					</motion.div>
 				)}
 			</AnimatePresence>

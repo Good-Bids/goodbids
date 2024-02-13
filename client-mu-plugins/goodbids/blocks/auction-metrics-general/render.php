@@ -21,32 +21,17 @@ if ( ! $goal && ! $estimated_value && ! $expected_high_bid && is_admin() ) :
 	return;
 endif;
 ?>
-<section <?php block_attr( $block, 'grid grid-cols-3 gap-5' ); ?>>
+<section <?php block_attr( $block, 'grid grid-cols-3 gap-2' ); ?>>
 	<?php
 	// Goal.
 	if ( $goal ) :
 		?>
-		<div class="flex flex-col text-center">
-			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></p>
+		<div class="rounded bg-contrast-5 px-4 py-2">
+			<span class="font-bold text-sm block"><?php esc_html_e( 'Goal', 'goodbids' ); ?></span>
 			<?php
 				printf(
-					'<p class="m-1 font-extrabold has-large-font-size">%s</p>',
+					'<span class="text-sm block">%s</span>',
 					wp_kses_post( wc_price( $goal ) )
-				);
-			?>
-		</div>
-	<?php endif; ?>
-
-	<?php
-	// Estimated Value.
-	if ( $estimated_value ) :
-		?>
-		<div class="flex flex-col text-center">
-			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Est. Value', 'goodbids' ); ?></p>
-			<?php
-				printf(
-					'<p class="m-1 font-extrabold has-large-font-size">%s</p>',
-					wp_kses_post( wc_price( $estimated_value ) )
 				);
 			?>
 		</div>
@@ -56,12 +41,27 @@ endif;
 	// Expected High Bid.
 	if ( $expected_high_bid ) :
 		?>
-		<div class="flex flex-col text-center">
-			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'High Bid Goal', 'goodbids' ); ?></p>
+		<div class="rounded bg-contrast-5 px-4 py-2">
+			<span class="font-bold text-sm block"><?php esc_html_e( 'High Bid Goal', 'goodbids' ); ?></span>
 			<?php
 				printf(
-					'<p class="m-1 font-extrabold has-large-font-size">%s</p>',
+					'<span class="text-sm block">%s</span>',
 					wp_kses_post( wc_price( $expected_high_bid ) )
+				);
+			?>
+		</div>
+	<?php endif; ?>
+
+	<?php
+	// Estimated Value.
+	if ( $estimated_value ) :
+		?>
+		<div class="rounded bg-contrast-5 px-4 py-2">
+			<span class="font-bold text-sm block"><?php esc_html_e( 'Est. Value', 'goodbids' ); ?></span>
+			<?php
+				printf(
+					'<span class="text-sm block">%s</span>',
+					wp_kses_post( wc_price( $estimated_value ) )
 				);
 			?>
 		</div>

@@ -7,8 +7,8 @@ import { useBlockProps } from '@wordpress/block-editor';
 /**
  * Internal dependencies
  */
-import { ClockIcon } from './components/clock-icon';
-import { WaveIcon } from './components/wave-icon';
+import { ClockIcon } from './components/icons/clock-icon';
+import { WaveIcon } from './components/icons/wave-icon';
 
 type EditProps = {
 	setAttributes: (attributes: { auctionId: number }) => void;

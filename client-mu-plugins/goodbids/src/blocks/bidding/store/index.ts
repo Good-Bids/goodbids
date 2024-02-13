@@ -1,5 +1,4 @@
+import { createTrackedSelector } from 'react-tracked';
 import { useBiddingStore } from './store';
 
-export const useBiddingState = () => {
-	return useBiddingStore((state) => state);
-};
+export const useBiddingState = createTrackedSelector(useBiddingStore);

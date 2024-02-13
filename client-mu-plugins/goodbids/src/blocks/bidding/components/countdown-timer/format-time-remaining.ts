@@ -2,7 +2,11 @@ const SECONDS_IN_MINUTE = 60;
 const SECONDS_IN_HOUR = 60 * SECONDS_IN_MINUTE;
 const SECONDS_IN_DAY = 24 * SECONDS_IN_HOUR;
 
-export function formatTimeRemaining(timeRemainingMs: number) {
+export function formatTimeRemaining(timeRemainingMs: number | undefined) {
+	if (timeRemainingMs === undefined) {
+		return '';
+	}
+
 	const seconds = Math.floor(timeRemainingMs / 1000);
 
 	// remainder is more than 1 day
