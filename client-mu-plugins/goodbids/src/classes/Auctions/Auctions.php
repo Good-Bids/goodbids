@@ -628,16 +628,18 @@ class Auctions {
 
 
 	/**
-	 * Get the Auction Remaining Time
+	 * Get the Auction Remaining Time returns a formatted string with the optional icon
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $auction_id
+	 * @param int     $auction_id
+	 * @param ?string $icon
 	 *
 	 * @return void
 	 */
 	public function get_remaining_time( int $auction_id, string $icon = null ): void {
 		$class        = 'flex items-center gap-2 ';
+		$svg_img      = '<img class="w-5 h-5" src="' . goodbids()->sites->get_svg_url( $icon ) . '" />';
 		$time_zone    = new \DateTimeZone( wp_timezone_string( 'timezone' ) );
 		$current_date = new \DateTime( 'now', $time_zone );
 
@@ -647,25 +649,35 @@ class Auctions {
 
 			if ( $remaining_time->h < 1 ) {
 				$class .= 'text-red-500';
-				$time   = $remaining_time->format( '-%im' );
+				$time   = $svg_img . $remaining_time->format( '-%im' );
 			} elseif ( $remaining_time->d < 1 ) {
-				$time = $remaining_time->format( '-%hh %im' );
+				$time = $svg_img . $remaining_time->format( '-%hh %im' );
 			} else {
-				$time = $remaining_time->format( '-%ad' );
+				$time = 'Ending ' . $this->get_end_date_time( $auction_id, 'M d' );
 			}
 
 			printf(
-				'<div class="%s">%s %s</div>',
-				esc_attr( $class ),
-				goodbids()->sites->get_svg( $icon ),
-				esc_html( $time )
+				'<div class="%s">%s</div>',
+				$class, // phpcs:ignore escaping in the template
+				$time // phpcs:ignore escaping in the template
 			);
 
 		} else {
+			$start_date     = new \DateTime( $this->get_start_date_time( $auction_id ), $time_zone );
+			$remaining_time = $current_date->diff( $start_date );
+
+			if ( $remaining_time->h < 1 ) {
+				$time = $svg_img . 'Coming in ' . $remaining_time->format( '%im' );
+			} elseif ( $remaining_time->d < 1 ) {
+				$time = $svg_img . 'Coming in ' . $remaining_time->format( '%hh %im' );
+			} else {
+				$time = 'Coming ' . $this->get_start_date_time( $auction_id, 'M d' );
+			}
+
 			printf(
-				'<div class="%s">Coming %s</div>',
-				esc_attr( $class ),
-				esc_html( $this->get_start_date_time( $auction_id, 'M d' ) )
+				'<div class="%s">%s</div>',
+				$class, // phpcs:ignore escaping in the template
+				$time // phpcs:ignore escaping in the template
 			);
 		}
 	}
