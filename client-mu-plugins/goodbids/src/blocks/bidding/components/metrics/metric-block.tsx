@@ -27,7 +27,12 @@ export function MetricBlock({ type, value }: MetricBlockProps) {
 	}, [value, motionValue]);
 
 	return (
-		<div className="rounded bg-contrast-5 px-4 py-2">
+		<div
+			className="rounded bg-contrast-5 px-4 py-2"
+			role="region"
+			aria-live="polite"
+			aria-atomic="true"
+		>
 			<span className="font-bold text-sm block">
 				{formatMetricHeading(type)}
 			</span>

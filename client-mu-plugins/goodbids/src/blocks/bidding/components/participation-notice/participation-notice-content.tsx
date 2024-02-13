@@ -58,6 +58,9 @@ function ContentWrapper({ children }: ContentWrapperProps) {
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.2 }}
 			className="m-0 text-center"
+			role="region"
+			aria-live="polite"
+			aria-atomic="true"
 		>
 			{children}
 		</motion.p>

@@ -32,6 +32,7 @@ export function FreeBidButton() {
 					href={disabled ? '' : freeBidUrl}
 					className={classes}
 					aria-disabled={disabled}
+					aria-live="polite"
 				>
 					{`Place free bid ${
 						userId ? `(${userFreeBids} available)` : ''

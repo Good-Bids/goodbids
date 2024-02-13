@@ -54,6 +54,7 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 				exit={{ opacity: 0 }}
 				transition={{ duration: 0.2 }}
 				className="flex items-start gap-4 bg-error-bg text-error-text rounded p-4"
+				role="alert"
 			>
 				<div className="h-6 w-6">
 					<WarningIcon />

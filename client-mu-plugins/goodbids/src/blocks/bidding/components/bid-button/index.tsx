@@ -64,6 +64,7 @@ function LiveAndClosing() {
 			transition={{ duration: 0.2 }}
 			className={classes}
 			href={isLastBidder ? '' : bidUrl}
+			aria-live="polite"
 		>
 			GOODBID <motion.span>{calculatedValue}</motion.span> Now
 		</motion.a>
@@ -82,6 +83,7 @@ function ClosedAndLastBidder() {
 			transition={{ duration: 0.2 }}
 			href={rewardUrl}
 			className="btn-fill text-center"
+			aria-live="polite"
 		>
 			Claim Your Reward
 		</motion.a>
