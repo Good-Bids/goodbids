@@ -83,7 +83,7 @@ function getStatusAndTimeRemaining(
 type HandleSetIntervalParams = Omit<TimingType, 'timeRemainingMs'> &
 	Pick<BiddingActions, 'setAuctionStatus'>;
 
-export function handleSetInterval({
+export function handleSetCountdownInterval({
 	startTime,
 	endTime,
 	auctionStatus,

@@ -61,7 +61,7 @@ function LiveAndClosing() {
 			layout
 			{...fadeAnimation}
 			className={classes}
-			href={isLastBidder ? '' : bidUrl}
+			href={isLastBidder ? '#' : bidUrl}
 			aria-live="polite"
 		>
 			GOODBID <motion.span>{calculatedValue}</motion.span> Now

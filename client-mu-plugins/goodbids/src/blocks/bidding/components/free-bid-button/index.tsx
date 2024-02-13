@@ -27,7 +27,7 @@ export function FreeBidButton() {
 				<motion.a
 					layout
 					{...fadeAnimation}
-					href={disabled ? '' : freeBidUrl}
+					href={disabled ? '#' : freeBidUrl}
 					className={classes}
 					aria-disabled={disabled}
 					aria-live="polite"

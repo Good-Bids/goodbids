@@ -48,14 +48,14 @@ export const handleSetAuctionStatus = (
 export function handelSetFetchAuction(
 	data: AuctionResponse,
 	userId: UserType['userId'],
-	setInterval: BiddingActions['setInterval'],
+	setCountdownInterval: BiddingActions['setCountdownInterval'],
 ): Partial<UrlsType & TimingType & BidsType & FetchingType & UserType> {
 	const startTime = new Date(data.startTime);
 	const endTime = new Date(data.endTime);
 
 	const isLastBidder = getIsLastBidder(userId, data.lastBidder);
 
-	setInterval(startTime, endTime);
+	setCountdownInterval(startTime, endTime);
 
 	return {
 		...data,
@@ -69,7 +69,7 @@ export function handelSetFetchAuction(
 export function handleSetSocketAuction(
 	message: SocketMessage,
 	userId: UserType['userId'],
-	setInterval: BiddingActions['setInterval'],
+	setCountdownInterval: BiddingActions['setCountdownInterval'],
 ): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
@@ -86,7 +86,7 @@ export function handleSetSocketAuction(
 		const startTime = new Date(message.payload.startTime);
 		const endTime = new Date(message.payload.endTime);
 
-		setInterval(startTime, endTime);
+		setCountdownInterval(startTime, endTime);
 
 		return {
 			...message.payload,

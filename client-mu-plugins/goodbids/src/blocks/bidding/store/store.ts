@@ -8,7 +8,7 @@ import {
 	handleSetAuctionStatus,
 	handleSetSocketError,
 } from './functions';
-import { handleSetInterval } from './timing';
+import { handleSetCountdownInterval } from './timing';
 
 export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	socketUrl: '',
@@ -45,7 +45,11 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 
 	setFetchAuction: (data) => {
 		set((state) =>
-			handelSetFetchAuction(data, state.userId, state.setInterval),
+			handelSetFetchAuction(
+				data,
+				state.userId,
+				state.setCountdownInterval,
+			),
 		);
 	},
 
@@ -55,7 +59,11 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 
 	setSocketAuction: (message) => {
 		set((state) =>
-			handleSetSocketAuction(message, state.userId, state.setInterval),
+			handleSetSocketAuction(
+				message,
+				state.userId,
+				state.setCountdownInterval,
+			),
 		);
 	},
 
@@ -67,8 +75,10 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 		set({ timeRemainingMs });
 	},
 
-	setInterval: (startTime, endTime) => {
-		set((state) => handleSetInterval({ ...state, startTime, endTime }));
+	setCountdownInterval: (startTime, endTime) => {
+		set((state) =>
+			handleSetCountdownInterval({ ...state, startTime, endTime }),
+		);
 	},
 }));
 

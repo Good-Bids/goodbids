@@ -58,7 +58,7 @@ export type BiddingActions = {
 	setSocketAuction: (message: SocketMessage) => void;
 	setUser: (data: UserResponse) => void;
 	setTimeRemaining: (timeRemainingMs: number | undefined) => void;
-	setInterval: (startTime: Date, endTime: Date) => void;
+	setCountdownInterval: (startTime: Date, endTime: Date) => void;
 };
 
 export type BiddingState = UrlsType &
