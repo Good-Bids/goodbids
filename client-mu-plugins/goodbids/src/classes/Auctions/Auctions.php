@@ -336,7 +336,7 @@ class Auctions {
 			function ( int $ttl, WP_REST_Response $response ): int {
 				$handler = $response->get_matched_handler();
 
-				if ( empty( $handler['callback'][0] ) || ! is_object(  $handler['callback'][0] ) ) {
+				if ( empty( $handler['callback'][0] ) || ! is_object( $handler['callback'][0] ) ) {
 					return $ttl;
 				}
 
@@ -624,6 +624,66 @@ class Auctions {
 
 		return goodbids()->utilities->format_date_time( $end, $format );
 	}
+
+
+
+	/**
+	 * Get the Auction Remaining Time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return string
+	 */
+	public function get_remaining_time( int $auction_id = null ): string {
+		$seconds_in_minute = 60;
+		$seconds_in_hour   = 60 * $seconds_in_minute;
+		$seconds_in_day    = 24 * $seconds_in_hour;
+		$seconds           = floor( $this->get_start_date_time( $auction_id ) / 1000 );
+
+		/* remainder is more than 1 day */
+		if ( $seconds > $seconds_in_day ) {
+			/* remainder is more than 2 days, pluralize */
+			if ( $seconds > 2 * $seconds_in_day ) {
+				return printf( '%d days', esc_html( floor( $seconds / $seconds_in_day ) ) );
+			}
+
+			return printf( '%d days', esc_html( floor( $seconds / $seconds_in_day ) ) );
+		}
+
+		/* remainder is less than a day, but more than 1 hour */
+		if ( $seconds > $seconds_in_hour ) {
+			$minutes = floor(
+				( $seconds % $seconds_in_hour ) / $seconds_in_minute,
+			);
+
+			/* if not exactly on the hour, show minutes */
+			if ( $minutes > 0 ) {
+				return printf(
+					'%d hours, %d minutes',
+					esc_html( floor( $seconds / $seconds_in_hour ) ),
+					esc_html( $minutes )
+				);
+
+			}
+				return printf(
+					'%d hours',
+					esc_html( floor( $seconds / $seconds_in_house ) )
+				);
+
+		}
+
+		/* remainder is less than an hour */
+		$remaining_seconds = ( $seconds / $seconds_in_minute );
+
+		return printf(
+			'%d ',
+			esc_html( floor( $seconds / $seconds_in_minute ) ),
+			esc_html( $remaining_seconds )
+		);
+	}
+
 
 	/**
 	 * Check if an Auction has started.
@@ -1227,7 +1287,7 @@ class Auctions {
 		}
 
 		$total = collect( $this->get_bid_orders( $auction_id ) )
-			->sum( fn( $order ) => $order->get_total( 'edit' ) );
+		->sum( fn( $order ) => $order->get_total( 'edit' ) );
 
 		set_transient( $transient, $total, HOUR_IN_SECONDS );
 
@@ -1246,7 +1306,7 @@ class Auctions {
 	 */
 	public function get_user_total_donated( int $auction_id, int $user_id ): float {
 		return collect( $this->get_bid_orders( $auction_id, -1, $user_id ) )
-			->sum( fn( $order ) => $order->get_total( 'edit' ) );
+		->sum( fn( $order ) => $order->get_total( 'edit' ) );
 	}
 
 	/**
@@ -1565,7 +1625,7 @@ class Auctions {
 	 */
 	private function add_one_min_cron_schedule(): void {
 		add_filter(
-			'cron_schedules', // phpcs:ignore
+		'cron_schedules', // phpcs:ignore
 			function ( array $schedules ): array {
 				foreach ( $this->cron_intervals as $id => $props ) {
 					// If one is already set, confirm it matches our schedule.
@@ -1662,7 +1722,14 @@ class Auctions {
 				$count = count( $auctions->posts );
 
 				if ( $count !== $starts ) {
-					Log::warning( 'Not all Auctions were started', [ 'starts' => $starts, 'expected' => $count, 'posts' => $auctions->posts ] );
+					Log::warning(
+						'Not all Auctions were started',
+						[
+							'starts'   => $starts,
+							'expected' => $count,
+							'posts'    => $auctions->posts,
+						]
+					);
 				}
 			}
 		);
