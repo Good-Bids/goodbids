@@ -3,6 +3,7 @@ import { useBiddingState } from '../../store';
 import { Skeleton } from '../skeleton';
 import { CountdownTimerContent } from './countdown-timer-content';
 import { CountdownTimerIcons } from './countdown-timer-icons';
+import { fadeAnimation } from '../../utils/animations';
 
 export function CountdownTimer() {
 	const { auctionStatus } = useBiddingState();
@@ -13,10 +14,7 @@ export function CountdownTimer() {
 			<AnimatePresence>
 				{auctionStatus !== 'initializing' && (
 					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.2 }}
+						{...fadeAnimation}
 						className="flex items-center gap-3 px-4"
 					>
 						<LayoutGroup>

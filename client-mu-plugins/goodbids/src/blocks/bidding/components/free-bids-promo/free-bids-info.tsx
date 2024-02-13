@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
 import { InfoIcon } from '../icons/info-icon';
 import { Skeleton } from '../skeleton';
+import { fadeAnimation } from '../../utils/animations';
 
 export function FreeBidsInfo() {
 	const { auctionStatus } = useBiddingState();
@@ -12,10 +13,7 @@ export function FreeBidsInfo() {
 			<AnimatePresence>
 				{auctionStatus !== 'initializing' && (
 					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.2 }}
+						{...fadeAnimation}
 						className="flex items-center gap-2"
 					>
 						<InfoIcon width={16} />

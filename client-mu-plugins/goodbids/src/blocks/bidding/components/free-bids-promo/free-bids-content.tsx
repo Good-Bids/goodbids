@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Skeleton } from '../skeleton';
 import { useBiddingState } from '../../store';
 import { liveStatuses, upcomingStatuses } from '../../utils/statuses';
+import { fadeAnimation } from '../../utils/animations';
 
 export function FreeBidsContent() {
 	const { auctionStatus, userId, freeBidsAvailable } = useBiddingState();
@@ -28,22 +29,27 @@ export function FreeBidsContent() {
 	);
 }
 
+type ContentWrapperProps = {
+	children: React.ReactNode;
+};
+
+function ContentWrapper({ children }: ContentWrapperProps) {
+	return (
+		<motion.p {...fadeAnimation} className="m-0">
+			{children}
+		</motion.p>
+	);
+}
+
 function UpcomingAndUser() {
 	return (
-		<motion.p
-			key="fbp-upcoming-user"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			className="m-0"
-		>
+		<ContentWrapper>
 			Place one of the first five <b>paid bids</b> in this auction or{' '}
 			<span className="font-bold underline">
 				share GOODBIDS with a friend
 			</span>{' '}
 			to <b>earn a free bid</b>!
-		</motion.p>
+		</ContentWrapper>
 	);
 }
 
@@ -51,57 +57,36 @@ function LiveAndUserAndFreeBids() {
 	const { currentBid } = useBiddingState();
 
 	return (
-		<motion.p
-			key="fbp-live-user-free-bids"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			className="m-0"
-		>
+		<ContentWrapper>
 			GOODBID <b>${currentBid}</b> now or{' '}
 			<span className="font-bold underline">
 				share GOODBIDS with a friend
 			</span>{' '}
 			to <b>earn a free bid</b>!
-		</motion.p>
+		</ContentWrapper>
 	);
 }
 
 function LiveAndUser() {
 	return (
-		<motion.p
-			key="fbp-live-user"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			className="m-0"
-		>
+		<ContentWrapper>
 			<span className="font-bold underline">
 				Share GOODBIDS with a friend
 			</span>{' '}
 			to <b>earn a free bid</b>!
-		</motion.p>
+		</ContentWrapper>
 	);
 }
 
 function NoUser() {
 	return (
-		<motion.p
-			key="fbp-live-user"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			className="m-0"
-		>
+		<ContentWrapper>
 			GOODBIDS users earn <b>free bids</b> when they place one of the{' '}
 			<b>first five paid bids</b> in an auction or{' '}
 			<span className="font-bold underline">
 				share GOODBIDS with a friend{' '}
 			</span>{' '}
 			to <b>earn a free bid</b>!
-		</motion.p>
+		</ContentWrapper>
 	);
 }

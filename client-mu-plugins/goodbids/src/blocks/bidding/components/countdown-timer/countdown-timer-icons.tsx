@@ -3,6 +3,7 @@ import { useBiddingState } from '../../store';
 import { LoadingIcon } from '../icons/loading-icon';
 import { ClockIcon } from '../icons/clock-icon';
 import { AuctionStatus } from '../../store/types';
+import { fadeAnimation } from '../../utils/animations';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 
@@ -17,15 +18,15 @@ const nonInitializingStatus: AuctionStatus[] = [
 export function CountdownTimerIcons() {
 	const { auctionStatus } = useBiddingState();
 
-	return (
-		<>
-			{closingStatuses.includes(auctionStatus) && (
-				<ClosingAndPreclosing />
-			)}
+	if (closingStatuses.includes(auctionStatus)) {
+		return <ClosingAndPreclosing />;
+	}
 
-			{nonInitializingStatus.includes(auctionStatus) && <AllOther />}
-		</>
-	);
+	if (nonInitializingStatus.includes(auctionStatus)) {
+		return <AllOther />;
+	}
+
+	return null;
 }
 
 type IconWrapperProps = {
@@ -34,13 +35,7 @@ type IconWrapperProps = {
 
 function IconWrapper({ children }: IconWrapperProps) {
 	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			className="flex items-center"
-		>
+		<motion.div {...fadeAnimation} className="flex items-center">
 			{children}
 		</motion.div>
 	);

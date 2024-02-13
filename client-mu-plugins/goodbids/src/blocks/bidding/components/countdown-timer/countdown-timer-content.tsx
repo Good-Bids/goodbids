@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
 import { formatTimeRemaining } from './format-time-remaining';
 import { AuctionStatus } from '../../store/types';
+import { fadeAnimation } from '../../utils/animations';
 
 const upcomingStatuses: AuctionStatus[] = ['upcoming', 'starting'];
 
@@ -45,14 +46,7 @@ type ContentWrapperProps = {
 
 function ContentWrapper({ children }: ContentWrapperProps) {
 	return (
-		<motion.span
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			role="timer"
-			aria-live="polite"
-		>
+		<motion.span {...fadeAnimation} role="timer" aria-live="polite">
 			{children}
 		</motion.span>
 	);

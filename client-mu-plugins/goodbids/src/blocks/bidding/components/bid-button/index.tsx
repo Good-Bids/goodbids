@@ -9,6 +9,7 @@ import { useBiddingState } from '../../store';
 import { AuctionStatus } from '../../store/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
+import { fadeAnimation } from '../../utils/animations';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 const liveAndClosingStatuses: AuctionStatus[] = ['live', ...closingStatuses];
@@ -58,10 +59,7 @@ function LiveAndClosing() {
 	return (
 		<motion.a
 			layout
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
+			{...fadeAnimation}
 			className={classes}
 			href={isLastBidder ? '' : bidUrl}
 			aria-live="polite"
@@ -77,10 +75,7 @@ function ClosedAndLastBidder() {
 	return (
 		<motion.a
 			layout
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
+			{...fadeAnimation}
 			href={rewardUrl}
 			className="btn-fill text-center"
 			aria-live="polite"

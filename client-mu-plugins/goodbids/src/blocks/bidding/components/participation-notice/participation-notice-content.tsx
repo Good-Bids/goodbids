@@ -1,16 +1,14 @@
 import { motion } from 'framer-motion';
 import { useBiddingState } from '../../store';
 import { upcomingStatuses } from '../../utils/statuses';
+import { fadeAnimation } from '../../utils/animations';
 
 export function ParticipationNoticeContent() {
 	const { auctionStatus, userTotalBids, userId } = useBiddingState();
 
 	return (
 		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
+			{...fadeAnimation}
 			className="flex flex-col items-center gap-2"
 			role="region"
 			aria-live="polite"
@@ -55,13 +53,7 @@ type ContentWrapperProps = {
 
 function ContentWrapper({ children }: ContentWrapperProps) {
 	return (
-		<motion.p
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-			className="m-0 text-center"
-		>
+		<motion.p {...fadeAnimation} className="m-0 text-center">
 			{children}
 		</motion.p>
 	);

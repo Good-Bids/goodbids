@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { useBiddingState } from '../../store';
 import { AnimatePresence, motion } from 'framer-motion';
+import { fadeAnimation } from '../../utils/animations';
 
 export function FreeBidButton() {
 	const {
@@ -25,10 +26,7 @@ export function FreeBidButton() {
 			{freeBidsAllowed && auctionStatus === 'live' && (
 				<motion.a
 					layout
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					transition={{ duration: 0.2 }}
+					{...fadeAnimation}
 					href={disabled ? '' : freeBidUrl}
 					className={classes}
 					aria-disabled={disabled}
