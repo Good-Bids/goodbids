@@ -49,6 +49,10 @@ Finally, run `npm install` from the root directory
 
 Alternatively, running `bin/install` will install all composer and npm dependencies.
 
+### Set up Environment Variables
+Duplicate the file `client-mu-plugins/vip-env-vars.example.php` and rename it to `vip-env-vars.local.php`. Fill in any
+env vars marked with `TODO`.  
+
 ## Local Environment URL
 
 [http://goodbids.vipdev.lndo.site/](http://goodbids.vipdev.lndo.site/)

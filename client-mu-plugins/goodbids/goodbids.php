@@ -28,7 +28,7 @@ if ( file_exists( GOODBIDS_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
 }
 
 /**
- * Plugin Function Shortcode.
+ * GoodBids API Entry Function.
  *
  * @return ?\GoodBids\Core
  */
