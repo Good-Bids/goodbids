@@ -5,7 +5,7 @@
 Global plugins to be used on all sites can be activated by adding the plugin slug to the `active-plugins` array in the GoodBids MU Plugin `config.json` file.
 
 If the plugin slug does not match the plugin filename (e.g. `woocommerce/woocommerce.php`), you need to specify the both the slug and plugin filename. (Example: `advanced-custom-fields-pro/acf.php`)
-
+ 
 ```json
 {
   "active-plugins": [
