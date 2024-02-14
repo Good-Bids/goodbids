@@ -29,7 +29,7 @@
 				data: function (params) {
 					return {
 						term: params.term,
-						user_id: <?php echo esc_html( $user_id ); ?>,
+						user_id: '<?php echo esc_html( $user_id ); ?>',
 						page: params.page || 1,
 						action: 'goodbids_referrals_search_user_select2',
 						nonce: '<?php echo esc_html( wp_create_nonce( 'goodbids_referrals_search_user_select2' ) ); ?>',

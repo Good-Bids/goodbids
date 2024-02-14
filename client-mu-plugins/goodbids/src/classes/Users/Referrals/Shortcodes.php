@@ -60,11 +60,11 @@ class Shortcodes {
 					return $referral->get_link();
 				}
 
-				if ( 'invitation_count' === $show ) {
+				if ( 'invitation-count' === $show ) {
 					return count( $referral->get_invitations() );
 				}
 
-				if ( 'top_referrers' === $show ) {
+				if ( 'top-referrers' === $show ) {
 					global $wpdb;
 					$results = $wpdb->get_results(
 						$wpdb->prepare(
@@ -87,7 +87,7 @@ class Shortcodes {
 					return ob_get_clean();
 				}
 
-				if ( 'copy_link' === $show ) {
+				if ( 'copy-link' === $show ) {
 					if ( ! wp_script_is( 'jquery', 'enqueued' ) ) {
 						// Enqueue jquery only if not enqueued before.
 						wp_enqueue_script( 'jquery' );

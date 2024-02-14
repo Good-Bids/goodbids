@@ -240,7 +240,12 @@ class Admin {
 				$total_count = $users_query->get_total();
 				$users       = array_map(
 					function ( WP_User $user ) {
-						$text = '(' . $user->ID . ') ' . $user->display_name . ' (' . $user->user_login . ')';
+						$text = sprintf(
+							'(%d) %s (%s)',
+							esc_html( $user->ID ),
+							esc_html( $user->display_name ),
+							esc_html( $user->user_login )
+						);
 
 						return [
 							'id'   => $user->ID,
@@ -351,8 +356,8 @@ class Admin {
 		add_filter(
 			'manage_users_columns',
 			function ( array $columns ) {
-				$columns['invited_by']       = __( 'Referred by', 'goodbids' );
-				$columns['invitation_count'] = __( 'Invitation Count', 'goodbids' );
+				$columns['referred_by']    = __( 'Referred by', 'goodbids' );
+				$columns['referral_count'] = __( 'Referral Count', 'goodbids' );
 				return $columns;
 			}
 		);
@@ -360,7 +365,7 @@ class Admin {
 		add_filter(
 			'wpmu_users_columns',
 			function ( array $columns ) {
-				$columns['invited_by'] = __( 'Referred by', 'goodbids' );
+				$columns['referred_by'] = __( 'Referred by', 'goodbids' );
 				return $columns;
 			}
 		);
@@ -370,9 +375,9 @@ class Admin {
 			function ( string $value, string $column, int $user_id ) {
 				$referral = new Referral( $user_id );
 
-				if ( 'invited_users_count' === $column ) {
+				if ( 'referral_count' === $column ) {
 					return esc_html( count( $referral->get_invitations() ) );
-				} elseif ( 'invited_by' === $column ) {
+				} elseif ( 'referred_by' === $column ) {
 					$referrer_id = $referral->get_referrer_id();
 
 					if ( ! $referrer_id ) {

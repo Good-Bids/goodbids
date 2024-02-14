@@ -44,7 +44,7 @@ class Referrals {
 	/**
 	 * @since 1.0.0
 	 */
-	const REFERRAL_CODE_QUERY_ARG = 'ref';
+	const REFERRAL_CODE_QUERY_ARG = 'gbr';
 
 	/**
 	 * @since 1.0.0
@@ -112,7 +112,7 @@ class Referrals {
 	 */
 	private function track_referral_code(): void {
 		add_action(
-			'init',
+			'template_redirect',
 			function () {
 				if ( ! isset( $_GET[ self::REFERRAL_CODE_QUERY_ARG ] ) ) {
 					return;
@@ -125,7 +125,12 @@ class Referrals {
 				}
 
 				$this->set_cookie( $code );
-			}
+
+				// Remove referral code from URL.
+				wp_safe_redirect( remove_query_arg( self::REFERRAL_CODE_QUERY_ARG ) );
+				exit;
+			},
+			2
 		);
 	}
 

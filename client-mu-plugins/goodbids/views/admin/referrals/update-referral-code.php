@@ -11,17 +11,19 @@
 
 ?>
 <table class="form-table">
-	<?php wp_nonce_field( 'update_referral_code', 'wrc_update_ref_code_nonce' ); ?>
+	<?php wp_nonce_field( 'update_referral_code', 'goodbids_update_referral_nonce' ); ?>
 	<tr>
-		<th><?php esc_html_e( 'Update Referral Code', 'goodbids' ); ?></th>
+		<th><?php esc_html_e( 'Referral Code', 'goodbids' ); ?></th>
 
 		<td>
 			<label>
 				<input type="text" name="wrc_new_ref_code"
 					placeholder="<?php esc_attr_e( 'Referral Code', 'goodbids' ); ?>"
-					value="<?php echo esc_attr( $referral->get_code() ); ?>"/>
+					value="<?php echo esc_attr( $referral->get_code() ); ?>"
+					style="text-transform: uppercase"
+				/>
 				<br>
-				<small><?php esc_html_e( 'Custom refer code', 'goodbids' ); ?></small>
+				<small><?php esc_html_e( 'Custom referral code', 'goodbids' ); ?></small>
 			</label>
 		</td>
 	</tr>
