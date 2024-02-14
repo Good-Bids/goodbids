@@ -1,6 +1,6 @@
 <?php
 /**
- * Block: Watch Auction
+ * Block: Auction Watchers
  *
  * @global array $block
  *
@@ -16,11 +16,12 @@ $watchers = goodbids()->watchers->get_watcher_count();
 	<a href="#gb-toggle-watching"
 		data-state="<?php echo esc_attr( intval( $watching ) ); ?>"
 		data-auction="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>"
-		class="flex items-center gap-2 no-underline btn-fill-secondary"
+		class="flex items-center gap-2 no-underline"
 	>
 		<span class="dashicons dashicons-<?php echo esc_attr( $icon ); ?>"></span>
 		<span>
-			<?php esc_html_e( 'Watch', 'goodbids' ); ?>
+			<span class="watch-count"><?php echo esc_html( $watchers ); ?></span>
+			<?php esc_html_e( 'Watching', 'goodbids' ); ?>
 		</span>
 	</a>
 </div>

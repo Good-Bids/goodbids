@@ -1,7 +1,7 @@
 {
-  "name": "watch-auction",
-  "title": "Watch Auction",
-  "description": "Control for toggling watching Auctions.",
+  "name": "auction-watchers",
+  "title": "Auction Watchers",
+  "description": "Show the number of watchers for an Auction.",
   "icon": "visibility",
   "category": "goodbids",
   "textdomain": "goodbids",
@@ -11,6 +11,5 @@
   },
   "supports": {
     "jsx": false
-  },
-  "script": "goodbids-watch-auction-block"
+  }
 }

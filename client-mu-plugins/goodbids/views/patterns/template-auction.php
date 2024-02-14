@@ -22,13 +22,15 @@
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
+			<!-- wp:acf/auction-watchers {"name":"acf/auction-watchers","mode":"preview"} /-->
+
 			<!-- wp:post-title /-->
+
+			<!-- wp:acf/watch-auction {"name":"acf/watch-auction","mode":"preview"} /-->
 
 			<!-- wp:post-excerpt /-->
 
 			<!-- wp:acf/auction-metrics-general {"name":"acf/auction-metrics-general","mode":"preview"} /-->
-
-			<!-- wp:acf/bid-now {"name":"acf/bid-now","mode":"preview"} /-->
 
 			<!-- wp:goodbids/bidding {"auctionId":0,"lock":{"move":false,"remove":true}} -->
 				<div id="goodbids-bidding" data-auction-id="0" class="wp-block-goodbids-bidding"></div>
