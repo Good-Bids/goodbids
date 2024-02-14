@@ -97,6 +97,20 @@ class Settings {
 					],
 				],
 			],
+			'code-length' => [
+				'label'    => __( 'Referral Code Length', 'goodbids' ),
+				'type'     => 'number',
+				'default'  => goodbids()->get_config( 'referrals.code-length', false ),
+				'section'  => 'referrals',
+				'class'    => 'small-text',
+			],
+			'expiration-days' => [
+				'label'    => __( 'Days until Expiration', 'goodbids' ),
+				'type'     => 'number',
+				'default'  => goodbids()->get_config( 'referrals.expiration-days', false ),
+				'section'  => 'referrals',
+				'class'    => 'small-text',
+			],
 			'logging' => [
 				'label'    => __( 'Logging', 'goodbids' ),
 				'type'     => 'toggle',
@@ -116,19 +130,20 @@ class Settings {
 			function (): void {
 				$this->load_settings();
 
-				add_settings_section(
-					'auctioneer',
-					__( 'Auctioneer', 'goodbids' ),
-					'__return_empty_string',
-					self::PAGE_SLUG
-				);
+				$sections = [
+					'auctioneer' => __( 'Auctioneer', 'goodbids' ),
+					'referrals'  => __( 'Referrals', 'goodbids' ),
+					'advanced'   => __( 'Advanced', 'goodbids' ),
+				];
 
-				add_settings_section(
-					'advanced',
-					__( 'Advanced', 'goodbids' ),
-					'__return_empty_string',
-					self::PAGE_SLUG
-				);
+				foreach ( $sections as $section => $label ) {
+					add_settings_section(
+						$section,
+						$label,
+						'__return_empty_string',
+						self::PAGE_SLUG
+					);
+				}
 
 				foreach ( $this->settings as $id => $setting ) {
 					$key = $setting['section'] . '.' . $id;

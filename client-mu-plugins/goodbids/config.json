@@ -12,8 +12,7 @@
     "user-switching",
     "woocommerce",
     "woocommerce-gateway-stripe",
-    "woocommerce-services",
-    "wp-referral-code"
+    "woocommerce-services"
   ],
   "vip-constants": {
     "auctioneer": {
