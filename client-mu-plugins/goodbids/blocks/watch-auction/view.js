@@ -8,7 +8,7 @@ const GBWatchAuction = (($) => {
 	};
 
 	const bind_toggle = () => {
-		$('a[href="#gb-toggle-watching"]').on('click', function (e) {
+		$('[data-controller="watch-auction"]').on('click', function (e) {
 			e.preventDefault();
 
 			const $btn = $(this);
@@ -26,12 +26,7 @@ const GBWatchAuction = (($) => {
 						return;
 					}
 
-					$btn.find('span.dashicons').toggleClass('dashicons-hidden');
-					$btn.find('span.dashicons').toggleClass(
-						'dashicons-visibility',
-					);
-
-					$btn.find('span.watch-count').text(
+					$('[data-watch-auction-target="watchers"]').text(
 						response.data.totalWatchers,
 					);
 				},

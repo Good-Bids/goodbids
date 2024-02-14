@@ -22,18 +22,24 @@
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:acf/auction-watchers {"name":"acf/auction-watchers","mode":"preview"} /-->
+			<!-- wp:acf/auction-watchers {"name":"acf/auction-watchers","mode":"preview","lock":{"move":true,"remove":true}} /-->
 
 			<!-- wp:post-title /-->
 
-			<!-- wp:acf/watch-auction {"name":"acf/watch-auction","mode":"preview"} /-->
+			<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-group">
+				<!-- wp:acf/watch-auction {"name":"acf/watch-auction","mode":"preview"} /-->
+
+				<!-- wp:acf/auction-user-actions {"name":"acf/auction-user-actions","data":{},"mode":"preview"} /-->
+			</div>
+			<!-- /wp:group -->
 
 			<!-- wp:post-excerpt /-->
 
 			<!-- wp:acf/auction-metrics-general {"name":"acf/auction-metrics-general","mode":"preview"} /-->
 
 			<!-- wp:goodbids/bidding {"auctionId":0,"lock":{"move":false,"remove":true}} -->
-				<div id="goodbids-bidding" data-auction-id="0" class="wp-block-goodbids-bidding"></div>
+			<div id="goodbids-bidding" data-auction-id="0" class="wp-block-goodbids-bidding"></div>
 			<!-- /wp:goodbids/bidding -->
 
 		</div>

@@ -13,15 +13,15 @@ $icon     = $watching ? 'visibility' : 'hidden';
 $watchers = goodbids()->watchers->get_watcher_count();
 ?>
 <div <?php block_attr( $block ); ?>>
-	<a href="#gb-toggle-watching"
+	<div id="gb-toggle-watching"
 		data-state="<?php echo esc_attr( intval( $watching ) ); ?>"
 		data-auction="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>"
-		class="flex items-center gap-2 no-underline"
+		class="inline-flex items-center gap-2 no-underline"
 	>
 		<span class="dashicons dashicons-<?php echo esc_attr( $icon ); ?>"></span>
-		<span>
-			<span class="watch-count"><?php echo esc_html( $watchers ); ?></span>
-			<?php esc_html_e( 'Watching', 'goodbids' ); ?>
+		<span class="text-xs font-bold">
+			<span data-watch-auction-target="watchers"><?php echo esc_html( $watchers ); ?></span>
+			<?php esc_html_e( 'Watchers', 'goodbids' ); ?>
 		</span>
-	</a>
+	</div>
 </div>

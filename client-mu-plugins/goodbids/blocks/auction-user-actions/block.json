@@ -1,0 +1,15 @@
+{
+  "name": "auction-user-actions",
+  "title": "Auction User Actions",
+  "description": "Show actions a user can take on an Auction.",
+  "icon": "share",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["free", "share", "auction", "goodbids"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
+}
