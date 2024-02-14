@@ -577,17 +577,7 @@ class Sites {
 			return false;
 		}
 
-		$main_site_id = get_main_site_id();
-
-		if ( is_main_site() ) {
-			return call_user_func( $callback, $main_site_id );
-		}
-
-		switch_to_blog( $main_site_id );
-		$return = call_user_func( $callback, $main_site_id );
-		restore_current_blog();
-
-		return $return;
+		return $this->swap( $callback, get_main_site_id() );
 	}
 
 	/**
