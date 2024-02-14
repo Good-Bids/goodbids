@@ -8,15 +8,18 @@ export default class extends Controller {
 		state: String,
 	};
 
-	connect() {
-		this.textTarget.textContent =
-			this.stateValue == 0 ? 'Watch' : 'Unwatch';
-	}
+	connect() {}
 
 	toggle() {
-		this.textTarget.textContent =
-			this.stateValue == 0 ? 'Unwatch' : 'Watch';
-		this.stateValue = this.stateValue == 0 ? 1 : 0;
+		if (this.stateValue == 0) {
+			this.stateValue = 1;
+			this.textTarget.textContent = 'Unwatch';
+		} else {
+			this.stateValue = 0;
+			this.textTarget.textContent = 'Watch';
+		}
+		this.element.classList.toggle('btn-fill-secondary');
+		this.element.classList.toggle('btn-fill');
 	}
 
 	watch() {
