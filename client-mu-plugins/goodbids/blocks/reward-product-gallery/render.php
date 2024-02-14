@@ -9,17 +9,16 @@
  */
 
 global $product;
-$reward_id = goodbids()->auctions->get_reward_product_id( goodbids()->auctions->get_auction_id() );
-$reward    = wc_get_product( $reward_id );
-if ( $reward ) {
-	$product = $reward;
-}
+$reward = goodbids()->auctions->rewards->get_product();
 ?>
 <section <?php block_attr( $block, 'woocommerce' ); ?>>
 	<div class="woocommerce product">
 		<?php
-		if ( $product ) :
+		if ( $reward ) :
+			$o_product = $product;
+			$product   = $reward;
 			wc_get_template( 'single-product/product-image.php' );
+			$product = $o_product;
 		else :
 			printf(
 				'<p style="text-align: center;">%s</p>',

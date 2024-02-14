@@ -8,7 +8,10 @@
 
 namespace GoodBids\Auctioneer;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use GoodBids\Auctioneer\Endpoints\Auctions;
+use GoodBids\Utilities\Log;
 
 /**
  * Class for Auctioneer, our Node.js server
@@ -16,6 +19,11 @@ use GoodBids\Auctioneer\Endpoints\Auctions;
  * @since 1.0.0
  */
 class Auctioneer {
+
+	/**
+	 * @since 1.0.0
+	 */
+	const AUCTIONEER_COOKIE = 'goodbids_auctioneer_session';
 
 	/**
 	 * Defines the environment to use.
@@ -162,7 +170,39 @@ class Auctioneer {
 		// Init Auctions Endpoint.
 		$this->auctions = new Auctions();
 
+		// Set the environment based on settings.
+		$this->set_environment();
+
+		// Create a custom session cookie readable by Auctioneer.
+		$this->create_session_cookie();
+
+		// Destroy session cookie on log out.
+		$this->destroy_session_cookie();
+
 		$this->initialized = true;
+	}
+
+	/**
+	 * Determine which environment to use.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_environment(): void {
+		add_action(
+			'init',
+			function () {
+				$environment = goodbids()->get_config( 'auctioneer.environment' );
+
+				// Validate Setting.
+				if ( ! in_array( $environment, [ 'develop', 'staging', 'production' ], true ) ) {
+					return;
+				}
+
+				$this->environment = $environment;
+			}
+		);
 	}
 
 	/**
@@ -181,7 +221,6 @@ class Auctioneer {
 			return null;
 		}
 
-		$params   = $this->convert_dates_to_gmt( $params );
 		$url      = trailingslashit( $this->url ) . $endpoint;
 		$response = wp_remote_request(
 			$url,
@@ -195,7 +234,7 @@ class Auctioneer {
 			]
 		);
 
-		// TODO: Log Response.
+		Log::debug( '[Auctioneer] Response', compact( 'response' ) );
 		$this->last_response = $response;
 
 		if ( $this->is_invalid_response( $response ) ) {
@@ -218,6 +257,21 @@ class Auctioneer {
 	}
 
 	/**
+	 * Get the last response code.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_last_response_code(): ?int {
+		if ( ! $this->get_last_response() ) {
+			return null;
+		}
+
+		return wp_remote_retrieve_response_code( $this->get_last_response() );
+	}
+
+	/**
 	 * Check if the response if valid.
 	 *
 	 * @since 1.0.0
@@ -226,21 +280,23 @@ class Auctioneer {
 	 *
 	 * @return bool
 	 */
-	public function is_invalid_response( mixed $response ): bool {
+	public function is_invalid_response( mixed $response = null ): bool {
+		if ( null === $response ) {
+			$response = $this->get_last_response();
+		}
+
 		if ( is_wp_error( $response ) ) {
-			// TODO: Log error.
-			error_log( '[GB] ' . $response->get_error_message() );
+			Log::debug( '[Auctioneer] Invalid Response: ' . $response->get_error_message(), compact( 'response' ) );
 			return true;
 		}
 
 		if ( ! is_array( $response ) || empty( $response ) ) {
-			// TODO: Log error.
+			Log::warning( '[Auctioneer] Invalid or Empty Response.', compact( 'response' ) );
 			return true;
 		}
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			// TODO: Log Errors.
-			error_log( '[GB] ' . wp_strip_all_tags( $this->get_response_message( $response ) ) );
+			Log::debug( '[Auctioneer] Bad Response: ' . wp_strip_all_tags( $this->get_response_message( $response ) ), compact( 'response' ) );
 			return true;
 		}
 
@@ -261,7 +317,7 @@ class Auctioneer {
 		$msg_raw = $this->get_response_message_raw( $response );
 
 		if ( ! $msg_raw ) {
-			return '';
+			return wp_remote_retrieve_body( $response );
 		}
 
 		$message = sprintf(
@@ -324,30 +380,84 @@ class Auctioneer {
 	}
 
 	/**
-	 * Convert all dates to GMT before sending to Auctioneer.
+	 * Generate a User cookie readable by Auctioneer.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $data
-	 * @param string $format
-	 *
-	 * @return array
+	 * @return void
 	 */
-	private function convert_dates_to_gmt( array $data, string $format = 'c' ): array {
-		$dates = [
-			'startTime',
-			'endTime',
-			'requestTime',
+	private function create_session_cookie(): void {
+		add_action(
+			'set_logged_in_cookie',
+			function ( $cookie, $expire, $expiration, $user_id ) {
+				$session_cookie = $this->generate_auctioneer_cookie( $user_id );
+				setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, false );
+
+				if ( COOKIEPATH != SITECOOKIEPATH ) {
+					setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, true, false );
+				}
+			},
+			10,
+			4
+		);
+	}
+
+	/**
+	 * Generates an encrypted cookie for Auctioneer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return string
+	 */
+	private function generate_auctioneer_cookie( int $user_id ): string {
+		$payload = [
+			'userId' => $user_id,
 		];
 
-		foreach ( $dates as $date ) {
-			if ( empty( $data[ $date ] ) ) {
-				continue;
+		return JWT::encode( $payload, $this->api_key, 'HS256' );
+	}
+
+	/**
+	 * Decrypts the encrypted user cookie for Auctioneer, returns the User ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $cookie
+	 *
+	 * @return int
+	 */
+	public function decrypt_auctioneer_cookie( string $cookie ): int {
+		$data = JWT::decode( $cookie, new Key( $this->api_key, 'HS256' ) );
+		return $data?->userId ?: 0;
+	}
+
+	/**
+	 * Destroy session cookie on log out.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function destroy_session_cookie(): void {
+		add_action(
+			'clear_auth_cookie',
+			function() {
+				setcookie( self::AUCTIONEER_COOKIE, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+				setcookie( self::AUCTIONEER_COOKIE, ' ', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN );
 			}
+		);
+	}
 
-			$data[ $date ] = get_gmt_from_date( $data[ $date ], $format );
-		}
-
-		return $data;
+	/**
+	 * Gets the URL for the Auctioneer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_url(): string {
+		return $this->url;
 	}
 }

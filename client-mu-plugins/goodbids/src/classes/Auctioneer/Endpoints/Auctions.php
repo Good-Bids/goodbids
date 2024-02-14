@@ -8,7 +8,7 @@
 
 namespace GoodBids\Auctioneer\Endpoints;
 
-use GoodBids\Auctioneer\Payload;
+use GoodBids\Utilities\Payload;
 
 /**
  * Class for Auctioneer Auctions
@@ -31,22 +31,30 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
+	 * @param array $extra_data
 	 *
 	 * @return bool
 	 */
-	public function start( int $auction_id ): bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
+	public function start( int $auction_id, array $extra_data = [] ): bool {
+		// Set up the payload data with defaults.
+		$payload_data = $this->setup_payload_data(
+			[
+				'bidUrl',
+				'currentBid',
+				'endTime',
+				'freeBidsAllowed',
+				'freeBidsAvailable',
+				'startTime',
+			],
+			$extra_data
+		);
 
-		if ( ! $guid ) {
-			// TODO: Log error.
-			return false;
-		}
-
-		$endpoint = "{$this->endpoint}/$guid/start";
-		$payload  = $this->get_payload( $auction_id, 'start' );
+		$endpoint = "$this->endpoint/$auction_id/start";
+		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
-		if ( ! $response ) {
+		// Bail if the request fails and the response code is not 208 (Already Reported).
+		if ( ! $response && 208 !== goodbids()->auctioneer->get_last_response_code() ) {
 			return false;
 		}
 
@@ -59,19 +67,23 @@ class Auctions {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
+	 * @param array $extra_data
 	 *
 	 * @return bool
 	 */
-	public function end( int $auction_id ): bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
+	public function end( int $auction_id, array $extra_data = [] ): bool {
+		// Set up the payload data with defaults.
+		$payload_data = $this->setup_payload_data(
+			[
+				'lastBid',
+				'totalBids',
+				'totalRaised',
+			],
+			$extra_data
+		);
 
-		if ( ! $guid ) {
-			// TODO: Log error.
-			return false;
-		}
-
-		$endpoint = "{$this->endpoint}/$guid/end";
-		$payload  = $this->get_payload( $auction_id, 'end' );
+		$endpoint = "$this->endpoint/$auction_id/end";
+		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
 		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
 		if ( ! $response ) {
@@ -86,22 +98,32 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
-	 * @param string $context
+	 * @param int   $auction_id
+	 * @param array $extra_data
 	 *
 	 * @return bool
 	 */
-	public function update( int $auction_id, string $context ): bool {
-		$guid = goodbids()->auctions->get_guid( $auction_id );
+	public function update( int $auction_id, array $extra_data = [] ): bool {
+		// Set up the payload data with defaults.
+		$payload_data = $this->setup_payload_data(
+			[
+				'bidUrl',
+				'currentBid',
+				'endTime',
+				'freeBidsAllowed',
+				'freeBidsAvailable',
+				'lastBid',
+				'lastBidder',
+				'startTime',
+				'totalBids',
+				'totalRaised',
+			],
+			$extra_data
+		);
 
-		if ( ! $guid ) {
-			// TODO: Log error.
-			return false;
-		}
-
-		$endpoint = "{$this->endpoint}/$guid/update";
-		$payload  = $this->get_payload( $auction_id, 'update:' . $context );
-		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'PUT' );
+		$endpoint = "$this->endpoint/$auction_id/update";
+		$payload  = ( new Payload( $auction_id, $payload_data ) )->get_data();
+		$response = goodbids()->auctioneer->request( $endpoint, $payload, 'POST' );
 
 		if ( ! $response ) {
 			return false;
@@ -111,17 +133,29 @@ class Auctions {
 	}
 
 	/**
-	 * Get the payload based on context
+	 * Build the payload array
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
-	 * @param string $context
+	 * @param array $payload_data
+	 * @param array $extra_data
 	 *
 	 * @return array
 	 */
-	private function get_payload( int $auction_id, string $context ): array {
-		return ( new Payload( $auction_id, $context ) )->get_data();
+	private function setup_payload_data( array $payload_data, array $extra_data = [] ): array {
+		$defaults = [
+			'requestTime',
+		];
+
+		return array_filter(
+			array_unique(
+				array_merge(
+					$defaults,
+					$payload_data,
+					$extra_data
+				)
+			)
+		);
 	}
 
 }

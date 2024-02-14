@@ -68,3 +68,10 @@ client-mu-plugins/vip-env-vars.local.php
 # Vite
 dist
 build
+
+# Log files
+private/logs/*.log
+*.log
+
+# Local config file
+client-mu-plugins/goodbids/config.local.json

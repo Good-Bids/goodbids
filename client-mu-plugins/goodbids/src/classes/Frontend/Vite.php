@@ -12,6 +12,8 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Core;
+
 /**
  * This class handles loading Vite assets.
  */
@@ -170,17 +172,17 @@ class Vite {
 	 * @return string
 	 */
 	public function vite( string $entry ): string {
-		if ( goodbids()->is_dev_env() ) {
+		if ( Core::is_dev_env() ) {
 			$scripts = [
 				"<script type=\"module\">
 					import RefreshRuntime from 'http://localhost:5173/@react-refresh'
 					RefreshRuntime.injectIntoGlobalHook(window)
-					window.$RefreshReg$ = () => {}
-					window.$RefreshSig$ = () => (type) => type
+					window.\$RefreshReg\$ = () => {}
+					window.\$RefreshSig\$ = () => (type) => type
 					window.__vite_plugin_react_preamble_installed__ = true
 			  	</script>",
-				"<script type=\"module\" src=\"{$this->dev_server}/@vite/client\"></script>",
-				"<script type=\"module\" src=\"{$this->dev_server}/{$entry}\"></script>",
+				"<script type=\"module\" src=\"http://localhost:5173/@vite/client\"></script>",
+				"<script type=\"module\" src=\"http://localhost:5173/{$entry}\"></script>",
 			];
 
 			return implode( PHP_EOL, $scripts );
@@ -409,17 +411,23 @@ class Vite {
 	 *
 	 * @return void
 	 */
-	public function admin_assets( $entry = '' ): void {
-		if ( ! $entry ) {
-			$entry = 'admin';
-		}
+	public function admin_assets(): void {
+		$entry = 'admin';
+
 		if ( ! $this->get_entry( $entry ) ) {
 			return;
 		}
+
 		$i = 0;
 		foreach ( $this->get_css( $this->get_entry( $entry ) ) as $url ) {
 			++$i;
 			wp_enqueue_style( 'goodbids-style-admin-' . $i, $url, [], goodbids()->get_version() );
+		}
+
+		$url = $this->get_asset_url( $this->get_entry( $entry ) );
+
+		if ( $url ) {
+			wp_enqueue_script( 'goodbids-script-admin', $url, [ 'jquery' ], goodbids()->get_version(), true );
 		}
 	}
 
@@ -475,7 +483,7 @@ class Vite {
 
 		$script_url = $this->get_asset_url( $file );
 
-		if ( goodbids()->is_dev_env() ) {
+		if ( Core::is_dev_env() ) {
 			$vite_client = $this->dev_server . '/@vite/client';
 			$vite_entry  = $this->dev_server . '/' . $entry;
 
@@ -555,8 +563,13 @@ class Vite {
 	 */
 	private function get_color_palette(): array {
 		$config  = $this->get_tailwind_config();
-		$colors  = $config['theme']['editorColors'] ?? $config['theme']['colors'];
 		$palette = [];
+
+		if ( ! $config || empty( $config['theme'] ) ) {
+			return apply_filters( 'theme_palette', $palette );
+		}
+
+		$colors = $config['theme']['editorColors'] ?? $config['theme']['colors'];
 
 		foreach ( $colors as $slug => $color ) {
 			$name = ucwords( $slug );

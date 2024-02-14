@@ -8,6 +8,8 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Utilities\Log;
+
 /**
  * Class for patterns
  *
@@ -57,7 +59,7 @@ class Patterns {
 
 				$auction_archive = [
 					'name'       => 'template-archive-auction',
-					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-archive-auction.php',
+					'path'       => goodbids()->get_view_path( 'patterns/template-archive-auction.php' ),
 					'title'      => __( 'Archive Auction', 'goodbids' ),
 					'categories' => [ 'goodbids' ],
 					'keywords'   => [ 'non-profit', 'starter', 'archive' ],
@@ -66,7 +68,7 @@ class Patterns {
 
 				$hero_banner = [
 					'name'       => 'goodbids-banner-hero',
-					'path'       => GOODBIDS_PLUGIN_PATH . 'views/patterns/banner-hero.php',
+					'path'       => goodbids()->get_view_path( 'patterns/banner-hero.php' ),
 					'title'      => __( 'Goodbids Banner Hero', 'goodbids' ),
 					'categories' => [ 'banner', 'featured', 'call-to-action', 'goodbids' ],
 					'keywords'   => [ 'banner', 'call-to-action', 'featured', 'hero' ],
@@ -74,9 +76,20 @@ class Patterns {
 					'inserter'   => true,
 				];
 
+				$logo_grid = [
+					'name'        => 'logo-grid',
+					'path'        => goodbids()->get_view_path( 'patterns/logo-grid.php' ),
+					'title'       => __( 'Logo Grid', 'goodbids' ),
+					'description' => _x( 'Grid of image for logos', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids', 'gallery' ],
+					'keywords'    => [ 'image', 'logo', 'grid' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
+				];
+
 				$nonprofit_interest_form = [
 					'name'        => 'nonprofit-interest-form',
-					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/nonprofit-interest-form.php',
+					'path'        => goodbids()->get_view_path( 'patterns/nonprofit-interest-form.php' ),
 					'title'       => __( 'Nonprofit Interest Form', 'goodbids' ),
 					'description' => _x( 'Nonprofit Interest Form using Jetpack forms', 'Block pattern description', 'goodbids' ),
 					'categories'  => [ 'goodbids' ],
@@ -86,21 +99,20 @@ class Patterns {
 				];
 
 				$section_sidebar_chapters = [
-					'name'          => 'section-sidebar-chapters',
-					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/section-sidebar-chapters.php',
-					'title'         => __( 'Section with Sidebar and Chapters', 'goodbids' ),
-					'description'   => _x( 'Template for Terms and Conditions or any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
-					'categories'    => [ 'page', 'goodbids' ],
-					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
-					'postTypes'     => [ 'page', 'wp_template' ],
-					'templateTypes' => [ 'page' ],
-					'source'        => 'plugin',
-					'inserter'      => true,
+					'name'        => 'section-sidebar-chapters',
+					'path'        => goodbids()->get_view_path( 'patterns/section-sidebar-chapters.php' ),
+					'title'       => __( 'Section with Sidebar and Chapters', 'goodbids' ),
+					'description' => _x( 'Template for any page with sidebar and chapters', 'Block pattern description', 'goodbids' ),
+					'categories'  => [ 'page', 'goodbids' ],
+					'keywords'    => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'   => [ 'page' ],
+					'source'      => 'plugin',
+					'inserter'    => true,
 				];
 
 				$template_about = [
 					'name'          => 'template-about-page',
-					'path'          => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-about-page.php',
+					'path'          => goodbids()->get_view_path( 'patterns/template-about-page.php' ),
 					'title'         => __( 'About GoodBids', 'goodbids' ),
 					'description'   => _x( 'Template for About Page', 'Block pattern description', 'goodbids' ),
 					'categories'    => [ 'about','page', 'goodbids' ],
@@ -114,7 +126,7 @@ class Patterns {
 
 				$template_auction = [
 					'name'        => 'template-auction',
-					'path'        => GOODBIDS_PLUGIN_PATH . 'views/patterns/template-auction.php',
+					'path'        => goodbids()->get_view_path( 'patterns/template-auction.php' ),
 					'title'       => __( 'Auction', 'goodbids' ),
 					'description' => _x( 'Template for GoodBids Auction Page', 'Block pattern description', 'goodbids' ),
 					'categories'  => [ 'page', 'goodbids' ],
@@ -124,15 +136,30 @@ class Patterns {
 					'inserter'    => false,
 				];
 
+				$template_terms_conditions = [
+					'name'          => 'template-terms-conditions',
+					'path'          => goodbids()->get_view_path( 'patterns/template-terms-conditions.php' ),
+					'title'         => __( 'Terms and Conditions', 'goodbids' ),
+					'description'   => _x( 'Template for GoodBids Terms and Conditions Page', 'Block pattern description', 'goodbids' ),
+					'categories'    => [ 'page', 'goodbids' ],
+					'keywords'      => [ 'conditions', 'terms', 'page', 'sidebar' ],
+					'postTypes'     => [ 'page', 'wp_template' ],
+					'templateTypes' => [ 'page' ],
+					'source'        => 'plugin',
+					'inserter'      => true,
+				];
+
 				$this->patterns = apply_filters(
 					'goodbids_block_patterns',
 					[
 						$auction_archive,
 						$hero_banner,
+						$logo_grid,
 						$nonprofit_interest_form,
 						$section_sidebar_chapters,
 						$template_about,
 						$template_auction,
+						$template_terms_conditions,
 					]
 				);
 
@@ -164,7 +191,7 @@ class Patterns {
 		unset( $pattern['path'], $pattern['name'] );
 
 		if ( str_starts_with( $path, 'http' ) ) {
-			// TODO: Log warning.
+			Log::warning( 'Block pattern path is a URL and not a file path.', $pattern );
 			return false;
 		}
 

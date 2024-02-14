@@ -44,9 +44,12 @@ add_filter(
 	function( array $class, array $block ) : array {
 		$class[] = 'my-custom-class';
 		return $class;
-	}
+	},
+	10,
+	2
 );
 ```
+
 ### goodbids_block_locations
 
 Adds support for additional custom block directories.
@@ -81,6 +84,7 @@ add_filter(
 
 		return array_merge( $patterns, $theme_patterns );
 	}
+);
 ```
 
 ### goodbids_auction_setting
@@ -98,5 +102,45 @@ add_filter(
 		$value = 'my-custom-value';
 
 		return $value;
-	}
+	},
+	10,
+	3
+);
+```
+
+### goodbids_auction_block_template
+
+Customizes the default block template for new Auctions.
+
+```php
+add_filter(
+	'goodbids_auction_block_template',
+	function ( mixed $template, int $auction_id ): array {
+		$template[] = [
+			'core/paragraph',
+			[
+				'placeholder' => __( 'Custom Placeholder', 'text-domain' ),
+			],		
+		];
+
+		return $template;
+	},
+	10,
+	2
+);
+```
+
+### goodbids_view_path
+
+Allows the template view paths to be overridden.
+
+```php
+add_filter(
+	'goodbids_view_path',
+	function( string $path, string $name ) : string {
+		return get_stylesheet_directory() . '/my-custom-path/' . $name;
+	},
+	10,
+	2
+);
 ```

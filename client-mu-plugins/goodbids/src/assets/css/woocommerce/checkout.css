@@ -1,0 +1,22 @@
+@layer components {
+	.wc-block-components-totals-discount__coupon-list-item
+		.wc-block-components-chip__text {
+		@apply text-ellipsis overflow-hidden uppercase;
+	}
+
+	.wc-block-components-order-summary-item {
+		.wc-block-components-product-price,
+		.wc-block-components-product-low-stock-badge,
+		.wc-block-components-product-metadata,
+		.wc-block-components-order-summary-item__quantity {
+			@apply hidden;
+		}
+	}
+
+	.wp-block-woocommerce-checkout-order-summary-block {
+		.wp-block-woocommerce-checkout-order-summary-coupon-form-block,
+		.wp-block-woocommerce-checkout-order-summary-subtotal-block {
+			@apply hidden;
+		}
+	}
+}

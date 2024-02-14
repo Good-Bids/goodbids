@@ -8,9 +8,13 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Nonprofits\Invoices;
+use GoodBids\Plugins\WooCommerce;
+use GoodBids\Utilities\Log;
 use WC_Order;
-use WC_Product;
+use WC_Product_Variation;
 use WP_Query;
+use WP_REST_Response;
 use WP_User;
 
 /**
@@ -54,7 +58,7 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const GUID_META_KEY = 'gb_guid';
+	const PRODUCT_AUCTION_META_KEY = '_gb_auction_id';
 
 	/**
 	 * @since 1.0.0
@@ -94,21 +98,35 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
 	 */
-	const CONTEXT_EXTENSION = 'extension';
+	const STATUS_DRAFT = 'Draft';
 
 	/**
 	 * @since 1.0.0
-	 * @var string
 	 */
-	const CONTEXT_NEW_BID = 'new_bid';
+	const STATUS_UPCOMING = 'Upcoming';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_LIVE = 'Live';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_CLOSED = 'Closed';
 
 	/**
 	 * @since 1.0.0
 	 * @var Bids
 	 */
 	public Bids $bids;
+
+	/**
+	 * @since 1.0.0
+	 * @var Rewards
+	 */
+	public Rewards $rewards;
 
 	/**
 	 * @since 1.0.0
@@ -123,7 +141,13 @@ class Auctions {
 	 */
 	public function __construct() {
 		// Initialize Submodules.
-		$this->bids = new Bids();
+		$this->bids    = new Bids();
+		$this->rewards = new Rewards();
+
+		// Disable Auctions on Main Site.
+		if ( is_main_site() ) {
+			return;
+		}
 
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
@@ -140,8 +164,17 @@ class Auctions {
 		// Register Post Type.
 		$this->register_post_type();
 
-		// Init Rewards Category.
-		$this->init_rewards_category();
+		// Register REST API Endpoints.
+		$this->setup_api_endpoints();
+
+		// Reduce the REST API cache time for Auction Requests.
+		$this->adjust_rest_timeout();
+
+		// Attempt to trigger events for opened/closed auctions.
+		$this->maybe_trigger_events();
+
+		// Register the Auction Single and Archive templates.
+		$this->set_templates();
 
 		// Add Auction Meta Box to display details and metrics.
 		$this->add_info_meta_box();
@@ -164,9 +197,6 @@ class Auctions {
 		// Override End Date/Time.
 		$this->override_end_date_time();
 
-		// Generate a unique ID for each Auction.
-		$this->generate_guid_on_publish();
-
 		// Set up 1min Cron Job Schedule.
 		$this->add_one_min_cron_schedule();
 
@@ -187,6 +217,12 @@ class Auctions {
 
 		// Tell Auctioneer about new Bid Order.
 		$this->update_auctioneer_on_order_complete();
+
+		// Allow admins to force update the close date to the Auction End Date.
+		$this->force_update_close_date();
+
+		// Prevent access to Bid/Reward products.
+		$this->prevent_access_to_products();
 	}
 
 	/**
@@ -258,12 +294,80 @@ class Auctions {
 					'capability_type'     => 'page',
 					'show_in_rest'        => true,
 					'rest_base'           => self::SINGULAR_SLUG,
-					'template'            => $this->get_template(),
+					'template'            => $this->get_block_template(),
 				];
 
 				register_post_type( $this->get_post_type(), $args );
 			}
 		);
+	}
+
+	/**
+	 * Register Auction REST API Endpoints
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_api_endpoints(): void {
+		add_action(
+			'rest_api_init',
+			function () {
+				( new API\Details() )->register_routes();
+				( new API\User() )->register_routes();
+			}
+		);
+	}
+
+	/**
+	 * Use a shorter timeout for Auction REST API requests.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_rest_timeout(): void {
+		add_filter(
+			'wpcom_vip_rest_read_response_ttl',
+			function ( int $ttl, WP_REST_Response $response ): int {
+				$handler = $response->get_matched_handler();
+
+				if ( empty( $handler['callback'][0] ) || ! is_object(  $handler['callback'][0] ) ) {
+					return $ttl;
+				}
+
+				$class = get_class( $handler['callback'][0] );
+
+				if ( ! str_starts_with( $class, __NAMESPACE__ ) ) {
+					return $ttl;
+				}
+
+				// Cache for 10 seconds.
+				return intval( goodbids()->get_config( 'auctions.rest-api.cache-timeout' ) );
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Returns a WP_Query object for all auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $query_args
+	 *
+	 * @return WP_Query
+	 */
+	public function get_all( array $query_args = [] ): WP_Query {
+		$args = [
+			'post_type'      => $this->get_post_type(),
+			'post_status'    => [ 'publish' ],
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+		];
+
+		return new WP_Query( array_merge( $args, $query_args ) );
 	}
 
 	/**
@@ -273,9 +377,9 @@ class Auctions {
 	 *
 	 * @return array
 	 */
-	private function get_template(): array {
+	private function get_block_template(): array {
 		return apply_filters(
-			'woocommerce_auction_default_template',
+			'goodbids_auction_block_template',
 			[
 				[
 					'core/pattern',
@@ -288,21 +392,29 @@ class Auctions {
 	}
 
 	/**
-	 * Initialize Rewards Category
+	 * Specify templates used for Auctions with Nice names.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function init_rewards_category(): void {
-		add_action(
-			'init',
-			function () {
-				$this->get_rewards_category_id();
+	private function set_templates(): void {
+		add_filter(
+			'default_template_types',
+			function ( $template_types ): array {
+				$template_types[ 'single-' . $this->get_post_type() ]  = array(
+					'title'       => _x( 'Single Auction', 'Template Name', 'goodbids' ),
+					'description' => __( 'Displays a single Auction post.', 'goodbids' ),
+				);
+				$template_types[ 'archive-' . $this->get_post_type() ] = array(
+					'title'       => _x( 'Archive: Auction', 'Template Name', 'goodbids' ),
+					'description' => __( 'Displays a the Auctions Archive.', 'goodbids' ),
+				);
+
+				return $template_types;
 			}
 		);
 	}
-
 
 	/**
 	 * Returns the Auction post type slug.
@@ -323,6 +435,10 @@ class Auctions {
 	 * @return ?int
 	 */
 	public function get_auction_id(): ?int {
+		if ( ! did_action( 'init' ) ) {
+			_doing_it_wrong( __METHOD__, 'Method should not be called before the init hook.', '1.0.0' );
+		}
+
 		$auction_id = is_singular( $this->get_post_type() ) ? get_queried_object_id() : get_the_ID();
 
 		if ( ! $auction_id && is_admin() && ! empty( $_GET['post'] ) ) { // phpcs:ignore
@@ -337,27 +453,22 @@ class Auctions {
 	}
 
 	/**
-	 * Retrieve the Rewards category ID, or create it if it doesn't exist.
+	 * Get the Invoice ID for an Auction
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param int $auction_id
+	 *
 	 * @return ?int
 	 */
-	public function get_rewards_category_id(): ?int {
-		$rewards_category = get_term_by( 'slug', 'rewards', 'product_cat' );
+	public function get_invoice_id( int $auction_id ): ?int {
+		$invoice_id = get_post_meta( $auction_id, Invoices::INVOICE_ID_META_KEY, true );
 
-		if ( ! $rewards_category ) {
-			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
-
-			if ( is_wp_error( $rewards_category ) ) {
-				// TODO: Log error.
-				return null;
-			}
-
-			return $rewards_category['term_id'];
+		if ( $invoice_id && get_post_type( $invoice_id ) === goodbids()->invoices->get_post_type() ) {
+			return $invoice_id;
 		}
 
-		return $rewards_category->term_id;
+		return null;
 	}
 
 	/**
@@ -370,39 +481,7 @@ class Auctions {
 	 * @return bool
 	 */
 	public function has_bid_product( int $auction_id ): bool {
-		return boolval( $this->get_bid_product_id( $auction_id ) );
-	}
-
-	/**
-	 * Retrieves the Bid product ID for an Auction.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 *
-	 * @return int
-	 */
-	public function get_bid_product_id( int $auction_id ): int {
-		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, true ) );
-	}
-
-	/**
-	 * Retrieves the Bid product ID for an Auction.
-	 *
-	 * @param int $auction_id
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return ?WC_Product
-	 */
-	public function get_bid_product( int $auction_id ): ?WC_Product {
-		$bid_product_id = $this->get_bid_product_id( $auction_id );
-
-		if ( ! $bid_product_id ) {
-			return null;
-		}
-
-		return wc_get_product( $bid_product_id );
+		return boolval( $this->bids->get_product_id( $auction_id ) );
 	}
 
 	/**
@@ -417,7 +496,21 @@ class Auctions {
 	 */
 	public function set_bid_product_id( int $auction_id, int $bid_product_id ): void {
 		update_post_meta( $auction_id, Bids::AUCTION_BID_META_KEY, $bid_product_id );
-		update_post_meta( $bid_product_id, Bids::BID_AUCTION_META_KEY, $auction_id );
+		update_post_meta( $bid_product_id, self::PRODUCT_AUCTION_META_KEY, $auction_id );
+	}
+
+	/**
+	 * Sets the Bid product Variation ID for an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $bid_variation_id
+	 *
+	 * @return void
+	 */
+	public function set_bid_variation_id( int $auction_id, int $bid_variation_id ): void {
+		update_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
 	}
 
 	/**
@@ -476,38 +569,6 @@ class Auctions {
 	}
 
 	/**
-	 * Get the Auction Reward Product ID.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return int
-	 */
-	public function get_reward_product_id( int $auction_id = null ): int {
-		return intval( $this->get_setting( 'auction_product', $auction_id ) );
-	}
-
-	/**
-	 * Get the Auction Reward Product object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return ?WC_Product
-	 */
-	public function get_reward_product( int $auction_id = null ): ?WC_Product {
-		$reward_product_id = $this->get_reward_product_id( $auction_id );
-
-		if ( ! $reward_product_id ) {
-			return null;
-		}
-
-		return wc_get_product( $reward_product_id );
-	}
-
-	/**
 	 * Get the Auction Reward Estimated Value.
 	 *
 	 * @since 1.0.0
@@ -537,7 +598,7 @@ class Auctions {
 			return '';
 		}
 
-		return $this->format_date_time( $start, $format );
+		return goodbids()->utilities->format_date_time( $start, $format );
 	}
 
 	/**
@@ -545,7 +606,7 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $auction_id
+	 * @param ?int   $auction_id
 	 * @param string $format
 	 *
 	 * @return string
@@ -557,33 +618,7 @@ class Auctions {
 			return '';
 		}
 
-		return $this->format_date_time( $end, $format );
-	}
-
-	/**
-	 * Format a date/time string.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $datetime
-	 * @param string $format
-	 *
-	 * @return string
-	 */
-	private function format_date_time( string $datetime, string $format ): string {
-		if ( ! $format ) {
-			return $datetime;
-		}
-
-		$formatted = $datetime;
-
-		try {
-			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
-		} catch ( \Exception $e ) {
-			// TODO: Log error.
-		}
-
-		return $formatted;
+		return goodbids()->utilities->format_date_time( $end, $format );
 	}
 
 	/**
@@ -599,7 +634,7 @@ class Auctions {
 		$start_date_time = $this->get_start_date_time( $auction_id );
 
 		if ( ! $start_date_time ) {
-			// TODO: Log error.
+			Log::warning( 'Auction has no start date/time.', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -619,7 +654,7 @@ class Auctions {
 		$end_date_time = $this->get_end_date_time( $auction_id );
 
 		if ( ! $end_date_time ) {
-			// TODO: Log error.
+			Log::warning( 'Auction has no end date/time.', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -677,7 +712,7 @@ class Auctions {
 			// Subtract seconds from end time to get window start.
 			$window = $end->sub( new \DateInterval( 'PT' . $extension . 'S' ) );
 		} catch ( \Exception $e ) {
-			// TODO: Log error.
+			Log::error( $e->getMessage(), compact( 'end_time' ) );
 			return false;
 		}
 
@@ -698,7 +733,7 @@ class Auctions {
 		$bid_extension = $this->get_setting( 'bid_extension', $auction_id );
 
 		if ( ! $bid_extension ) {
-			// TODO: Log error.
+			Log::error( '[CONFIG] Unable to load Bid Extension' );
 			return null;
 		}
 
@@ -779,6 +814,101 @@ class Auctions {
 	}
 
 	/**
+	 * Checks if Free Bids are allowed on Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function are_free_bids_allowed( ?int $auction_id = null ): bool {
+		$all_bids  = count( $this->get_bid_order_ids( $auction_id ) );
+		$free_bids = count( $this->get_free_bid_order_ids( $auction_id ) );
+
+		// Don't divide by zero.
+		if ( ! $all_bids ) {
+			return false;
+		}
+
+		// Free orders must be less than 50% of all orders.
+		if ( round( $free_bids / $all_bids, 2 ) > 0.5 ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Gets the number of Available Free Bids for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return int
+	 */
+	public function get_free_bids_available( ?int $auction_id = null ): int {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
+		$free_bids = get_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, true );
+
+		// Return the default value if we have no value.
+		if ( ! $free_bids && 0 !== $free_bids && '0' !== $free_bids ) {
+			$free_bids = goodbids()->get_config( 'auctions.default-free-bids' );
+			update_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, $free_bids );
+		}
+
+		return intval( $free_bids );
+	}
+
+	/**
+	 * Update the Free Bids count for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $free_bids
+	 *
+	 * @return void
+	 */
+	public function update_free_bids( int $auction_id, int $free_bids ): void {
+		update_post_meta( $auction_id, Bids::FREE_BIDS_META_KEY, $free_bids );
+	}
+
+	/**
+	 * Maybe Award a Free Bid, if available
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int   $auction_id
+	 * @param ?int   $user_id
+	 * @param string $description
+	 *
+	 * @return bool
+	 */
+	public function maybe_award_free_bid( ?int $auction_id, ?int $user_id = null, string $description = '' ): bool {
+		$free_bids = $this->get_free_bids_available( $auction_id );
+		if ( ! $free_bids ) {
+			return false;
+		}
+
+		if ( null === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( goodbids()->users->award_free_bid( $user_id, $auction_id, $description ) ) {
+			--$free_bids;
+			$this->update_free_bids( $auction_id, $free_bids );
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Update Auction with some initial data when created.
 	 *
 	 * @since 1.0.0
@@ -808,6 +938,29 @@ class Auctions {
 	}
 
 	/**
+	 * Get the Auction ID from the Product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id_from_product_id( int $product_id ): ?int {
+		$type = $this->get_product_type( $product_id );
+
+		if ( Bids::ITEM_TYPE === $type ) {
+			return $this->bids->get_auction_id( $product_id );
+		}
+
+		if ( Rewards::ITEM_TYPE === $type ) {
+			return $this->rewards->get_auction_id( $product_id );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Update the Bid Product when an Auction is updated.
 	 *
 	 * @since 1.0.0
@@ -819,34 +972,34 @@ class Auctions {
 			'save_post',
 			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) ) {
+				if ( ! $post_id || wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) || wp_doing_ajax() ) {
 					return;
 				}
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $this->has_bid_product( $post_id ) ) {
-					// TODO: Log error.
+					Log::error( 'Auction does not have Bid Product', compact( 'post_id' ) );
 					return;
 				}
 
+				// Only update if Auction hasn't started.
 				if ( $this->has_started( $post_id ) ) {
-					// TODO: Log warning.
+					Log::warning( 'Attempted to update Auction Bid Product after Auction has started', compact( 'post_id' ) );
 					return;
 				}
 
-				// Update the Bid product.
-				$bid_product_id = goodbids()->auctions->get_bid_product_id( $post_id );
-				$bid_product    = wc_get_product( $bid_product_id );
-				$starting_bid   = $this->calculate_starting_bid( $post_id );
-				$bid_price      = intval( $bid_product->get_price( 'edit' ) );
+				// Update the Bid product variation.
+				$bid_variation = goodbids()->auctions->bids->get_variation( $post_id );
+				$starting_bid  = $this->calculate_starting_bid( $post_id );
+				$bid_price     = intval( $bid_variation->get_price( 'edit' ) );
 
 				if ( $starting_bid && $bid_price !== $starting_bid ) {
 					// Update post meta.
-					update_post_meta( $bid_product_id, '_price', $starting_bid );
+					update_post_meta( $bid_variation->get_id(), '_price', $starting_bid );
 
 					// Update current instance.
-					$bid_product->set_price( $starting_bid );
-					$bid_product->save();
+					$bid_variation->set_price( $starting_bid );
+					$bid_variation->save();
 				}
 			}
 		);
@@ -862,8 +1015,13 @@ class Auctions {
 	 * @return ?string
 	 */
 	public function get_product_type( int $product_id ): ?string {
-		$valid      = [ 'bids', 'rewards' ];
-		$categories = get_the_terms( $product_id, 'product_cat' );
+		if ( ! in_array( get_post_type( $product_id ), [ 'product', 'product_variation' ], true ) ) {
+			return null;
+		}
+
+		$lookup_id  = $this->get_parent_product_id( $product_id );
+		$valid      = [ Bids::ITEM_TYPE, Rewards::ITEM_TYPE ];
+		$categories = get_the_terms( $lookup_id, 'product_cat' );
 
 		if ( ! is_array( $categories ) ) {
 			return null;
@@ -879,37 +1037,87 @@ class Auctions {
 	}
 
 	/**
+	 * Convert a product or variation to the parent product ID.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $product_id
+	 *
+	 * @return ?int
+	 */
+	public function get_parent_product_id( int $product_id ): ?int {
+		if ( ! in_array( get_post_type( $product_id ), [ 'product', 'product_variation' ], true ) ) {
+			return $product_id;
+		}
+
+		$product = wc_get_product( $product_id );
+		return $product?->get_parent_id() ?: $product_id;
+	}
+
+	/**
 	 * Get Bid Order IDs for an Auction
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
-	 * @param int $limit
+	 * @param ?int $auction_id
+	 * @param int  $limit
+	 * @param ?int $user_id
 	 *
 	 * @return int[]
 	 */
-	public function get_bid_order_ids( int $auction_id, int $limit = -1 ): array {
+	public function get_bid_order_ids( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		if ( null === $auction_id ) {
+			$auction_id = $this->get_auction_id();
+		}
+
 		$args = [
-			'limit'   => $limit,
-			'status'  => [ 'processing', 'completed' ],
-			'return'  => 'ids',
-			'orderby' => 'date',
-			'order'   => 'DESC',
+			'limit'      => $limit,
+			'status'     => [ 'processing', 'completed' ],
+			'return'     => 'ids',
+			'orderby'    => 'date',
+			'order'      => 'DESC',
+			'meta_query' => [
+				[
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Bids::ITEM_TYPE,
+				],
+			],
 		];
 
-		$orders = wc_get_orders( $args );
+		if ( $user_id ) {
+			$args['customer_id'] = $user_id;
+		}
+
+		if ( $auction_id ) {
+			$args['meta_query'][] = [
+				'key'     => WooCommerce::AUCTION_META_KEY,
+				'compare' => '=',
+				'value'   => $auction_id,
+			];
+		}
+
+		return wc_get_orders( $args );
+	}
+
+	/**
+	 * Get Order IDs that have been placed using a Free Bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @param int  $limit
+	 * @param ?int $user_id
+	 *
+	 * @return int[]
+	 */
+	public function get_free_bid_order_ids( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
+		$orders = $this->get_bid_order_ids( $auction_id, $limit, $user_id );
 		$return = [];
 
 		foreach ( $orders as $order_id ) {
-			// We need to filter the orders out here, for some reason.
-			// meta_query doesn't seem to work with the following filter hooks:
-			// - woocommerce_order_query_args
-			// - woocommerce_order_data_store_cpt_get_orders_query
-			if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
-				continue;
-			}
-
-			if ( $auction_id !== goodbids()->woocommerce->get_order_auction_id( $order_id ) ) {
+			// TODO: Add Free Bid Order meta.
+			if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 				continue;
 			}
 
@@ -920,26 +1128,41 @@ class Auctions {
 	}
 
 	/**
-	 * Get Bid Order objects for an Auction
+	 * Get Order Objects that have been placed using a Free Bid.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 * @param int $limit
+	 * @param ?int $auction_id
+	 * @param int  $limit
+	 * @param ?int $user_id
 	 *
 	 * @return WC_Order[]
 	 */
-	public function get_bid_orders( int $auction_id, int $limit = -1 ): array {
-		$orders = $this->get_bid_order_ids( $auction_id, $limit );
-
+	public function get_free_bid_orders( ?int $auction_id = null, int $limit = -1, ?int $user_id = null ): array {
 		return array_map(
 			fn ( $order ) => wc_get_order( $order ),
-			$orders
+			$this->get_free_bid_order_ids( $auction_id, $limit, $user_id )
 		);
 	}
 
 	/**
-	 * Get the Auction Bid Count
+	 * Get Bid Order objects for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int  $auction_id
+	 * @param int  $limit
+	 * @param ?int $user_id
+	 *
+	 * @return WC_Order[]
+	 */
+	public function get_bid_orders( int $auction_id, int $limit = -1, ?int $user_id = null ): array {
+		return array_map(
+			fn ( $order ) => wc_get_order( $order ),
+			$this->get_bid_order_ids( $auction_id, $limit, $user_id )
+		);
+	}
+
+	/**
+	 * Get the Auction Bid Count. If a User ID is specified, the Bid Count will be filtered by that User.
 	 *
 	 * @since 1.0.0
 	 *
@@ -961,6 +1184,21 @@ class Auctions {
 		set_transient( $transient, $bid_count, HOUR_IN_SECONDS );
 
 		return $bid_count;
+	}
+
+	/**
+	 * Get total bids for a specific User on an Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $user_id
+	 *
+	 * @return int
+	 */
+	public function get_user_bid_count( int $auction_id, int $user_id ): int {
+		$orders = $this->get_bid_order_ids( $auction_id, -1, $user_id );
+		return count( $orders );
 	}
 
 	/**
@@ -986,6 +1224,21 @@ class Auctions {
 		set_transient( $transient, $total, HOUR_IN_SECONDS );
 
 		return $total;
+	}
+
+	/**
+	 * Get the Auction Total Donated by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $user_id
+	 *
+	 * @return float
+	 */
+	public function get_user_total_donated( int $auction_id, int $user_id ): float {
+		return collect( $this->get_bid_orders( $auction_id, -1, $user_id ) )
+			->sum( fn( $order ) => $order->get_total( 'edit' ) );
 	}
 
 	/**
@@ -1022,6 +1275,51 @@ class Auctions {
 	}
 
 	/**
+	 * Checks if the current user is the current high bidder of an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_current_user_winning( int $auction_id ): bool {
+		$last_bidder = $this->get_last_bidder( $auction_id );
+		return $last_bidder?->ID === get_current_user_id();
+	}
+
+	/**
+	 * Get the Auction's winning bidder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return ?WP_User
+	 */
+	public function get_winning_bidder( int $auction_id ): ?WP_User {
+		if ( ! $this->has_ended( $auction_id ) ) {
+			return null;
+		}
+
+		return $this->get_last_bidder( $auction_id );
+	}
+
+	/**
+	 * Checks if the current user is the winning bidder of an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	public function is_current_user_winner( int $auction_id ): bool {
+		$winning_bidder = $this->get_winning_bidder( $auction_id );
+		return $winning_bidder?->ID === get_current_user_id();
+	}
+
+	/**
 	 * Get the status of an Auction.
 	 *
 	 * @since 1.0.0
@@ -1032,17 +1330,17 @@ class Auctions {
 	 */
 	public function get_status( int $auction_id ): string {
 		if ( 'publish' !== get_post_status( $auction_id ) ) {
-			return __( 'Draft', 'goodbids' );
+			return self::STATUS_DRAFT;
 		}
 
-		$status = __( 'Upcoming', 'goodbids' );
+		$status = self::STATUS_UPCOMING;
 
 		if ( $this->has_started( $auction_id ) ) {
-			$status = __( 'Live', 'goodbids' );
+			$status = self::STATUS_LIVE;
 		}
 
 		if ( $this->has_ended( $auction_id ) ) {
-			$status = __( 'Closed', 'goodbids' );
+			$status = self::STATUS_CLOSED;
 		}
 
 		return $status;
@@ -1088,7 +1386,7 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Don't clear if this isn't a Bid order.
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
@@ -1117,12 +1415,12 @@ class Auctions {
 		$auction_id = $this->get_auction_id();
 
 		// Display the Auction Details.
-		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/details.php';
+		goodbids()->load_view( 'admin/auctions/details.php', compact( 'auction_id' ) );
 
 		echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
 
 		// Display the Auction Metrics.
-		include GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/metrics.php';
+		goodbids()->load_view( 'admin/auctions/metrics.php', compact( 'auction_id' ) );
 	}
 
 	/**
@@ -1159,7 +1457,7 @@ class Auctions {
 
 		add_action(
 			'manage_' . $this->get_post_type() . '_posts_custom_column',
-			function ( $column, $post_id ) {
+			function ( string $column, int $post_id ) {
 				// Columns that require a "published" status.
 				$published_cols = [
 					'starting_bid',
@@ -1178,7 +1476,22 @@ class Auctions {
 
 				// Output the column values.
 				if ( 'status' === $column ) {
-					echo esc_html( $this->get_status( $post_id ) );
+					$title = $this->get_status( $post_id );
+
+					if ( self::STATUS_LIVE === $this->get_status( $post_id ) ) {
+						$title = __( 'Ends', 'goodbids' ) . ': ' . $this->get_end_date_time( $post_id );
+					} elseif ( self::STATUS_UPCOMING === $this->get_status( $post_id ) ) {
+						$title = __( 'Starts', 'goodbids' ) . ': ' . $this->get_start_date_time( $post_id );
+					} elseif ( self::STATUS_CLOSED === $this->get_status( $post_id ) ) {
+						$title = __( 'Ended', 'goodbids' ) . ': ' . $this->get_end_date_time( $post_id );
+					}
+
+					printf(
+						'<span title="%s" class="goodbids-status status-%s">%s</span>',
+						esc_attr( $title ),
+						esc_attr( strtolower( $this->get_status( $post_id ) ) ),
+						esc_html( $this->get_status( $post_id ) )
+					);
 				} elseif ( 'starting_bid' === $column ) {
 					echo wp_kses_post( wc_price( $this->calculate_starting_bid( $post_id ) ) );
 				} elseif ( 'bid_increment' === $column ) {
@@ -1191,8 +1504,9 @@ class Auctions {
 					$last_bid = $this->get_last_bid( $post_id );
 					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
 				} elseif ( 'current_bid' === $column ) {
-					$bid_product = wc_get_product( $this->get_bid_product_id( $post_id ) );
-					echo wp_kses_post( wc_price( $bid_product->get_price() ) );
+					/** @var WC_Product_Variation $bid_variation */
+					$bid_variation = $this->bids->get_variation( $post_id );
+					echo $bid_variation ? wp_kses_post( wc_price( $bid_variation->get_price() ) ) : '';
 				}
 			},
 			10,
@@ -1221,7 +1535,7 @@ class Auctions {
 				}
 
 				// Default to the WooCommerce featured image or WooCommerce default image
-				$reward = $this->get_reward_product( $post_id );
+				$reward = $this->rewards->get_product( $post_id );
 
 				if ( ! $reward ) {
 					return $html;
@@ -1231,54 +1545,6 @@ class Auctions {
 			},
 			10,
 			2
-		);
-	}
-
-	/**
-	 * Get the Auction GUID
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $auction_id
-	 *
-	 * @return string
-	 */
-	public function get_guid( int $auction_id = null ): string {
-		if ( null === $auction_id ) {
-			$auction_id = $this->get_auction_id();
-		}
-
-		return get_post_meta( $auction_id, self::GUID_META_KEY, true );
-	}
-
-	/**
-	 * Create a Bid product when an Auction is created.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function generate_guid_on_publish(): void {
-		add_action(
-			'wp_after_insert_post',
-			function ( $post_id ): void {
-				// Bail if this is a revision.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
-					return;
-				}
-
-				// Bail if not an Auction.
-				if ( $this->get_post_type() !== get_post_type( $post_id ) ) {
-					return;
-				}
-
-				// Bail if the Auction already has a guid.
-				if ( $this->get_guid( $post_id ) ) {
-					return;
-				}
-
-				update_post_meta( $post_id, self::GUID_META_KEY, wp_generate_uuid4() );
-			}
 		);
 	}
 
@@ -1367,16 +1633,28 @@ class Auctions {
 			self::CRON_AUCTION_START_HOOK,
 			function (): void {
 				$auctions = $this->get_starting_auctions();
+				$starts   = 0;
 
 				if ( ! $auctions->have_posts() ) {
 					return;
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
-					if ( $this->trigger_auction_start( $auction_id ) ) {
-						// Update the Auction meta to indicate it has started.
-						update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+					// Skip START Action on Auctions that have ended.
+					if ( $this->has_ended( $auction_id ) ) {
+						Log::debug( 'Auction not started because it has already ended', compact( 'auction_id' ) );
+						continue;
 					}
+
+					if ( $this->trigger_auction_start( $auction_id ) ) {
+						$starts++;
+					}
+				}
+
+				$count = count( $auctions->posts );
+
+				if ( $count !== $starts ) {
+					Log::warning( 'Not all Auctions were started', [ 'starts' => $starts, 'expected' => $count, 'posts' => $auctions->posts ] );
 				}
 			}
 		);
@@ -1422,9 +1700,9 @@ class Auctions {
 
 		$args = [
 			'post_type'      => $this->get_post_type(),
-			'post_status'    => 'publish',
+			'post_status'    => [ 'publish' ],
 			'posts_per_page' => -1,
-			'return'         => 'ids',
+			'fields'         => 'ids',
 			'meta_query'     => [
 				[
 					'key'     => 'auction_start',
@@ -1482,13 +1760,35 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_start( int $auction_id ): bool {
+		/**
+		 * @param int $auction_id
+		 */
+		do_action( 'goodbids_auction_start', $auction_id );
+
 		$result = goodbids()->auctioneer->auctions->start( $auction_id );
 
 		if ( true !== $result ) {
 			return false;
 		}
 
+		// Update the Auction meta to indicate it has started.
+		// This is used for the sole purposes of filtering started auctions from get_starting_auctions() method.
+		update_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, 1 );
+
 		return true;
+	}
+
+	/**
+	 * Check if the Auction Start event has been triggered.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function start_triggered( int $auction_id ): bool {
+		return boolval( get_post_meta( $auction_id, self::AUCTION_STARTED_META_KEY, true ) );
 	}
 
 	/**
@@ -1501,6 +1801,11 @@ class Auctions {
 	 * @return bool
 	 */
 	private function trigger_auction_close( int $auction_id ): bool {
+		/**
+		 * @param int $auction_id
+		 */
+		do_action( 'goodbids_auction_close', $auction_id );
+
 		$result = goodbids()->auctioneer->auctions->end( $auction_id );
 
 		if ( true !== $result ) {
@@ -1508,6 +1813,56 @@ class Auctions {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if the Auction End event has been triggered.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function end_triggered( int $auction_id ): bool {
+		return boolval( get_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, true ) );
+	}
+
+	/**
+	 * Additional attempt to trigger Auction events.
+	 * Useful when Cron Jobs are slow or not firing.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_trigger_events(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				$auction_id = $this->get_auction_id();
+
+				if ( ! $auction_id ) {
+					return;
+				}
+
+				// TODO: Move to background process.
+
+				if ( $this->has_started( $auction_id ) && ! $this->start_triggered( $auction_id ) ) {
+					$this->trigger_auction_start( $auction_id );
+				}
+
+				if ( $this->has_ended( $auction_id ) ) {
+					if ( ! $this->end_triggered( $auction_id ) ) {
+						$this->trigger_auction_close( $auction_id );
+					}
+
+					if ( ! $this->get_invoice_id( $auction_id ) ) {
+						goodbids()->invoices->generate( $auction_id );
+					}
+				}
+			}
+		);
 	}
 
 	/**
@@ -1522,7 +1877,7 @@ class Auctions {
 			'goodbids_order_payment_complete',
 			function ( int $order_id, int $auction_id ) {
 				// Bail if this isn't a Bid order.
-				if ( ! goodbids()->woocommerce->is_bid_order( $order_id ) ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
 					return;
 				}
 
@@ -1531,10 +1886,34 @@ class Auctions {
 				}
 
 				if ( ! $this->extend_auction( $auction_id ) ) {
-					// TODO: Log error.
+					Log::error( 'There was a problem extending the Auction', compact( 'auction_id' ) );
 				}
 			},
 			10,
+			2
+		);
+	}
+
+	/**
+	 * Update the Auctioneer when a Bid is placed.
+	 * Priority must be AFTER Bid Amount has been increased.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_auctioneer_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				// Bail if this isn't a Bid order.
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				goodbids()->auctioneer->auctions->update( $auction_id );
+			},
+			50,
 			2
 		);
 	}
@@ -1557,7 +1936,7 @@ class Auctions {
 
 		// Bail early if missing extension value.
 		if ( ! $extension ) {
-			// TODO: Log error.
+			Log::error( 'Missing Auction Bid Extension', compact( 'auction_id' ) );
 			return false;
 		}
 
@@ -1565,7 +1944,7 @@ class Auctions {
 			$close      = current_datetime()->add( new \DateInterval( 'PT' . $extension . 'S' ) );
 			$close_time = $close->format( 'Y-m-d H:i:s' );
 		} catch ( \Exception $e ) {
-			// TODO: Log error.
+			Log::error( $e->getMessage(), compact( 'extension' ) );
 			return false;
 		}
 
@@ -1579,31 +1958,82 @@ class Auctions {
 
 		// Update Extensions
 		$extensions = $this->get_extensions( $auction_id );
-		$extensions++;
+		++$extensions;
 		update_post_meta( $auction_id, self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
 		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_EXTENSION );
+		goodbids()->auctioneer->auctions->update( $auction_id );
 
 		return true;
 	}
 
 	/**
-	 * Update the Auctioneer when a Bid is placed.
+	 * Admin AJAX Action from the Auction Edit screen to force update the Auction Close Date/Time.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function update_auctioneer_on_order_complete(): void {
+	private function force_update_close_date(): void {
 		add_action(
-			'goodbids_order_payment_complete',
-			function ( int $order_id, int $auction_id ) {
-				// Trigger Node to update the Auction.
-				goodbids()->auctioneer->auctions->update( $auction_id, self::CONTEXT_NEW_BID );
-			},
-			10,
-			2
+			'wp_ajax_goodbids_force_auction_close_date',
+			function () {
+				$nonce = ! empty( $_REQUEST['gb_nonce'] ) ? sanitize_text_field( $_REQUEST['gb_nonce'] ) : '';
+
+				if ( ! wp_verify_nonce( $nonce, 'gb-force-update-close-date' ) ) {
+					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
+				}
+
+				$auction_id = isset( $_POST['auction_id'] ) ? intval( $_POST['auction_id'] ) : 0;
+
+				if ( ! $auction_id ) {
+					wp_send_json_error( __( 'Invalid Auction ID.', 'goodbids' ) );
+				}
+
+				// Get raw End Date/Time.
+				$end_date = get_field( 'auction_end', $auction_id );
+				update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $end_date );
+
+				wp_send_json_success(
+					[
+						'closeDate' => goodbids()->utilities->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
+					]
+				);
+			}
+		);
+	}
+
+	/**
+	 * Disable access to Bid product singular product page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function prevent_access_to_products(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! is_singular( 'product' ) ) {
+					return;
+				}
+
+				$product_id = get_the_ID();
+
+				if ( ! $this->get_product_type( $product_id ) ) {
+					return;
+				}
+
+				$auction_id = $this->get_auction_id_from_product_id( $product_id );
+
+				if ( ! $auction_id ) {
+					wp_safe_redirect( home_url() );
+					exit;
+				}
+
+				wp_safe_redirect( get_permalink( $auction_id ), 301 );
+				exit;
+			}
 		);
 	}
 }

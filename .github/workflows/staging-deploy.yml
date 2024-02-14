@@ -1,0 +1,36 @@
+name: Staging Deploy
+
+on:
+  release:
+    types: [prereleased]
+
+jobs:
+  deploy:
+    name: Staging Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.CI_DEPLOY_KEY }}
+          name: id_goodbids
+          known_hosts: unnecessary # Actions have have github.com in known_hosts by default
+          config: |
+            Host github.com
+              HostName github.com
+              IdentityFile /home/runner/.ssh/id_goodbids
+          if_key_exists: fail
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.release.target_commitish }}
+
+      - name: Push to remote
+        run: |
+          git config --unset-all http.https://github.com/.extraheader
+          git config user.name "GitHub Actions"
+          git config user.email github-actions@github.com
+          git remote add wpvip git@github.com:wpcomvip/goodbids.git
+          git push -f wpvip HEAD:staging

@@ -7,11 +7,14 @@ import { useBlockProps } from '@wordpress/block-editor';
 /**
  * Internal dependencies
  */
-import * as React from 'react';
-import { ClockIcon } from './components/clock-icon';
-import { WaveIcon } from './components/wave-icon';
+import { ClockIcon } from './components/icons/clock-icon';
+import { WaveIcon } from './components/icons/wave-icon';
 
-const Edit = ({ setAttributes }) => {
+type EditProps = {
+	setAttributes: (attributes: { auctionId: number }) => void;
+};
+
+const Edit = ({ setAttributes }: EditProps) => {
 	const auctionId = useSelect((select) => {
 		// @ts-expect-error Seems like a type error in the @wordpress/data package
 		return select('core/editor').getCurrentPostId();

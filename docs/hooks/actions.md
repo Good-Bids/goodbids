@@ -42,3 +42,29 @@ add_action(
 	}
 );
 ```
+
+### goodbids_auction_start
+
+Fired when an auction starts.
+
+```php
+add_action(
+	'goodbids_auction_start',
+	function ( int $auction_id ): void {
+		// Maybe update some post meta?
+	}
+);
+```
+
+### goodbids_auction_close
+
+Fired when an auction ends.
+
+```php
+add_action(
+	'goodbids_auction_close',
+	function ( int $auction_id ): void {
+		// Maybe update some post meta?
+	}
+);
+```

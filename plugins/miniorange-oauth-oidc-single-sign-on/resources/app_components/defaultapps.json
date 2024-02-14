@@ -1,0 +1,253 @@
+{
+	"office365": {
+		"label":"Office 365", "type":"openidconnect", "image":"office365.png", "scope": "openid", "discovery": "", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-windowslive", "video":"https://www.youtube.com/watch?v=smHkrtg6Y9I&t=24s"
+ 	},
+	"azure": {
+		"label":"Azure AD", "type":"openidconnect", "image":"azure.png", "scope": "openid offline_access", "discovery": "", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/azure-ad-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-windowslive", "video":"https://youtu.be/3QkVcSQH9F0"
+ 	},
+	"azureb2c": {
+		"label":"Azure B2C", "type":"openidconnect", "image":"azure.png", "scope": "openid", "discovery": "","authorize": "https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/authorize", "token": "https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/token", "userinfo": "", "guide":"https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-windowslive", "video":"https://youtu.be/GbaH1vMkEMc"
+ 	},
+	"cognito": {
+		"label":"AWS Cognito", "type":"oauth", "image":"cognito.png", "scope": "openid", "domain": "", "discovery": "","authorize": "https://<cognito-app-domain>/oauth2/authorize", "token": "https://<cognito-app-domain>/oauth2/token", "userinfo": "https://<cognito-app-domain>/oauth2/userInfo", "guide":"https://plugins.miniorange.com/aws-cognito-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-amazon", "video":"https://youtu.be/p8zNiiPZrWk"
+	},
+	"adfs": {
+		"label":"ADFS", "type":"openidconnect", "image":"adfs.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{yourADFSDomain}/adfs/oauth2/authorize/", "token": "https://{yourADFSDomain}/adfs/oauth2/token/", "userinfo": "", "guide":"https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-windowslive"
+ 	},
+	"whmcs": {
+		"label":"WHMCS", "type":"oauth", "image":"whmcs.png", "scope": "openid profile email", "domain": "", "discovery":"", "authorize": "https://{yourWHMCSdomain}/oauth/authorize.php", "token": "https://{yourWHMCSdomain}/oauth/token.php", "userinfo": "https://{yourWHMCSdomain}/oauth/userinfo.php", "guide":"https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock", "video":"https://youtu.be/PGet7ip3Q8E"
+	},
+	"keycloak": {
+		"label":"keycloak", "type":"openidconnect", "image":"keycloak.png", "scope": "openid", "domain": "", "realmname":"", "discovery":"", "authorize": "https://{your-domain}/auth/realms/{your-realm}/protocol/openid-connect/auth", "token": "https://{your-domain}/auth/realms/{your-realm}/protocol/openid-connect/token", "userinfo": "https://{your-domain}/auth/realms/{realm}/protocol/openid-connect/userinfo", "guide":"https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock", "video":" https://youtu.be/w2_Dx8pd43w"
+ 	},
+	"wordpress": {
+		"label":"WordPress", "type":"oauth", "image":"wordpress.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://<your-site-url>/wp-json/moserver/authorize", "token": "https://<your-site-url>/wp-json/moserver/token", "userinfo": "https://<your-site-url>/wp-json/moserver/resource", "guide":"https://plugins.miniorange.com/guide-to-setup-single-sign-on-between-two-wordpress-sites/", "logo_class":"mofa fa-wordpress", "video":"https://youtu.be/RzmYIR3yKFo"
+	},
+	"zoho": {
+		"label":"Zoho", "type":"oauth", "image":"zoho.png", "scope": "aaaserver.profile.READ", "domain": "", "discovery":"", "authorize": "https://accounts.zoho.in/oauth/v2/auth", "token": "https://accounts.zoho.in/oauth/v2/token", "userinfo": "https://accounts.zoho.com/oauth/user/info", "guide":"", "logo_class":"mofa fa-lock", "video":"https://youtu.be/n6b3KSfvWUI"
+	},
+	"miniorange": {
+		"label":"miniOrange", "type":"oauth", "image":"miniorange.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://logins.xecurify.com/moas/idp/openidsso", "token": "https://logins.xecurify.com/moas/rest/oauth/token", "userinfo": "https://logins.xecurify.com/moas/rest/oauth/getuserinfo", "guide":"https://plugins.miniorange.com/single-sign-on-sso-into-wordpress-using-oauth-openid-connect/", "logo_class":"mofa fa-lock", "video":"https://youtu.be/SIIJacO5eZM"
+	},
+	"slack": {
+		"label":"Slack", "type":"oauth", "image":"slack.png", "scope": "users.profile:read", "domain": "", "discovery":"", "authorize": "https://slack.com/oauth/authorize", "token": "https://slack.com/api/oauth.access", "userinfo": "https://slack.com/api/users.profile.get", "guide":"https://plugins.miniorange.com/slack-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-slack", "video":"https://youtu.be/f5YTViCqxWw"
+	},
+	"discord": {
+		"label":"Discord", "type":"oauth", "image":"discord.png", "scope": "identify email", "domain": "", "discovery":"", "authorize": "https://discordapp.com/api/oauth2/authorize", "token": "https://discordapp.com/api/oauth2/token", "userinfo": "https://discordapp.com/api/users/@me", "guide":"https://plugins.miniorange.com/discord-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock", "video":"https://youtu.be/SKZ7uMJBoYY"
+	},
+	"invision": {
+		"label":"Invision Community", "type":"oauth", "image":"invision.png", "scope": "email", "domain": "", "discovery":"", "authorize": "https://{invision-community-domain}/oauth/authorize/", "token": "https://{invision-community-domain}/oauth/token/", "userinfo": "https://{invision-community-domain}/api/core/me", "guide":"https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock"
+	},
+    "bitrix24": {
+		"label":"Bitrix24", "type":"oauth", "image":"bitrix24.png", "scope": "user", "domain": "", "discovery":"", "authorize": "https://{your-id}.bitrix24.com/oauth/authorize", "token": "https://{your-id}.bitrix24.com/oauth/token", "userinfo": "https://{your-id}.bitrix24.com/rest/user.current.json?auth=", "guide":"https://plugins.miniorange.com/bitrix24-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-clock-o"
+	},
+	"wso2": {
+		"label":"WSO2", "type":"oauth", "image":"wso2.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://domain/oauth2/authorize", "token": "https://domain/oauth2/toke", "userinfo": "https://domain/oauth2/userinfo", "guide":"https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock", "video":"https://youtu.be/ub34FlnRUiw"
+	},
+	"okta": {
+		"label":"Okta", "type":"openidconnect", "image":"okta.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://{yourOktaDomain}.com/oauth2/default/v1/authorize", "token": "https://{yourOktaDomain}.com/oauth2/default/v1/token", "userinfo": "", "guide":"https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "video":"https://youtu.be/veEIAUs_Gwc"
+ 	},
+	"ping": {
+		"label":"Ping", "type":"openidconnect", "image":"ping.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://{yourPingDomain}.com/as/authorization.oauth2", "token": "https://{yourPingDomain}.com/as/token.oauth2", "userinfo": "https://{yourPingDomain}.com/as/userinfo.openid", "guide":"https://plugins.miniorange.com/ping-federate-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock"
+ 	},
+	"onelogin": {
+		"label":"OneLogin", "type":"openidconnect", "image":"onelogin.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://<site-url>.onelogin.com/oidc/auth", "token": "https://<site-url>.onelogin.com/oidc/token", "userinfo": "", "guide":"https://plugins.miniorange.com/onelogin-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "video":"https://youtu.be/a4uVuRGaFLA"
+ 	},
+	"Drupal": {
+		"label":"Drupal", "type":"oauth", "image":"drupal.png", "scope": "oauth", "domain":"", "discovery":"", "authorize": "https://<drupal-app-domain>/authorize", "token": "https://<drupal-app-domain>/access_token", "userinfo": "https://<drupal-app-domain>/user_info", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-sso-using-drupal-as-oauth-server", "logo_class":"mofa fa-lock", "video":"", "send_header":"1", "send_body":"0"
+	},
+	"joomla": {
+		"label":"Joomla", "type":"oauth", "image":"joomla.png", "scope": "email", "domain":"", "discovery":"", "authorize": "http://<joomla-app-domain>/index.php", "token": "http://<joomla-app-domain>/index.php", "userinfo": "http://<joomla-app-domain>/plugins/system/miniorangeoauth/miniorangeoauthserver.php", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-sso-oauth-openid-client-with-joomla-oauth-server", "logo_class":"mofa fa-lock", "video":"", "send_header":"1", "send_body":"0"
+	},
+	"ASP.NET": {
+		"label":"ASP.NET", "type":"oauth", "image":"dotnet.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://<asp-net-app-domain>/api/moserver/authorize", "token": "https://<asp-net-app-domain>/api/moserver/token", "userinfo": "https://<asp-net-app-domain>/api/moserver/userinfo", "guide":"", "logo_class":"mofa fa-lock", "video":"", "send_header":"1", "send_body":"0"
+	},
+	"Shopify": {
+		"label":"Shopify", "type":"oauth", "image":"shopify.png", "scope": "openid email profile", "domain":"", "discovery":"", "authorize": "https://store.xecurify.com/moas/broker/login/oauth/<customer_id>", "token": "https://store.xecurify.com/moas/rest/oauth/token", "userinfo": "https://store.xecurify.com/moas/rest/oauth/getuserinfo", "guide":"", "logo_class":"mofa fa-lock", "video":"", "send_header":"1", "send_body":"0"
+	},
+	"WindowsLive": {
+		"label":"Windows Live", "type":"openidconnect", "image":"windowslive.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://login.live.com/oauth20_authorize.srf", "token": "https://login.live.com/oauth20_token.srf", "userinfo": "https://apis.live.net/v5.0/me", "guide":"https://plugins.miniorange.com/windows-live-oauth-and-openid-connect-single-sign-on-sso-login", "logo_class":"mofa fa-lock", "send_header":"1", "send_body":"0"
+ 	},
+	 "Minecraft": {
+		"label":"Minecraft", "type":"openidconnect", "image":"minecraft.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://login.live.com/oauth20_authorize.srf", "token": "https://login.live.com/oauth20_token.srf", "userinfo": "https://apis.live.net/v5.0/me", "guide":"https://plugins.miniorange.com/minecraft-single-sign-on-for-wordpress-using-oauth", "logo_class":"mofa fa-lock", "send_header":"1", "send_body":"0"
+ 	},
+	"gapps": {
+		"label":"Google", "type":"openidconnect", "image":"google.png", "scope": "email", "domain":"", "discovery":"", "authorize": "https://accounts.google.com/o/oauth2/auth", "token": "https://www.googleapis.com/oauth2/v4/token", "userinfo": "https://www.googleapis.com/oauth2/v1/userinfo", "guide":"https://plugins.miniorange.com/google-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-google-plus", "video":"https://youtu.be/fpOewMgaQgc"
+ 	},
+	"fbapps": {
+		"label":"Facebook", "type":"oauth", "image":"facebook.png", "scope": "public_profile email", "domain":"", "discovery":"", "authorize": "https://www.facebook.com/dialog/oauth", "token": "https://graph.facebook.com/v2.8/oauth/access_token", "userinfo": "https://graph.facebook.com/me/?fields=id,name,email,age_range,first_name,gender,last_name,link", "guide":"https://plugins.miniorange.com/facebook-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-facebook", "video":"https://youtu.be/1Q0J-Jl-sj4"
+	},
+	"apple": {
+		"label":"Apple", "type":"openidconnect", "image":"apple.png", "scope": "email", "domain": "", "discovery":"", "authorize": "https://appleid.apple.com/auth/authorize", "token": "https://appleid.apple.com/auth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/login-with-apple-app-using-wordpress-oauth-client", "logo_class":"mofa fa-lock", "video":"https://youtu.be/qrd5NqJ3z60"
+ 	},
+	"twitter":{
+		"label":"twitter", "type":"oauth1", "image":"twitter.png", "scope": "profile", "logo_class":"mofa fa-lock","authorize":"https://api.twitter.com/oauth/authenticate" ,"requesturl":"https://twitter.com/oauth/request_token","token":"https://twitter.com/oauth/access_token","userinfo":"https://api.twitter.com/1.1/account/verify_credentials.json","guide":"https://plugins.miniorange.com/twitter-single-sign-on-wordpress-sso-oauth-openid-connect"
+	   ,"video":"https://youtu.be/Gxz505zW72Y"
+	},
+	"MicrosoftTeams": {
+		"label":"Microsoft Teams", "type":"openidconnect", "image":"microsoftTeams.png", "scope": "openid", "tenant": "tenent-id", "discovery": "https://login.microsoftonline.com/tenant/.well-known/openid-configuration", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/microsoft-teams-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-windowslive", "input":{"Tenant":"Enter Azure tenant id"}, "video":"", "send_header":"1", "send_body":"0"
+	},
+	"imisASI": {
+		"label":"iMIS ASI", "type":"oauth", "image":"imisASI.png", "scope": "public_profile email", "domain":"", "discovery":"", "authorize": "https://<iMIS-SSO-endpoint>", "token": "https://<iMIS-domian-name>/token", "userinfo": "https://<iMIS-domian-name>/api/User/?UserName=", "logo_class":"mofa fa-lock"
+	},
+	"imisCSI": {
+		"label":"iMIS CSI", "type":"oauth", "image":"imiscsi.png", "scope": "public_profile email", "domain":"", "discovery":"", "authorize": "https://<iMIS-domian-name>/openid/authenticate", "token": "https://<iMIS-domian-name>/openid/token", "userinfo": "https://<iMIS-domian-name>/openid/userinfo", "logo_class":"mofa fa-lock"
+	},
+	"gluu": {
+		"label":"Gluu Server", "type":"oauth", "image":"gluu.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "http://<gluu-server-domain>/oxauth/restv1/authorize", "token": "http://<gluu-server-domain>/oxauth/restv1/token", "userinfo": "http:///<gluu-server-domain>/oxauth/restv1/userinfo", "guide":"https://plugins.miniorange.com/gluu-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"linkedin": {
+		"label":"LinkedIn", "type":"oauth", "image":"linkedin.png", "scope": "r_liteprofile r_emailaddress", "domain": "", "discovery":"", "authorize": "https://www.linkedin.com/oauth/v2/authorization", "token": "https://www.linkedin.com/oauth/v2/accessToken", "userinfo": "https://api.linkedin.com/v2/me", "guide":"https://plugins.miniorange.com/linkedin-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-linkedin-square"
+	},
+	"strava": {
+		"label":"Strava", "type":"oauth", "image":"strava.png", "scope": "read", "domain": "", "discovery":"", "authorize": "https://www.strava.com/oauth/authorize", "token": "https://www.strava.com/oauth/token", "userinfo": "https://www.strava.com/api/v3/athlete", "guide":"https://plugins.miniorange.com/strava-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "video":"https://youtu.be/pU-lgMm318k"
+	},
+	"Dynamics365CRM": {
+		"label":"Dynamics 365 CRM", "type":"openidconnect", "image":"dynamics365.png", "scope": "openid", "tenant": "", "discovery": "", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/dynamics-crm-oauth-and-openid-connect-single-sign-on-sso-login", "logo_class":"mofa fa-windowslive", "input":{"Tenant":"Enter Azure tenant id"}, "video":"", "send_header":"1", "send_body":"0"
+	},
+	"hubspot": {
+		"label":"HubSpot", "type":"oauth", "image":"hubspot.png", "scope": "crm.objects.owners.read", "domain": "", "discovery": "","authorize": "https://app.hubspot.com/oauth/authorize", "token": "https://api.hubapi.com/oauth/v1/token", "userinfo": "https://api.hubapi.com/crm/v3/owners/?limit=100", "guide":"https://plugins.miniorange.com/hubspot-single-sign-on-for-wordpress-using-oauth", "logo_class":"mofa fa-body", "video":"", "send_header":"1", "send_body":"0"
+	},
+	"neoncrm": {
+		"label":"Neon CRM", "type":"oauth", "image":"neoncrm.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{{your Neon CRM organization id}}.z2systems.com/np/oauth/auth", "token": "https://{{your Neon CRM organization id}}.z2systems.com/np/oauth/token", "userinfo": "https://api.neoncrm.com/neonws/services/api/account/retrieveIndividualAccount?accountId=", "guide":"https://plugins.miniorange.com/neon-crm-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "send_header":"1", "send_body":"0"
+	, "video":"" 
+	},
+	"fitbit": {
+		"label":"FitBit", "type":"oauth", "image":"fitbit.png", "scope": "profile", "domain": "", "discovery":"", "authorize": "https://www.fitbit.com/oauth2/authorize", "token": "https://api.fitbit.com/oauth2/token", "userinfo": "https://www.fitbit.com/1/user", "guide":"https://plugins.miniorange.com/fitbit-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"box": {
+		"label":"Box", "type":"oauth", "image":"box.png", "scope": "root_readwrite", "domain": "", "discovery":"", "authorize": "https://account.box.com/api/oauth2/authorize", "token": "https://api.box.com/oauth2/token", "userinfo": "https://api.box.com/2.0/users/me", "guide":"https://plugins.miniorange.com/box-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"github": {
+		"label":"GitHub", "type":"oauth", "image":"github.png", "scope": "user repo", "domain": "", "discovery":"", "authorize": "https://github.com/login/oauth/authorize", "token": "https://github.com/login/oauth/access_token", "userinfo": "https://api.github.com/user", "guide":"https://plugins.miniorange.com/github-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-github", "video":"https://youtu.be/tqKpTuOH_eo"
+	},
+	"gitlab": {
+		"label":"GitLab", "type":"oauth", "image":"gitlab.png", "scope": "read_user", "domain": "", "discovery":"", "authorize": "https://gitlab.com/oauth/authorize", "token": "http://gitlab.com/oauth/token", "userinfo": "https://gitlab.com/api/v4/user", "guide":"https://plugins.miniorange.com/gitlab-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-gitlab", "video":"https://youtu.be/RcI-x3wTqvw"
+	},
+	"clever": {
+		"label":"Clever", "type":"oauth", "image":"clever.png", "scope": "read:students read:teachers read:user_id", "domain": "", "discovery":"", "authorize": "https://clever.com/oauth/authorize", "token": "https://clever.com/oauth/tokens", "userinfo": "https://api.clever.com/v3.0/me", "guide":"https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock"
+	},
+	"salesforce": {
+		"label":"Salesforce", "type":"oauth", "image":"salesforce.png", "scope": "email", "domain": "", "discovery":"", "authorize": "https://login.salesforce.com/services/oauth2/authorize", "token": "https://login.salesforce.com/services/oauth2/token", "userinfo": "https://login.salesforce.com/services/oauth2/userinfo", "guide":"https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "video":"https://youtu.be/jXImJNGPo0M"
+	},
+	"reddit": {
+		"label":"Reddit", "type":"oauth", "image":"reddit.png", "scope": "identity", "domain": "", "discovery":"", "authorize": "https://www.reddit.com/api/v1/authorize", "token": "https://www.reddit.com/api/v1/access_token", "userinfo": "https://www.reddit.com/api/v1/me", "guide":"https://plugins.miniorange.com/reddit-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-reddit", "video":"https://youtu.be/CbUGw-XZSqk"
+	},
+	"paypal": {
+		"label":"PayPal", "type":"openidconnect", "image":"paypal.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://www.paypal.com/signin/authorize", "token": "https://api.paypal.com/v1/oauth2/token", "userinfo": "", "guide":"https://plugins.miniorange.com/paypal-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-paypal"
+ 	},
+	"swiss rx login": {
+		"label":"Swiss RX Login", "type":"openidconnect", "image":"swissrx.png", "domain": "", "discovery":"", "scope": "anonymous", "authorize": "https://www.swiss-rx-login.ch/oauth/authorize", "token": "https://swiss-rx-login.ch/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/swiss-rx-login-single-sign-on-for-wordpress-using-oauth", "logo_class":"mofa fa-lock"
+	},
+	"Vendasta": {
+		"label":"Vendasta", "type":"oauth", "image":"vendasta.png", "scope": "openid profile email", "domain": "", "discovery":"", "authorize": "https://sso-api-prod.apigateway.co/oauth2/auth", "token": "https://sso-api-prod.apigateway.co/oauth2/token", "userinfo": "https://sso-api-prod.apigateway.co/oauth2/user-info", "guide":"", "logo_class":"mofa fa-lock", "video":"", "send_header":"0", "send_body":"1"
+	},
+	"yahoo": {
+		"label":"Yahoo", "type":"openidconnect", "image":"yahoo.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://api.login.yahoo.com/oauth2/request_auth", "token": "https://api.login.yahoo.com/oauth2/get_token", "userinfo": "", "guide":"https://plugins.miniorange.com/yahoo-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-yahoo", "video":"https://youtu.be/6MFHtqMc8nQ"
+ 	},
+	"spotify": {
+		"label":"Spotify", "type":"oauth", "image":"spotify.png", "scope": "user-read-private user-read-email", "domain": "", "discovery":"", "authorize": "https://accounts.spotify.com/authorize", "token": "https://accounts.spotify.com/api/token", "userinfo": "https://api.spotify.com/v1/me", "guide":"https://plugins.miniorange.com/spotify-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-spotify"
+	},
+	"eveonlinenew": {
+		"label":"Eve Online", "type":"oauth", "image":"eveonlinenew.png", "scope": "publicData", "domain": "", "discovery":"", "authorize": "https://login.eveonline.com/oauth/authorize", "token": "https://login.eveonline.com/oauth/token", "userinfo": "https://esi.evetech.net/verify", "guide":"https://plugins.miniorange.com/eve-online-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"vkontakte": {
+		"label":"VKontakte", "type":"oauth", "image":"vk.png", "scope": "", "domain": "", "discovery":"",  "authorize": "https://oauth.vk.com/authorize", "token": "https://oauth.vk.com/access_token", "userinfo": "https://api.vk.com/method/users.get?fields=id,name,email,age_range,first_name,gender,last_name,link&access_token=", "guide":"https://plugins.miniorange.com/vkontakte-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-vk"
+	},
+	"pinterest": {
+		"label":"Pinterest", "type":"oauth", "image":"pinterest.png", "domain": "", "discovery":"", "scope": "read_public", "authorize": "https://api.pinterest.com/oauth/", "token": "https://api.pinterest.com/v1/oauth/token", "userinfo": "https://api.pinterest.com/v1/me/", "guide":"https://plugins.miniorange.com/pinterest-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-pinterest"
+	},
+	"vimeo": {
+		"label":"Vimeo", "type":"oauth", "image":"vimeo.png", "scope": "public", "domain": "", "discovery":"", "authorize": "https://api.vimeo.com/oauth/authorize", "token": "https://api.vimeo.com/oauth/access_token", "userinfo": "https://api.vimeo.com/me", "guide":"https://plugins.miniorange.com/vimeo-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-vimeo"
+	},
+	"deviantart": {
+		"label":"DeviantArt", "type":"oauth", "image":"devart.png", "scope": "browse", "domain": "", "discovery":"", "authorize": "https://www.deviantart.com/oauth2/authorize", "token": "https://www.deviantart.com/oauth2/token", "userinfo": "https://www.deviantart.com/api/v1/oauth2/user/profile", "guide":"https://plugins.miniorange.com/deviantart-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-deviantart"
+	},
+	"dailymotion": {
+		"label":"Dailymotion", "type":"oauth", "image":"dailymotion.png", "scope": "email", "domain": "", "discovery":"", "authorize": "https://www.dailymotion.com/oauth/authorize", "token": "https://api.dailymotion.com/oauth/token", "userinfo": "https://api.dailymotion.com/user/me?fields=id,username,email,first_name,last_name", "guide":"https://plugins.miniorange.com/dailymotion-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"meetup": {
+		"label":"Meetup", "type":"oauth", "image":"meetup.png", "scope": "basic", "domain": "", "discovery":"", "authorize": "https://secure.meetup.com/oauth2/authorize", "token": "https://secure.meetup.com/oauth2/access", "userinfo": "https://api.meetup.com/members/self", "guide":"https://plugins.miniorange.com/meetup-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"autodesk": {
+		"label":"Autodesk", "type":"oauth", "image":"autodesk.png", "scope": "user:read user-profile:read", "domain": "", "discovery":"", "authorize": "https://developer.api.autodesk.com/authentication/v1/authorize", "token": "https://developer.api.autodesk.com/authentication/v1/gettoken", "userinfo": "https://developer.api.autodesk.com/userprofile/v1/users/@me", "guide":"https://plugins.miniorange.com/autodesk-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"zendesk": {
+		"label":"Zendesk", "type":"oauth", "image":"zendesk.png", "scope": "read write", "domain": "https://hostname", "discovery":"", "authorize": "https://{subdomain}.zendesk.com/oauth/authorizations/new", "token": "https://{subdomain}.zendesk.com/oauth/tokens", "userinfo": "https://{subdomain}.zendesk.com/api/v2/users", "guide":"https://plugins.miniorange.com/zendesk-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"Freja eID":{
+		"label":"Freja eID", "type":"openidconnect", "image":"frejaeid.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://oidc.prod.frejaeid.com/oidc/authorize", "token": "https://oidc.prod.frejaeid.com/oidc/token", "userinfo": "", "guide":"https://plugins.miniorange.com/login-with-freja-eid-using-wordpress-oauth-client", "logo_class":"mofa fa-lock"
+	},
+	"laravel": {
+		"label":"Laravel", "type":"oauth", "image":"laravel.png", "scope": "", "domain": "", "discovery":"", "authorize": "http://your-laravel-site-url/oauth/authorize", "token": "http://your-laravel-site-url/oauth/token", "userinfo": "http://your-laravel-site-url/api/user/get", "guide":"https://plugins.miniorange.com/laravel-passport-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"identityserver": {
+		"label":"Identity Server", "type":"oauth", "image":"identityserver.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://<your-identityserver-domain>/connect/authorize", "token": "https://<your-identityserver-domain>/connect/token", "userinfo": "https://your-domain/connect/introspect", "guide":"https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock"
+	},
+	"nextcloud": {
+		"label":"Nextcloud", "type":"oauth", "image":"nextcloud.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://<your-nextcloud-domain>/apps/oauth2/authorize", "token": "https://<your-nextcloud-domain>/apps/oauth2/api/v1/token", "userinfo": "https://<your-nextcloud-domain>/ocs/v2.php/cloud/user?format=json", "guide":"https://plugins.miniorange.com/nextcloud-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"twitch": {
+		"label":"Twitch", "type":"oauth", "image":"twitch.png", "scope": "Analytics:read:extensions", "domain": "", "discovery":"", "authorize": "https://id.twitch.tv/oauth2/authorize", "token": "https://id.twitch.tv/oauth2/token", "userinfo": "https://id.twitch.tv/oauth2/userinfo", "guide":"https://plugins.miniorange.com/twitch-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "video":"https://youtu.be/L4U-_9yWSGM"
+	},
+	"wildApricot": {
+		"label":"Wild Apricot", "type":"oauth", "image":"wildApricot.png", "scope": "auto", "domain": "", "discovery":"", "authorize": "https://<your_account_url>/sys/login/OAuthLogin", "token": "https://oauth.wildapricot.org/auth/token", "userinfo": "https://api.wildapricot.org/v2.1/accounts/<account_id>/contacts/me", "guide":"https://plugins.miniorange.com/wild-apricot-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"connect2id": {
+		"label":"Connect2id", "type":"oauth", "image":"connect2id.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://c2id.com/login", "token": "https://<your-base-server-url>/token", "userinfo": "https://<your-base-server-url>/userinfo", "guide":"https://plugins.miniorange.com/connect2id-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"orcid": {
+		"label":"ORCID", "type":"openidconnect", "image":"orcid.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://orcid.org/oauth/authorize", "token": "https://orcid.org/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/orcid-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"mofa fa-lock"
+ 	},
+	"diaspora": {
+		"label":"Diaspora", "type":"openidconnect", "image":"diaspora.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://<your-diaspora-domain>/api/openid_connect/authorizations/new", "token": "https://<your-diaspora-domain>/api/openid_connect/access_tokens", "userinfo": "", "guide":"https://plugins.miniorange.com/setup-diaspora-as-an-openid-connect-server", "logo_class":"mofa fa-lock"
+	},
+	"timezynk": {
+		"label":"Timezynk", "type":"oauth", "image":"timezynk.png", "scope": "read:user", "domain": "", "discovery":"", "authorize": "https://api.timezynk.com/api/oauth2/v1/auth", "token": "https://api.timezynk.com/api/oauth2/v1/token", "userinfo": "https://api.timezynk.com/api/oauth2/v1/userinfo", "guide":"", "logo_class":"mofa fa-lock"
+	},
+	"did": {
+		"label":"DID App", "type":"openidconnect", "image":"did.png", "scope": "openid email", "domain": "", "discovery":"", "authorize": "https://auth.did.app/oidc/authorize", "token": "https://auth.did.app/oidc/token", "userinfo": "https://auth.did.app/oidc/userinfo", "guide":"https://plugins.miniorange.com/did-single-sign-on-for-wordpress-using-oauth", "logo_class":"mofa fa-lock"
+	},
+	"coil": {
+		"label":"Coil", "type":"oauth", "image":"coil.png", "scope": "openid email", "domain": "", "discovery":"", "authorize": "https://coil.com/oauth/auth", "token": "https://coil.com/oauth/token", "userinfo": "https://api.coil.com/user/info", "guide":"https://plugins.miniorange.com/coil-single-sign-on-sso", "logo_class":"mofa fa-lock"
+	},
+	"vatsim": {
+		"label":"VATSIM", "type":"oauth", "image":"vatsim.png", "scope": "full_name email", "domain": "", "discovery":"", "authorize": "https://auth.vatsim.net/oauth/authorize", "token": "https://auth.vatsim.net/oauth/token", "userinfo": "https://auth.vatsim.net/api/user", "guide":"https://plugins.miniorange.com/vatsim-single-sign-on-sso", "logo_class":"mofa fa-lock"
+	},
+	"intuit": {
+		"label":"Intuit", "type":"oauth", "image":"intuit.png", "scope": "openid email profile", "domain": "", "discovery":"", "authorize": "https://appcenter.intuit.com/connect/oauth2", "token": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", "userinfo": "https://accounts.platform.intuit.com/v1/openid_connect/userinfo", "guide":"https://plugins.miniorange.com/login-with-intuit-using-wordpress-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"blizzard": {
+		"label":"Blizzard", "type":"oauth", "image":"blizzard.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://us.battle.net/oauth/authorize", "token": "https://us.battle.net/oauth/token", "userinfo": "https://us.battle.net/oauth/userinfo", "guide":"https://plugins.miniorange.com/blizzard-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock", "video":"https://youtu.be/aSoM3tjcM0Y"
+	},
+	"auth0": {
+		"label":"Auth0", "type":"openidconnect", "image":"auth0.png", "scope": "openid profile", "domain": "", "discovery":"", "authorize": "https://<your-auth0-domain>/authorize", "token": "https://<your-auth0-domain>/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/auth0-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"classlink": {
+		"label":"ClassLink", "type":"oauth", "image":"classlink.png", "scope": "profile", "domain": "", "discovery":"", "authorize": "https://launchpad.classlink.com/oauth2/v2/auth", "token": "https://launchpad.classlink.com/oauth2/v2/token", "userinfo": "https://nodeapi.classlink.com/v2/my/info", "guide":"https://plugins.miniorange.com/classlink-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"canvas": {
+		"label":"Canvas", "type":"oauth", "image":"canvas.png", "scope": "openid profile", "domain": "", "discovery":"", "authorize": "https://<your-site-url>/login/oauth2/auth", "token": "https://<your-site-url>/login/oauth2/token", "userinfo": "https://<your-site-url>/api/v1/users/self", "guide":"https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"servicenow": {
+		"label":"ServiceNow", "type":"oauth", "image":"servicenow.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://<your-servicenow-domain>/oauth_auth.do", "token": "https://<your-servicenow-domain>/oauth_token.do", "userinfo": "https://<your-servicenow-domain>/<rest-api-path>?access_token=", "guide":"https://plugins.miniorange.com/servicenow-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"ibmappid": {
+		"label":"IBM App ID", "type":"openidconnect", "image":"ibmappid.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://<region>.appid.cloud.ibm.com/oauth/v4/<tenant-id>/authorization", "token": "https://<region>.appid.cloud.ibm.com/oauth/v4/<tenant-id>/token", "userinfo": "https://<region>.appid.cloud.ibm.com/oauth/v4/<tenant-id>/userinfo", "guide":"https://plugins.miniorange.com/ibm-app-id-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"mofa fa-lock"
+	},
+	"idaptive": {
+		"label":"Idaptive | CyberArk", "type":"openidconnect", "image":"idaptive.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://<idaptive-domain>/OAuth2/Authorize/oidc", "token": "https://<idaptive-domain>/OAuth2/Token/oidc", "userinfo": "https://<idaptive-domain>/OAuth2/UserInfo/oidc", "guide":"https://plugins.miniorange.com/idaptive-single-sign-on-for-wordpress-using-oauth", "logo_class":"mofa fa-lock"
+	},
+	"5Paisa.com": {
+		"label":"5Paisa.com", "type":"openidconnect", "image":"fivepaisa.jpg", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://dev-openapi.5paisa.com/WebVendorLogin/VLogin/Index?VendorKey=uOmI3anLbyZnP2u6OiUdwmj6nHISn8tF&ResponseURL=", "token": "https://openapi.5paisa.com/VendorsAPI/Service1.svc/GetAccessToken", "userinfo": "", "guide":"", "logo_class":"mofa fa-lock"
+	},
+	"other": {
+		"label":"Custom OAuth 2.0 App", "type":"oauth", "image":"customapp.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-with-custom-oauth-provider/", "logo_class":"mofa fa-lock"
+	},
+	"openidconnect": {
+		"label":"Custom OpenID Connect App", "type":"openidconnect", "image":"customapp.png", "scope": "", "domain": "", "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-with-custom-openid-connect-provider/", "logo_class":"mofa fa-lock"
+	},
+	"oauth1": {
+		"label":"Custom OAuth 1.0 App", "type":"oauth1", "image":"customapp.png", "scope": "", "domain": "", "discovery":"", "request": "", "authorize": "", "token": "", "userinfo": "",  "logo_class":"mofa fa-lock"
+	}
+}

@@ -1,7 +1,12 @@
 {
   "version": "1.0",
+  "advanced": {
+    "debug-mode": false,
+    "logging": true
+  },
   "active-plugins": [
     "advanced-custom-fields-pro/acf.php",
+    "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
     "woocommerce",
     "woocommerce-gateway-stripe",
     "woocommerce-services",
@@ -14,9 +19,44 @@
       "urls": {
         "local": "GOODBIDS_AUCTIONEER_URL_LOCAL",
         "develop": "GOODBIDS_AUCTIONEER_URL_DEVELOP",
+        "staging": "GOODBIDS_AUCTIONEER_URL_STAGING",
         "production": "GOODBIDS_AUCTIONEER_URL_PRODUCTION"
       },
       "api-key": "GOODBIDS_AUCTIONEER_API_KEY"
+    }
+  },
+  "auctioneer": {
+    "environment": "develop"
+  },
+  "auctions": {
+    "default-free-bids": 5,
+    "rest-api": {
+      "cache-timeout": 0
+    }
+  },
+  "sites": {
+    "default-posts-per-page": 9
+  },
+  "woocommerce": {
+    "account": {
+      "default-orders-per-page": 10
+    }
+  },
+  "blocks": {
+    "all-auctions": {
+      "auctions-per-page": 9
+    },
+    "watch-auction": {
+      "post-types": [ "gb-auction" ]
+    }
+  },
+  "invoices": {
+    "payment-terms-days": 30,
+    "percent": 10
+  },
+  "network": {
+    "logs": {
+      "per-page": 20
     }
   }
 }

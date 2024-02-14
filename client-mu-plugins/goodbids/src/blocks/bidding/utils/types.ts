@@ -1,6 +1,4 @@
-export type AuctionStatus = 'not-started' | 'in-progress' | 'ended';
-
-type MessageType = 'start' | 'update' | 'end';
+type MessageType = 'update' | 'end';
 
 type AuctionType = {
 	startTime: string;
@@ -9,11 +7,17 @@ type AuctionType = {
 	totalRaised: number;
 	currentBid: number;
 	lastBid: number;
-	lastBidder: string;
-	freeBidsAvailable: boolean;
+	lastBidder?: number;
 };
 
-export type Message = {
+type SocketSuccessMessage = {
 	type: MessageType;
 	payload: AuctionType;
 };
+
+type SocketErrorMessage = {
+	type: 'not-found';
+	payload: string;
+};
+
+export type SocketMessage = SocketSuccessMessage | SocketErrorMessage;

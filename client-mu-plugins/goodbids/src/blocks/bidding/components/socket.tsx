@@ -1,49 +1,50 @@
 import { useEffect } from 'react';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { attributes } from '../utils/get-data-attributes';
-import { useAuction } from '../utils/auction-store';
-import { DEMO_DATA } from '../utils/demo-data';
+import useWebSocket from 'react-use-websocket';
+import { SocketMessage } from '../utils/types';
+import { useBiddingState } from '../store';
 
-type MessageType = 'start' | 'update' | 'end';
+// TODO: Remove once WP sends appropriate url in dev mode
+const socketUrlOverride = 'ws://localhost:3000/_ws/connect';
 
-type AuctionType = {
-	startTime: string;
-	endTime: string;
-	totalBids: number;
-	totalRaised: number;
-	currentBid: number;
-	lastBid: number;
-	lastBidder: string;
-	freeBidsAvailable: boolean;
+type SocketProps = {
+	auctionId: number;
 };
 
-export type Message = {
-	type: MessageType;
-	payload: AuctionType;
-};
+export function Socket({ auctionId }: SocketProps) {
+	const { auctionStatus } = useBiddingState();
 
-export function Socket() {
-	const { auctionId } = attributes;
-	const { socketUrl } = DEMO_DATA;
-	const { setAuctionState } = useAuction();
+	if (auctionStatus === 'live') {
+		return <SocketHandler auctionId={auctionId} />;
+	}
 
-	const { readyState, lastJsonMessage } = useWebSocket<Message>(
-		`${socketUrl}/${auctionId}`,
+	return null;
+}
+
+function SocketHandler({ auctionId }: SocketProps) {
+	const { socketUrl, setSocketError, setSocketAuction, auctionStatus } =
+		useBiddingState();
+
+	const { lastJsonMessage } = useWebSocket<SocketMessage>(
+		`${
+			process.env.NODE_ENV === 'development'
+				? socketUrlOverride
+				: socketUrl
+		}/${auctionId}`,
 		{
-			onError: (event) => {
-				// TODO: On error, swap to polling
-				console.error(event);
+			onError: () => {
+				setSocketError();
 			},
+			reconnectInterval: 30000,
+			shouldReconnect: () => auctionStatus === 'live',
 		},
 	);
 
 	useEffect(() => {
-		if (readyState === ReadyState.OPEN) {
-			if (lastJsonMessage) {
-				setAuctionState(lastJsonMessage);
-			}
+		if (lastJsonMessage) {
+			setSocketAuction(lastJsonMessage);
 		}
-	}, [lastJsonMessage, readyState, setAuctionState]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [lastJsonMessage]);
 
 	return null;
 }

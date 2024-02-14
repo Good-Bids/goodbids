@@ -13,6 +13,7 @@ namespace GoodBids\Plugins\WooCommerce\API;
 
 defined( 'ABSPATH' ) || exit;
 
+use GoodBids\Utilities\Log;
 use WC_REST_Controller;
 use WP_Error;
 use WP_REST_Request;
@@ -126,14 +127,14 @@ class Credentials extends WC_REST_Controller {
 		$keys_id = $this->lookup_credentials( $site_id );
 
 		if ( $keys_id && ! $this->delete_credentials( $site_id, $keys_id ) ) {
-			// TODO: Log Error
+			Log::error( 'There was a problem revoking the previous site credentials.', compact( 'site_id', 'keys_id' ) );
 			return new WP_Error( 'goodbids_credentials_malfunction', __( 'There was a problem revoking the previous site credentials.', 'goodbids' ) );
 		}
 
 		$data = $this->generate_credentials( $site_id );
 
 		if ( ! $data ) {
-			// TODO: Log Error
+			Log::error( 'There was a problem generating the site credentials.', compact( 'data' ) );
 			return new WP_Error( 'goodbids_credentials_malfunction', __( 'There was a problem generating the site credentials.', 'goodbids' ) );
 		}
 
@@ -153,18 +154,18 @@ class Credentials extends WC_REST_Controller {
 		$site_id = get_blog_id_from_url( $domain );
 
 		if ( ! $site_id ) {
-			// TODO: Log Error.
+			Log::error( 'Invalid site ID', compact( 'domain' ) );
 			return false;
 		}
 
 		if ( ! is_main_site() ) {
-			// TODO: Log Error.
+			Log::emergency( 'Attempted to generate credentials on Main Site', compact( 'domain', 'site_id' ) );
 			return false;
 		}
 
 		// Do not generate credentials for the main site.
 		if ( $site_id === get_main_site_id() ) {
-			// TODO: Log Error.
+			Log::emergency( 'Attempted to generate credentials for Main Site', compact( 'domain', 'site_id' ) );
 			return false;
 		}
 
@@ -181,32 +182,34 @@ class Credentials extends WC_REST_Controller {
 	 * @return int|null
 	 */
 	private function lookup_credentials( int $site_id ): ?int {
-		global $wpdb;
-
+		// Do not allow on main site.
 		if ( ! is_main_site() ) {
-			// TODO: Log error.
+			Log::emergency( 'Attempted to lookup credentials on Main Site', compact( 'site_id' ) );
 			return null;
 		}
 
-		switch_to_blog( $site_id );
+		return goodbids()->sites->swap(
+			function (): ?int {
+				global $wpdb;
 
-		$key = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT key_id
-				FROM {$wpdb->prefix}woocommerce_api_keys
-				WHERE user_id = %d AND description = %s LIMIT 0,1",
-				$this->default_user_id,
-				$this->default_description
-			)
+				$key = $wpdb->get_col(
+					$wpdb->prepare(
+						"SELECT key_id
+						FROM {$wpdb->prefix}woocommerce_api_keys
+						WHERE user_id = %d AND description = %s LIMIT 0,1",
+						$this->default_user_id,
+						$this->default_description
+					)
+				);
+
+				if ( ! $key ) {
+					return null;
+				}
+
+				return intval( $key[0] );
+			},
+			$site_id
 		);
-
-		restore_current_blog();
-
-		if ( ! $key ) {
-			return null;
-		}
-
-		return intval( $key[0] );
 	}
 
 	/**
@@ -220,23 +223,25 @@ class Credentials extends WC_REST_Controller {
 	 * @return bool
 	 */
 	private function delete_credentials( int $site_id, int $key_id ): bool {
-		global $wpdb;
-
+		// Do not allow in main site.
 		if ( ! is_main_site() ) {
 			return false;
 		}
 
-		switch_to_blog( $site_id );
+		return goodbids()->sites->swap(
+			function () use ( $key_id ): bool {
+				global $wpdb;
 
-		$delete = $wpdb->delete(
-			$wpdb->prefix . 'woocommerce_api_keys',
-			[ 'key_id' => $key_id ],
-			[ '%d' ]
+				$delete = $wpdb->delete(
+					$wpdb->prefix . 'woocommerce_api_keys',
+					[ 'key_id' => $key_id ],
+					[ '%d' ]
+				);
+
+				return 1 === $delete;
+			},
+			$site_id
 		);
-
-		restore_current_blog();
-
-		return 1 === $delete;
 	}
 
 	/**
@@ -246,58 +251,60 @@ class Credentials extends WC_REST_Controller {
 	 *
 	 * @param int $site_id
 	 *
-	 * @return string[]|null
+	 * @return ?string[]
 	 */
 	private function generate_credentials( int $site_id ): ?array {
-		global $wpdb;
-
+		// Do not allow on main site.
 		if ( ! is_main_site() ) {
-			// TODO: Log error.
+			Log::emergency( 'Attempted to generate credentials on Main Site', compact( 'site_id' ) );
 			return null;
 		}
 
-		switch_to_blog( $site_id );
+		return goodbids()->sites->swap(
+			function () use ( $site_id ): ?array {
+				global $wpdb;
 
-		$consumer_key    = 'ck_' . wc_rand_hash();
-		$consumer_secret = 'cs_' . wc_rand_hash();
-		$user_id         = $this->default_user_id;
-		$description     = $this->default_description;
-		$permissions     = 'read_write';
+				$consumer_key    = 'ck_' . wc_rand_hash();
+				$consumer_secret = 'cs_' . wc_rand_hash();
+				$user_id         = $this->default_user_id;
+				$description     = $this->default_description;
+				$permissions     = 'read_write';
 
-		$data = [
-			'user_id'         => $user_id,
-			'description'     => $description,
-			'permissions'     => $permissions,
-			'consumer_key'    => wc_api_hash( $consumer_key ),
-			'consumer_secret' => $consumer_secret,
-			'truncated_key'   => substr( $consumer_key, -7 ),
-		];
+				$data = [
+					'user_id'         => $user_id,
+					'description'     => $description,
+					'permissions'     => $permissions,
+					'consumer_key'    => wc_api_hash( $consumer_key ),
+					'consumer_secret' => $consumer_secret,
+					'truncated_key'   => substr( $consumer_key, -7 ),
+				];
 
-		$wpdb->insert(
-			$wpdb->prefix . 'woocommerce_api_keys',
-			$data,
-			[
-				'%d',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-				'%s',
-			]
+				$wpdb->insert(
+					$wpdb->prefix . 'woocommerce_api_keys',
+					$data,
+					[
+						'%d',
+						'%s',
+						'%s',
+						'%s',
+						'%s',
+						'%s',
+					]
+				);
+
+				$insert_id = $wpdb->insert_id;
+
+				if ( 0 === $insert_id ) {
+					Log::critical( 'Error generating credentials for site', compact( 'data', 'site_id' ) );
+					return null;
+				}
+
+				return [
+					'key'    => $consumer_key,
+					'secret' => $consumer_secret,
+				];
+			},
+			$site_id
 		);
-
-		$insert_id = $wpdb->insert_id;
-
-		restore_current_blog();
-
-		if ( 0 === $insert_id ) {
-			// TODO: Log error.
-			return null;
-		}
-
-		return [
-			'key'    => $consumer_key,
-			'secret' => $consumer_secret,
-		];
 	}
 }
