@@ -59,6 +59,7 @@
 		"wpackagist-plugin/woocommerce": "^8.5",
 		"wpackagist-plugin/woocommerce-gateway-stripe": "^7.9",
 		"wpackagist-plugin/woocommerce-services": "^2.4",
+		"wpackagist-plugin/wp-referral-code": "^1.4",
 		"wpengine/advanced-custom-fields-pro": "*"
 	},
 	"require-dev": {

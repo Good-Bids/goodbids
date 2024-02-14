@@ -5,14 +5,15 @@
     "logging": true
   },
   "active-plugins": [
+    "accessibility-checker",
     "advanced-custom-fields-pro/acf.php",
     "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
+    "svg-support",
+    "user-switching",
     "woocommerce",
     "woocommerce-gateway-stripe",
     "woocommerce-services",
-    "accessibility-checker",
-    "svg-support",
-    "user-switching"
+    "wp-referral-code"
   ],
   "vip-constants": {
     "auctioneer": {
@@ -58,5 +59,9 @@
     "logs": {
       "per-page": 20
     }
+  },
+  "referrals": {
+    "code-length": 6,
+    "expiration-days": 30
   }
 }
