@@ -1240,15 +1240,15 @@
         },
         {
             "name": "wpackagist-plugin/accessibility-checker",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/accessibility-checker/",
-                "reference": "tags/1.8.0"
+                "reference": "tags/1.8.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.8.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.8.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1312,15 +1312,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce-gateway-stripe",
-            "version": "7.9.1",
+            "version": "7.9.3",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce-gateway-stripe/",
-                "reference": "tags/7.9.1"
+                "reference": "tags/7.9.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.7.9.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.7.9.3.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1330,15 +1330,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce-services",
-            "version": "2.4.2",
+            "version": "2.5.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce-services/",
-                "reference": "tags/2.4.2"
+                "reference": "tags/2.5.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce-services.2.4.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce-services.2.5.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1348,10 +1348,10 @@
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",
-            "version": "6.2.5",
+            "version": "6.2.6.1",
             "dist": {
                 "type": "zip",
-                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.5"
+                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.6.1"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
