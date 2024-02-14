@@ -73,7 +73,7 @@ class Stripe {
 	 */
 	public function init(): void {
 		if ( ! function_exists( 'woocommerce_gateway_stripe' ) ) {
-			Log::warning( 'WooCommerce Stripe gateway not found. Please install or activate the WooCommerce Stripe Gatewway plugin.' );
+			Log::warning( 'WooCommerce Stripe gateway not found. Please install or activate the WooCommerce Stripe Gateway plugin.' );
 			return;
 		}
 
