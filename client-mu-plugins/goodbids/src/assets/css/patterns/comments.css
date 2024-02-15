@@ -1,0 +1,14 @@
+@layer components {
+	.wp-block-post-comments-form {
+		.comment-reply-title {
+			@apply hidden;
+		}
+		.wp-element-button {
+			@apply btn-fill;
+		}
+	}
+
+	.wp-block-comment-reply-link a:where(:not(.wp-element-button)) {
+		@apply text-sm underline hover:no-underline focus:no-underline;
+	}
+}
