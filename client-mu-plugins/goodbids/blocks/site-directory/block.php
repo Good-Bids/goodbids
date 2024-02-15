@@ -29,18 +29,13 @@ class SiteDirectory extends ACFBlock {
 		$sites = [];
 
 		foreach ( get_sites() as $nonprofit ) {
-			$nonprofit_id       = get_object_vars( $nonprofit )['blog_id'];
-			$nonprofit_siteurl  = get_blog_details( $nonprofit_id )->siteurl;
-			$nonprofit_blogname = get_blog_details( $nonprofit_id )->blogname;
+			$nonprofit_id = get_object_vars( $nonprofit )['blog_id'];
 
-			// TODO: filter list by site status and/or other items
-
-			$sites[] =
-				[
-					'site_id'  => $nonprofit_id,
-					'blogname' => $nonprofit_blogname,
-					'siteurl'  => $nonprofit_siteurl,
-				];
+			// Skip main site
+			if ( is_main_site( $nonprofit_id ) ) {
+				continue;
+			}
+			$sites[] = [ 'site_id' => $nonprofit_id ];
 
 		}
 
