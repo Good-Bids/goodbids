@@ -29,7 +29,7 @@ endif;
 	<tbody>
 		<?php foreach ( $results as $result ) : ?>
 			<tr>
-				<?php $user = get_user_by( 'id', $result['id'] ); ?>
+				<?php $user = get_user_by( 'ID', $result['id'] ); ?>
 				<td><?php echo esc_html( $user->user_login ); ?></td>
 				<td><?php echo esc_html( $result['counted'] ); ?></td>
 			</tr>

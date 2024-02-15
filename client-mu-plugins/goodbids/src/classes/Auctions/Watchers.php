@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Core;
 use GoodBids\Utilities\Log;
 use WP_Query;
 
@@ -42,6 +43,11 @@ class Watchers {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Disable Watchers on Main Site.
+		if ( is_main_site() && ! Core::is_dev_env() ) {
+			return;
+		}
+
 		// Register Post Type.
 		$this->register_post_type();
 

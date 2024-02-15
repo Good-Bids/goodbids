@@ -8,6 +8,7 @@
 
 namespace GoodBids\Users\Referrals;
 
+use GoodBids\Users\Referrals;
 use WP_User;
 use WP_User_Query;
 
@@ -19,12 +20,22 @@ use WP_User_Query;
 class Admin {
 
 	/**
+	 * @since 1.0.0
+	 */
+	const UPDATE_CODE_NONCE = 'goodbids_update_referral_code_nonce';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const UPDATE_CODE_NONCE_ACTION = 'update_referral_code';
+
+	/**
 	 * Initialize Referral Admin
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! is_admin() ) {
+		if ( ! is_admin() && ! is_network_admin() ) {
 			return;
 		}
 
@@ -41,10 +52,15 @@ class Admin {
 	private function init(): void {
 		// Edit User Page.
 		add_action( 'load-user-edit.php', [ $this, 'init_user' ] );
+
+		// List Users Page.
 		add_action( 'load-users.php', [ $this, 'init_users' ] );
 
 		// User AJAX Actions.
 		$this->user_ajax_actions();
+
+		// Set up JS Vars.
+		$this->user_js_vars();
 	}
 
 	/**
@@ -73,42 +89,42 @@ class Admin {
 			}
 
 			$user_id  = $user->ID;
-			$referral = new Referral( $user_id );
-			$data     = compact( 'user_id', 'referral' );
+			$referrer = new Referrer( $user_id );
+			$data     = compact( 'user_id', 'referrer' );
 
-			goodbids()->load_view( 'admin/referrals/invitations.php', $data );
+			goodbids()->load_view( 'admin/referrals/referrals.php', $data );
 			goodbids()->load_view( 'admin/referrals/update-referral-code.php', $data );
 		};
 
 		add_action( 'show_user_profile', $profile_fields, 1 );
 		add_action( 'edit_user_profile', $profile_fields, 1 );
 
+		$get_code = function(): false|string {
+			if ( ! isset( $_POST[ self::UPDATE_CODE_NONCE ] ) || ! wp_verify_nonce( sanitize_text_field( $_POST[ self::UPDATE_CODE_NONCE ] ), self::UPDATE_CODE_NONCE_ACTION ) || empty( $_POST[ Referrals::REFERRAL_CODE_META_KEY ] ) ) {
+				return false;
+			}
+
+			return sanitize_text_field( wp_unslash( $_POST[ Referrals::REFERRAL_CODE_META_KEY ] ) );
+		};
+
 		add_action(
 			'user_profile_update_errors',
-			function ( $errors, $update, $user ): void {
+			function ( $errors, $update, $user ) use ( $get_code ): void {
 				if ( ! $update ) {
 					return;
 				}
 
-				if ( ! isset( $_POST['wrc_update_ref_code_nonce'] ) || ! wp_verify_nonce( $_POST['wrc_update_ref_code_nonce'], 'update_ref_code' ) ) {
+				$code = $get_code();
+
+				if ( ! $code ) {
 					return;
 				}
 
-				$new_code = sanitize_text_field( wp_unslash( $_POST['wrc_new_ref_code'] ) );
+				$user_id = goodbids()->referrals->get_user_id_by_referral_code( $code );
 
-				if ( empty( $new_code ) ) {
-					return;
-				}
-
-				$referrer_id = goodbids()->referrals->get_user_id_by_code( $new_code );
-
-				// Referral code hasn't been used yet
-				if ( false === $referrer_id ) {
-					return;
-				}
-
-				if ( $referrer_id !== $user->ID ) {
-					$errors->add( 'unique-ref-code', __( 'Submitted refer code is already in use', 'goodbids' ) );
+				// Referral code already used (and not by current user).
+				if ( $user_id && $user_id !== intval( $user->ID ) ) {
+					$errors->add( 'unique-ref-code', __( 'Submitted referral code is already in use.', 'goodbids' ) );
 				}
 			},
 			10,
@@ -117,23 +133,19 @@ class Admin {
 
 		add_action(
 			'profile_update',
-			function ( int $user_id ): void {
+			function ( int $user_id ) use ( $get_code ): void {
 				if ( ! current_user_can( 'promote_users' ) || ! current_user_can( 'edit_user', $user_id ) ) {
 					return;
 				}
 
-				if ( ! isset( $_POST['wrc_update_ref_code_nonce'] ) || ! wp_verify_nonce( $_POST['wrc_update_ref_code_nonce'], 'update_ref_code' ) ) {
+				$code = $get_code();
+
+				if ( ! $code ) {
 					return;
 				}
 
-				$new_code = sanitize_text_field( wp_unslash( $_POST['wrc_new_ref_code'] ) );
-
-				if ( empty( $new_code ) ) {
-					return;
-				}
-
-				$referral = new Referral( $user_id );
-				$referral->update( $new_code );
+				$referrer = new Referrer( $user_id );
+				$referrer->set_code( $code );
 			}
 		);
 
@@ -149,11 +161,11 @@ class Admin {
 	private function user_ajax_actions(): void {
 		// AJAX Delete Referral.
 		add_action(
-			'wp_ajax_goodbids_referrals_delete_user_relation',
+			'wp_ajax_goodbids_referrals_delete_referral',
 			function () {
-				list( $user_id, $referrer_id ) = $this->ajax_relation_request_validation( 'goodbids_referrals_delete_user_relation_nonce' );
+				list( $user_id, $referrer_id ) = $this->ajax_request_validation( 'goodbids_referrals_delete_referral_nonce' );
 
-				goodbids()->referrals->invitations->delete( $user_id, $referrer_id );
+				goodbids()->referrals->delete( $referrer_id, $user_id );
 				wp_send_json_success(
 					[
 						'done',
@@ -166,9 +178,9 @@ class Admin {
 
 		// AJAX Add Referral.
 		add_action(
-			'wp_ajax_goodbids_referrals_add_user_relation',
+			'wp_ajax_goodbids_referrals_add_referral',
 			function () {
-				list( $user_id, $referrer_id ) = $this->ajax_relation_request_validation( 'goodbids_referrals_add_user_relation_nonce' );
+				list( $user_id, $referrer_id ) = $this->ajax_request_validation( 'goodbids_referrals_add_referral_nonce' );
 
 				if ( $user_id === $referrer_id ) {
 					wp_send_json_error(
@@ -180,9 +192,9 @@ class Admin {
 					wp_die();
 				}
 
-				$already_has_referrer = ! empty( get_user_meta( $user_id, Referrals::REFERRER_ID_META_KEY, true ) );
+				$referred_by = goodbids()->referrals->get_referrer_id( $user_id );
 
-				if ( $already_has_referrer ) {
+				if ( $referred_by ) {
 					wp_send_json_error(
 						[
 							'error' => __( 'User already has a referrer. You might want to first delete the original referral.', 'goodbids' ),
@@ -192,9 +204,7 @@ class Admin {
 					wp_die();
 				}
 
-				// set referrer as inviter of new user.
-				goodbids()->referrals->invitations->add( $user_id, $referrer_id );
-				update_user_meta( $user_id, Referrals::REFERRER_ID_META_KEY, $referrer_id );
+				goodbids()->referrals->add_referral( $referrer_id, $user_id );
 
 				wp_send_json_success(
 					[
@@ -213,19 +223,25 @@ class Admin {
 				check_ajax_referer( 'goodbids_referrals_search_user_select2', 'nonce' );
 
 				$data     = wp_unslash( $_REQUEST );
-				$page     = isset( $data['page'] ) ? sanitize_text_field( $data['page'] ) : 1;
 				$per_page = 10;
-				$user_id  = isset( $data['user_id'] ) ? sanitize_text_field( $data['user_id'] ) : 0;
+				$page     = isset( $data['page'] ) ? intval( sanitize_text_field( $data['page'] ) ) : 1;
+				$user_id  = isset( $data['user_id'] ) ? intval( sanitize_text_field( $data['user_id'] ) ) : 0;
+				$exclude  = [];
 
-				$excludes = ( new Referral( $user_id ) )->get_invitations();
+				if ( $user_id ) {
+					$referrer = new Referrer( $user_id );
+					$exclude  = array_merge( $referrer->get_referred_users(), [ $user_id ] );
+				}
 
-				$search = isset( $data['term'] ) ? '*' . sanitize_text_field( $data['term'] ) . '*' : '';
+				$search      = isset( $data['term'] ) ? '*' . sanitize_text_field( $data['term'] ) . '*' : '';
+				$search_cols = [ 'user_login', 'user_url', 'user_email', 'user_nicename', 'display_name' ];
 
 				$users_query = new WP_User_Query(
 					array(
-						'exclude'        => $excludes,
+						'blog_id'        => 0,
+						'exclude'        => $exclude,
 						'search'         => $search,
-						'search_columns' => [ 'user_login', 'user_url', 'user_email', 'user_nicename', 'display_name' ],
+						'search_columns' => $search_cols,
 						'orderby'        => 'user_registered',
 						'order'          => 'DESC',
 						'fields'         => [ 'ID', 'user_login', 'user_email', 'display_name' ],
@@ -239,12 +255,13 @@ class Admin {
 				$users       = $users_query->get_results();
 				$total_count = $users_query->get_total();
 				$users       = array_map(
-					function ( WP_User $user ) {
+					function ( \stdClass $user ) {
 						$text = sprintf(
-							'(%d) %s (%s)',
+							'%d: %s (%s / %s )',
 							esc_html( $user->ID ),
 							esc_html( $user->display_name ),
-							esc_html( $user->user_login )
+							esc_html( $user->user_login ),
+							esc_html( $user->user_email )
 						);
 
 						return [
@@ -269,26 +286,18 @@ class Admin {
 	}
 
 	/**
-	 * Enqueue User Edit Assets
+	 * Set up JS Vars
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function enqueue_user_assets(): void {
+	public function user_js_vars(): void {
 		add_action(
-			'admin_enqueue_scripts',
-			function ( $hook ): void {
-				if ( 'user-edit.php' !== $hook ) {
-					return;
-				}
-
-				// Scripts.
-				wp_enqueue_script( 'gb-referral-main', GOODBIDS_PLUGIN_URL . 'admin/js/main.min.js', [], goodbids()->get_version(), false );
-				wp_enqueue_script( 'select2', GOODBIDS_PLUGIN_URL . 'admin/js/select2.full.min.js', [ 'jquery' ], goodbids()->get_version(), true );
-
+			'goodbids_enqueue_admin_script',
+			function ( $handle ) {
 				wp_localize_script(
-					'gb-referral-main',
+					$handle,
 					'goodbidsReferral',
 					[
 						'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
@@ -301,15 +310,12 @@ class Admin {
 						],
 						'confirmedAlert' => [
 							'title' => __( 'Deleted!', 'goodbids' ),
-							'text'  => __( 'The relation has been deleted.', 'goodbids' ),
+							'text'  => __( 'The referral has been deleted.', 'goodbids' ),
 						],
-						'nonceDelete'    => wp_create_nonce( 'goodbids_referrals_delete_user_relation_nonce' ),
-						'nonceAdd'       => wp_create_nonce( 'goodbids_referrals_add_user_relation_nonce' ),
+						'nonceDelete'    => wp_create_nonce( 'goodbids_referrals_delete_referral_nonce' ),
+						'nonceAdd'       => wp_create_nonce( 'goodbids_referrals_add_referral_nonce' ),
 					]
 				);
-
-				// Styles.
-				wp_enqueue_style( 'select2', GOODBIDS_PLUGIN_URL . 'admin/css/select2.min.css', [], goodbids()->get_version() );
 			}
 		);
 	}
@@ -323,12 +329,12 @@ class Admin {
 	 *
 	 * @return array
 	 */
-	private function ajax_relation_request_validation( string $nonce_action ): array {
+	private function ajax_request_validation( string $nonce_action ): array {
 		check_ajax_referer( $nonce_action, 'nonce' );
 
 		$data        = wp_unslash( $_POST );
-		$user_id     = sanitize_text_field( $data['user_id'] );
-		$referrer_id = sanitize_text_field( $data['referrer_id'] );
+		$user_id     = intvaL( sanitize_text_field( $data['user_id'] ) );
+		$referrer_id = intval( sanitize_text_field( $data['referrer_id'] ) );
 
 		if ( ! is_numeric( $user_id ) || ! ( new WP_User( $user_id ) ) || ! ( new WP_User( $referrer_id ) ) ) {
 			wp_send_json_error(
@@ -373,12 +379,12 @@ class Admin {
 		add_filter(
 			'manage_users_custom_column',
 			function ( string $value, string $column, int $user_id ) {
-				$referral = new Referral( $user_id );
+				$referrer = new Referrer( $user_id );
 
 				if ( 'referral_count' === $column ) {
-					return esc_html( count( $referral->get_invitations() ) );
+					return esc_html( count( $referrer->get_referral_count() ) );
 				} elseif ( 'referred_by' === $column ) {
-					$referrer_id = $referral->get_referrer_id();
+					$referrer_id = goodbids()->referrals->get_referrer_id( $user_id );
 
 					if ( ! $referrer_id ) {
 						return '&mdash;';

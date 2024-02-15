@@ -10,6 +10,7 @@ namespace GoodBids\Nonprofits;
 
 use GoodBids\Utilities\Log;
 use stdClass;
+use WP_Post;
 
 /**
  * Invoice Class
@@ -104,9 +105,9 @@ class Invoice {
 
 	/**
 	 * @since 1.0.0
-	 * @var ?\WP_Post
+	 * @var ?WP_Post
 	 */
-	private ?\WP_Post $post;
+	private ?WP_Post $post;
 
 	/**
 	 * @since 1.0.0
@@ -191,9 +192,9 @@ class Invoice {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return \WP_Post
+	 * @return WP_Post
 	 */
-	public function get_post(): \WP_Post {
+	public function get_post(): WP_Post {
 		return $this->post;
 	}
 
@@ -383,9 +384,7 @@ class Invoice {
 		}
 
 		$due_date = $this->get_due_date();
-		$now      = current_datetime()
-			->setTimezone( new \DateTimeZone( 'GMT' ) )
-			->format( 'Y-m-d H:i:s' );
+		$now      = current_time( 'mysql', true );
 
 		if ( $now > $due_date ) {
 			return self::STATUS_OVERDUE;
@@ -416,11 +415,7 @@ class Invoice {
 	 * @return void
 	 */
 	public function mark_as_sent(): void {
-		$this->set_sent_date(
-			current_datetime()
-			->setTimezone( new \DateTimeZone( 'GMT' ) )
-			->format( 'Y-m-d H:i:s' )
-		);
+		$this->set_sent_date( current_time( 'mysql', true ) );
 	}
 
 	/**

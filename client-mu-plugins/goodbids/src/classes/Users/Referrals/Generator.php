@@ -67,6 +67,6 @@ class Generator {
 	 * @return bool
 	 */
 	private function is_unique( string $code ): bool {
-		return ! goodbids()->referrals->get_user_id_by_code( $code );
+		return ! goodbids()->referrals->get_user_id_by_referral_code( $code );
 	}
 }
