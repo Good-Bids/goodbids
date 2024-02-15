@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction User Actions block
+ * Auction Share block
  *
  * @since 1.0.0
  *

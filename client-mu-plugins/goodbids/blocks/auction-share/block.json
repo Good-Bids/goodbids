@@ -1,7 +1,7 @@
 {
-  "name": "auction-user-actions",
-  "title": "Auction User Actions",
-  "description": "Show actions a user can take on an Auction.",
+  "name": "auction-share",
+  "title": "Auction Share",
+  "description": "Share the current Auction.",
   "icon": "share",
   "category": "goodbids",
   "textdomain": "goodbids",

@@ -11,6 +11,7 @@ export default class extends Controller {
 	connect() {}
 
 	toggle() {
+		this.watch();
 		if (this.stateValue == 0) {
 			this.stateValue = 1;
 			this.textTarget.textContent = 'Unwatch';
@@ -23,13 +24,17 @@ export default class extends Controller {
 	}
 
 	watch() {
+		const params = new URLSearchParams();
+		params.append('action', 'goodbids_toggle_watching');
+		params.append('auction', this.idValue);
+
 		fetch(window.watchAuctionVars.ajaxUrl, {
-			type: 'POST',
-			credentials: 'same-origin',
-			data: {
-				action: 'goodbids_toggle_watching',
-				auction: this.idValue,
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
 			},
+			body: params,
 		})
 			.then(function (response) {
 				if (!response.success) {
@@ -37,9 +42,11 @@ export default class extends Controller {
 					return;
 				}
 
-				this.watchersTarget.textContent = response.data.totalWatchers;
+				document.querySelector(
+					'data-watch-auction-target="watchers"',
+				).textContent = response.data.totalWatchers;
 
-				console.log(response);
+				console.log(response.data.totalWatchers);
 			})
 			.catch((error) => console.error(error));
 	}

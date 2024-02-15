@@ -9,7 +9,7 @@
 
 add_action(
 	'wp_enqueue_scripts',
-	function() {
+	function () {
 		wp_register_script(
 			'goodbids-watch-auction-block',
 			GOODBIDS_PLUGIN_URL . 'blocks/watch-auction/view.js',

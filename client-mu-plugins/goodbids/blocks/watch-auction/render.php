@@ -8,17 +8,23 @@
  * @package GoodBids
  */
 
+if ( ! is_user_logged_in() ) {
+	return;
+}
+
 $watching    = goodbids()->watchers->is_watching();
 $watchers    = goodbids()->watchers->get_watcher_count();
 $watch_text  = $watching ? 'Unwatch' : 'Watch';
 $watch_class = $watching ? 'btn-fill' : 'btn-fill-secondary';
+$post_url    = str_replace( untrailingslashit( site_url() ), '', admin_url( 'admin-ajax.php' ) );
 
 ?>
 <div <?php block_attr( $block ); ?>>
-	<button
-		data-controller="watch-auction"
-		data-action="watch-auction#toggle"
-		data-watch-auction-state-value="<?php echo esc_attr( intval( $watching ) ); ?>"
+	<button 
+		data-controller="watch-auction" 
+		data-action="watch-auction#toggle" 
+		data-watch-auction-state-value="<?php echo esc_attr( intval( $watching ) ); ?>" 
+		data-watch-auction-id-value="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>" 
 		data-auction="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>"
 		class="inline-flex items-center gap-2 no-underline text-md <?php echo esc_attr( $watch_class ); ?>"
 	>

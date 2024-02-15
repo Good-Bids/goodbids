@@ -21,14 +21,15 @@ const GBWatchAuction = (($) => {
 					auction: $btn.attr('data-auction'),
 				},
 				success: function (response) {
-					if (!response.success) {
-						console.log(response);
-						return;
-					}
+					console.log(response);
+					// if (!response.success) {
+					// 	console.log(response);
+					// 	return;
+					// }
 
-					$('[data-watch-auction-target="watchers"]').text(
-						response.data.totalWatchers,
-					);
+					// $('[data-watch-auction-target="watchers"]').text(
+					// 	response.data.totalWatchers,
+					// );
 				},
 				error: function (response) {
 					console.log(response);
