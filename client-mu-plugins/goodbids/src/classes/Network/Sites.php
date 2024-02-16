@@ -66,6 +66,9 @@ class Sites {
 		$this->create_about_page();
 		$this->lock_block_editor();
 
+		// Sites Custom Columns
+		$this->customize_sites_columns();
+
 		// Auto-register users on new sites.
 		$this->auto_register_user();
 
@@ -429,10 +432,10 @@ class Sites {
 					return $html;
 				}
 
-				if ( $this->swap(
-					fn () => get_theme_mod( 'custom_logo' ),
-					get_main_site_id()
-				)
+				if (
+					$this->main(
+						fn () => get_theme_mod( 'custom_logo' )
+					)
 				) {
 					return get_custom_logo( get_main_site_id() );
 				}
@@ -514,12 +517,12 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param callable $callback
-	 * @param array    $site_args
+	 * @param callable|array $callback
+	 * @param array          $site_args
 	 *
 	 * @return array
 	 */
-	public function loop( callable $callback, array $site_args = [] ): array {
+	public function loop( callable|array $callback, array $site_args = [] ): array {
 		if ( ! is_callable( $callback ) ) {
 			return [];
 		}
@@ -539,12 +542,12 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param callable $callback
-	 * @param int      $site_id
+	 * @param callable|array $callback
+	 * @param int            $site_id
 	 *
 	 * @return mixed
 	 */
-	public function swap( callable $callback, int $site_id ): mixed {
+	public function swap( callable|array $callback, int $site_id ): mixed {
 		if ( ! is_callable( $callback ) ) {
 			return false;
 		}
@@ -558,6 +561,23 @@ class Sites {
 		restore_current_blog();
 
 		return $return;
+	}
+
+	/**
+	 * Swap to the main site with a callback function
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param callable|array $callback
+	 *
+	 * @return mixed
+	 */
+	public function main( callable|array $callback ): mixed {
+		if ( ! is_callable( $callback ) && ! is_array( $callback ) ) {
+			return false;
+		}
+
+		return $this->swap( $callback, get_main_site_id() );
 	}
 
 	/**
@@ -652,7 +672,7 @@ class Sites {
 			return null;
 		}
 
-		return $this->swap(
+		return $this->main(
 			function (): string {
 				$privacy_policy_link = '';
 				$privacy_policy_id   = get_option( 'wp_page_for_privacy_policy' );
@@ -666,8 +686,7 @@ class Sites {
 				}
 
 				return $privacy_policy_link;
-			},
-			get_main_site_id()
+			}
 		);
 	}
 
@@ -683,7 +702,7 @@ class Sites {
 			return null;
 		}
 
-		return $this->swap(
+		return $this->main(
 			function (): string {
 				$terms_conditions_link = '';
 				$terms_conditions_id   = wc_terms_and_conditions_page_id();
@@ -697,8 +716,7 @@ class Sites {
 				}
 
 				return $terms_conditions_link;
-			},
-			get_main_site_id()
+			}
 		);
 	}
 
@@ -1001,5 +1019,47 @@ class Sites {
 	 */
 	public function get_user_reward_orders( ?int $user_id = null, array $status = [] ): array {
 		return $this->get_user_orders( $user_id, $status, Rewards::ITEM_TYPE );
+	}
+
+	/**
+	 * Display custom content on Network Sites page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function customize_sites_columns(): void {
+		add_filter(
+			'wpmu_blogs_columns',
+			function ( $columns ) {
+				$columns['standing'] = __( 'Account Standing', 'goodbids' );
+				return $columns;
+			}
+		);
+
+		add_action(
+			'manage_sites_custom_column',
+			function ( string $column, string $site_id ) {
+				if ( 'standing' === $column ) {
+					if ( get_main_site_id() !== intval( $site_id ) ) {
+						goodbids()->sites->swap(
+							function() {
+								if ( goodbids()->invoices->has_overdue_invoices() ) {
+									esc_html_e( 'Delinquent', 'goodbids' );
+									return;
+								}
+
+								esc_html_e( 'Good', 'goodbids' );
+							},
+							intval( $site_id )
+						);
+					} else {
+						esc_html_e( 'N/A', 'goodbids' );
+					}
+				}
+			},
+			10,
+			2
+		);
 	}
 }

@@ -113,6 +113,12 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
+	private ?int $invoice_id = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?int
+	 */
 	private ?int $auction_id = null;
 
 	/**
@@ -164,6 +170,10 @@ class Invoice {
 	private ?string $stripe_invoice_url = null;
 
 	/**
+	 * Retrieve an instance of an Invoice.
+	 * Passing the Auction ID into the 2nd parameter will initialize the Invoice.
+	 * The Auction ID will be connected to the Invoice during initialization.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return ?self
@@ -210,7 +220,7 @@ class Invoice {
 	}
 
 	/**
-	 * Initialize a New Invoice
+	 * Initialize a New Invoice. This will also connect the Auction to this Invoice.
 	 *
 	 * @since 1.0.0
 	 *
@@ -357,14 +367,14 @@ class Invoice {
 				$due_date = current_datetime()
 					->setTimezone( new \DateTimeZone( 'GMT' ) )
 					->add( new \DateInterval( 'P' . $payment_terms . 'D' ) )
-					->format( 'Y-m-d H:i:s' );
+					->format( 'Y-m-d 23:59:59' );
 			} catch ( \Exception $e ) {
 				// Log the error.
 				Log::error( 'Error setting invoice due date: ' . $e->getMessage(), [ 'invoice_id' => $this->get_id() ] );
 				return false;
 			}
 		} else {
-			$due_date = wp_date( 'Y-m-d H:i:s', $due_date, new \DateTimeZone( 'GMT' ) );
+			$due_date = wp_date( 'Y-m-d 23:59:59', $due_date, new \DateTimeZone( 'GMT' ) );
 		}
 
 		// Set the invoice due date in GMT
@@ -556,7 +566,11 @@ class Invoice {
 	 * @return void
 	 */
 	public function mark_as_paid( string $stripe_payment_id ): void {
-		$this->set_payment_date( current_datetime()->format( 'Y-m-d H:i:s' ) );
+		$this->set_payment_date(
+			current_datetime()
+				->setTimezone( new \DateTimeZone( 'GMT' ) )
+				->format( 'Y-m-d H:i:s' )
+		);
 		$this->set_payment_id( $stripe_payment_id );
 	}
 
