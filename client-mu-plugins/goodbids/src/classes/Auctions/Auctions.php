@@ -223,6 +223,9 @@ class Auctions {
 
 		// Prevent access to Bid/Reward products.
 		$this->prevent_access_to_products();
+
+		// Restrict operations when a Nonprofit is delinquent.
+		$this->restrict_delinquent_sites();
 	}
 
 	/**
@@ -651,6 +654,10 @@ class Auctions {
 	 * @return bool
 	 */
 	public function has_ended( int $auction_id = null ): bool {
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			return false;
+		}
+
 		$end_date_time = $this->get_end_date_time( $auction_id );
 
 		if ( ! $end_date_time ) {
@@ -2034,6 +2041,46 @@ class Auctions {
 				wp_safe_redirect( get_permalink( $auction_id ), 301 );
 				exit;
 			}
+		);
+	}
+
+	/**
+	 * Prevent delinquent Nonprofits from publishing Auctions.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function restrict_delinquent_sites(): void {
+		add_action(
+			'transition_post_status',
+			function ( string $new_status, string $old_status, \WP_Post $post ): void {
+				if ( 'publish' !== $new_status ) {
+					return;
+				}
+
+				if ( $this->get_post_type() !== get_post_type( $post ) ) {
+					return;
+				}
+
+				if ( ! goodbids()->invoices->has_overdue_invoices() ) {
+					return;
+				}
+
+				if ( 'publish' === $old_status ) {
+					$old_status = 'draft';
+				}
+
+				// Revert post status to previous state.
+				wp_update_post(
+					[
+						'ID'          => $post->ID,
+						'post_status' => $old_status,
+					]
+				);
+			},
+			10,
+			3
 		);
 	}
 }

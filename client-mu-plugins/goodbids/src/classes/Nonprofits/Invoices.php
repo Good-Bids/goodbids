@@ -68,6 +68,9 @@ class Invoices {
 
 		// Generate Invoice on Auction Close.
 		$this->auto_generate();
+
+		// Add an Admin Notice when Nonprofit is delinquent.
+		$this->alert_when_delinquent();
 	}
 
 	/**
@@ -398,10 +401,12 @@ class Invoices {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param array $args
+	 *
 	 * @return WP_Query
 	 */
-	public function get_all_ids(): WP_Query {
-		return new WP_Query(
+	public function get_all_ids( array $args = [] ): WP_Query {
+		$query_args = array_merge(
 			[
 				'post_type'      => $this->get_post_type(),
 				'posts_per_page' => -1,
@@ -409,8 +414,44 @@ class Invoices {
 				'order'          => 'ASC',
 				'orderby'        => 'date',
 				'fields'         => 'ids',
+			],
+			$args
+		);
+		return new WP_Query( $query_args );
+	}
+
+	/**
+	 * Get All Overdue Invoices
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WP_Query
+	 */
+	public function get_overdue_invoices(): WP_Query {
+		return $this->get_all_ids(
+		[
+				'meta_query' => [
+					[
+						'key'     => Invoice::DUE_DATE_META_KEY,
+						'value'   => current_datetime()->setTimezone( new \DateTimeZone( 'GMT' ) )->format( 'Y-m-d 23:59:59' ),
+						'compare' => '<',
+						'type'    => 'DATE',
+					],
+				],
 			]
 		);
+	}
+
+	/**
+	 * Check if there are any overdue invoices.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function has_overdue_invoices(): bool {
+		$invoices = $this->get_overdue_invoices();
+		return $invoices->have_posts();
 	}
 
 	/**
@@ -525,6 +566,11 @@ class Invoices {
 	 * @return void
 	 */
 	public function generate( int $auction_id ): void {
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			Log::warning( 'Auction not published yet.', compact( 'auction_id' ) );
+			return;
+		}
+
 		// Bail early if invoice already exists.
 		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
 			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
@@ -573,5 +619,29 @@ class Invoices {
 		if ( ! $invoice->get_stripe_invoice_id() ) {
 			Log::error( 'There was a problem creating the Stripe Invoice.', compact( 'auction_id', 'invoice' ) );
 		}
+	}
+
+	/**
+	 * Add an Admin Notice when Nonprofit is delinquent.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function alert_when_delinquent(): void {
+		add_action(
+			'admin_notices',
+			function (): void {
+				if ( ! $this->has_overdue_invoices() ) {
+					return;
+				}
+
+				?>
+				<div class="notice notice-error">
+					<p><?php esc_html_e( 'There are currently delinquent invoices on this account. Please take action to restore full site functionality.', 'goodbids' ); ?></p>
+				</div>
+				<?php
+			}
+		);
 	}
 }

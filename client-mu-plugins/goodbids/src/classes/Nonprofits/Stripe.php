@@ -59,19 +59,7 @@ class Stripe {
 	public function __construct() {
 		add_action(
 			'init',
-			function() {
-				goodbids()->sites->swap(
-					function () {
-						if ( ! function_exists( 'woocommerce_gateway_stripe' ) ) {
-							Log::warning( 'WooCommerce Stripe gateway not found. Please install or activate the WooCommerce Stripe Gatewway plugin.' );
-							return;
-						}
-
-						$this->init();
-					},
-					get_main_site_id()
-				);
-			}
+			fn() => goodbids()->sites->main( [ $this, 'init' ] )
 		);
 	}
 
@@ -83,7 +71,12 @@ class Stripe {
 	 *
 	 * @return void
 	 */
-	private function init(): void {
+	public function init(): void {
+		if ( ! function_exists( 'woocommerce_gateway_stripe' ) ) {
+			Log::warning( 'WooCommerce Stripe gateway not found. Please install or activate the WooCommerce Stripe Gateway plugin.' );
+			return;
+		}
+
 		if ( ! woocommerce_gateway_stripe() ) {
 			Log::warning( 'Could not initialize the Stripe gateway.' );
 			return;
@@ -220,7 +213,7 @@ class Stripe {
 			'name'  => get_bloginfo( 'name' ),
 		];
 
-		$customer_id = goodbids()->sites->swap(
+		$customer_id = goodbids()->sites->main(
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'customers' );
@@ -235,8 +228,7 @@ class Stripe {
 				}
 
 				return $response->id;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $customer_id ) {
@@ -286,7 +278,7 @@ class Stripe {
 			'pending_invoice_items_behavior' => 'exclude',
 		];
 
-		$stripe_invoice_id = goodbids()->sites->swap(
+		$stripe_invoice_id = goodbids()->sites->main(
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'invoices' );
@@ -301,8 +293,7 @@ class Stripe {
 				}
 
 				return $response->id;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $stripe_invoice_id ) {
@@ -338,7 +329,7 @@ class Stripe {
 			'amount'   => $this->invoice->get_amount() * 100, // Convert to cents.
 		];
 
-		$item_id = goodbids()->sites->swap(
+		$item_id = goodbids()->sites->main(
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'invoiceitems' );
@@ -353,8 +344,7 @@ class Stripe {
 				}
 
 				return $response->id;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $item_id ) {
@@ -388,7 +378,7 @@ class Stripe {
 
 		Log::debug( 'Finalizing Stripe Invoice.', $context );
 
-		$stripe_invoice = goodbids()->sites->swap(
+		$stripe_invoice = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id, $context ): ?stdClass {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/finalize', $stripe_invoice_id ) );
@@ -403,8 +393,7 @@ class Stripe {
 				}
 
 				return $response;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $stripe_invoice ) {
@@ -440,7 +429,7 @@ class Stripe {
 
 		Log::debug( 'Sending Stripe Invoice.', $context );
 
-		$invoice_url = goodbids()->sites->swap(
+		$invoice_url = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/send', $stripe_invoice_id ) );
@@ -455,8 +444,7 @@ class Stripe {
 				}
 
 				return $response->hosted_invoice_url;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $invoice_url ) {
@@ -472,12 +460,14 @@ class Stripe {
 	/**
 	 * Get all Stripe Invoices
 	 *
+	 * TODO: Verify invoices coming from Stripe aren't paginated.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
 	public function get_invoices(): array {
-		$stripe_invoices = goodbids()->sites->swap(
+		$stripe_invoices = goodbids()->sites->main(
 			function() {
 				try {
 					$response = WC_Stripe_API::request( [], 'invoices', 'GET' );
@@ -492,8 +482,7 @@ class Stripe {
 				}
 
 				return $response->data;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $stripe_invoices ) {
@@ -514,7 +503,7 @@ class Stripe {
 	 * @return ?stdClass
 	 */
 	public function lookup_invoice( string $stripe_invoice_id ): ?stdClass {
-		$stripe_invoice = goodbids()->sites->swap(
+		$stripe_invoice = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id ): ?stdClass {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s', $stripe_invoice_id ), 'GET' );
@@ -529,8 +518,7 @@ class Stripe {
 				}
 
 				return $response;
-			},
-			get_main_site_id()
+			}
 		);
 
 		if ( ! $stripe_invoice ) {

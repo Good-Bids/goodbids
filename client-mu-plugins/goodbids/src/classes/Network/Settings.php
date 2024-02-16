@@ -272,7 +272,9 @@ class Settings {
 					return;
 				}
 
-				if ( ! empty( $_POST[ self::SETTINGS_NONCE ] ) && ! wp_verify_nonce( sanitize_text_field( $_POST[ self::SETTINGS_NONCE ] ), self::PAGE_SLUG ) ) {
+				$nonce = ! empty( $_POST[ self::SETTINGS_NONCE ] ) ? sanitize_text_field( $_POST[ self::SETTINGS_NONCE ] ) : null; // phpcs:ignore
+
+				if ( $nonce && ! wp_verify_nonce( $nonce, self::PAGE_SLUG ) ) {
 					add_settings_error(
 						self::PAGE_SLUG,
 						'nonce_error',
