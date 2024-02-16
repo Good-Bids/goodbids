@@ -15,7 +15,6 @@ use GoodBids\Users\Referrals\Referral;
 use GoodBids\Users\Referrals\Shortcodes;
 use GoodBids\Users\Referrals\Track;
 use GoodBids\Utilities\Log;
-use GoodBids\Utilities\Utilities;
 use WP_Query;
 
 /**

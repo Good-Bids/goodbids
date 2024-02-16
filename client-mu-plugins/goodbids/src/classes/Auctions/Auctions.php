@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Core;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
@@ -145,7 +146,7 @@ class Auctions {
 		$this->rewards = new Rewards();
 
 		// Disable Auctions on Main Site.
-		if ( is_main_site() ) {
+		if ( is_main_site() && ! Core::is_dev_env() ) {
 			return;
 		}
 

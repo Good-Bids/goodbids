@@ -29,6 +29,8 @@ class Shortcodes {
 	/**
 	 * Register Referral Shortcodes
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
 	 */
 	private function register_shortcodes(): void {
@@ -37,67 +39,92 @@ class Shortcodes {
 			function ( array $attrs = [], string $content = '', string $shortcode = 'goodbids-referral' ): string {
 				$attrs = shortcode_atts(
 					[
-						'show'    => 'code',
+						'return'  => 'code',
 						'user_id' => get_current_user_id(),
 					],
 					$attrs,
 					$shortcode
 				);
 
-				// Bail early if not logged in.
-				if ( ! $attrs['user_id'] ) {
+				$return  = $attrs['return'] ?? false;
+				$user_id = $attrs['user_id'] ?? false;
+
+				// User not required for Top Referrers action.
+				if ( 'top-referrers' === $return && current_user_can( 'manage_options' ) ) {
+					$results = goodbids()->referrals->get_top_referrers();
+					return $this->get_view( 'top-referrers', compact( 'results' ) );
+				}
+
+				// Bail early if no user ID.
+				if ( ! $user_id ) {
 					return '';
 				}
 
 				// Bail early if user is not allowed to view other user's referral information.
-				if ( $attrs['user_id'] !== get_current_user_id() ) {
-					if ( ! current_user_can( 'edit_users' ) ) {
-						return '';
-					}
+				if ( $user_id !== get_current_user_id() && ! current_user_can( 'edit_users' ) ) {
+					return '';
 				}
 
-				// analyze shortcode parameters.
-				$show     = $attrs['show'];
-				$referrer = new Referrer( $attrs['user_id'] );
-
-				if ( 'code' === $show ) {
-					return $referrer->get_code();
+				// Bail early if user does not exist.
+				if ( ! get_user_by( 'ID', $user_id ) ) {
+					return '';
 				}
 
-				if ( 'link' === $show ) {
-					return $referrer->get_link();
-				}
+				$referrer = new Referrer( $user_id );
 
-				if ( 'referral-count' === $show ) {
-					return count( $referrer->get_referral_count() );
-				}
-
-				if ( 'top-referrers' === $show ) {
-					$results = goodbids()->referrals->get_top_referrers();
-
-					ob_start();
-					goodbids()->load_view( 'admin/referrals/top-referrers.php', compact( 'results' ) );
-					return ob_get_clean();
-				}
-
-				if ( 'referrals' === $show ) {
-					$referrals = $referrer->get_referrals();
-					ob_start();
-					goodbids()->load_view( 'admin/referrals/user-referrals.php', compact( 'referrals' ) );
-					return ob_get_clean();
-				}
-
-				if ( 'copy-link' === $show ) {
-					ob_start();
-
-					goodbids()->load_view( 'admin/referrals/copy-link-box.php', compact( 'referrer' ) );
-
-					return ob_get_clean();
-				}
-
-				return '';
+				return $this->shortcode_action( $return, $referrer );
 			}
 		);
 	}
 
+	/**
+	 * Handle Referral Shortcode Actions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string   $return
+	 * @param Referrer $referrer
+	 *
+	 * @return string
+	 */
+	private function shortcode_action( string $return, Referrer $referrer ): string {
+		if ( 'code' === $return ) {
+			return $referrer->get_code();
+		}
+
+		if ( 'link' === $return ) {
+			return $referrer->get_link();
+		}
+
+		if ( 'referral-count' === $return ) {
+			return count( $referrer->get_referral_count() );
+		}
+
+		if ( 'referrals' === $return ) {
+			$referrals = $referrer->get_referrals();
+			return $this->get_view( 'user-referrals', compact( 'referrals' ) );
+		}
+
+		if ( 'copy-link' === $return ) {
+			return $this->get_view( 'copy-link-box', compact( 'referrer' ) );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Returns a view file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $view
+	 * @param array  $context
+	 *
+	 * @return string
+	 */
+	private function get_view( string $view, array $context = [] ): string {
+		ob_start();
+		goodbids()->load_view( 'admin/referrals/' . $view . '.php', $context );
+		return ob_get_clean();
+	}
 }

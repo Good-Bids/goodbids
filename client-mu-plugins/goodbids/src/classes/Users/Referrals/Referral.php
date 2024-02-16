@@ -190,7 +190,11 @@ class Referral {
 	 * @return string
 	 */
 	public function get_created_date( string $format = 'Y-m-d H:i:s' ): string {
-		return wp_date( $format, get_the_date( 'U', $this->post ), 'GMT' );
+		return wp_date(
+			$format,
+			get_the_date( 'U', $this->post ),
+			new \DateTimeZone( 'GMT' )
+		);
 	}
 
 	/**

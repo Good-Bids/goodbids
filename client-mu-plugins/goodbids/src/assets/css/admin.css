@@ -1,3 +1,5 @@
+@import 'referral-copy-link.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -106,112 +108,6 @@
 
 .gb-toggle {
 	@apply inline-block;
-}
-
-.goodbids-referrals-copy-link {
-	.tooltip {
-		@apply relative inline-block w-full;
-		height: 50px;
-
-		.tooltiptext {
-			@apply hidden text-center absolute left-1/2;
-			background-color: #1c1d1e;
-			border-radius: 6px;
-			bottom: 120%;
-			color: #fff;
-			margin-left: -60px;
-			padding: 5px 0;
-			width: 120px;
-			z-index: 1;
-
-			&::after {
-				@apply absolute top-full left-1/2;
-				content: '';
-				margin-left: -5px;
-				border-width: 5px;
-				border-style: solid;
-				border-color: #1c1d1e transparent transparent transparent;
-			}
-		}
-
-		.tooltip-visible {
-			@apply visible block opacity-100;
-		}
-	}
-
-	.btn-copy {
-		@apply relative inline-flex justify-center items-center whitespace-nowrap cursor-pointer select-none appearance-none;
-		background-color: #eee;
-		background-image: linear-gradient(#fcfcfc, #eee);
-		border-radius: 0 3px 3px 0;
-		border: 1px solid #d5d5d5;
-		color: #333;
-		font-size: 1.5em;
-		font-weight: 700;
-		height: 48px;
-		line-height: 20px;
-		padding: 0 1rem;
-		transition: all 300ms;
-
-		&:hover {
-			background-color: rgba(63, 63, 63, 0.61);
-			background-image: linear-gradient(
-				rgba(79, 79, 79, 0.4),
-				rgba(63, 63, 63, 0.5)
-			);
-			color: #fff;
-		}
-
-		svg {
-			@apply align-middle;
-			fill: currentColor;
-			height: 1.3rem;
-			max-width: max-content;
-			width: 1.3rem;
-		}
-
-		&:hover svg {
-			fill: #fff;
-		}
-	}
-
-	.copy-link-input {
-		@apply relative text-left outline-none table-cell w-full overflow-scroll;
-		background: #fff;
-		border-radius: 3px 0 0 3px;
-		border: 1px solid #d2d2d2;
-		border-right: 0;
-		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
-		box-sizing: border-box;
-		color: #696969;
-		flex-grow: 1;
-		font-size: 1em;
-		height: 50px;
-		line-height: normal;
-		padding-left: 1.5rem;
-		transition: opacity 0.5s;
-	}
-
-	button,
-	input {
-		@apply m-0 p-0;
-		color: inherit;
-		font: inherit;
-	}
-
-	.input-group {
-		@apply w-full table;
-	}
-
-	.input-group-button {
-		@apply align-middle;
-		width: 1%;
-	}
-
-	.input-group input,
-	.input-group-button {
-		@apply table-cell;
-	}
 }
 
 .goodbids-referrals {

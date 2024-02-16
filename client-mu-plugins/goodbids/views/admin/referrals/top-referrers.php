@@ -11,7 +11,7 @@
 if ( empty( $results ) ) :
 	?>
 	<p class="goodbids-top-referrers-empty">
-		<?php echo esc_html__( 'No Referrals yet. Be the first one!', 'goodbids' ); ?>
+		<?php echo esc_html__( 'No Referrals found!', 'goodbids' ); ?>
 	</p>
 	<?php
 	return;
@@ -27,9 +27,11 @@ endif;
 	</thead>
 
 	<tbody>
-		<?php foreach ( $results as $result ) : ?>
+		<?php
+		foreach ( $results as $result ) :
+			$user = get_user_by( 'ID', $result['id'] );
+			?>
 			<tr>
-				<?php $user = get_user_by( 'ID', $result['id'] ); ?>
 				<td><?php echo esc_html( $user->user_login ); ?></td>
 				<td><?php echo esc_html( $result['counted'] ); ?></td>
 			</tr>

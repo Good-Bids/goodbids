@@ -11,6 +11,7 @@
 /* WooCommerce overrides */
 @import 'woocommerce/checkout.css';
 @import 'woocommerce/my-account.css';
+@import 'referral-copy-link.css';
 
 @tailwind base;
 @tailwind components;

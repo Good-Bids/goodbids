@@ -30,16 +30,12 @@ class Admin {
 	const UPDATE_CODE_NONCE_ACTION = 'update_referral_code';
 
 	/**
-	 * Initialize Referral Admin
+	 * Initialize Referrals Admin
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! is_admin() && ! is_network_admin() ) {
-			return;
-		}
-
-		$this->init();
+		add_action( 'admin_init', [ $this, 'init' ] );
 	}
 
 	/**
@@ -49,12 +45,15 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	private function init(): void {
-		// Edit User Page.
-		add_action( 'load-user-edit.php', [ $this, 'init_user' ] );
+	public function init(): void {
+		// Customize User edit screen.
+		$this->user_profile_fields();
 
-		// List Users Page.
-		add_action( 'load-users.php', [ $this, 'init_users' ] );
+		// Save User Profile changes.
+		$this->update_user_profile();
+
+		// Add custom columns to Users table.
+		$this->customize_user_columns();
 
 		// User AJAX Actions.
 		$this->user_ajax_actions();
@@ -64,25 +63,13 @@ class Admin {
 	}
 
 	/**
-	 * Perform User List Page Initialization
+	 * Customize User Profile Fields
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function init_users(): void {
-		// Add custom columns to Users table.
-		$this->customize_user_columns();
-	}
-
-	/**
-	 * Perform User Edit Page Initialization
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function init_user(): void {
+	private function user_profile_fields(): void {
 		$profile_fields = function ( WP_User $user ): void {
 			if ( ! current_user_can( 'promote_users' ) || ! current_user_can( 'edit_user', $user->ID ) ) {
 				return;
@@ -98,7 +85,16 @@ class Admin {
 
 		add_action( 'show_user_profile', $profile_fields, 1 );
 		add_action( 'edit_user_profile', $profile_fields, 1 );
+	}
 
+	/**
+	 * Update User Profile
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_user_profile(): void {
 		$get_code = function(): false|string {
 			if ( ! isset( $_POST[ self::UPDATE_CODE_NONCE ] ) || ! wp_verify_nonce( sanitize_text_field( $_POST[ self::UPDATE_CODE_NONCE ] ), self::UPDATE_CODE_NONCE_ACTION ) || empty( $_POST[ Referrals::REFERRAL_CODE_META_KEY ] ) ) {
 				return false;
@@ -148,7 +144,6 @@ class Admin {
 				$referrer->set_code( $code );
 			}
 		);
-
 	}
 
 	/**
@@ -230,7 +225,7 @@ class Admin {
 
 				if ( $user_id ) {
 					$referrer = new Referrer( $user_id );
-					$exclude  = array_merge( $referrer->get_referred_users(), [ $user_id ] );
+					$exclude  = array_merge( $referrer->get_referred_user_ids(), [ $user_id ] );
 				}
 
 				$search      = isset( $data['term'] ) ? '*' . sanitize_text_field( $data['term'] ) . '*' : '';

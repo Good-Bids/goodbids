@@ -25,7 +25,7 @@ use GoodBids\Users\Referrals\Referrer;
 		</span>
 
 		<div class="tooltip">
-			<span class="tooltiptext"><?php esc_html_e( 'Copied!', 'goodbids' ); ?></span>
+			<span class="tooltiptext"><?php esc_html_e( 'Copied', 'goodbids' ); ?></span>
 			<label>
 				<input class="copy-link-input" readonly type="text" value="<?php echo esc_url( $referrer->get_link() ); ?>">
 			</label>

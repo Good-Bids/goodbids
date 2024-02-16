@@ -117,6 +117,9 @@ class WooCommerce {
 		// New Site Setup.
 		$this->configure_new_site();
 
+		// Change the default registration URL.
+		$this->modify_registration_url();
+
 		// Auth Redirects.
 		// $this->authentication_redirect();
 		// $this->prevent_wp_login_access();
@@ -260,6 +263,21 @@ class WooCommerce {
 				);
 				update_option( 'woocommerce_email_footer_text', $email_footer_text );
 			},
+			5
+		);
+	}
+
+	/**
+	 * Adjust the default registration URL.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_registration_url(): void {
+		add_filter(
+			'register_url',
+			fn () => wc_get_page_permalink( 'myaccount' ),
 			5
 		);
 	}

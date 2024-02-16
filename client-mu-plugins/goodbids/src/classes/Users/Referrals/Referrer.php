@@ -10,6 +10,7 @@ namespace GoodBids\Users\Referrals;
 
 use GoodBids\Users\Referrals;
 use WP_Query;
+use WP_User;
 
 /**
  * Class for Referral Referrer
@@ -25,6 +26,14 @@ class Referrer {
 	 * @var int
 	 */
 	public int $user_id;
+
+	/**
+	 * The User Object (or false if user does not exist)
+	 *
+	 * @since 1.0.0
+	 * @var WP_User|false
+	 */
+	public WP_User|false $user = false;
 
 	/**
 	 * The user's referral code
@@ -45,6 +54,7 @@ class Referrer {
 		}
 
 		$this->user_id = $user_id;
+		$this->user    = get_user_by( 'ID', $this->user_id );
 	}
 
 	/**
@@ -68,6 +78,10 @@ class Referrer {
 	public function get_code(): ?string {
 		if ( $this->referral_code ) {
 			return $this->referral_code;
+		}
+
+		if ( ! $this->user ) {
+			return null;
 		}
 
 		$referral_code = get_user_meta( $this->get_id(), Referrals::REFERRAL_CODE_META_KEY, true );
@@ -94,6 +108,10 @@ class Referrer {
 	 * @return bool|int
 	 */
 	public function set_code( string $code ) : bool|int {
+		if ( ! $this->user ) {
+			return false;
+		}
+
 		$this->referral_code = $code;
 
 		return update_user_meta( $this->get_id(), Referrals::REFERRAL_CODE_META_KEY, $this->referral_code );
@@ -107,6 +125,10 @@ class Referrer {
 	 * @return string
 	 */
 	public function get_link(): string {
+		if ( ! $this->user ) {
+			return '';
+		}
+
 		$code = strtoupper( $this->get_code() );
 		$base = wp_registration_url();
 
@@ -118,20 +140,41 @@ class Referrer {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WP_Query
+	 * @return array
 	 */
-	public function get_referrals(): WP_Query {
-		return new WP_Query(
-			[
-				'post_type'      => goodbids()->referrals->get_post_type(),
-				'posts_per_page' => -1,
-				'meta_query'     => [
+	public function get_referrals(): array {
+		if ( ! $this->user ) {
+			return [];
+		}
+
+		return goodbids()->sites->loop(
+			function ( $site_id ) {
+				$referrals = [];
+				$query     = new WP_Query(
 					[
-						'key'   => Referrals::REFERRER_ID_META_KEY,
-						'value' => $this->get_id(),
-					],
-				],
-			]
+						'post_type'      => goodbids()->referrals->get_post_type(),
+						'posts_per_page' => -1,
+						'fields'         => 'ids',
+						'meta_query'     => [
+							[
+								'key'   => Referrals::REFERRER_ID_META_KEY,
+								'value' => $this->get_id(),
+							],
+						],
+					]
+				);
+
+				while ( $query->have_posts() ) {
+					$query->the_post();
+					$referrals[] = [
+						'referral_id' => get_the_ID(),
+						'site_id'     => $site_id,
+					];
+				}
+				wp_reset_postdata();
+
+				return $referrals;
+			}
 		);
 	}
 
@@ -143,8 +186,11 @@ class Referrer {
 	 * @return int
 	 */
 	public function get_referral_count(): int {
-		$referrals = $this->get_referrals();
-		return $referrals->found_posts;
+		if ( ! $this->user ) {
+			return 0;
+		}
+
+		return( count( $this->get_referrals() ) );
 	}
 
 	/**
@@ -154,13 +200,28 @@ class Referrer {
 	 *
 	 * @return int[]
 	 */
-	public function get_referred_users(): array {
-		$referrals = $this->get_referrals();
-		$users     = [];
+	public function get_referred_user_ids(): array {
+		$users = [];
 
-		while ( $referrals->have_posts() ) {
-			$referrals->the_post();
-			$users[] = get_post_meta( get_the_ID(), Referrals::USER_ID_META_KEY, true );
+		if ( ! $this->user ) {
+			return $users;
+		}
+
+		$referrals = $this->get_referrals();
+
+		if ( ! $referrals ) {
+			return $users;
+		}
+
+		foreach ( $referrals as $data ) {
+			$user_id = goodbids()->sites->swap(
+				fn() => get_post_meta( $data['referral_id'], Referrals::USER_ID_META_KEY, true ),
+				$data['site_id']
+			);
+
+			if ( $user_id ) {
+				$users[] = $user_id;
+			}
 		}
 
 		return $users;

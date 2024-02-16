@@ -19,20 +19,17 @@ $referrals   = $referrer->get_referrals();
 <h2 id="goodbids-referrals-user-edit"><?php esc_html_e( 'GoodBids Referrals', 'goodbids' ); ?></h2>
 
 <table class="form-table">
-	<?php if ( $referrer_id ) : ?>
+	<?php
+	if ( $referrer_id ) :
+		$referrer = get_user_by( 'ID', $referrer_id );
+		?>
 		<tr>
 			<th><?php esc_html_e( 'Referred By', 'goodbids' ); ?></th>
 			<td>
 				<p>
-					<?php esc_html_e( 'This user was referred by', 'goodbids' ); ?>
-					<a href="<?php echo esc_url( admin_url( '/user-edit.php?user_id=' . $referrer_id . '#goodbids-referrals-user-edit' ) ); ?>"  target="_blank">
+					<a href="<?php echo esc_url( admin_url( '/user-edit.php?user_id=' . $referrer_id . '#goodbids-referrals-user-edit' ) ); ?>" target="_blank" rel="noopener">
 						<strong class="text-lg">
-							<?php
-							echo esc_html(
-								get_user_meta( $referrer_id, 'first_name', true ) . ' ' .
-								get_user_meta( $referrer_id, 'last_name', true )
-							);
-							?>
+							<?php echo esc_html( $referrer->display_name ); ?>
 						</strong>
 					</a>
 				<p>
@@ -43,42 +40,44 @@ $referrals   = $referrer->get_referrals();
 	<tr>
 		<th><?php esc_html_e( 'Referral Link', 'goodbids' ); ?></th>
 		<td>
-			<?php echo do_shortcode( sprintf( '[goodbids-referral show="copy-link" user_id="%d"]', esc_attr( $user_id ) ) ); ?>
+			<?php echo do_shortcode( sprintf( '[goodbids-referral return="copy-link" user_id="%d"]', esc_attr( $user_id ) ) ); ?>
 		</td>
 	</tr>
 
 	<tr>
 		<th><?php esc_html_e( 'Referrals', 'goodbids' ); ?></th>
 		<td>
-			<?php if ( ! $referrals->have_posts() ) : ?>
+			<?php if ( empty( $referrals ) ) : ?>
 				<?php esc_html_e( 'No referrals found.', 'goodbids' ); ?>
 			<?php else : ?>
 
 				<ul class="goodbids-referrals">
 					<?php
-					while ( $referrals->have_posts() ):
-						$referrals->the_post();
-						$referral = new Referral( get_the_ID() );
-						$user     = $referral->get_user();
-						// Be careful not to overwrite $user_id here.
+					foreach ( $referrals as $referral_data ) :
+						goodbids()->sites->swap(
+							function() use ( $referral_data, $user_id ) {
+								$referral = new Referral( $referral_data['referral_id'] );
+								$user     = $referral->get_user();
 
-						if ( ! $user ) {
-							continue;
-						}
-						?>
-						<li class="referral-item item" id="<?php echo esc_attr( $user->ID ); ?>">
-							<a href="<?php echo esc_url( admin_url( '/user-edit.php?user_id=' . $user->ID ) ); ?>" target="_blank"><?php echo esc_html( $user->display_name ); ?></a>
-							<button style="background-color: #dd382d; border-color: #dd382d"
-								class="goodbids-referrals-delete button button-small button-primary delete-permanently"
-								data-referrer-id="<?php echo esc_attr( $user_id ); ?>"
-								data-user-id="<?php echo esc_attr( $user->ID ); ?>"
-							>
-								<?php esc_html_e( 'Delete', 'goodbids' ); ?>
-							</button>
-						</li>
-					<?php
-					endwhile;
-					wp_reset_postdata();
+								if ( ! $user ) {
+									return;
+								}
+								?>
+								<li class="referral-item item" id="<?php echo esc_attr( $user->ID ); ?>">
+									<a href="<?php echo esc_url( admin_url( '/user-edit.php?user_id=' . $user->ID ) ); ?>" target="_blank"><?php echo esc_html( $user->display_name ); ?></a>
+									<button style="background-color: #dd382d; border-color: #dd382d"
+										class="goodbids-referrals-delete button button-small button-primary delete-permanently"
+										data-referrer-id="<?php echo esc_attr( $user_id ); ?>"
+										data-user-id="<?php echo esc_attr( $user->ID ); ?>"
+									>
+										<?php esc_html_e( 'Delete', 'goodbids' ); ?>
+									</button>
+								</li>
+								<?php
+							},
+							$referral_data['site_id']
+						);
+					endforeach;
 					?>
 				</ul>
 				<?php
