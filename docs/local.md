@@ -10,29 +10,29 @@
 4. Create WP VIP Dev Environment:  
    `vip dev-env create --slug=goodbids --multisite`  
     **When prompted, here are the recommended responses:**
-   - WordPress site title: `GoodBids Dev`
-   - Multisite: `true`
-   - PHP version to use: `8.1`
-   - WordPress - Which version would you like:
-     `6.4 or latest`
-   - How would you like to source vip-go-mu-plugins: `Demo - Automatically fetched vip-go-mu-plugins`
-   - How would you like to source application code: `Custom`: `/Absolute/Path/To/Local/Repo`
-   - Enable Elasticsearch (needed by Enterprise Search)?: `false`
-   - Enable phpMyAdmin: `optional`
-   - Enable XDebug: `true`
-   - Enable Mailpit: `false`
-   - Enable Photon: `false`
+    - WordPress site title: `GoodBids Dev`
+    - Multisite: `true`
+    - PHP version to use: `8.1`
+    - WordPress - Which version would you like:
+      `6.4 or latest`
+    - How would you like to source vip-go-mu-plugins: `Demo - Automatically fetched vip-go-mu-plugins`
+    - How would you like to source application code: `Custom`: `/Absolute/Path/To/Local/Repo`
+    - Enable Elasticsearch (needed by Enterprise Search)?: `false`
+    - Enable phpMyAdmin: `optional`
+    - Enable XDebug: `true`
+    - Enable Mailpit: `false`
+    - Enable Photon: `false`
 
 If needed, here is a quick reference on restarting your environment:
 
 ```bash
 vip dev-env --slug=goodbids start
-npm run dev
+npm run start
 vip dev-env --slug=goodbids stop
 
 # Alternatively
 bin/start
-bin/start-vite
+bin/watch-assets
 bin/stop
 ```
 
@@ -45,7 +45,7 @@ Then, run `composer install` in the following directories:
 1. `root`: Run at project root.
 2. `client-mu-plugins/goodbids`: GoodBids MU Plugin
 
-Finally, run `npm install` from the root directory
+Finally, run `npm install` from `client-mu-plugins/goodbids`
 
 Alternatively, running `bin/install` will install all composer and npm dependencies.
 
@@ -74,8 +74,8 @@ In order to get IntelliSense to work you will need to do these steps:
 1. Clone the [vip-go-mu-plugins](https://github.com/Automattic/vip-go-mu-plugins)
 2. Include the path to your local `vip-go-mu-plugins` directory in your PHP includes path.
 
-   - If you are using Visual Studio Code and have the Extensions [PHP Intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client) then go to the extensions settings.
-   - [PhpStorm Instructions](https://www.jetbrains.com/help/phpstorm/configuring-include-paths.html) on adding include paths.
+    - If you are using Visual Studio Code and have the Extensions [PHP Intelephense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client) then go to the extensions settings.
+    - [PhpStorm Instructions](https://www.jetbrains.com/help/phpstorm/configuring-include-paths.html) on adding include paths.
 
 3. Next include the WordPress Core directory that was installed using VIP CLI. It should be at `/Absolute/Path/To/.local/share/vip/dev-environment/goodbids`
 4. You may need to reload your code editor once you have added both include paths.
