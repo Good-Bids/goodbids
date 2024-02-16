@@ -377,7 +377,7 @@ class Admin {
 				$referrer = new Referrer( $user_id );
 
 				if ( 'referral_count' === $column ) {
-					return esc_html( count( $referrer->get_referral_count() ) );
+					return esc_html( $referrer->get_referral_count() );
 				} elseif ( 'referred_by' === $column ) {
 					$referrer_id = goodbids()->referrals->get_referrer_id( $user_id );
 
