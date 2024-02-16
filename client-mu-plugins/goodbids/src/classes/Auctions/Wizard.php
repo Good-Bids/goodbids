@@ -58,7 +58,7 @@ class Wizard {
 				[ $this, 'wizard_product_page' ]
 			);
 
-			// Settings Page
+			// TODO: Auction Creation Page
 			add_submenu_page(
 				null,
 				esc_html__( 'Create Auction', 'goodbids' ),
@@ -68,7 +68,7 @@ class Wizard {
 				[ $this, 'wizard_start_page' ]
 			);
 
-			// Settings Page
+			// TODO: Finish Page
 			add_submenu_page(
 				null,
 				esc_html__( 'Finish', 'goodbids' ),
