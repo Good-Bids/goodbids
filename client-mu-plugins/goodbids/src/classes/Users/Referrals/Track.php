@@ -36,6 +36,9 @@ class Track {
 
 		// Check for cookie on registration.
 		$this->handle_registration();
+
+		// Check for a Referral Code during Checkout.
+		$this->convert_referrals();
 	}
 
 	/**
@@ -114,6 +117,21 @@ class Track {
 	}
 
 	/**
+	 * Get the Referral Code from the cookie, if it exists.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_cookie(): ?string {
+		if ( empty( $_COOKIE[ self::REFERRER_COOKIE ] ) ) {
+			return null;
+		}
+
+		return sanitize_text_field( wp_unslash( $_COOKIE[ self::REFERRER_COOKIE ] ) ); // phpcs:ignore
+	}
+
+	/**
 	 * Clear referrer cookie
 	 *
 	 * @since 1.0.0
@@ -139,13 +157,7 @@ class Track {
 		add_action(
 			'user_register',
 			function ( int $user_id ) {
-				$code = '';
-
-				if ( isset( $_COOKIE[ self::REFERRER_COOKIE ] ) ) {
-					$code = sanitize_text_field( wp_unslash( $_COOKIE[ self::REFERRER_COOKIE ] ) );
-				}
-
-				$code = apply_filters( 'goodbids_referrals_new_user_referral_code', $code, $user_id );
+				$code = $this->get_cookie();
 
 				if ( ! $code ) {
 					return;
@@ -153,6 +165,7 @@ class Track {
 
 				$referrer_id = goodbids()->referrals->get_user_id_by_referral_code( $code );
 
+				// User no longer exists or referral code has changed.
 				if ( false === $referrer_id ) {
 					$this->clear_cookie();
 					return;
@@ -167,4 +180,33 @@ class Track {
 		);
 	}
 
+	/**
+	 * Convert a Referral during Checkout
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function convert_referrals(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				$referrer_id = goodbids()->referrals->get_referrer_id();
+
+				if ( ! $referrer_id ) {
+					return;
+				}
+
+				// No Free Bids for non-Paid-Bid Orders.
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) || goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					return;
+				}
+
+				// Convert the Referral
+				goodbids()->referrals->convert( $referrer_id, get_current_user_id(), $auction_id, $order_id );
+			},
+			10,
+			2
+		);
+	}
 }

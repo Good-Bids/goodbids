@@ -253,11 +253,15 @@ class Referrals {
 	/**
 	 * Get the referring user ID for the given user ID.
 	 *
-	 * @param int $user_id
+	 * @param ?int $user_id
 	 *
 	 * @return int|false
 	 */
-	public function get_referrer_id( int $user_id ): int|false {
+	public function get_referrer_id( ?int $user_id = null ): int|false {
+		if ( null === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
 		$referrer_id = get_user_meta( $user_id, self::REFERRER_ID_META_KEY, true );
 
 		if ( ! $referrer_id ) {
@@ -323,6 +327,46 @@ class Referrals {
 		$referral->set_code( $code );
 
 		return $referral->save();
+	}
+
+	/**
+	 * Convert a Referral and award a Free Bid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $referrer_id
+	 * @param int $user_id
+	 * @param int $auction_id
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function convert( int $referrer_id, int $user_id, int $auction_id, int $order_id ): bool {
+		$referral_id = $this->get_referral( $referrer_id, $user_id );
+
+		if ( is_null( $referral_id ) ) {
+			Log::warning( 'Referral not found', compact( 'user_id', 'referrer_id' ) );
+			return false;
+		}
+
+		$referral = new Referral( $referral_id );
+
+		if ( $referral->is_converted() ) {
+			Log::warning( 'Referral already converted', compact( 'user_id', 'referrer_id' ) );
+			return false;
+		}
+
+		$referral->convert( $auction_id, $order_id );
+
+		$description = sprintf(
+			/* translators: %s: User ID */
+			__( 'Referral converted for User ID: %s', 'goodbids' ),
+			$user_id
+		);
+
+		goodbids()->users->award_free_bid( $referrer_id, $auction_id, $description );
+
+		return true;
 	}
 
 	/**

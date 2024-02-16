@@ -210,8 +210,10 @@ class Referral {
 	public function convert( int $auction_id, int $order_id ): void {
 		$this->converted_date = current_time( 'mysql', true );
 
+		// Update Converted Date
 		update_post_meta( $this->get_id(), Referrals::CONVERTED_DATE_META_KEY, $this->converted_date );
 
+		// Add additional Referral Meta
 		update_post_meta( $this->get_id(), self::AUCTION_ID_META_KEY, $auction_id );
 		update_post_meta( $this->get_id(), self::ORDER_ID_META_KEY, $order_id );
 	}
