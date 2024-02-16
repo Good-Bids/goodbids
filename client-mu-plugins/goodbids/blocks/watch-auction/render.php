@@ -12,21 +12,28 @@ if ( ! is_user_logged_in() ) {
 	return;
 }
 
-$watching    = goodbids()->watchers->is_watching();
-$watchers    = goodbids()->watchers->get_watcher_count();
-$watch_text  = $watching ? 'Unwatch' : 'Watch';
-$watch_class = $watching ? 'btn-fill' : 'btn-fill-secondary';
-$post_url    = str_replace( untrailingslashit( site_url() ), '', admin_url( 'admin-ajax.php' ) );
+$watching = goodbids()->watchers->is_watching();
+$watchers = goodbids()->watchers->get_watcher_count();
 
+$watch_text   = __( 'Watch', 'goodbids' );
+$unwatch_text = __( 'Unwatch', 'goodbids' );
+$button_text  = $watching ? $unwatch_text : $watch_text;
+
+$watch_class   = 'btn-fill';
+$unwatch_class = 'btn-fill-secondary';
+$button_class  = $watching ? $watch_class : $unwatch_class;
 ?>
 <div <?php block_attr( $block ); ?>>
-	<button 
-		data-controller="watch-auction" 
-		data-action="watch-auction#toggle" 
-		data-watch-auction-state-value="<?php echo esc_attr( intval( $watching ) ); ?>" 
-		data-watch-auction-id-value="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>" 
-		data-auction="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>"
-		class="inline-flex items-center gap-2 no-underline text-md <?php echo esc_attr( $watch_class ); ?>"
+	<button
+		data-controller="watch-auction"
+		data-action="watch-auction#toggle"
+		data-watch-auction-state-value="<?php echo esc_attr( intval( $watching ) ); ?>"
+		data-watch-auction-id-value="<?php echo esc_attr( goodbids()->auctions->get_auction_id() ); ?>"
+		data-watch-auction-watch-value="<?php echo esc_attr( $watch_text ); ?>"
+		data-watch-auction-unwatch-value="<?php echo esc_attr( $unwatch_text ); ?>"
+		data-watch-auction-watch-class-value="<?php echo esc_attr( $watch_class ); ?>"
+		data-watch-auction-unwatch-class-value="<?php echo esc_attr( $unwatch_class ); ?>"
+		class="inline-flex items-center gap-2 no-underline text-md <?php echo esc_attr( $button_class ); ?>"
 	>
 		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path
@@ -34,7 +41,7 @@ $post_url    = str_replace( untrailingslashit( site_url() ), '', admin_url( 'adm
 				fill="currentColor" />
 		</svg>
 		<span data-watch-auction-target="text">
-			<?php echo esc_html( $watch_text ); ?>
+			<?php echo esc_html( $button_text ); ?>
 		</span>
 	</button>
 </div>

@@ -1,53 +1,84 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-	static targets = ['text', 'watchers'];
+	static targets = ['text'];
 
 	static values = {
-		id: String,
-		state: String,
+		id: Number,
+		state: Number,
+		watch: String,
+		unwatch: String,
+		watchClass: String,
+		unwatchClass: String,
 	};
 
 	connect() {}
 
 	toggle() {
 		this.watch();
-		if (this.stateValue == 0) {
+		this.toggleState();
+
+		this.element.classList.toggle(this.watchClassValue);
+		this.element.classList.toggle(this.unwatchClassValue);
+	}
+
+	toggleState() {
+		if (!this.stateValue) {
 			this.stateValue = 1;
-			this.textTarget.textContent = 'Unwatch';
+			this.updateText(this.unwatchValue);
 		} else {
 			this.stateValue = 0;
-			this.textTarget.textContent = 'Watch';
+			this.updateText(this.watchValue);
 		}
-		this.element.classList.toggle('btn-fill-secondary');
-		this.element.classList.toggle('btn-fill');
+	}
+
+	updateText(string) {
+		this.textTarget.textContent = string;
+	}
+
+	updateWatchers(string) {
+		const watchers = document.querySelector('.auction-watchers-count');
+		watchers.textContent = string;
+	}
+
+	sendRequest(data, callback) {
+		// Create a new XMLHttpRequest object
+		const xhr = new XMLHttpRequest();
+
+		// Open a POST request to the admin-ajax.php file
+		xhr.open('POST', window.watchAuctionVars.ajaxUrl, true); // TODO: Update Reference.
+
+		// Set the request header for POST requests
+		xhr.setRequestHeader(
+			'Content-Type',
+			'application/x-www-form-urlencoded; charset=UTF-8',
+		);
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				const jsonResponse = JSON.parse(xhr.responseText);
+				callback(jsonResponse);
+			}
+		};
+
+		// Send the data
+		xhr.send(data);
 	}
 
 	watch() {
-		const params = new URLSearchParams();
-		params.append('action', 'goodbids_toggle_watching');
-		params.append('auction', this.idValue);
+		const data = new URLSearchParams();
+		data.append('action', 'goodbids_toggle_watching');
+		data.append('auction', this.idValue);
 
-		fetch(window.watchAuctionVars.ajaxUrl, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body: params,
-		})
-			.then(function (response) {
-				if (!response.success) {
-					console.log(response);
-					return;
-				}
+		const updateWatchers = this.updateWatchers;
 
-				document.querySelector(
-					'data-watch-auction-target="watchers"',
-				).textContent = response.data.totalWatchers;
+		this.sendRequest(data, (response) => {
+			if (!response.success) {
+				console.log(response);
+				return;
+			}
 
-				console.log(response.data.totalWatchers);
-			})
-			.catch((error) => console.error(error));
+			updateWatchers(response.data.totalWatchers);
+		});
 	}
 }
