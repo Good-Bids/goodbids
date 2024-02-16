@@ -3,7 +3,7 @@ import apiFetch from '@wordpress/api-fetch';
 
 type UploadImageAPISuccessResponse = {
 	id: number;
-	link: string;
+	source_url: string;
 };
 
 type UploadImageSuccessResponse = {
@@ -37,7 +37,7 @@ export function useUploadImage(
 
 			return {
 				id: result.id,
-				url: result.link,
+				url: result.source_url,
 				fileName: file.name,
 			};
 		},
