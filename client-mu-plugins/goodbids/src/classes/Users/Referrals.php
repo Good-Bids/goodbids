@@ -8,6 +8,7 @@
 
 namespace GoodBids\Users;
 
+use GoodBids\Auctions\FreeBid;
 use GoodBids\Core;
 use GoodBids\Users\Referrals\Admin;
 use GoodBids\Users\Referrals\Generator;
@@ -358,13 +359,14 @@ class Referrals {
 
 		$referral->convert( $auction_id, $order_id );
 
-		$description = sprintf(
-			/* translators: %s: User ID */
-			__( 'Referral converted for User ID: %s', 'goodbids' ),
-			$user_id
+		$details = sprintf(
+			/* translators: %1$d: User ID, %2$d: Auction ID */
+			__( 'Referral converted for User ID: %1$d for placing a paid bid on Auction ID: %2$d', 'goodbids' ),
+			$user_id,
+			$auction_id
 		);
 
-		goodbids()->users->award_free_bid( $referrer_id, $auction_id, $description );
+		goodbids()->users->award_free_bid( $referrer_id, $auction_id, FreeBid::TYPE_REFERRAL, $details );
 
 		return true;
 	}

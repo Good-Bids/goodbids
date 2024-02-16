@@ -18,6 +18,18 @@ use GoodBids\Users\Users;
 class FreeBid {
 
 	/**
+	 * Paid Bid type of Free Bid.
+	 * @since 1.0.0
+	 */
+	const TYPE_PAID_BID = 'paid_bid';
+
+	/**
+	 * Referral type of Free Bid.
+	 * @since 1.0.0
+	 */
+	const TYPE_REFERRAL = 'referral';
+
+	/**
 	 * Unique Identifier.
 	 *
 	 * @since 1.0.0
@@ -48,12 +60,29 @@ class FreeBid {
 	public ?string $earned_date = null;
 
 	/**
-	 * Description of the Free Earned Bid
+	 * Type of Free Bid
 	 *
 	 * @since 1.0.0
 	 * @var ?string
 	 */
+	public ?string $type = null;
+
+	/**
+	 * Description of the Free Earned Bid
+	 *
+	 * @since 1.0.0
+	 * @deprecated 1.0.0 Use `details` instead.
+	 * @var ?string
+	 */
 	public ?string $description = null;
+
+	/**
+	 * Details of the Free Earned Bid
+	 *
+	 * @since 1.0.0
+	 * @var ?string
+	 */
+	public ?string $details = null;
 
 	/**
 	 * ID of the Auction Free Bid was Used
@@ -143,17 +172,50 @@ class FreeBid {
 	}
 
 	/**
-	 * Sets the Description for the Free Earned Bid.
+	 * Sets the Free Earned Type.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $description
+	 * @param string $type
 	 *
 	 * @return FreeBid
 	 */
-	public function set_description( string $description ): FreeBid {
-		$this->description = $description;
+	public function set_type( string $type ): FreeBid {
+		$this->type = $type;
 		return $this;
+	}
+
+	/**
+	 * Sets the Details for the Free Earned Bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $details
+	 *
+	 * @return FreeBid
+	 */
+	public function set_details( string $details ): FreeBid {
+		$this->details = $details;
+		return $this;
+	}
+
+	/**
+	 * Get the Free Bid Details
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_details(): string {
+		if ( ! empty( $this->details ) ) {
+			return $this->details;
+		}
+
+		if ( ! empty( $this->description ) ) {
+			return $this->description;
+		}
+
+		return '';
 	}
 
 	/**
