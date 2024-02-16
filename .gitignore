@@ -70,7 +70,6 @@ dist
 build
 
 # Log files
-private/logs/*.log
 *.log
 
 # Local config file
