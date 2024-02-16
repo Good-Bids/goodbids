@@ -300,7 +300,7 @@ class FreeBid {
 		$this->status            = Bids::FREE_BID_STATUS_USED;
 		$this->auction_id_used   = $auction_id;
 		$this->order_id_redeemed = $order->get_id();
-		$this->bid_value         = 0; // TODO: Maybe calculate the order total pre-coupon?
+		$this->bid_value         = $order->get_subtotal();
 
 		return true;
 	}
