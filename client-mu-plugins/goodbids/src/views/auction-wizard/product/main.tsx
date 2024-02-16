@@ -12,7 +12,7 @@ export function Main() {
 		<QueryClientProvider client={queryClient}>
 			<TooltipProvider>
 				<Wrapper progress={50}>
-					<div className="flex gap-4">
+					<div className="flex gap-4 justify-between">
 						<Form />
 
 						<Tips>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Multisite Functionality
+ * Auction Creation Wizard
  *
  * @since 1.0.0
  * @package GoodBids
