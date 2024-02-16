@@ -1,6 +1,6 @@
 <?php
 /**
- * Pattern: Logo Grid
+ * Pattern: Comments
  *
  * @since 1.0.0
  * @package GoodBids
@@ -9,8 +9,12 @@
 ?>
 <!-- wp:group {"className":"gb-comments","layout":{"type":"constrained"}} -->
 <div class="wp-block-group gb-comments">
-	<!-- wp:comments {"align":"wide"} -->
-	<div class="wp-block-comments alignwide">
+	<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"className":"is-style-wide"} -->
+	<hr class="wp-block-separator has-alpha-channel-opacity is-style-wide" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)" />
+	<!-- /wp:separator -->
+
+	<!-- wp:comments -->
+	<div class="wp-block-comments">
 		<!-- wp:heading {"level":4,"style":{"typography":{"textTransform":"capitalize","fontStyle":"normal","fontWeight":"400"}}} -->
 		<h4 class="wp-block-heading" style="font-style:normal;font-weight:400;text-transform:capitalize">Comments</h4>
 		<!-- /wp:heading -->
