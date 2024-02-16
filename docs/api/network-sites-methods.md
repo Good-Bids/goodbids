@@ -43,6 +43,3 @@ Returns an array of all auctions the given user ID has participated in for all s
 
 `goodbids()->sites->get_user_auctions_won( int $user_id )`
 Returns an array of all auctions the given user ID has won for all sites.
-
-`goodbids()->sites->get_svg_url_url( string $svg_file )`
-Returns the url of the svg file.

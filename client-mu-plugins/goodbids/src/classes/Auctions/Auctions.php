@@ -637,9 +637,9 @@ class Auctions {
 	 *
 	 * @return void
 	 */
-	public function get_remaining_time( int $auction_id, string $icon = null ): void {
+	public function get_remaining_time( int $auction_id, ?string $icon = null ): void {
 		$class        = 'flex items-center gap-2 ';
-		$svg_img      = '<img class="w-5 h-5" src="' . goodbids()->sites->get_svg_url( $icon ) . '" />';
+		$svg_img      = '<img class="w-5 h-5" src="' . goodbids()->utilities->get_svg_path( $icon ) . '" />';
 		$time_zone    = new \DateTimeZone( wp_timezone_string( 'timezone' ) );
 		$current_date = new \DateTime( 'now', $time_zone );
 
@@ -1285,7 +1285,7 @@ class Auctions {
 		}
 
 		$total = collect( $this->get_bid_orders( $auction_id ) )
-		->sum( fn( $order ) => $order->get_total( 'edit' ) );
+			->sum( fn( $order ) => $order->get_total( 'edit' ) );
 
 		set_transient( $transient, $total, HOUR_IN_SECONDS );
 
@@ -1304,7 +1304,7 @@ class Auctions {
 	 */
 	public function get_user_total_donated( int $auction_id, int $user_id ): float {
 		return collect( $this->get_bid_orders( $auction_id, -1, $user_id ) )
-		->sum( fn( $order ) => $order->get_total( 'edit' ) );
+			->sum( fn( $order ) => $order->get_total( 'edit' ) );
 	}
 
 	/**
@@ -1623,7 +1623,7 @@ class Auctions {
 	 */
 	private function add_one_min_cron_schedule(): void {
 		add_filter(
-		'cron_schedules', // phpcs:ignore
+			'cron_schedules', // phpcs:ignore
 			function ( array $schedules ): array {
 				foreach ( $this->cron_intervals as $id => $props ) {
 					// If one is already set, confirm it matches our schedule.

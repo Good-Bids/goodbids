@@ -8,8 +8,7 @@
  * @package GoodBids
  */
 
-$url              = is_admin() ? '#' : get_the_permalink();
-$image_attributes = wp_get_attachment_image_src( get_theme_mod( 'custom_logo' ) );
+$url = is_admin() ? '#' : get_the_permalink();
 ?>
 <li class="block overflow-hidden">
 	<a href="<?php echo esc_url( $url ); ?>" class="no-underline hover:underline hover:text-black">
@@ -42,7 +41,7 @@ $image_attributes = wp_get_attachment_image_src( get_theme_mod( 'custom_logo' ) 
 		<?php echo wp_kses_post( goodbids()->auctions->get_remaining_time( get_the_ID(), 'clock' ) ); ?>
 
 		<div class="flex items-center gap-2">
-			<img class="w-5 h-5" src="<?php echo esc_url( goodbids()->sites->get_svg_url( 'eye' ) ); ?> " />
+			<img class="w-5 h-5" src="<?php echo esc_url( goodbids()->utilities->get_svg_path( 'eye' ) ); ?> " />
 			<?php echo esc_html( goodbids()->watchers->get_watcher_count( get_the_ID() ) ); ?>
 		</div>
 	</div>

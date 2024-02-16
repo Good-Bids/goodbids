@@ -68,4 +68,23 @@ class Utilities {
 
 		return $number . $ordinal;
 	}
+
+
+	/**
+	 * Get SVG
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $svg_file
+	 *
+	 * @return string
+	 */
+	public function get_svg_path( $svg_file ): string {
+		$svg_file_path = GOODBIDS_PLUGIN_PATH . 'assets/icons/' . $svg_file . '.svg';
+		if ( ! file_exists( $svg_file_path ) ) {
+			return '';
+		}
+
+		return $svg_file_path;
+	}
 }
