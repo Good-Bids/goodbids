@@ -10,6 +10,7 @@ namespace GoodBids\Auctions;
 
 use GoodBids\Frontend\Notices;
 use GoodBids\Utilities\Log;
+use WC_Data_Exception;
 use WC_Product;
 use WC_Product_Attribute;
 use WC_Product_Variable;
@@ -195,8 +196,8 @@ class Bids {
 		try {
 			$bid_product->set_sku( 'GB-BID-' . $auction_id );
 			$bid_product->set_catalog_visibility( 'hidden' );
-		} catch ( \WC_Data_Exception $e ) {
-			// Do nothing.
+		} catch ( WC_Data_Exception $e ) {
+			Log::error( $e->getMessage() );
 		}
 
 		/**
@@ -240,7 +241,7 @@ class Bids {
 
 		try {
 			$variation->set_sku( 'GB-BID-' . $auction_id . '-' . $count );
-		} catch ( \WC_Data_Exception $e ) {
+		} catch ( WC_Data_Exception $e ) {
 			// Do nothing.
 		}
 

@@ -36,7 +36,7 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 			function () {
 				$this->retry_interval = 2;
 				$stripe_settings      = get_option( 'woocommerce_stripe_settings', [] );
-				$this->testmode       = ( ! empty( $stripe_settings['testmode'] ) && 'yes' === $stripe_settings['testmode'] ) ? true : false;
+				$this->testmode       = ! empty( $stripe_settings['testmode'] ) && 'yes' === $stripe_settings['testmode'];
 				$secret_key           = ( $this->testmode ? 'test_' : '' ) . 'webhook_secret';
 				$this->secret         = ! empty( $stripe_settings[ $secret_key ] ) ? $stripe_settings[ $secret_key ] : false;
 

@@ -8,7 +8,9 @@
 
 namespace GoodBids\Nonprofits;
 
+use DateTimeZone;
 use GoodBids\Utilities\Log;
+use WP_Post;
 use WP_Query;
 
 /**
@@ -158,11 +160,11 @@ class Invoices {
 		 * @since 1.0.0
 		 *
 		 * @param mixed $delete
-		 * @param \WP_Post $post
+		 * @param WP_Post $post
 		 *
 		 * @return mixed
 		 */
-		$prevent_delete = function ( mixed $delete, \WP_Post $post ): mixed {
+		$prevent_delete = function ( mixed $delete, WP_Post $post ): mixed {
 			if ( $this->get_post_type() !== get_post_type( $post ) ) {
 				return $delete;
 			}
@@ -257,7 +259,7 @@ class Invoices {
 	private function clear_post_state(): void {
 		add_filter(
 			'display_post_states',
-			function ( array $post_states, \WP_Post $post ): array {
+			function ( array $post_states, WP_Post $post ): array {
 				if ( $this->get_post_type() !== get_post_type( $post ) ) {
 					return $post_states;
 				}
@@ -291,7 +293,7 @@ class Invoices {
 				add_meta_box(
 					'goodbids-invoice-details',
 					__( 'Invoice Details', 'goodbids' ),
-					function ( \WP_Post $post ): void {
+					function ( WP_Post $post ): void {
 						$invoice = $this->get_invoice( $post->ID );
 
 						if ( ! $invoice ) {
@@ -309,7 +311,7 @@ class Invoices {
 				add_meta_box(
 					'goodbids-invoice-actions',
 					__( 'Actions', 'goodbids' ),
-					function ( \WP_Post $post ): void {
+					function ( WP_Post $post ): void {
 						$invoice = $this->get_invoice( $post->ID );
 
 						if ( ! $invoice ) {
@@ -436,7 +438,7 @@ class Invoices {
 				'meta_query' => [
 					[
 						'key'     => Invoice::DUE_DATE_META_KEY,
-						'value'   => current_datetime()->setTimezone( new \DateTimeZone( 'GMT' ) )->format( 'Y-m-d 23:59:59' ),
+						'value'   => current_datetime()->setTimezone( new DateTimeZone( 'GMT' ) )->format( 'Y-m-d 23:59:59' ),
 						'compare' => '<',
 						'type'    => 'DATE',
 					],

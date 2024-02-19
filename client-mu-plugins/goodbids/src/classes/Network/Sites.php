@@ -13,6 +13,7 @@ use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
+use WP_Block_Type_Registry;
 use WP_Post;
 use WP_Site;
 
@@ -503,7 +504,7 @@ class Sites {
 				];
 
 				if ( ! is_array( $allowed_block_types ) ) {
-					$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+					$allowed_block_types = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
 				}
 
 				// Remove the block from the allowed blocks.

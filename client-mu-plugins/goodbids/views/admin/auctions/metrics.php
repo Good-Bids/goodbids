@@ -2,7 +2,6 @@
 /**
  * Auction Details Meta Box Content
  *
- * @global \GoodBids\Auctions\Auctions $this
  * @global int $auction_id
  *
  * @since 1.0.0

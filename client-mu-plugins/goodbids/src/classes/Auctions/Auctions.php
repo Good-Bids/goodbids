@@ -8,9 +8,11 @@
 
 namespace GoodBids\Auctions;
 
+use DateInterval;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 use WC_Product_Variation;
+use WP_Post;
 use WP_Query;
 use WP_REST_Response;
 
@@ -849,7 +851,7 @@ class Auctions {
 	 */
 	private function get_starting_auctions(): WP_Query {
 		// Use the current time + 1min to get Auctions about to start.
-		$auction_start = current_datetime()->add( new \DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
+		$auction_start = current_datetime()->add( new DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
 
 		$args = [
 			'post_type'      => $this->get_post_type(),
@@ -1045,7 +1047,7 @@ class Auctions {
 	private function restrict_delinquent_sites(): void {
 		add_action(
 			'transition_post_status',
-			function ( string $new_status, string $old_status, \WP_Post $post ): void {
+			function ( string $new_status, string $old_status, WP_Post $post ): void {
 				if ( 'publish' !== $new_status ) {
 					return;
 				}

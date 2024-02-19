@@ -46,6 +46,6 @@ if ( ! function_exists( 'dd' ) ) {
 		ini_set( 'highlight.string', '#F2C47E' );
 
 		$output = highlight_string( "<?php\n\n" . var_export( $data, true ), true );
-		die( "<div style=\"background-color: #1C1E21; padding: 1rem\">{$output}</div>" );
+		die( "<div style=\"background-color: #1C1E21; padding: 1rem\">$output</div>" );
 	}
 }

@@ -28,7 +28,7 @@ if ( $start_time && ! $auction->has_started() ) {
 		' (%s)',
 		__( 'Extended', 'goodbids' )
 	);
-} elseif ( ! $auction->has_ended() && $auction->is_extension_window( $auction_id ) ) {
+} elseif ( ! $auction->has_ended() && $auction->is_extension_window() ) {
 	$extra = sprintf(
 		' (%s)',
 		__( 'Extension Window', 'goodbids' )

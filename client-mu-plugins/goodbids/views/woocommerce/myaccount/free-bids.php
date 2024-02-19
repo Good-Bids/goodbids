@@ -2,15 +2,16 @@
 /**
  * My Account: Free Bids Page
  *
- * @global \GoodBids\Auctions\FreeBid[] $free_bids
+ * @global FreeBid[] $free_bids
  *
  * @package GoodBids
  */
 
+use GoodBids\Auctions\FreeBid;
+
 ?>
 <div class="goodbids-free-bids">
 	<h1><?php esc_html_e( 'Free Bids', 'goodbids' ); ?></h1>
-
 
 	<?php if ( ! count( $free_bids ) ) : ?>
 		<p><?php esc_html_e( 'You have not earned any free bids yet.', 'goodbids' ); ?></p>

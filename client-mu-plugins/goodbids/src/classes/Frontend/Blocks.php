@@ -8,6 +8,8 @@
 
 namespace GoodBids\Frontend;
 
+use WP_Block_Type_Registry;
+
 /**
  * Main Blocks Class
  *
@@ -95,7 +97,7 @@ class Blocks {
 							];
 
 							if ( ! is_array( $allowed_block_types ) ) {
-								$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+								$allowed_block_types = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
 							}
 
 							// Remove the block from the allowed blocks.

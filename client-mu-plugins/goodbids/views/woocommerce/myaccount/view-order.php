@@ -22,10 +22,10 @@ $notes = $order->get_customer_order_notes();
 			printf(
 				/* translators: 1: order number 2: blog title 3: order date 4: order status */
 				esc_html__( 'Your donation #%1$s to %2$s was placed on %3$s and is currently %4$s.', 'woocommerce' ),
-				'<mark class="order-number">' . $order->get_order_number() . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-site-title">' . get_bloginfo( 'title' ) . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-date">' . wc_format_datetime( $order->get_date_created() ) . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-status">' . wc_get_order_status_name( $order->get_status() ) . '</mark>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'<mark class="order-number">' . wp_kses_post( $order->get_order_number() ) . '</mark>',
+				'<mark class="order-site-title">' . wp_kses_post( get_bloginfo( 'title' ) ) . '</mark>',
+				'<mark class="order-date">' . wp_kses_post( wc_format_datetime( $order->get_date_created() ) ) . '</mark>',
+				'<mark class="order-status">' . wp_kses_post( wc_get_order_status_name( $order->get_status() ) ) . '</mark>'
 			);
 		?>
 	<?php elseif ( goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) : ?>
@@ -33,10 +33,10 @@ $notes = $order->get_customer_order_notes();
 			printf(
 				/* translators: 1: blog title 2: order date 3: order status 4: order number */
 				esc_html__( 'Your reward claim with %1$s was placed on %2$s and is currently %3$s. Your order number is #%4$s', 'woocommerce' ),
-				'<mark class="order-site-title">' . get_bloginfo( 'title' ) . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-date">' . wc_format_datetime( $order->get_date_created() ) . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-status">' . wc_get_order_status_name( $order->get_status() ) . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-number">' . $order->get_order_number() . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'<mark class="order-site-title">' . wp_kses_post( get_bloginfo( 'title' ) ) . '</mark>',
+				'<mark class="order-date">' . wp_kses_post( wc_format_datetime( $order->get_date_created() ) ) . '</mark>',
+				'<mark class="order-status">' . wp_kses_post( wc_get_order_status_name( $order->get_status() ) ) . '</mark>',
+				'<mark class="order-number">' . wp_kses_post( $order->get_order_number() ) . '</mark>'
 			);
 		?>
 	<?php else : ?>
@@ -44,9 +44,9 @@ $notes = $order->get_customer_order_notes();
 			printf(
 			/* translators: 1: order number 2: order date 3: order status */
 				esc_html__( 'Order #%1$s was placed on %2$s and is currently %3$s.', 'woocommerce' ),
-				'<mark class="order-number">' . $order->get_order_number() . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-date">' . wc_format_datetime( $order->get_date_created() ) . '</mark>', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				'<mark class="order-status">' . wc_get_order_status_name( $order->get_status() ) . '</mark>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'<mark class="order-number">' . wp_kses_post( $order->get_order_number() ) . '</mark>',
+				'<mark class="order-date">' . wp_kses_post( wc_format_datetime( $order->get_date_created() ) ) . '</mark>',
+				'<mark class="order-status">' . wp_kses_post( wc_get_order_status_name( $order->get_status() ) ) . '</mark>'
 			);
 		?>
 	<?php endif; ?>

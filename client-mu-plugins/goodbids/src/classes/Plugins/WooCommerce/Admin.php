@@ -9,6 +9,7 @@
 namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Utilities\Log;
+use WP_Post;
 
 /**
  * Class for Admin Methods
@@ -121,7 +122,7 @@ class Admin {
 				$auth_page_id = wp_insert_post( $auth_page, true );
 
 				if ( is_wp_error( $auth_page_id ) ) {
-					Log::error( $auth_page_id->get_error_message(), compact( 'auth_page' ), );
+					Log::error( $auth_page_id->get_error_message(), compact( 'auth_page' ) );
 				} elseif ( ! $auth_page_id ) {
 					Log::warning( 'Failed to create Authentication Page.', compact( 'auth_page' ) );
 					return;
@@ -189,7 +190,7 @@ class Admin {
 	private function display_post_states(): void {
 		add_filter(
 			'display_post_states',
-			function ( array $post_states, \WP_Post $post ): array {
+			function ( array $post_states, WP_Post $post ): array {
 				if ( wc_get_page_id( 'authentication' ) === $post->ID ) {
 					$post_states['wc_page_for_authentication'] = __( 'Authentication Page', 'goodbids' );
 				}

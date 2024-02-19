@@ -8,6 +8,9 @@
 
 namespace GoodBids\Auctions;
 
+use DateInterval;
+use DateTimeImmutable;
+use Exception;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
 use WC_Order;
@@ -339,11 +342,11 @@ class Auction {
 		}
 
 		try {
-			$end = new \DateTimeImmutable( $end_time );
+			$end = new DateTimeImmutable( $end_time );
 
 			// Subtract seconds from end time to get window start.
-			$window = $end->sub( new \DateInterval( 'PT' . $extension . 'S' ) );
-		} catch ( \Exception $e ) {
+			$window = $end->sub( new DateInterval( 'PT' . $extension . 'S' ) );
+		} catch ( Exception $e ) {
 			Log::error( $e->getMessage(), compact( 'end_time' ) );
 			return false;
 		}
@@ -851,9 +854,9 @@ class Auction {
 		}
 
 		try {
-			$close      = current_datetime()->add( new \DateInterval( 'PT' . $extension . 'S' ) );
+			$close      = current_datetime()->add( new DateInterval( 'PT' . $extension . 'S' ) );
 			$close_time = $close->format( 'Y-m-d H:i:s' );
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			Log::error( $e->getMessage(), compact( 'extension' ) );
 			return false;
 		}
