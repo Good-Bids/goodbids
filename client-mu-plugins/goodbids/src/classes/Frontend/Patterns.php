@@ -66,6 +66,16 @@ class Patterns {
 					'inserter'   => true,
 				];
 
+				$comments = [
+					'name'       => 'goodbids-comments',
+					'path'       => goodbids()->get_view_path( 'patterns/comments.php' ),
+					'title'      => __( 'Goodbids Comments', 'goodbids' ),
+					'categories' => [ 'page', 'goodbids' ],
+					'keywords'   => [ 'comments', 'auction', 'page', 'goodbids' ],
+					'source'     => 'plugin',
+					'inserter'   => true,
+				];
+
 				$hero_banner = [
 					'name'       => 'goodbids-banner-hero',
 					'path'       => goodbids()->get_view_path( 'patterns/banner-hero.php' ),
@@ -153,6 +163,7 @@ class Patterns {
 					'goodbids_block_patterns',
 					[
 						$auction_archive,
+						$comments,
 						$hero_banner,
 						$logo_grid,
 						$nonprofit_interest_form,
