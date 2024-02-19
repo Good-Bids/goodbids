@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Auctions\Auction;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -62,5 +64,57 @@ class AuctionAdminLive extends AuctionWatchersLive {
 	 */
 	public function get_button_url(): string {
 		return '{auction.url}';
+	}
+
+	/**
+	 * Customize the plain text footer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function plain_text_footer(): void {
+
+		echo "\n\n----------------------------------------\n\n";
+
+		if ( $this->get_button_text() ) {
+			printf(
+				"%s:\n%s",
+				esc_html( wp_strip_all_tags( wptexturize( $this->get_button_text() ) ) ),
+				esc_html( wp_strip_all_tags( wptexturize( $this->get_button_url() ) ) ),
+			);
+			echo "\n\n----------------------------------------\n\n";
+		}
+
+		printf(
+		/* translators: %1$s: Login URL */
+			'Login to your site to view additional auction information: %1$s',
+			'{login_url}'
+		);
+
+		echo "\n\n----------------------------------------\n\n";
+
+		/**
+		 * Show user-defined additional content - this is set in each email's settings.
+		 */
+		if ( $this->get_additional_content() ) {
+
+			echo esc_html( wp_strip_all_tags( wptexturize( $this->get_additional_content() ) ) );
+			echo "\n\n----------------------------------------\n\n";
+		}
+	}
+
+	/**
+	 * Add custom vars
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function init_vars(): void {
+		$auction = $this->object instanceof Auction ? $this->object : null;
+		$this->add_email_var( 'auction_estimated_value', $auction?->get_estimated_value() );
+		$this->add_email_var( 'auction_goal', $auction?->get_goal() );
+		$this->add_email_var( 'auction_expected_high_bid', $auction?->get_expected_high_bid() );
 	}
 }

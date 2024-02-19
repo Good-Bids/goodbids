@@ -1,8 +1,16 @@
 <?php
 /**
- * Auction Watchers Live email
+ * Admin Auction Live Email
  *
+ * @since 1.0.0
  * @version 1.0.0
+ * @package GoodBids
+ *
+ * @var string $email_heading
+ * @var string $email
+ * @var ?string $auction_estimated_value
+ * @var ?string $auction_goal
+ * @var ?string $auction_expected_high_bid
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -15,25 +23,14 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <p>
 	<?php
 	printf(
-		/* translators: %s: Customer username */
-		esc_html__( 'Hi %s,', 'goodbids' ),
-		'{user.firstName}'
-	);
-	?>
-</p>
-
-<p>
-	<?php
-	printf(
 		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Start Date  */
 		esc_html__( 'Just letting you know that the %1$s auction on the %2$s GOODBIDS site went live on %3$s.', 'goodbids' ),
 		'{auction.title}',
 		'{site_title}',
-		'{auction.startTime}',
+		'{auction.start_date_time}',
 	);
 	?>
 </p>
-
 
 <div style="margin-bottom: 40px;">
 	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
@@ -46,15 +43,15 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		<tbody>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Scheduled Start', 'goodbids' ); ?></td>
-				<td class="td">{auction.startTime}</td>
+				<td class="td">{auction.start_date_time}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Starting Bid', 'goodbids' ); ?></td>
-				<td class="td">{auction.startingBid}</td>
+				<td class="td">{auction.starting_bid}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Bid Increment', 'goodbids' ); ?></td>
-				<td class="td">{auction.bidIncrement}</td>
+				<td class="td">{auction.bid_increment}</td>
 			</tr>
 			<?php if ( $auction_goal ) : ?>
 				<tr>
@@ -62,27 +59,27 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 					<td class="td"><?php echo esc_html( $auction_goal ); ?></td>
 				</tr>
 			<?php endif; ?>
-			<?php if ( $auction_high_bid ) : ?>
+			<?php if ( $auction_expected_high_bid ) : ?>
 				<tr>
 					<td class="td"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></td>
-					<td class="td"><?php echo esc_html( $auction_high_bid ); ?></td>
+					<td class="td"><?php echo esc_html( $auction_expected_high_bid ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Scheduled End', 'goodbids' ); ?></td>
-				<td class="td">{auction.endTime}</td>
+				<td class="td">{auction.end_date_time}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Bid Extension', 'goodbids' ); ?></td>
-				<td class="td">{auction.bidExtension}</td>
+				<td class="td">{auction.bid_extension}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
-				<td class="td">{auction.rewardTitle}</td>
+				<td class="td">{reward.title}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
-				<td class="td">{auction.rewardType}</td>
+				<td class="td">{reward.type}</td>
 			</tr>
 			<?php if ( $auction_estimated_value ) : ?>
 				<tr>
@@ -110,33 +107,18 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<?php echo esc_html__( 'Keep an eye on the auction page for live bidding updates!', 'goodbids' ); ?>
 </p>
 
-<p class="button-wrapper">
-	<?php
-	printf(
-		/* translators: %1$s: Auction page url, %2$s: Bid Now */
-		'<a class="button" href="%1$s">%2$s</a>',
-		'{auction.url}',
-		esc_html( $button_text )
-	);
-	?>
-</p>
-
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Login URL */
-		'<a href="%1$s">Login to your site</a> to view additional auction information.',
-		'{auction.loginUrl}',
+		'<a href="%s">%s</a> %s',
+		'{login_url}',
+		esc_html__( 'Login to your site', 'goodbids' ),
+		esc_html__( 'to view additional auction information.', 'goodbids' )
 	);
 	?>
 </p>
 
-
 <?php
-/** * Show user-defined additional content - this is set in each email's settings. */
-if ( $additional_content ) {
-	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
-}
 
 /* * @hooked WC_Emails::email_footer() Output the email footer */
 do_action( 'woocommerce_email_footer', $email );

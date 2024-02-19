@@ -31,6 +31,8 @@ class AuctionClosed extends Email {
 		$this->description    = __( 'Notification email is sent when an auction goes closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-closed.php';
 		$this->template_plain = 'emails/plain/auction-closed.php';
+
+		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
 	}
 
 	/**
@@ -82,5 +84,21 @@ class AuctionClosed extends Email {
 	 */
 	public function get_button_url(): string {
 		return '#';
+	}
+
+	/**
+	 * Display Link to All Auctions
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function all_auctions_html(): void {
+		printf(
+			'<p>%s <a href="%s">%s</a>',
+	esc_html__( 'Want to support another great GoodBids?', 'goodbids' ),
+			'{auctions_url}',
+			esc_html__( 'View all auctions', 'goodbids' )
+		);
 	}
 }

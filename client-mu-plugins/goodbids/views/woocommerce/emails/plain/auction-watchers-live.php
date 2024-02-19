@@ -2,29 +2,20 @@
 /**
  * Auction Watchers Live email (plain text)
  *
- * @var string $email_heading
- * @var string $user_name
- * @var string $email
- * @var string $button_text
- * @var string $additional_content
- *
+ * @since 1.0.0
  * @version 1.0.0
+ * @package GoodBids
+ *
+ * @var string $email
+ *
+ * @var AuctionWatchersLive $instance
  */
+
+use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
 
 defined( 'ABSPATH' ) || exit;
 
-echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
-echo esc_html( wp_strip_all_tags( $email_heading ) );
-echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
-
-
-printf(
-	/* translators: %s: Customer username */
-	esc_html__( 'Hi %s,', 'goodbids' ),
-	'{user.firstName}'
-);
-
-echo "\n\n----------------------------------------\n\n";
+$instance->plain_text_header();
 
 printf(
 	/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
@@ -51,21 +42,6 @@ printf(
 	'{site_title}',
 );
 
-echo "\n\n----------------------------------------\n\n";
-
-printf(
-	/* translators: %1$s: Bid Now, %2$s: Auction page url */
-	'%1$s at %2$s',
-	esc_html( $button_text ),
-	'{auction.url}'
-);
-
-/**
- * Show user-defined additional content - this is set in each email's settings.
- */
-if ( $additional_content ) {
-	echo esc_html( wp_strip_all_tags( wptexturize( $additional_content ) ) );
-	echo "\n\n----------------------------------------\n\n";
-}
+$instance->plain_text_footer();
 
 echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );

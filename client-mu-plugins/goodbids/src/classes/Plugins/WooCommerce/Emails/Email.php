@@ -10,6 +10,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
 
+use GoodBids\Auctions\Auction;
 use WC_Email;
 use WP_User;
 
@@ -45,26 +46,21 @@ class Email extends WC_Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->init();
-	}
-
-	/**
-	 * Initialize the custom email.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function init(): void {
 		// Set up empty placeholders.
 		$this->init_placeholders();
 
 		// Set up custom fields.
 		$this->init_fields();
 
+		// Add custom button support if button text exists.
 		if ( $this->get_default_button_text() ) {
 			$this->add_button_support();
 		}
+
+		// Default Template Customizations.
+		add_action( 'woocommerce_email_header', [ $this, 'greeting_html' ], 12 );
+		add_action( 'woocommerce_email_footer', [ $this, 'button_html' ], 5 );
+		add_action( 'woocommerce_email_footer', [ $this, 'additional_content_html' ], 8 );
 	}
 
 	/**
@@ -159,8 +155,8 @@ class Email extends WC_Email {
 		 * @since 1.0.0
 		 *
 		 * @param string $button_text The button text.
-		 * @param object $object The object.
-		 * @param object $this The email object.
+		 * @param object $object      The object.
+		 * @param object $this        The email object.
 		 */
 		return apply_filters(
 			'goodbids_button_text_' . $this->id,
@@ -180,6 +176,32 @@ class Email extends WC_Email {
 	 */
 	public function get_button_url(): string {
 		return '#';
+	}
+
+	/**
+	 * Output Button HTML if supported
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $url
+	 *
+	 * @return void
+	 */
+	public function button_html( string $url = '' ): void {
+		if ( ! $url ) {
+			$url = $this->get_button_url();
+		}
+
+		if ( ! $this->get_button_text() || ! $url ) {
+			return;
+		}
+
+		printf(
+			/* translators: %1$s: reward checkout page url, %2$s: Claim Your Reward */
+			'<p class="button-wrapper"><a class="button" href="%1$s">%2$s</a></p>',
+			esc_html( $url ),
+			esc_html( $this->get_button_text() )
+		);
 	}
 
 	/**
@@ -207,14 +229,8 @@ class Email extends WC_Email {
 			$this->user_id = $user_id;
 		}
 
-		// Default Email Vars.
-		$this->add_email_var( 'email_heading', $this->get_heading() );
-		$this->add_email_var( 'additional_content', $this->get_additional_content() );
-		$this->add_email_var( 'button_text', $this->get_button_text() );
-		$this->add_email_var( 'button_url', $this->get_button_url() );
-
-		// Default placeholders.
-		$this->add_placeholder( 'user.name', $this->get_user_name() );
+		// Default Vars & Placeholders.
+		$this->init_defaults();
 
 		// Allow Email Classes to customize the vars.
 		$this->init_vars();
@@ -232,6 +248,57 @@ class Email extends WC_Email {
 		);
 
 		$this->restore_locale();
+	}
+
+	/**
+	 * Set default vars and placeholders
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function init_defaults(): void {
+		// Default Vars.
+		$this->add_email_var( 'instance', $this );
+		$this->add_email_var( 'email_heading', $this->get_heading() );
+		$this->add_email_var( 'button_text', $this->get_button_text() );
+		$this->add_email_var( 'button_url', $this->get_button_url() );
+		$this->add_email_var( 'additional_content', $this->get_additional_content() );
+
+		// Default Placeholders.
+		$this->add_placeholder( 'user.name', $this->get_user_name() );
+		$this->add_placeholder( 'login_url', wc_get_page_permalink( 'myaccount' ) );
+		$this->add_placeholder( 'auctions_url', get_post_type_archive_link( goodbids()->auctions->get_post_type() ) );
+
+		// Auction Placeholders
+		$auction = $this->object instanceof Auction ? $this->object : null;
+		$reward  = goodbids()->rewards->get_product( $auction?->get_id() );
+
+		// Auction Details.
+		$this->add_placeholder( 'auction.url', $auction?->get_url() );
+		$this->add_placeholder( 'auction.title', $auction?->get_title() );
+		$this->add_placeholder( 'auction.start_date_time', $auction?->get_start_date_time( 'n/j/Y g:i a' ) );
+		$this->add_placeholder( 'auction.end_date_time', $auction?->get_end_date_time( 'n/j/Y g:i a' ) );
+
+		// Bid Details
+		$this->add_placeholder( 'auction.starting_bid', $auction?->get_starting_bid() );
+		$this->add_placeholder( 'auction.bid_increment', $auction?->get_bid_increment() );
+		$this->add_placeholder( 'auction.high_bid', $auction?->get_last_bid()?->get_subtotal() );
+
+		// Auction Stats.
+		$this->add_placeholder( 'auction.total_raised', $auction?->get_total_raised() );
+		$this->add_placeholder( 'auction.bid_count', $auction?->get_bid_count() );
+		$this->add_placeholder( 'auction.goal', $auction?->get_goal() );
+		$this->add_placeholder( 'auction.estimated_value', $auction?->get_estimated_value() );
+
+		// Reward Details.
+		$this->add_placeholder( 'reward.title', $reward?->get_title() );
+		$this->add_placeholder( 'reward.purchase_note', $reward?->get_purchase_note() );
+		$this->add_placeholder( 'reward.days_to_claim', 'TBD' );
+
+		// User Details.
+		$this->add_placeholder( 'user.bid_count', $auction?->get_user_bid_count( $this->user_id ) );
+		$this->add_placeholder( 'user.total_donated', $auction?->get_user_total_donated( $this->user_id ) );
 	}
 
 	/**
@@ -349,5 +416,83 @@ class Email extends WC_Email {
 		}
 
 		$this->form_fields = $form_fields;
+	}
+
+	/**
+	 * Output the Greeting HTML
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function greeting_html(): void {
+		printf(
+			'<p>%s %s,</p>',
+			esc_html__( 'Hi', 'goodbids' ),
+			esc_html( $this->get_user_name() )
+		);
+	}
+
+	/**
+	 * Show user-defined additional content - this is set in each email's settings
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function additional_content_html(): void {
+		if ( $this->get_additional_content() ) {
+			echo wp_kses_post( wpautop( wptexturize( $this->get_additional_content() ) ) );
+		}
+	}
+
+	/**
+	 * Display the plain text header
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function plain_text_header(): void {
+		echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+		echo esc_html( wp_strip_all_tags( $this->get_heading() ) );
+		echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
+
+		printf(
+		/* translators: %s: Customer username */
+			esc_html( wp_strip_all_tags( __( 'Hi %s,', 'goodbids' ) ) ),
+			esc_html( wp_strip_all_tags( $this->get_user_name() ) )
+		);
+
+		echo "\n\n----------------------------------------\n\n";
+	}
+
+	/**
+	 * Output the plain text footer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function plain_text_footer(): void {
+		echo "\n\n----------------------------------------\n\n";
+
+		if ( $this->get_button_text() ) {
+			printf(
+				"%s:\n%s",
+				esc_html( wp_strip_all_tags( wptexturize( $this->get_button_text() ) ) ),
+				esc_html( wp_strip_all_tags( wptexturize( $this->get_button_url() ) ) ),
+			);
+			echo "\n\n----------------------------------------\n\n";
+		}
+
+		/**
+		 * Show user-defined additional content - this is set in each email's settings.
+		 */
+		if ( $this->get_additional_content() ) {
+
+			echo esc_html( wp_strip_all_tags( wptexturize( $this->get_additional_content() ) ) );
+			echo "\n\n----------------------------------------\n\n";
+		}
 	}
 }

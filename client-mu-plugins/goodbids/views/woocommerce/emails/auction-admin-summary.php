@@ -1,8 +1,16 @@
 <?php
 /**
- * Auction Watchers Live email
+ * Admin Summary Email
  *
+ * @since 1.0.0
  * @version 1.0.0
+ * @package GoodBids
+ *
+ * @var string $email_heading
+ * @var string $email
+ * @var ?string $auction_estimated_value
+ * @var ?string $auction_goal
+ * @var ?string $auction_expected_high_bid
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,17 +18,8 @@ defined( 'ABSPATH' ) || exit;
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
-
-<p>
-	<?php
-	printf(
-		/* translators: %s: Customer username */
-		esc_html__( 'Hi %s,', 'goodbids' ),
-		'{user.firstName}'
-	);
-	?>
-</p>
+do_action( 'woocommerce_email_header', $email_heading, $email );
+?>
 
 <p>
 	<?php
@@ -28,14 +27,13 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		/* translators: %1$s: Auction title, %2$s: Auction end time, %3$s: Auction total Bids, %4$s: Auction total Raised, %5$s: Site name  */
 		esc_html__( 'The %1$s GOODBIDS auction ended on %2$s with %3$s placed and %4$s raised for %5$s. Check out the summary below for key auction metrics.', 'goodbids' ),
 		'{auction.title}',
-		'{auction.actualEndDate}',
-		'{auction.totalBids}',
-		'{auction.totalRaised}',
+		'{auction.end_date_time}',
+		'{auction.bid_count}',
+		'{auction.total_raised}',
 		'{site_title}'
 	);
 	?>
 </p>
-
 
 <div style="margin-bottom: 40px;">
 	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
@@ -48,15 +46,15 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		<tbody>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Scheduled Start', 'goodbids' ); ?></td>
-				<td class="td">{auction.startTime}</td>
+				<td class="td">{auction.start_date_time}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Starting Bid', 'goodbids' ); ?></td>
-				<td class="td">{auction.startingBid}</td>
+				<td class="td">{auction.starting_bid}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Bid Increment', 'goodbids' ); ?></td>
-				<td class="td">{auction.bidIncrement}</td>
+				<td class="td">{auction.bid_increment}</td>
 			</tr>
 			<?php if ( $auction_goal ) : ?>
 				<tr>
@@ -64,31 +62,30 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 					<td class="td"><?php echo esc_html( $auction_goal ); ?></td>
 				</tr>
 			<?php endif; ?>
-			<?php if ( $auction_high_bid ) : ?>
+			<?php if ( $auction_expected_high_bid ) : ?>
 				<tr>
 					<td class="td"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></td>
-					<td class="td"><?php echo esc_html( $auction_high_bid ); ?></td>
+					<td class="td"><?php echo esc_html( $auction_expected_high_bid ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Scheduled End', 'goodbids' ); ?></td>
-				<td class="td">{auction.endTime}</td>
+				<td class="td">{auction.end_date_time}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Bid Extension', 'goodbids' ); ?></td>
-				<td class="td">{auction.bidExtension}</td>
+				<td class="td">{auction.bid_extension}</td>
 			</tr>
 			<tr>
-				<td class="td"></td>
-				<td class="td"></td>
+				<td class="td" colspan="2"></td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
-				<td class="td">{auction.rewardTitle}</td>
+				<td class="td">{reward.title}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
-				<td class="td">{auction.rewardType}</td>
+				<td class="td">{reward.type}</td>
 			</tr>
 			<?php if ( $auction_estimated_value ) : ?>
 				<tr>
@@ -97,24 +94,23 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 				</tr>
 			<?php endif; ?>
 			<tr>
-				<td class="td"></td>
-				<td class="td"></td>
+				<td class="td" colspan="2"></td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Actual End', 'goodbids' ); ?></td>
-				<td class="td">{auction.actualEndDate}</td>
+				<td class="td">{auction.end_date_time}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Total Bids', 'goodbids' ); ?></td>
-				<td class="td">{auction.totalBids}</td>
+				<td class="td">{auction.bid_count}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'Total Raised', 'goodbids' ); ?></td>
-				<td class="td">{auction.totalRaised}</td>
+				<td class="td">{auction.total_raised}</td>
 			</tr>
 			<tr>
 				<td class="td"><?php esc_html_e( 'High Bid', 'goodbids' ); ?></td>
-				<td class="td">{auction.highBid}</td>
+				<td class="td">{auction.high_bid}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -127,19 +123,15 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Login URL */
-		'<a href="%1$s">Login to your site</a> to view additional auction information.',
-		'{auction.loginUrl}',
+		'<a href="%s">%s</a> %s',
+		'{login_url}',
+		esc_html__( 'Login to your site', 'goodbids' ),
+		esc_html__( 'to view additional auction information.', 'goodbids' )
 	);
 	?>
 </p>
 
-
 <?php
-/** * Show user-defined additional content - this is set in each email's settings. */
-if ( $additional_content ) {
-	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
-}
 
 /* * @hooked WC_Emails::email_footer() Output the email footer */
 do_action( 'woocommerce_email_footer', $email );

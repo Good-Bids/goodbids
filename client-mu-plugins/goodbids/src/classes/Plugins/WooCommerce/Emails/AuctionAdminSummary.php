@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Auctions\Auction;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -29,8 +31,8 @@ class AuctionAdminSummary extends Email {
 		$this->id             = 'goodbids_auction_admin_summary';
 		$this->title          = __( 'Auction Admin Summary', 'goodbids' );
 		$this->description    = __( 'Notification email sent to admins when an auction closes.', 'goodbids' );
-		$this->template_html  = 'emails/auction-admin-summery.php';
-		$this->template_plain = 'emails/plain/auction-admin-summery.php';
+		$this->template_html  = 'emails/auction-admin-summary.php';
+		$this->template_plain = 'emails/plain/auction-admin-summary.php';
 	}
 
 	/**
@@ -61,5 +63,19 @@ class AuctionAdminSummary extends Email {
 			'{auction.total_raised}',
 			'{site_title}'
 		);
+	}
+
+	/**
+	 * Add custom vars
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function init_vars(): void {
+		$auction = $this->object instanceof Auction ? $this->object : null;
+		$this->add_email_var( 'auction_estimated_value', $auction?->get_estimated_value() );
+		$this->add_email_var( 'auction_goal', $auction?->get_goal() );
+		$this->add_email_var( 'auction_expected_high_bid', $auction?->get_expected_high_bid() );
 	}
 }
