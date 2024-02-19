@@ -38,45 +38,37 @@ export default class extends Controller {
 		watchers.textContent = string;
 	}
 
-	sendRequest(data, callback) {
-		// Create a new XMLHttpRequest object
-		const request = new XMLHttpRequest();
-		console.log(this.ajaxUrlValue);
+	async sendRequest(data) {
+		const response = await fetch(this.ajaxUrlValue, {
+			method: 'POST',
+			headers: {
+				'Content-Type':
+					'application/x-www-form-urlencoded; charset=UTF-8',
+			},
+			body: data,
+		});
 
-		// Open a POST request to the admin-ajax.php file
-		request.open('POST', this.ajaxUrlValue, true); // TODO: Update Reference.
+		// Checks if the response is within the 200 range
+		if (!response.ok) {
+			throw new Error('Something happened');
+		}
 
-		// Set the request header for POST requests
-		request.setRequestHeader(
-			'Content-Type',
-			'application/x-www-form-urlencoded; charset=UTF-8',
-		);
-
-		request.onreadystatechange = function () {
-			if (request.readyState === 4 && request.status === 200) {
-				const jsonResponse = JSON.parse(request.responseText);
-				callback(jsonResponse);
-			}
-		};
-
-		// Send the data
-		request.send(data);
+		// The response is returned instead of a callback being used.
+		return await response.json();
 	}
 
-	watch() {
+	async watch() {
 		const data = new URLSearchParams();
 		data.append('action', 'goodbids_toggle_watching');
 		data.append('auction', this.idValue);
 
-		const updateWatchers = this.updateWatchers;
+		const response = await this.sendRequest(data);
 
-		this.sendRequest(data, (response) => {
-			if (!response.success) {
-				console.log(response);
-				return;
-			}
+		if (!response.success) {
+			console.log(response);
+			return;
+		}
 
-			updateWatchers(response.data.totalWatchers);
-		});
+		this.updateWatchers(response.data.totalWatchers);
 	}
 }
