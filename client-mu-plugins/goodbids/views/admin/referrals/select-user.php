@@ -10,6 +10,7 @@
 
 ?>
 <label>
+	<span class="screen-reader-text"><?php esc_html_e( 'Search for a user', 'goodbids' ); ?></span>
 	<select id="goodbids-referrals-search-user-select"
 		class="goodbids-referrals-search-users"
 		style="width: 100%">
@@ -18,8 +19,7 @@
 </label>
 
 <script>
-	jQuery(document).ready(function ($) {
-
+	jQuery(function ($) {
 		const $gbrSearchUser = $('#goodbids-referrals-search-user-select');
 		$gbrSearchUser.select2({
 			ajax: {
@@ -38,6 +38,6 @@
 			},
 			width: '300px',
 			placeholder: '<?php esc_html_e( 'Search for a user by name or email', 'goodbids' ); ?>',
-		})
+		});
 	});
 </script>
