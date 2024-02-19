@@ -13,7 +13,7 @@ use GoodBids\Users\Referrals\Referral;
 <div class="goodbids-account-referrals">
 	<h1><?php esc_html_e( 'Referrals', 'goodbids' ); ?></h1>
 
-	<div><strong><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></strong></div>
+	<div><p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p></div>
 	<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
 
 	<?php if ( ! $referrals ) : ?>
@@ -32,7 +32,7 @@ use GoodBids\Users\Referrals\Referral;
 				<?php
 				foreach ( $referrals as $referral_data ) :
 					goodbids()->sites->swap(
-						function() use ( $referral_data ) {
+						function () use ( $referral_data ) {
 							$referral = new Referral( $referral_data['referral_id'] );
 							$display  = $referral->get_user() ? $referral->get_user()->display_name : $referral->get_user_id();
 							$r_status = $referral->is_converted() ? __( 'Placed Bid!', 'goodbids' ) : __( 'Pending', 'goodbids' );
