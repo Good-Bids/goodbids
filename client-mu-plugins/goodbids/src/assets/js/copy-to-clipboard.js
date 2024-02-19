@@ -22,8 +22,10 @@ function copyToClipboard(text, element) {
 
 function maybeShowTooltip() {
 	const tooltipElement = document.querySelector('.tooltiptext');
+	const tooltipSRText = document.querySelector('.tooltip-sr-text');
 
 	if (tooltipElement) {
+		tooltipSRText.innerText = 'Link copied to clipboard!';
 		tooltipElement.classList.add('tooltip-visible');
 	}
 
