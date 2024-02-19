@@ -4,6 +4,9 @@
  *
  * Shows the details of a particular order on the account page.
  *
+ * @global WC_Order $order
+ * @global int $order_id
+ *
  * @see     https://woo.com/document/template-structure/
  * @package WooCommerce\Templates
  * @version 3.0.0

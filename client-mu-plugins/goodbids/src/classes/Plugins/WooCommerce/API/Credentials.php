@@ -283,12 +283,12 @@ class Credentials extends WC_REST_Controller {
 					$wpdb->prefix . 'woocommerce_api_keys',
 					$data,
 					[
-						'%d',
-						'%s',
-						'%s',
-						'%s',
-						'%s',
-						'%s',
+						'%d', // user_id
+						'%s', // description
+						'%s', // permissions
+						'%s', // consumer_key
+						'%s', // consumer_secret
+						'%s', // truncated_key
 					]
 				);
 

@@ -115,13 +115,15 @@ class Bids {
 					return;
 				}
 
+				$auction = goodbids()->auctions->get( (int) $post_id );
+
 				// Bail if the Auction already has a Bid product.
-				if ( goodbids()->auctions->has_bid_product( (int) $post_id ) ) {
+				if ( $auction->has_bid_product() ) {
 					return;
 				}
 
 				// Set starting bid amount.
-				$starting_bid = goodbids()->auctions->calculate_starting_bid( (int) $post_id );
+				$starting_bid = $auction->calculate_starting_bid();
 
 				// Make sure this meta value has been saved.
 				if ( ! $starting_bid ) {
@@ -137,7 +139,7 @@ class Bids {
 				}
 
 				// Set the Bid product as a meta of the Auction.
-				goodbids()->auctions->set_bid_product_id( (int) $post_id, $bid_product->get_id() );
+				$auction->set_bid_product_id( $bid_product->get_id() );
 
 				$variation = $this->create_new_bid_variation( $bid_product->get_id(), $starting_bid, $post_id );
 
@@ -147,7 +149,7 @@ class Bids {
 				}
 
 				// Set the Bid variation as a meta of the Auction.
-				goodbids()->auctions->set_bid_variation_id( (int) $post_id, $variation->get_id() );
+				$auction->set_bid_variation_id( $variation->get_id() );
 			},
 			10
 		);
@@ -276,8 +278,6 @@ class Bids {
 		return $bids_category->term_id;
 	}
 
-
-
 	/**
 	 * Retrieves the Bid product ID for an Auction.
 	 *
@@ -379,7 +379,7 @@ class Bids {
 	 * @return ?int
 	 */
 	public function get_auction_id( int $bid_product_id ): ?int {
-		$product_id = goodbids()->auctions->get_parent_product_id( $bid_product_id );
+		$product_id = goodbids()->products->get_parent_product_id( $bid_product_id );
 		$auction_id = get_post_meta( $product_id, Auctions::PRODUCT_AUCTION_META_KEY, true );
 
 		return intval( $auction_id ) ?: null;
@@ -400,60 +400,18 @@ class Bids {
 					return;
 				}
 
-				if ( goodbids()->auctions->has_ended( $auction_id ) ) {
+				$auction = goodbids()->auctions->get( $auction_id );
+				if ( $auction->has_ended() ) {
 					return;
 				}
 
-				if ( ! $this->increase_bid( $auction_id ) ) {
+				if ( ! $auction->increase_bid() ) {
 					Log::error( 'There was a problem trying to increase the Bid Amount', compact( 'auction_id' ) );
 				}
 			},
 			10,
 			2
 		);
-	}
-
-	/**
-	 * Increase the current bid amount.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $auction_id
-	 *
-	 * @return bool
-	 */
-	public function increase_bid( int $auction_id ): bool {
-		$bid_product   = $this->get_product( $auction_id );
-		$bid_variation = $this->get_variation( $auction_id );
-
-		if ( ! $bid_product || ! $bid_variation ) {
-			Log::error( 'Auction missing Bid Product or Variation', compact( 'auction_id' ) );
-			return false;
-		}
-
-		$increment_amount = goodbids()->auctions->get_bid_increment( $auction_id );
-		$current_price    = floatval( $bid_variation->get_regular_price( 'edit' ) );
-		$new_price        = $current_price + $increment_amount;
-
-		// Add support for new variation.
-		$this->update_bid_product_attributes( $bid_product );
-
-		// Create the new Variation.
-		$new_variation = $this->create_new_bid_variation( $bid_product->get_id(), $new_price, $auction_id );
-
-		if ( ! $new_variation->save() ) {
-			Log::error( 'There was a problem saving the new Bid Variation', compact( 'auction_id' ) );
-			return false;
-		}
-
-		// Set the Bid variation as a meta of the Auction.
-		goodbids()->auctions->set_bid_variation_id( $auction_id, $new_variation->get_id() );
-
-		// Disallow backorders on previous variation.
-		$bid_variation->set_backorders( 'no' );
-		$bid_variation->save();
-
-		return true;
 	}
 
 	/**
@@ -495,7 +453,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->bids->get_product_id( $post_id );
+				$bid_product_id = goodbids()->bids->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -523,7 +481,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->bids->get_product_id( $post_id );
+				$bid_product_id = $this->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -551,7 +509,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->auctions->bids->get_product_id( $post_id );
+				$bid_product_id = $this->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -585,11 +543,12 @@ class Bids {
 
 				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
 				$redirect   = get_permalink( $auction_id );
+				$auction    = goodbids()->auctions->get( $auction_id );
 
 				// Do not award free bids if this order contains a free bid.
 				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
-					$remaining_free_bids = goodbids()->auctions->get_free_bids_available( $auction_id );
+					$remaining_free_bids = $auction->get_free_bids_available();
 					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
 					$bid_order           = wc_get_order( $order_id );
 
@@ -601,7 +560,7 @@ class Bids {
 						$auction_id
 					);
 
-					if ( goodbids()->auctions->maybe_award_free_bid( $auction_id, null, $description ) ) {
+					if ( $auction->maybe_award_free_bid( null, $description ) ) {
 						// TODO: Let the user know they earned a free bid.
 						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
 					}

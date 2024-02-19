@@ -391,10 +391,10 @@ class Auctioneer {
 			'set_logged_in_cookie',
 			function ( $cookie, $expire, $expiration, $user_id ) {
 				$session_cookie = $this->generate_auctioneer_cookie( $user_id );
-				setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, false );
+				setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, false ); // phpcs:ignore
 
 				if ( COOKIEPATH != SITECOOKIEPATH ) {
-					setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, true, false );
+					setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, true, false ); // phpcs:ignore
 				}
 			},
 			10,

@@ -77,14 +77,14 @@ class Products {
 	 * @return ?int
 	 */
 	public function get_auction_id_from_product( int $product_id ): ?int {
-		$type = $this->get_product_type( $product_id );
+		$type = $this->get_type( $product_id );
 
 		if ( Bids::ITEM_TYPE === $type ) {
-			return $this->bids->get_auction_id( $product_id );
+			return goodbids()->bids->get_auction_id( $product_id );
 		}
 
 		if ( Rewards::ITEM_TYPE === $type ) {
-			return $this->rewards->get_auction_id( $product_id );
+			return goodbids()->rewards->get_auction_id( $product_id );
 		}
 
 		return null;
@@ -151,25 +151,27 @@ class Products {
 			'save_post',
 			function ( int $post_id ) {
 				// Bail if not an Auction and not published.
-				if ( ! $post_id || wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || $this->get_post_type() !== get_post_type( $post_id ) || wp_doing_ajax() ) {
+				if ( ! $post_id || wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) || wp_doing_ajax() ) {
 					return;
 				}
 
+				$auction = goodbids()->auctions->get( $post_id );
+
 				// Bail if the Auction doesn't have a Bid product.
-				if ( ! $this->has_bid_product( $post_id ) ) {
+				if ( ! $auction->has_bid_product() ) {
 					Log::error( 'Auction does not have Bid Product', compact( 'post_id' ) );
 					return;
 				}
 
 				// Only update if Auction hasn't started.
-				if ( $this->has_started( $post_id ) ) {
+				if ( $auction->has_started() ) {
 					Log::warning( 'Attempted to update Auction Bid Product after Auction has started', compact( 'post_id' ) );
 					return;
 				}
 
 				// Update the Bid product variation.
-				$bid_variation = goodbids()->auctions->bids->get_variation( $post_id );
-				$starting_bid  = $this->calculate_starting_bid( $post_id );
+				$bid_variation = goodbids()->bids->get_variation( $post_id );
+				$starting_bid  = $auction->calculate_starting_bid();
 				$bid_price     = intval( $bid_variation->get_price( 'edit' ) );
 
 				if ( $starting_bid && $bid_price !== $starting_bid ) {
@@ -191,11 +193,12 @@ class Products {
 	 *
 	 * @return void
 	 */
-	private function set_default_feature_image(): void {
+	private function set_default_feature_image(): void
+	{
 		add_filter(
 			'post_thumbnail_html',
 			function ( string $html, int $post_id ) {
-				if ( ! is_post_type_archive( $this->get_post_type() ) ) {
+				if ( ! is_post_type_archive( goodbids()->auctions->get_post_type() ) ) {
 					return $html;
 				}
 
@@ -205,7 +208,7 @@ class Products {
 				}
 
 				// Default to the WooCommerce featured image or WooCommerce default image
-				$reward = $this->rewards->get_product( $post_id );
+				$reward = goodbids()->rewards->get_product( $post_id );
 
 				if ( ! $reward ) {
 					return $html;

@@ -156,7 +156,6 @@ class Orders {
 
 		$order = wc_get_order( $order_id );
 
-		// TODO: Temporary Solution until Free Bids are implemented.
 		if ( 0 < $order->get_total( 'edit' ) ) {
 			return false;
 		}

@@ -9,7 +9,7 @@
  */
 
 global $product;
-$reward = goodbids()->auctions->rewards->get_product();
+$reward = goodbids()->rewards->get_product();
 ?>
 <section <?php block_attr( $block, 'woocommerce' ); ?>>
 	<div class="woocommerce product">

@@ -103,9 +103,6 @@ class Auction {
 		}
 
 		$this->auction_id = $auction_id;
-
-		// Configure some values for new Auction posts.
-		$this->new_auction_post_init();
 	}
 
 	/**
@@ -116,6 +113,28 @@ class Auction {
 	 */
 	public function get_id(): int {
 		return $this->auction_id;
+	}
+
+	/**
+	 * Get the URL for the Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_url(): string {
+		return get_permalink( $this->get_id() );
+	}
+
+	/**
+	 * Get the Auction Title
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_title(): string {
+		return get_the_title( $this->get_id() );
 	}
 
 	/**
@@ -143,7 +162,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function has_bid_product(): bool {
-		return boolval( goodbids()->auctions->bids->get_product_id( $this->get_id() ) );
+		return boolval( goodbids()->bids->get_product_id( $this->get_id() ) );
 	}
 
 	/**
@@ -858,4 +877,57 @@ class Auction {
 		return true;
 	}
 
+	/**
+	 * Increase the current bid amount.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function increase_bid(): bool {
+		$bids = goodbids()->bids;
+
+		$bid_product   = $bids->get_product( $this->get_id() );
+		$bid_variation = $bids->get_variation( $this->get_id() );
+
+		if ( ! $bid_product || ! $bid_variation ) {
+			Log::error( 'Auction missing Bid Product or Variation', compact( 'this' ) );
+			return false;
+		}
+
+		$increment_amount = $this->get_bid_increment();
+		$current_price    = floatval( $bid_variation->get_regular_price( 'edit' ) );
+		$new_price        = $current_price + $increment_amount;
+
+		// Add support for new variation.
+		$bids->update_bid_product_attributes( $bid_product );
+
+		// Create the new Variation.
+		$new_variation = $bids->create_new_bid_variation( $bid_product->get_id(), $new_price, $this->get_id() );
+
+		if ( ! $new_variation->save() ) {
+			Log::error( 'There was a problem saving the new Bid Variation', compact( 'this' ) );
+			return false;
+		}
+
+		// Set the Bid variation as a meta of the Auction.
+		$this->set_bid_variation_id( $new_variation->get_id() );
+
+		// Disallow backorders on previous variation.
+		$bid_variation->set_backorders( 'no' );
+		$bid_variation->save();
+
+		return true;
+	}
+
+	/**
+	 * Get Auction Watch Count
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_watch_count(): int {
+		return goodbids()->watchers->get_watcher_count( $this->get_id() );
+	}
 }

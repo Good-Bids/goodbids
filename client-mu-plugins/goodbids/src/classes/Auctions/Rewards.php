@@ -153,7 +153,9 @@ class Rewards {
 			$auction_id = goodbids()->auctions->get_auction_id();
 		}
 
-		return intval( goodbids()->auctions->get_setting( 'auction_product', $auction_id ) );
+		$auction = goodbids()->auctions->get( $auction_id );
+
+		return intval( $auction->get_setting( 'auction_product' ) );
 	}
 
 	/**
@@ -219,7 +221,7 @@ class Rewards {
 				}
 
 				if ( ! goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) {
-					error_log( 'Not a reward order.' );
+					Log::error( 'Not a reward order.' );
 					return;
 				}
 

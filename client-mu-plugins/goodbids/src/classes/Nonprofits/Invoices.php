@@ -388,9 +388,12 @@ class Invoices {
 	 * @return ?Invoice
 	 */
 	public function get_invoice( int $post_id, ?int $auction_id = null ): ?Invoice {
-		if ( null !== $auction_id && goodbids()->auctions->get_invoice_id( $auction_id ) ) {
-			_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
-			return null;
+		if ( ! is_null( $auction_id ) ) {
+			$auction = goodbids()->auctions->get( $auction_id );
+			if ( $auction->get_invoice_id() ) {
+				_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
+				return null;
+			}
 		}
 
 		return new Invoice( $post_id, $auction_id );
@@ -571,13 +574,15 @@ class Invoices {
 			return;
 		}
 
+		$auction = goodbids()->auctions->get( $auction_id );
+
 		// Bail early if invoice already exists.
-		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+		if ( $auction->get_invoice_id() ) {
 			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
 			return;
 		}
 
-		if ( ! goodbids()->auctions->get_total_raised( $auction_id ) ) {
+		if ( ! $auction->get_total_raised() ) {
 			Log::warning( 'No funds were raised for Auction.', compact( 'auction_id' ) );
 			return;
 		}

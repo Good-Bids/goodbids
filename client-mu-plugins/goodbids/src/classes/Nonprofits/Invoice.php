@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Utilities\Log;
 use stdClass;
 
@@ -270,6 +271,22 @@ class Invoice {
 	}
 
 	/**
+	 * Get the invoice Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?Auction
+	 */
+	public function get_auction(): ?Auction {
+		$auction_id = $this->get_auction_id();
+		if ( ! $auction_id ) {
+			return null;
+		}
+
+		return goodbids()->auctions->get( $auction_id );
+	}
+
+	/**
 	 * Set the Invoice Auction ID
 	 *
 	 * @since 1.0.0
@@ -319,7 +336,8 @@ class Invoice {
 	 */
 	private function set_amount( ?int $amount = null ): bool|int {
 		if ( is_null( $amount ) ) {
-			$total_raised = goodbids()->auctions->get_total_raised( $this->get_auction_id() );
+			$auction      = $this->get_auction();
+			$total_raised = $auction->get_total_raised();
 			$percent      = intval( goodbids()->get_config( 'invoices.percent' ) );
 			$amount       = $total_raised * ( $percent / 100 );
 		} else {

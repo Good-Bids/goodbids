@@ -89,30 +89,6 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var string
-	 */
-	const AUCTION_EXTENSIONS_META_KEY = '_auction_extensions';
-
-	/**
-	 * @since 1.0.0
-	 * @var Products
-	 */
-	public Products $products;
-
-	/**
-	 * @since 1.0.0
-	 * @var Bids
-	 */
-	public Bids $bids;
-
-	/**
-	 * @since 1.0.0
-	 * @var Rewards
-	 */
-	public Rewards $rewards;
-
-	/**
-	 * @since 1.0.0
 	 * @var array
 	 */
 	public array $cron_intervals = [];
@@ -123,11 +99,6 @@ class Auctions {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Initialize Submodules.
-		$this->products = new Products();
-		$this->bids     = new Bids();
-		$this->rewards  = new Rewards();
-
 		// Disable Auctions on Main Site.
 		if ( is_main_site() ) {
 			return;
@@ -326,6 +297,23 @@ class Auctions {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Get instance of an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return Auction
+	 */
+	public function get( ?int $auction_id = null ): Auction {
+		if ( is_null( $auction_id ) ) {
+			$auction_id = $this->get_auction_id();
+		}
+
+		return new Auction( $auction_id );
 	}
 
 	/**
@@ -668,7 +656,7 @@ class Auctions {
 					return;
 				}
 
-				$auction = new Auction( $post_id );
+				$auction = goodbids()->auctions->get( $post_id );
 
 				// Output the column values.
 				if ( 'status' === $column ) {
@@ -702,7 +690,7 @@ class Auctions {
 					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
 				} elseif ( 'current_bid' === $column ) {
 					/** @var WC_Product_Variation $bid_variation */
-					$bid_variation = $this->bids->get_variation( $post_id );
+					$bid_variation = goodbids()->bids->get_variation( $post_id );
 					echo $bid_variation ? wp_kses_post( wc_price( $bid_variation->get_price() ) ) : '';
 				}
 			},
@@ -803,7 +791,7 @@ class Auctions {
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
-					$auction = new Auction( $auction_id );
+					$auction = goodbids()->auctions->get( $auction_id );
 					// Skip START Action on Auctions that have ended.
 					if ( $auction->has_ended() ) {
 						Log::debug( 'Auction not started because it has already ended', compact( 'auction_id' ) );
@@ -842,7 +830,7 @@ class Auctions {
 				}
 
 				foreach ( $auctions->posts as $auction_id ) {
-					$auction = new Auction( $auction_id );
+					$auction = goodbids()->auctions->get( $auction_id );
 					if ( $auction->trigger_close() ) {
 						// Update the Auction meta to indicate it has closed.
 						update_post_meta( $auction_id, self::AUCTION_CLOSED_META_KEY, 1 );
@@ -933,7 +921,7 @@ class Auctions {
 					return;
 				}
 
-				$auction = new Auction( $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
 
 				// TODO: Move to background process.
 
@@ -970,7 +958,7 @@ class Auctions {
 					return;
 				}
 
-				$auction = new Auction( $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
 
 				if ( ! $auction->is_extension_window() || $auction->has_ended() ) {
 					return;
@@ -1020,9 +1008,11 @@ class Auctions {
 		add_action(
 			'wp_ajax_goodbids_force_auction_close_date',
 			function () {
-				$nonce = ! empty( $_REQUEST['gb_nonce'] ) ? sanitize_text_field( $_REQUEST['gb_nonce'] ) : '';
+				if ( empty( $_REQUEST['gb_nonce'] ) ) {
+					wp_send_json_error( __( 'Missing nonce.', 'goodbids' ) );
+				}
 
-				if ( ! wp_verify_nonce( $nonce, 'gb-force-update-close-date' ) ) {
+				if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['gb_nonce'] ), 'gb-force-update-close-date' ) ) {
 					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
 				}
 

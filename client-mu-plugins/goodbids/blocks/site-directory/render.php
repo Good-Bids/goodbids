@@ -13,7 +13,6 @@ if ( ! is_main_site() ) :
 endif;
 
 $site_directory = new GoodBids\Blocks\SiteDirectory( $block );
-
 ?>
 <div <?php block_attr( $block, 'flex flex-wrap gap-5' ); ?>>
 	<?php foreach ( $site_directory->get_sites() as $nonprofit ) : ?>

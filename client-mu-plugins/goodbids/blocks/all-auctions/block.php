@@ -8,6 +8,7 @@
 
 namespace GoodBids\Blocks;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Plugins\ACF\ACFBlock;
 use GoodBids\Auctions\Auctions;
 
@@ -121,10 +122,13 @@ class AllAuctions extends ACFBlock {
 				]
 			)
 			->sortByDesc(
-				fn ( array $auction ) => [
-					'bid_count'    => fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
-					'total_raised' => fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
-				]
+				function ( array $auction_data ): array {
+					$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+					return [
+						'bid_count'    => $auction->get_bid_count(),
+						'total_raised' => $auction->get_total_raised(),
+					];
+				}
 			)
 			->all();
 	}
@@ -147,8 +151,11 @@ class AllAuctions extends ACFBlock {
 		if ( 'upcoming' === $filter ) {
 			return collect( $auctions )
 				->filter(
-					fn ( array $auction ) => goodbids()->sites->swap(
-						fn () => Auctions::STATUS_UPCOMING === goodbids()->auctions->get_status( $auction['post_id'] ),
+					fn ( array $auction_data ) => goodbids()->sites->swap(
+						function () use ( $auction_data ) {
+								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+								return Auction::STATUS_UPCOMING === $auction->get_status();
+							},
 						$auction['site_id']
 					)
 				)
@@ -156,8 +163,11 @@ class AllAuctions extends ACFBlock {
 		} elseif ( 'live' === $filter ) {
 			return collect( $auctions )
 				->filter(
-					fn ( array $auction ) => goodbids()->sites->swap(
-						fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
+					fn ( array $auction_data ) => goodbids()->sites->swap(
+						function () use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+							return $auction->has_started() && ! $auction->has_ended();
+						},
 						$auction['site_id']
 					)
 				)
@@ -227,46 +237,36 @@ class AllAuctions extends ACFBlock {
 			$auctions = $this->get_all_auctions();
 		}
 
-		if ( 'newest' === $sort ) {
+		$sort_method = match ( $sort ) {
+			'newest'   => 'get_start_date_time',
+			'starting' => 'calculate_starting_bid',
+			'ending'   => 'get_end_date_time',
+			'low_bid'  => 'bid_variation_price',
+			'popular'  => 'get_watch_count',
+			default    => false,
+		};
+
+		if ( $sort_method ) {
 			return collect( $auctions )
 				->sortBy(
-					fn( array $auction ) => goodbids()->sites->swap(
-						function () use ( &$auction ) {
-							return goodbids()->auctions->get_start_date_time( $auction['post_id'] );
+					fn( array $auction_data ) => goodbids()->sites->swap(
+						function () use ( $auction_data, $sort_method ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+
+							if ( method_exists( $auction, $sort_method ) ) {
+								return $auction->$sort_method();
+							}
+
+							if ( 'bid_variation_price' === $sort_method ) {
+								return goodbids()->bids->get_variation( $auction['post_id'] )?->get_price( 'edit' );
+							}
+
+							return null;
 						},
 						$auction['site_id']
 					)
 				)
 				->all();
-		} elseif ( 'starting' === $sort ) {
-			return collect( $auctions )
-				->sortBy(
-					fn( array $auction ) => goodbids()->sites->swap(
-						fn() => goodbids()->auctions->calculate_starting_bid( $auction['post_id'] ),
-						$auction['site_id']
-					)
-				)
-				->all();
-		} elseif ( 'ending' === $sort ) {
-			return collect( $auctions )
-				->sortBy(
-					fn( array $auction ) => goodbids()->sites->swap(
-						fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
-						$auction['site_id']
-					)
-				)
-				->all();
-		} elseif ( 'low_bid' === $sort ) {
-			return collect( $auctions )
-				->sortBy(
-					fn ( array $auction ) => goodbids()->sites->swap(
-						fn() => goodbids()->auctions->bids->get_variation( $auction['post_id'] )?->get_price( 'edit' ),
-						$auction['site_id']
-					)
-				)
-				->all();
-		} elseif ( 'popular' === $sort ) {
-			// TODO: once we have watch auctions set up we can sort by most watched
 		}
 
 		return $auctions;

@@ -58,5 +58,8 @@
     "logs": {
       "per-page": 20
     }
+  },
+  "onetrust": {
+    "domain-script": "27e668a7-1a27-4468-a980-700744dc0a20-test"
   }
 }

@@ -16,7 +16,7 @@ $url = is_admin() ? '#' : get_the_permalink();
 			<?php if ( has_post_thumbnail() ) : ?>
 				<?php the_post_thumbnail( 'woocommerce_thumbnail' ); ?>
 			<?php else : ?>
-				<?php echo wp_kses_post( goodbids()->auctions->rewards->get_product( get_the_ID() )->get_image() ); ?>
+				<?php echo wp_kses_post( goodbids()->rewards->get_product( get_the_ID() )->get_image() ); ?>
 			<?php endif; ?>
 		</figure>
 		<?php if ( get_the_title() ) : ?>

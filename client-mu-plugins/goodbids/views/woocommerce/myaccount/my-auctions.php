@@ -32,16 +32,17 @@
 
 			<tbody>
 				<?php
-				foreach ( $auctions as $auction ) :
+				foreach ( $auctions as $auction_data ) :
 					goodbids()->sites->swap(
-						function () use ( $auction ) {
-							$auction_id = $auction['auction_id'];
-							$bid_count  = $auction['count'];
+						function () use ( $auction_data ) {
+							$auction_id = $auction_data['auction_id'];
+							$bid_count  = $auction_data['count'];
 
-							$status = goodbids()->auctions->get_status( $auction_id );
+							$auction = goodbids()->auctions->get( $auction_id );
+							$status  = $auction->get_status();
 
-							$is_winning    = goodbids()->auctions->is_current_user_winning( $auction_id );
-							$bid_orders    = goodbids()->auctions->get_bid_orders( $auction_id, -1, get_current_user_id() );
+							$is_winning    = $auction->is_current_user_winning();
+							$bid_orders    = $auction->get_bid_orders( -1, get_current_user_id() );
 							$total_donated = collect( $bid_orders )
 								->sum( fn( $order ) => $order->get_total( 'edit' ) );
 							?>
@@ -70,7 +71,7 @@
 							</tr>
 							<?php
 						},
-						$auction['site_id'],
+						$auction_data['site_id'],
 					);
 					?>
 				<?php endforeach; ?>

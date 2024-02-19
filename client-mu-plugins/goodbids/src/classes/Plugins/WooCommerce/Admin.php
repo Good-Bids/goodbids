@@ -75,7 +75,7 @@ class Admin {
 							esc_html( $auction_id )
 						);
 
-						$reward_id = goodbids()->auctions->rewards->get_product_id( $auction_id );
+						$reward_id = goodbids()->rewards->get_product_id( $auction_id );
 
 						printf(
 							'<p><strong>%s</strong><br><a href="%s">%s</a> (ID: %s)</p>',

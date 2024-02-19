@@ -127,10 +127,9 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 		Log::debug( 'Stripe Webhook Received: ' . $event->type, $context );
 
 		match ( $event->type ) {
-			'invoice.sent'    => $this->process_webhook_sent(),
-			'invoice.paid'    => $this->process_webhook_paid(),
-			'invoice.overdue' => $this->process_webhook_overdue(),
-			default           => $this->process_webhook_other( $event->type )
+			'invoice.sent' => $this->process_webhook_sent(),
+			'invoice.paid' => $this->process_webhook_paid(),
+			default        => $this->process_webhook_other( $event->type )
 		};
 
 		parent::process_webhook( $request_body );
@@ -174,21 +173,6 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 		}
 
 		$invoice->mark_as_paid( $this->payload->charge );
-	}
-
-	/**
-	 * Mark an invoice as Overdue.
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	private function process_webhook_overdue(): void {
-		$invoice = $this->get_invoice();
-		if ( ! $invoice ) {
-			return;
-		}
-
-		// TODO: Implement process_webhook_overdue() method.
 	}
 
 	/**

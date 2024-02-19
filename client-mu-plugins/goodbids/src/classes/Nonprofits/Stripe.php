@@ -27,11 +27,6 @@ class Stripe {
 	const STRIPE_CUSTOMER_ID_OPT = '_goodbids_stripe_customer_id';
 
 	/**
-	 * @var ?Webhooks
-	 */
-	private ?Webhooks $webhooks = null;
-
-	/**
 	 * @since 1.0.0
 	 * @var bool
 	 */
@@ -89,7 +84,7 @@ class Stripe {
 
 		// Initialize webhooks.
 		if ( class_exists( '\WC_Stripe_Webhook_Handler' ) ) {
-			$this->webhooks = new Webhooks();
+			new Webhooks();
 		} else {
 			Log::warning( 'Could not initialize Stripe Webhooks.' );
 		}
@@ -106,7 +101,7 @@ class Stripe {
 	 *
 	 * @return void
 	 */
-	public function set_invoice( Invoice $invoice ) {
+	public function set_invoice( Invoice $invoice ): void {
 		$this->invoice = $invoice;
 	}
 

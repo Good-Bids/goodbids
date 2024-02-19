@@ -5,6 +5,14 @@
  * @see https://woo.com/document/template-structure/
  * @package WooCommerce\Templates
  * @version 5.2.0
+ *
+ * @global WC_Order $order Order object.
+ * @global int $item_id Item ID.
+ * @global WC_Order_Item_Product $item Order item object.
+ * @global bool $purchase_note_exists Whether the purchase note exists.
+ * @global bool $show_purchase_note Whether the purchase note should be shown.
+ * @global string $purchase_note Purchase note.
+ * @global WC_Product $product Product object.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

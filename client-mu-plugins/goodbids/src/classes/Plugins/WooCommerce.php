@@ -491,39 +491,6 @@ class WooCommerce {
 		);
 	}
 
-
-	/**
-	 * Get User Email Addresses. If no user_id is provided, the current user is used.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $user_id
-	 *
-	 * @return array
-	 */
-	public function get_user_emails( int $user_id = null ): array {
-		$emails = [];
-
-		if ( ! $user_id ) {
-			$user_id = get_current_user_id();
-		}
-
-		$user = get_user_by( 'id', $user_id );
-
-		if ( ! $user ) {
-			return $emails;
-		}
-
-		$emails[] = $user->user_email;
-
-		$billing_email = get_user_meta( $user_id, 'billing_email', true );
-		if ( $billing_email ) {
-			$emails[] = $billing_email;
-		}
-
-		return $emails;
-	}
-
 	/**
 	 * Load WooCommerce Templates from the GoodBids Views folder.
 	 *

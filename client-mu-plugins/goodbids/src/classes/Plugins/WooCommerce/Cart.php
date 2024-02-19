@@ -8,6 +8,7 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
@@ -62,8 +63,8 @@ class Cart {
 					return;
 				}
 
-				$auction_id   = goodbids()->auctions->get_auction_id_from_product_id( $item->get_product_id() );
-				$product_type = goodbids()->auctions->get_product_type( $item->get_product_id() );
+				$auction_id   = goodbids()->products->get_auction_id_from_product( $item->get_product_id() );
+				$product_type = goodbids()->products->get_type( $item->get_product_id() );
 
 				if ( ! $auction_id || ! $product_type ) {
 					return;
@@ -85,7 +86,7 @@ class Cart {
 		add_filter(
 			'woocommerce_add_to_cart_handler',
 			function ( $handler, $product ) {
-				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+				if ( ! goodbids()->products->get_type( $product->get_id() ) ) {
 					return $handler;
 				}
 
@@ -110,7 +111,7 @@ class Cart {
 		add_filter(
 			'woocommerce_add_to_cart_validation',
 			function ( $passed, $product_id ) {
-				if ( ! goodbids()->auctions->get_product_type( $product_id ) ) {
+				if ( ! goodbids()->products->get_type( $product_id ) ) {
 					return $passed;
 				}
 
@@ -132,7 +133,7 @@ class Cart {
 					exit;
 				}
 
-				$auction_id = goodbids()->auctions->get_auction_id_from_product_id( $product_id );
+				$auction_id = goodbids()->products->get_auction_id_from_product( $product_id );
 
 				if ( ! $auction_id ) {
 					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $auth_url );
@@ -140,23 +141,25 @@ class Cart {
 					exit;
 				}
 
-				$auction_url = get_permalink( $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
 
-				if ( Bids::ITEM_TYPE === goodbids()->auctions->get_product_type( $product_id ) ) {
-					if ( ! goodbids()->auctions->has_started( $auction_id ) ) {
+				$auction_url = $auction->get_url();
+
+				if ( Bids::ITEM_TYPE === goodbids()->products->get_type( $product_id ) ) {
+					if ( ! $auction->has_started() ) {
 						$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_STARTED, $auction_url );
 						wp_safe_redirect( $redirect );
 						exit;
 					}
 
-					if ( goodbids()->auctions->has_ended( $auction_id ) ) {
+					if ( $auction->has_ended() ) {
 						$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_HAS_ENDED, $auction_url );
 						wp_safe_redirect( $redirect );
 						exit;
 					}
 
 					// Make sure they aren't the current high bidder.
-					if ( goodbids()->auctions->is_current_user_winning( $auction_id ) ) {
+					if ( $auction->is_current_user_winning() ) {
 						$redirect = add_query_arg( 'gb-notice', Notices::ALREADY_HIGH_BIDDER, $auction_url );
 						wp_safe_redirect( $redirect );
 						exit;
@@ -169,19 +172,19 @@ class Cart {
 				/**
 				 * Reward Items
 				 */
-				if ( ! goodbids()->auctions->has_ended( $auction_id ) ) {
+				if ( ! $auction->has_ended() ) {
 					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_ENDED, $auction_url );
 					wp_safe_redirect( $redirect );
 					exit;
 				}
 
-				if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
+				if ( ! $auction->is_current_user_winner() ) {
 					$redirect = add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $auction_url );
 					wp_safe_redirect( $redirect );
 					exit;
 				}
 
-				if ( goodbids()->auctions->rewards->is_redeemed( $auction_id ) ) {
+				if ( goodbids()->rewards->is_redeemed( $auction_id ) ) {
 					$redirect = add_query_arg( 'gb-notice', Notices::REWARD_ALREADY_REDEEMED, $auction_url );
 					wp_safe_redirect( $redirect );
 					exit;
@@ -221,7 +224,7 @@ class Cart {
 					return $url;
 				}
 
-				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+				if ( ! goodbids()->products->get_type( $product->get_id() ) ) {
 					return $url;
 				}
 
@@ -241,7 +244,7 @@ class Cart {
 					return;
 				}
 
-				if ( ! goodbids()->auctions->get_product_type( $product->get_id() ) ) {
+				if ( ! goodbids()->products->get_type( $product->get_id() ) ) {
 					return;
 				}
 
@@ -265,7 +268,7 @@ class Cart {
 			'wc_add_to_cart_message_html',
 			function ( string $message, array $products ): string {
 				foreach ( $products as $product_id => $quantity ) {
-					if ( goodbids()->auctions->get_product_type( $product_id ) ) {
+					if ( goodbids()->products->get_type( $product_id ) ) {
 						return '';
 					}
 				}

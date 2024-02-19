@@ -298,29 +298,28 @@ class Account {
 		return $this->get_user_order_ids( $user_id, $args );
 	}
 
-
 	/**
 	 * Removes the "Order Again" button from the order details.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	private function remove_order_again_button() {
+	private function remove_order_again_button(): void {
 		remove_action( 'woocommerce_order_details_after_order_table', 'woocommerce_order_again_button' );
 	}
 
-
 	/**
-	 * Removes the "Bid Instance" meta data from the order details.
+	 * Removes the "Bid Instance" metadata from the order details.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	private function remove_bid_instance_from_order() {
+	private function remove_bid_instance_from_order(): void {
 		add_filter(
 			'woocommerce_order_item_get_formatted_meta_data',
-			function ( $formatted_meta ) {
+			function ( array $formatted_meta ): array {
 				unset( $formatted_meta['bid_instance'] );
+				return $formatted_meta;
 			}
 		);
 	}

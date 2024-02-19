@@ -8,6 +8,7 @@
 
 namespace GoodBids\Utilities;
 
+use GoodBids\Auctions\Auction;
 use WC_Order;
 use WC_Product;
 use WP_User;
@@ -40,6 +41,14 @@ class Payload {
 	 * @var ?int
 	 */
 	private ?int $auction_id;
+
+	/**
+	 * The instance of the Auction.
+	 *
+	 * @since 1.0.0
+	 * @var ?Auction
+	 */
+	private ?Auction $auction;
 
 	/**
 	 * The User ID.
@@ -100,6 +109,7 @@ class Payload {
 	 */
 	public function set_auction_id( int $auction_id ): Payload {
 		$this->auction_id = $auction_id;
+		$this->auction    = goodbids()->auctions->get( $auction_id );
 		return $this;
 	}
 
@@ -198,26 +208,26 @@ class Payload {
 
 		return match ( $item ) {
 			'accountUrl'        => $this->get_auth_url(),
-			'auctionStatus'     => strtolower( goodbids()->auctions->get_status( $this->auction_id ) ),
-			'bidUrl'            => goodbids()->auctions->bids->get_place_bid_url( $this->auction_id ),
+			'auctionStatus'     => strtolower( $this->auction->get_status() ),
+			'bidUrl'            => goodbids()->bids->get_place_bid_url( $this->auction_id ),
 			'currentBid'        => $this->get_current_bid(),
-			'endTime'           => goodbids()->auctions->get_end_date_time( $this->auction_id, 'c' ),
-			'freeBidsAvailable' => goodbids()->auctions->get_free_bids_available( $this->auction_id ),
-			'freeBidsAllowed'   => goodbids()->auctions->are_free_bids_allowed( $this->auction_id ),
+			'endTime'           => $this->auction->get_end_date_time( 'c' ),
+			'freeBidsAvailable' => $this->auction->get_free_bids_available(),
+			'freeBidsAllowed'   => $this->auction->are_free_bids_allowed(),
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid_amount(),
 			'lastBidder'        => $this->get_last_bidder(),
-			'rewardUrl'         => goodbids()->auctions->rewards->get_claim_reward_url( $this->auction_id ), // TBD.
+			'rewardUrl'         => goodbids()->rewards->get_claim_reward_url( $this->auction_id ),
 			'requestTime'       => current_datetime()->format( 'c' ),
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
-			'startTime'         => goodbids()->auctions->get_start_date_time( $this->auction_id, 'c' ),
-			'totalBids'         => goodbids()->auctions->get_bid_count( $this->auction_id ),
-			'totalRaised'       => goodbids()->auctions->get_total_raised( $this->auction_id ),
+			'startTime'         => $this->auction->get_start_date_time( 'c' ),
+			'totalBids'         => $this->auction->get_bid_count(),
+			'totalRaised'       => $this->auction->get_total_raised(),
 			'userId'            => $this->get_user_id(),
 			'userFreeBids'      => goodbids()->users->get_available_free_bid_count( $this->get_user_id() ),
-			'userTotalBids'     => goodbids()->auctions->get_user_bid_count( $this->auction_id, $this->get_user_id() ),
-			'userTotalDonated'  => goodbids()->auctions->get_user_total_donated( $this->auction_id, $this->get_user_id() ),
+			'userTotalBids'     => $this->auction->get_user_bid_count( $this->get_user_id() ),
+			'userTotalDonated'  => $this->auction->get_user_total_donated( $this->get_user_id() ),
 			default             => null,
 		};
 	}
@@ -249,7 +259,7 @@ class Payload {
 	 */
 	private function get_current_bid(): ?float {
 		if ( ! $this->bid_variation ) {
-			$this->bid_variation = goodbids()->auctions->bids->get_variation( $this->auction_id );
+			$this->bid_variation = goodbids()->bids->get_variation( $this->auction_id );
 		}
 
 		return floatval( $this->bid_variation?->get_price( 'edit' ) );
@@ -264,7 +274,7 @@ class Payload {
 	 */
 	private function get_last_bid_amount(): ?float {
 		if ( ! $this->last_bid ) {
-			$this->last_bid = goodbids()->auctions->get_last_bid( $this->auction_id );
+			$this->last_bid = $this->auction->get_last_bid();
 		}
 
 		if ( $this->last_bid ) {
@@ -283,7 +293,7 @@ class Payload {
 	 */
 	private function get_last_bidder(): ?int {
 		if ( ! $this->last_bidder ) {
-			$this->last_bidder = goodbids()->auctions->get_last_bidder( $this->auction_id );
+			$this->last_bidder = $this->auction->get_last_bidder();
 		}
 
 		return $this->last_bidder?->ID;
@@ -300,7 +310,7 @@ class Payload {
 	 */
 	private function is_user_last_bidder( int $user_id ): bool {
 		if ( ! $this->last_bidder ) {
-			$this->last_bidder = goodbids()->auctions->get_last_bidder( $this->auction_id );
+			$this->last_bidder = $this->auction->get_last_bidder();
 		}
 
 		return $this->last_bidder?->ID === $user_id;

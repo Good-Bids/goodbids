@@ -54,20 +54,24 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 						<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
 							<?php foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) : ?>
 								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
-									<?php if ( has_action( 'woocommerce_my_account_my_orders_column_' . $column_id ) ) : ?>
-										<?php do_action( 'woocommerce_my_account_my_orders_column_' . $column_id, $order, $goodbids_order['site_id'] ); ?>
-									<?php elseif ( 'order-donation' === $column_id ) : ?>
+									<?php
+									if ( has_action( 'woocommerce_my_account_my_orders_column_' . $column_id ) ) :
+										do_action( 'woocommerce_my_account_my_orders_column_' . $column_id, $order, $goodbids_order['site_id'] );
+									elseif ( 'order-donation' === $column_id ) :
 
-										<?php foreach ( $order->get_items() as $item ) : ?>
-											<?php $product = $item->get_product(); ?>
-											<?php if ( $product ) : ?>
+										foreach ( $order->get_items() as $item ) :
+											$product = $item->get_product();
+											if ( $product ) :
+												?>
 												<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
 													<?php echo esc_html( $item['name'] ); ?>
 												</a>
-											<?php endif; ?>
-										<?php endforeach; ?>
+												<?php
+											endif;
+										endforeach;
 
-									<?php elseif ( 'order-nonprofit' === $column_id ) : ?>
+									elseif ( 'order-nonprofit' === $column_id ) :
+										?>
 										<a href="<?php echo esc_url( get_blog_details( $goodbids_order['site_id'] )->siteurl ); ?>">
 											<?php echo esc_html( get_blog_details( $goodbids_order['site_id'] )->blogname ); ?>
 										</a>
@@ -77,16 +81,13 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 											<?php echo esc_html( $order->get_date_created()->date( 'h/i/s' ) ); ?>
 										</time>
 
-
-									<?php elseif ( 'order-total' === $column_id ) : ?>
 										<?php
-												/* translators: 1: formatted order total 2: total order items */
-												echo wp_kses_post( sprintf( '%1$s', $order->get_formatted_order_total() ) );
-										?>
+									elseif ( 'order-total' === $column_id ) :
+										/* translators: 1: formatted order total 2: total order items */
+										echo wp_kses_post( sprintf( '%1$s', $order->get_formatted_order_total() ) );
 
-									<?php elseif ( 'order-actions' === $column_id ) : ?>
-										<?php
-												$actions = wc_get_account_orders_actions( $order );
+									elseif ( 'order-actions' === $column_id ) :
+										$actions = wc_get_account_orders_actions( $order );
 										if ( ! empty( $actions ) ) {
 											foreach ( $actions as $key => $action ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 												printf(
@@ -97,8 +98,8 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 												);
 											}
 										}
-										?>
-									<?php endif; ?>
+									endif;
+									?>
 								</td>
 							<?php endforeach; ?>
 						</tr>

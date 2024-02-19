@@ -6,7 +6,7 @@
  * @since 1.0.0
  */
 
-namespace GoodBids\Blocks;
+namespace GoodBids\Frontend;
 
 /**
  * Main Blocks Class
