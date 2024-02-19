@@ -3,7 +3,6 @@
  * Auction Watchers Live email
  *
  * @var string $email_heading
- * @var string $site_name
  * @var string $user_name
  * @var string $email
  * @var string $button_text
@@ -25,7 +24,7 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
 	printf(
 		/* translators: %s: Customer username */
 		esc_html__( 'Hi %s,', 'goodbids' ),
-		'{user.firstName}'
+		'{user.name}'
 	);
 	?>
 </p>
@@ -36,7 +35,7 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
 		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
 		esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
 		'{auction.title}',
-		esc_html( $site_name ),
+		'{site_title}',
 		'{auction.goal}',
 		'{auction.url}'
 	);
@@ -58,7 +57,7 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
 	printf(
 		/* translators: %1$s: Site Name */
 		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-		esc_html( $site_name )
+		'{site_title}'
 	);
 	?>
 </p>
