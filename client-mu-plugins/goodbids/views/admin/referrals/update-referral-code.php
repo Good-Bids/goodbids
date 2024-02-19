@@ -8,7 +8,6 @@
  * @package GoodBids
  */
 
-
 use GoodBids\Users\Referrals;
 use GoodBids\Users\Referrals\Admin;
 use GoodBids\Users\Referrals\Referrer;
@@ -23,16 +22,14 @@ use GoodBids\Users\Referrals\Referrer;
 		</th>
 
 		<td>
-			<label>
-				<input
-					type="text"
-					name="<?php echo esc_attr( Referrals::REFERRAL_CODE_META_KEY ); ?>"
-					id="<?php echo esc_attr( Referrals::REFERRAL_CODE_META_KEY ); ?>"
-					placeholder="<?php esc_attr_e( 'Referral Code', 'goodbids' ); ?>"
-					value="<?php echo esc_attr( $referrer->get_code() ); ?>"
-					style="text-transform: uppercase;"
-				/>
-			</label>
+			<input
+				type="text"
+				name="<?php echo esc_attr( Referrals::REFERRAL_CODE_META_KEY ); ?>"
+				id="<?php echo esc_attr( Referrals::REFERRAL_CODE_META_KEY ); ?>"
+				placeholder="<?php esc_attr_e( 'Referral Code', 'goodbids' ); ?>"
+				value="<?php echo esc_attr( $referrer->get_code() ); ?>"
+				style="text-transform: uppercase;"
+			/>
 		</td>
 	</tr>
 
