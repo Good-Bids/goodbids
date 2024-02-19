@@ -622,7 +622,7 @@ class Sites {
 	private function create_about_page(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( int $site_id ): void {
+			function (): void {
 				ob_start();
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );

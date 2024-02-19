@@ -8,8 +8,6 @@
 
 namespace GoodBids\Auctions;
 
-use GoodBids\Users\Users;
-
 /**
  * Class for Free Bid Objects
  *

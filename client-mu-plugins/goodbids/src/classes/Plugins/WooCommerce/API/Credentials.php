@@ -82,11 +82,9 @@ class Credentials extends WC_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
-	 *
 	 * @return WP_Error|boolean
 	 */
-	public function get_credentials_permissions_check( WP_REST_Request $request ) : WP_Error|bool {
+	public function get_credentials_permissions_check() : WP_Error|bool {
 		if ( ! wc_rest_check_manager_permissions( 'settings', 'read' ) ) {
 			return new WP_Error(
 				'woocommerce_rest_cannot_view',

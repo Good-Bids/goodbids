@@ -242,7 +242,7 @@ class Bids {
 		try {
 			$variation->set_sku( 'GB-BID-' . $auction_id . '-' . $count );
 		} catch ( WC_Data_Exception $e ) {
-			// Do nothing.
+			Log::error( $e->getMessage() );
 		}
 
 		/**

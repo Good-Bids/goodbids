@@ -8,7 +8,6 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
-use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
