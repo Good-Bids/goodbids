@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
@@ -638,7 +639,7 @@ class Sites {
 				$about_id = wp_insert_post( $about );
 
 				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
-					// Use the $site_id to update post meta to track which $about_id is the About page.
+					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
 				}
 			},
 			20
@@ -730,13 +731,19 @@ class Sites {
 					]
 				)
 				->sortByDesc(
-					fn ( array $auction ) => [
+					fn ( array $auction_data ) => [
 						'bid_count'    => $this->swap(
-							fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
+							function() use ( $auction_data ) {
+								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+								return $auction->get_bid_count();
+							},
 							$auction['site_id']
 						),
 						'total_raised' => $this->swap(
-							fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
+							function() use ( $auction_data ) {
+								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+								return $auction->get_total_raised();
+							},
 							$auction['site_id']
 						),
 					]
@@ -962,7 +969,8 @@ class Sites {
 			->filter(
 				fn( array $item ) => $this->swap(
 					function () use ( &$item ) {
-						return Auctions::STATUS_LIVE === goodbids()->auctions->get_status( $item['auction_id'] );
+						$auction = goodbids()->auctions->get( $item['auction_id'] );
+						return Auction::STATUS_LIVE === $auction->get_status();
 					},
 					$item['site_id']
 				)

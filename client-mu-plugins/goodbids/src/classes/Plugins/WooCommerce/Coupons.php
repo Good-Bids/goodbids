@@ -190,7 +190,7 @@ class Coupons {
 					return $url;
 				}
 
-				$product_type = goodbids()->auctions->get_product_type( $product->get_id() );
+				$product_type = goodbids()->products->get_type( $product->get_id() );
 				$redirect_url = wc_get_page_permalink( 'myaccount' );
 				$coupon_code  = false;
 
@@ -198,17 +198,19 @@ class Coupons {
 					return $url;
 				}
 
-				$auction_id = goodbids()->auctions->get_auction_id_from_product_id( $product->get_id() );
+				$auction_id = goodbids()->products->get_auction_id_from_product( $product->get_id() );
 
 				if ( ! $auction_id ) {
 					return add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $url );
 				}
 
+				$auction = goodbids()->auctions->get( $auction_id );
+
 				if ( Rewards::ITEM_TYPE === $product_type ) {
 
-					$redirect_url = get_permalink( $auction_id );
+					$redirect_url = $auction->get_url();
 
-					if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
+					if ( ! $auction->is_current_user_winner() ) {
 						WC()->cart->empty_cart();
 						return add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $url );
 					}
@@ -220,7 +222,7 @@ class Coupons {
 					}
 				} elseif ( Bids::ITEM_TYPE === $product_type ) {
 					if ( ! empty( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
-						if ( ! goodbids()->auctions->are_free_bids_allowed( $auction_id ) ) {
+						if ( ! $auction->are_free_bids_allowed() ) {
 							return add_query_arg( 'gb-notice', Notices::FREE_BIDS_NOT_ELIGIBLE, $url );
 						}
 

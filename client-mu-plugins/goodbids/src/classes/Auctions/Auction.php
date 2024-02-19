@@ -201,7 +201,6 @@ class Auction {
 	 * @since 1.0.0
 	 *
 	 * @param string $meta_key
-	 * @param ?int   $auction_id
 	 *
 	 * @return mixed
 	 */
