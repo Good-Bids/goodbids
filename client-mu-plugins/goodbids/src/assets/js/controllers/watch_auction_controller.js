@@ -6,63 +6,61 @@ export default class extends Controller {
 	static values = {
 		id: Number,
 		state: Number,
-		watch: String,
-		unwatch: String,
+		watchText: String,
+		unwatchText: String,
 		watchClass: String,
 		unwatchClass: String,
+		ajaxUrl: String,
 	};
-
-	connect() {}
 
 	toggle() {
 		this.watch();
 		this.toggleState();
-
-		this.element.classList.toggle(this.watchClassValue);
-		this.element.classList.toggle(this.unwatchClassValue);
 	}
 
 	toggleState() {
 		if (!this.stateValue) {
 			this.stateValue = 1;
-			this.updateText(this.unwatchValue);
+			this.textTarget.textContent = this.unwatchTextValue;
 		} else {
 			this.stateValue = 0;
-			this.updateText(this.watchValue);
+			this.textTarget.textContent = this.watchTextValue;
 		}
-	}
 
-	updateText(string) {
-		this.textTarget.textContent = string;
+		this.element.classList.toggle(this.watchClassValue);
+		this.element.classList.toggle(this.unwatchClassValue);
 	}
 
 	updateWatchers(string) {
-		const watchers = document.querySelector('.auction-watchers-count');
+		const watchers = document.querySelector(
+			'[data-auction-watchers-count]',
+		);
 		watchers.textContent = string;
 	}
 
 	sendRequest(data, callback) {
 		// Create a new XMLHttpRequest object
-		const xhr = new XMLHttpRequest();
+		const request = new XMLHttpRequest();
+		console.log(this.ajaxUrlValue);
 
 		// Open a POST request to the admin-ajax.php file
-		xhr.open('POST', window.watchAuctionVars.ajaxUrl, true); // TODO: Update Reference.
+		request.open('POST', this.ajaxUrlValue, true); // TODO: Update Reference.
 
 		// Set the request header for POST requests
-		xhr.setRequestHeader(
+		request.setRequestHeader(
 			'Content-Type',
 			'application/x-www-form-urlencoded; charset=UTF-8',
 		);
 
-		xhr.onreadystatechange = function () {
-			if (xhr.readyState === 4 && xhr.status === 200) {
-				const jsonResponse = JSON.parse(xhr.responseText);
+		request.onreadystatechange = function () {
+			if (request.readyState === 4 && request.status === 200) {
+				const jsonResponse = JSON.parse(request.responseText);
 				callback(jsonResponse);
 			}
 		};
 
 		// Send the data
-		xhr.send(data);
+		request.send(data);
 	}
 
 	watch() {
