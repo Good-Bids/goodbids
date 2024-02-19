@@ -22,20 +22,12 @@ use WP_User;
 class Email extends WC_Email {
 
 	/**
-	 * User login name.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	public string $user_name;
-
-	/**
 	 * User ID.
 	 *
 	 * @since 1.0.0
-	 * @var int
+	 * @var ?int
 	 */
-	public int $user_id;
+	public ?int $user_id = null;
 
 	/**
 	 * Email vars.
@@ -53,13 +45,6 @@ class Email extends WC_Email {
 	public function __construct() {
 		parent::__construct();
 
-		// Default Email Vars.
-		$this->add_email_var( 'email_heading', $this->get_heading() );
-		$this->add_email_var( 'additional_content', $this->get_additional_content() );
-
-		// Default placeholders.
-		$this->add_placeholder( 'user.name', $this->get_user_name() );
-
 		$this->init();
 	}
 
@@ -71,11 +56,40 @@ class Email extends WC_Email {
 	 * @return void
 	 */
 	private function init(): void {
-		$this->init_vars();
-
+		// Set up empty placeholders.
 		$this->init_placeholders();
 
+		// Set up custom fields.
 		$this->init_fields();
+
+		if ( $this->get_default_button_text() ) {
+			$this->add_button_support();
+		}
+	}
+
+	/**
+	 * Add a custom field for button text.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_button_support(): void {
+		/* translators: %s: list of placeholders */
+		$placeholder_text  = sprintf( __( 'Available placeholders: %s', 'goodbids' ), '<code>' . esc_html( implode( '</code>, <code>', array_keys( $this->placeholders ) ) ) . '</code>' );
+
+		// Custom Fields
+		$this->set_form_field(
+			'button_text',
+			[
+				'title'       => __( 'Button Text', 'woocommerce' ),
+				'type'        => 'text',
+				'desc_tip'    => true,
+				'description' => $placeholder_text,
+				'placeholder' => $this->get_default_button_text(),
+				'default'     => '',
+			]
+		);
 	}
 
 	/**
@@ -124,6 +138,51 @@ class Email extends WC_Email {
 	}
 
 	/**
+	 * Custom Button Text Support. Override this method to add a custom button.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public function get_default_button_text(): string {
+		return '';
+	}
+
+	/**
+	 * Get the button text.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public function get_button_text(): string {
+		/**
+		 * Filter the button text.
+		 * @since 1.0.0
+		 *
+		 * @param string $button_text The button text.
+		 * @param object $object The object.
+		 * @param object $this The email object.
+		 */
+		return apply_filters(
+			'goodbids_button_text_' . $this->id,
+			$this->format_string(
+				$this->get_option( 'button_text', $this->get_default_button_text() )
+			),
+			$this->object,
+			$this
+		);
+	}
+
+	/**
+	 * Get the button url.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public function get_button_url(): string {
+		return '#';
+	}
+
+	/**
 	 * Determine if the email should actually be sent and setup email merge variables
 	 *
 	 * @since 1.0.0
@@ -147,6 +206,21 @@ class Email extends WC_Email {
 		if ( $user_id ) {
 			$this->user_id = $user_id;
 		}
+
+		// Default Email Vars.
+		$this->add_email_var( 'email_heading', $this->get_heading() );
+		$this->add_email_var( 'additional_content', $this->get_additional_content() );
+		$this->add_email_var( 'button_text', $this->get_button_text() );
+		$this->add_email_var( 'button_url', $this->get_button_url() );
+
+		// Default placeholders.
+		$this->add_placeholder( 'user.name', $this->get_user_name() );
+
+		// Allow Email Classes to customize the vars.
+		$this->init_vars();
+
+		// Fill Placeholders with Values.
+		$this->init_placeholders();
 
 		// Woohoo, send the email!
 		$this->send(

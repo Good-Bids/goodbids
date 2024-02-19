@@ -432,8 +432,8 @@ class WooCommerce {
 		);
 	}
 
-	/*
-		Add a custom email to the list of emails WooCommerce
+	/**
+	 * Add a custom email to the list of emails WooCommerce
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -441,17 +441,18 @@ class WooCommerce {
 	private function setup_email_notifications(): void {
 		add_filter(
 			'woocommerce_email_classes',
-			function ( $email_classes ): array {
+			function ( array $email_classes ): array {
+				$goodbids_emails = [
+					'AuctionAdminLive'          => new AuctionAdminLive(),
+					'AuctionAdminSummary'       => new AuctionAdminSummary(),
+					'AuctionClosed'             => new AuctionClosed(),
+					'AuctionOutbid'             => new AuctionOutbid(),
+					'AuctionRewardReminder'     => new AuctionRewardReminder(),
+					'AuctionWatchersLive'       => new AuctionWatchersLive(),
+					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
+				];
 
-				// add the email class to the list of email classes that WooCommerce loads
-				$email_classes['AuctionAdminLive']          = new AuctionAdminLive();
-				$email_classes['AuctionAdminSummary']       = new AuctionAdminSummary();
-				$email_classes['AuctionClosed']             = new AuctionClosed();
-				$email_classes['AuctionOutbid']             = new AuctionOutbid();
-				$email_classes['AuctionRewardReminder']     = new AuctionRewardReminder();
-				$email_classes['AuctionWatchersLive']       = new AuctionWatchersLive();
-				$email_classes['AuctionWinnerConfirmation'] = new AuctionWinnerConfirmation();
-				return $email_classes;
+				return array_merge( $email_classes, $goodbids_emails );
 			}
 		);
 	}

@@ -38,43 +38,6 @@ class AuctionWatchersLive extends Email {
 	}
 
 	/**
-	 * Initialize custom vars.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function init_vars(): void {
-		// Custom Field Vars
-		$this->add_email_var( 'button_text', $this->get_button_text() );
-	}
-
-	/**
-	 * Initialize custom fields.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function init_fields(): void {
-		/* translators: %s: list of placeholders */
-		$placeholder_text  = sprintf( __( 'Available placeholders: %s', 'goodbids' ), '<code>' . esc_html( implode( '</code>, <code>', array_keys( $this->placeholders ) ) ) . '</code>' );
-
-		// Custom Fields
-		$this->set_form_field(
-			'button_text',
-			[
-				'title'       => __( 'Bid Button Text', 'woocommerce' ),
-				'type'        => 'text',
-				'desc_tip'    => true,
-				'description' => $placeholder_text,
-				'placeholder' => $this->get_default_button_text(),
-				'default'     => '',
-			]
-		);
-	}
-
-	/**
 	 * Get email subject.
 	 *
 	 * @since 1.0.0
@@ -83,7 +46,7 @@ class AuctionWatchersLive extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			// translators: %1$s: Site Name, %2$s: Auction Title
-			__( '%1$s %2$s is live', 'goodbids' ),
+			__( '[%1$s] %2$s is live', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -110,28 +73,14 @@ class AuctionWatchersLive extends Email {
 	}
 
 	/**
-	 * Get the button text.
+	 * Set Button URL
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
-	public function get_button_text(): string {
-		/**
-		 * Filter the button text.
-		 * @since 1.0.0
-		 *
-		 * @param string $button_text The button text.
-		 * @param object $object The object.
-		 * @param object $this The email object.
-		 */
-		return apply_filters(
-			'goodbids_button_text_' . $this->id,
-			$this->format_string(
-				$this->get_option( 'button_text', $this->get_default_button_text() )
-			),
-			$this->object,
-			$this
-		);
+	public function get_button_url(): string {
+		return '#';
 	}
 
 	/**
