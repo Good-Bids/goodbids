@@ -27,6 +27,7 @@ use GoodBids\Users\Referrals\Referrer;
 		<div class="tooltip">
 			<span class="tooltiptext"><?php esc_html_e( 'Copied', 'goodbids' ); ?></span>
 			<label>
+				<span class="screen-reader-text"><?php esc_html_e( 'Your Custom Share Link', 'goodbids' ); ?></span>
 				<input class="copy-link-input" readonly type="text" value="<?php echo esc_url( $referrer->get_link() ); ?>">
 			</label>
 		</div>

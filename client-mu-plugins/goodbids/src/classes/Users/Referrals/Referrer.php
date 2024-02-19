@@ -198,7 +198,7 @@ class Referrer {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return int[]
+	 * @return array
 	 */
 	public function get_referred_user_ids(): array {
 		$users = [];
