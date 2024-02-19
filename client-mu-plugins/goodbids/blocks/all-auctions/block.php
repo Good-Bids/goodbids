@@ -10,7 +10,6 @@ namespace GoodBids\Blocks;
 
 use GoodBids\Auctions\Auction;
 use GoodBids\Plugins\ACF\ACFBlock;
-use GoodBids\Auctions\Auctions;
 
 /**
  * Class for All Auctions Block
