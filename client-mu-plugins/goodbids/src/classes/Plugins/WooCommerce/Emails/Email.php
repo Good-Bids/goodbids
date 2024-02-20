@@ -44,10 +44,11 @@ class Email extends WC_Email {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		parent::__construct();
-
 		// Set up empty placeholders.
+		$this->default_placeholders();
 		$this->init_placeholders();
+
+		parent::__construct();
 
 		// Set up custom fields.
 		$this->init_fields();
@@ -265,42 +266,52 @@ class Email extends WC_Email {
 		$this->add_email_var( 'button_url', $this->get_button_url() );
 		$this->add_email_var( 'additional_content', $this->get_additional_content() );
 
+		$this->default_placeholders();
+	}
+
+	/**
+	 * Set default placeholders
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function default_placeholders(): void {
 		// Default Placeholders.
-		$this->add_placeholder( 'user.name', $this->get_user_name() );
-		$this->add_placeholder( 'login_url', wc_get_page_permalink( 'myaccount' ) );
-		$this->add_placeholder( 'auctions_url', get_post_type_archive_link( goodbids()->auctions->get_post_type() ) );
+		$this->add_placeholder( '{login_url}', wc_get_page_permalink( 'authentication' ) );
+		$this->add_placeholder( '{auctions_url}', get_post_type_archive_link( goodbids()->auctions->get_post_type() ) );
 
 		// Auction Placeholders
 		$auction = $this->object instanceof Auction ? $this->object : null;
 		$reward  = goodbids()->rewards->get_product( $auction?->get_id() );
 
 		// Auction Details.
-		$this->add_placeholder( 'auction.url', $auction?->get_url() );
-		$this->add_placeholder( 'auction.title', $auction?->get_title() );
-		$this->add_placeholder( 'auction.start_date_time', $auction?->get_start_date_time( 'n/j/Y g:i a' ) );
-		$this->add_placeholder( 'auction.end_date_time', $auction?->get_end_date_time( 'n/j/Y g:i a' ) );
+		$this->add_placeholder( '{auction.url}', $auction?->get_url() );
+		$this->add_placeholder( '{auction.title}', $auction?->get_title() );
+		$this->add_placeholder( '{auction.start_date_time}', $auction?->get_start_date_time( 'n/j/Y g:i a' ) );
+		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( 'n/j/Y g:i a' ) );
 
 		// Bid Details
-		$this->add_placeholder( 'auction.starting_bid', $auction?->get_starting_bid() );
-		$this->add_placeholder( 'auction.bid_increment', $auction?->get_bid_increment() );
-		$this->add_placeholder( 'auction.high_bid', $auction?->get_last_bid()?->get_subtotal() );
+		$this->add_placeholder( '{auction.starting_bid}', $auction?->get_starting_bid() );
+		$this->add_placeholder( '{auction.bid_increment}', $auction?->get_bid_increment() );
+		$this->add_placeholder( '{auction.high_bid}', $auction?->get_last_bid()?->get_subtotal() );
 
 		// Auction Stats.
-		$this->add_placeholder( 'auction.total_raised', $auction?->get_total_raised() );
-		$this->add_placeholder( 'auction.bid_count', $auction?->get_bid_count() );
-		$this->add_placeholder( 'auction.goal', $auction?->get_goal() );
-		$this->add_placeholder( 'auction.estimated_value', $auction?->get_estimated_value() );
+		$this->add_placeholder( '{auction.total_raised}', $auction?->get_total_raised() );
+		$this->add_placeholder( '{auction.bid_count}', $auction?->get_bid_count() );
+		$this->add_placeholder( '{auction.goal}', $auction?->get_goal() );
+		$this->add_placeholder( '{auction.estimated_value}', $auction?->get_estimated_value() );
 
 		// Reward Details.
-		$this->add_placeholder( 'reward.title', $reward?->get_title() );
-		$this->add_placeholder( 'reward.purchase_note', $reward?->get_purchase_note() );
-		$this->add_placeholder( 'reward.days_to_claim', 'TBD' );
+		$this->add_placeholder( '{reward.title}', $reward?->get_title() );
+		$this->add_placeholder( '{reward.purchase_note}', $reward?->get_purchase_note() );
+		$this->add_placeholder( '{reward.days_to_claim}', 'TBD' );
 
 		// User Details.
-		$this->add_placeholder( 'user.bid_count', $auction?->get_user_bid_count( $this->user_id ) );
-		$this->add_placeholder( 'user.total_donated', $auction?->get_user_total_donated( $this->user_id ) );
+		$this->add_placeholder( '{user.name}', $this->get_user_name() );
+		$this->add_placeholder( '{user.bid_count}', $auction?->get_user_bid_count( $this->user_id ) );
+		$this->add_placeholder( '{user.total_donated}', $auction?->get_user_total_donated( $this->user_id ) );
 	}
-
 	/**
 	 * Get the email recipient
 	 *
