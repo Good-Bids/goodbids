@@ -341,8 +341,8 @@ class Email extends WC_Email {
 		// Bid Details
 		$starting_bid = wc_price( $auction?->get_starting_bid() );
 		$this->add_placeholder( '{auction.starting_bid}', $starting_bid );
-		$this->add_placeholder( '{auction.bid_increment}', $auction?->get_bid_increment() );
-		$this->add_placeholder( '{auction.bid_extension}', $auction?->get_bid_extension() );
+		$this->add_placeholder( '{auction.bid_increment}', $auction?->get_bid_increment_formatted() );
+		$this->add_placeholder( '{auction.bid_extension}', $auction?->get_bid_extension_formatted() );
 
 		$high_bid = wc_price( $auction?->get_last_bid()?->get_subtotal() );
 		$this->add_placeholder( '{auction.high_bid}', $high_bid );

@@ -6,9 +6,12 @@
  * @version 1.0.0
  * @package GoodBids
  *
- * @var ?string $auction_goal
- * @var ?string $auction_expected_high_bid
  * @var ?string $auction_estimated_value
+ * @var ?string $auction_estimated_value_formatted
+ * @var ?string $auction_goal
+ * @var ?string $auction_goal_formatted
+ * @var ?string $auction_expected_high_bid
+ * @var ?string $auction_expected_high_bid_formatted
  *
  * @var AuctionIsLiveAdmin $instance
  */
@@ -51,14 +54,14 @@ echo "\n\n----------------------------------------\n\n";
 
 if ( $auction_goal ) :
 	esc_html_e( 'Auction Goal:', 'goodbids' );
-	echo esc_html( $auction_goal );
+	echo esc_html( $auction_goal_formatted );
 endif;
 
 echo "\n\n----------------------------------------\n\n";
 
 if ( $auction_expected_high_bid ) :
 	esc_html_e( 'Expected High Bid:', 'goodbids' );
-	echo esc_html( $auction_expected_high_bid );
+	echo esc_html( $auction_expected_high_bid_formatted );
 endif;
 
 echo "\n\n----------------------------------------\n\n";
@@ -85,7 +88,7 @@ echo "\n\n----------------------------------------\n\n";
 
 if ( $auction_estimated_value ) :
 	esc_html_e( 'Fair Market Value:', 'goodbids' );
-	echo esc_html( $auction_estimated_value );
+	echo esc_html( $auction_estimated_value_formatted );
 endif;
 
 echo "\n\n----------------------------------------\n\n";

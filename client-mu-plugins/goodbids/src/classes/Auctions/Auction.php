@@ -387,6 +387,35 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Bid Extension time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_bid_extension_formatted(): string {
+		$bid_extension = $this->get_setting( 'bid_extension' );
+		$formatted     = '';
+
+		if ( ! $bid_extension ) {
+			return $formatted;
+		}
+
+		if ( ! empty( $bid_extension['minutes'] ) ) {
+			$formatted = number_format( $bid_extension['minutes'], 0 ) . ' ' . __( 'minutes', 'goodbids' );
+		}
+
+		if ( ! empty( $bid_extension['seconds'] ) ) {
+			if ( $formatted ) {
+				$formatted .= ' ' . __( 'and', 'goodbids' ) . ' ';
+			}
+			$formatted .= number_format( $bid_extension['seconds'], 0 ) . ' ' . __( 'seconds', 'goodbids' );
+		}
+
+		return $formatted;
+	}
+
+	/**
 	 * Get the Auction Bid Increment amount
 	 *
 	 * @since 1.0.0
@@ -395,6 +424,17 @@ class Auction {
 	 */
 	public function get_bid_increment(): int {
 		return intval( $this->get_setting( 'bid_increment' ) );
+	}
+
+	/**
+	 * Get the Formatted Auction Bid Increment amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_bid_increment_formatted(): string {
+		return wc_price( $this->get_bid_increment() );
 	}
 
 	/**
