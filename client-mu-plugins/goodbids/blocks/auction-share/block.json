@@ -1,0 +1,15 @@
+{
+  "name": "auction-share",
+  "title": "Auction Share",
+  "description": "Share the current Auction.",
+  "icon": "share",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["free", "share", "auction", "goodbids"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
+}

@@ -1,15 +1,15 @@
 {
-	"name": "site-directory",
-	"title": "Site Directory",
-	"description": "Displays a list of all the Nonprofits Sites.",
-	"icon": "index-card",
-	"category": "goodbids",
-	"textdomain": "goodbids",
-	"keywords": ["nonprofits", "home", "list"],
-	"acf": {
-		"mode": "preview"
-	},
-	"supports": {
-		"jsx": false
-	}
+  "name": "site-directory",
+  "title": "Site Directory",
+  "description": "Displays a list of all the Nonprofits Sites.",
+  "icon": "index-card",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["nonprofits", "home", "list"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
 }
