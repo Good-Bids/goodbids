@@ -8,8 +8,11 @@
  *
  * @var string $email_heading
  * @var ?string $auction_estimated_value
+ * @var ?string $auction_estimated_value_formatted
  * @var ?string $auction_goal
+ * @var ?string $auction_goal_formatted
  * @var ?string $auction_expected_high_bid
+ * @var ?string $auction_expected_high_bid_formatted
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -35,80 +38,78 @@ do_action( 'woocommerce_email_header', $email_heading );
 </p>
 
 <div style="margin-bottom: 40px;">
-	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
-		<thead>
-			<tr>
-				<th class="td" scope="col"><?php esc_html_e( 'Auction Title', 'goodbids' ); ?></th>
-				<th class="td" scope="col">{auction.title}</th>
-			</tr>
-		</thead>
+	<table cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
 		<tbody>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Scheduled Start', 'goodbids' ); ?></td>
+				<td class="th" scope="col"><?php esc_html_e( 'Auction Title', 'goodbids' ); ?></td>
+				<td class="td" scope="col">{auction.title}</td>
+			</tr>
+			<tr>
+				<td class="th"><?php esc_html_e( 'Scheduled Start', 'goodbids' ); ?></td>
 				<td class="td">{auction.start_date_time}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Starting Bid', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Starting Bid', 'goodbids' ); ?></td>
 				<td class="td">{auction.starting_bid}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Bid Increment', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Bid Increment', 'goodbids' ); ?></td>
 				<td class="td">{auction.bid_increment}</td>
 			</tr>
 			<?php if ( $auction_goal ) : ?>
 				<tr>
-					<td class="td"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></td>
-					<td class="td"><?php echo esc_html( $auction_goal ); ?></td>
+					<td class="th"><?php esc_html_e( 'Auction Goal', 'goodbids' ); ?></td>
+					<td class="td"><?php echo wp_kses_post( $auction_goal_formatted ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<?php if ( $auction_expected_high_bid ) : ?>
 				<tr>
-					<td class="td"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></td>
-					<td class="td"><?php echo esc_html( $auction_expected_high_bid ); ?></td>
+					<td class="th"><?php esc_html_e( 'Expected High Bid', 'goodbids' ); ?></td>
+					<td class="td"><?php echo wp_kses_post( $auction_expected_high_bid_formatted ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Scheduled End', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Scheduled End', 'goodbids' ); ?></td>
 				<td class="td">{auction.end_date_time}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Bid Extension', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Bid Extension', 'goodbids' ); ?></td>
 				<td class="td">{auction.bid_extension}</td>
 			</tr>
 			<tr>
-				<td class="td" colspan="2"></td>
+				<td class="th" colspan="2" style="background-color:#636363;"></td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
 				<td class="td">{reward.title}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
 				<td class="td">{reward.type}</td>
 			</tr>
 			<?php if ( $auction_estimated_value ) : ?>
 				<tr>
-					<td class="td"><?php esc_html_e( 'Fair Market Value', 'goodbids' ); ?></td>
-					<td class="td"><?php echo esc_html( $auction_estimated_value ); ?></td>
+					<td class="th"><?php esc_html_e( 'Fair Market Value', 'goodbids' ); ?></td>
+					<td class="td"><?php echo wp_kses_post( $auction_estimated_value_formatted ); ?></td>
 				</tr>
 			<?php endif; ?>
 			<tr>
-				<td class="td" colspan="2"></td>
+				<td class="th" colspan="2" style="background-color:#636363;"></td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Actual End', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Actual End', 'goodbids' ); ?></td>
 				<td class="td">{auction.end_date_time}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Total Bids', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Total Bids', 'goodbids' ); ?></td>
 				<td class="td">{auction.bid_count}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'Total Raised', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'Total Raised', 'goodbids' ); ?></td>
 				<td class="td">{auction.total_raised}</td>
 			</tr>
 			<tr>
-				<td class="td"><?php esc_html_e( 'High Bid', 'goodbids' ); ?></td>
+				<td class="th"><?php esc_html_e( 'High Bid', 'goodbids' ); ?></td>
 				<td class="td">{auction.high_bid}</td>
 			</tr>
 		</tbody>
