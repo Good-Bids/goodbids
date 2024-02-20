@@ -439,11 +439,6 @@ class WooCommerce {
 	 * @return void
 	 */
 	private function setup_email_notifications(): void {
-		if ( ! class_exists( 'WC_Email', false ) && defined( 'WC_ABSPATH' ) ) {
-			// WC_ABSPATH is defined, WC just uses a method to define constants.
-			include_once WC_ABSPATH . 'includes/emails/class-wc-email.php';
-		}
-
 		add_filter(
 			'woocommerce_email_classes',
 			function ( array $email_classes ): array {
