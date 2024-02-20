@@ -6,12 +6,10 @@
  * @version 1.0.0
  * @package GoodBids
  *
- * @var string $email
- *
- * @var AuctionWatchersLive $instance
+ * @var AuctionIsLive $instance
  */
 
-use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -43,5 +41,3 @@ printf(
 );
 
 $instance->plain_text_footer();
-
-echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );

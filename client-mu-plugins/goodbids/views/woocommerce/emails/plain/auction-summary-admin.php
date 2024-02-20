@@ -6,7 +6,6 @@
  * @version 1.0.0
  * @package GoodBids
  *
- * @var string  $email
  * @var ?string $auction_goal
  * @var ?string $auction_estimated_value
  * @var ?string $auction_expected_high_bid
@@ -124,5 +123,3 @@ printf(
 );
 
 $instance->plain_text_footer();
-
-echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );

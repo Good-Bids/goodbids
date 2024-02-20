@@ -69,7 +69,7 @@ class AuctionClosed extends Email {
 	 */
 	public function get_default_heading(): string {
 		return sprintf(
-			/* translators: %1$s: site title, %2$s: auction total raised */
+			/* translators: %1$s: Site Title, %2$s: Total Raised by Auction */
 			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
 			'{site_title}',
 			'{auction.total_raised}'
@@ -94,7 +94,7 @@ class AuctionClosed extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return '#';
+		return '{auction.url}';
 	}
 
 	/**

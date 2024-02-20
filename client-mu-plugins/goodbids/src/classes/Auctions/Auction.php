@@ -222,6 +222,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the Auction Reward Estimated Value formatted.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_estimated_value_formatted(): string {
+		return wc_price( $this->get_estimated_value() );
+	}
+
+	/**
 	 * Get the Auction Start Date/Time
 	 *
 	 * @since 1.0.0
@@ -447,6 +458,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the Auction Expected High Bid Amount formatted
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_expected_high_bid_formatted(): string {
+		return wc_price( $this->get_expected_high_bid() );
+	}
+
+	/**
 	 * Checks if Free Bids are allowed on Auction
 	 *
 	 * @since 1.0.0
@@ -663,6 +685,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Total Raised
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_total_raised_formatted(): string {
+		return wc_price( $this->get_total_raised() );
+	}
+
+	/**
 	 * Get the Auction Total Donated by User
 	 *
 	 * @since 1.0.0
@@ -674,6 +707,19 @@ class Auction {
 	public function get_user_total_donated( int $user_id ): float {
 		return collect( $this->get_bid_orders( -1, $user_id ) )
 			->sum( fn( $order ) => $order->get_total( 'edit' ) );
+	}
+
+	/**
+	 * Get the formatted Total Donated by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return string
+	 */
+	public function get_user_total_donated_formatted( int $user_id ): string {
+		return wc_price( $this->get_user_total_donated( $user_id ) );
 	}
 
 	/**

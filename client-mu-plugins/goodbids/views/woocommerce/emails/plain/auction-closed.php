@@ -6,8 +6,6 @@
  * @version 1.0.0
  * @package GoodBids
  *
- * @var string $email
- *
  * @var AuctionClosed $instance
  */
 
@@ -32,12 +30,12 @@ echo "\n\n----------------------------------------\n\n";
 
 esc_html_e( 'Check your email or visit the auction page to see if you won!', 'goodbids' );
 
-$instance->plain_text_footer();
+echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Main site All Auctions page url */
+/* translators: %1$s: Main site All Auctions page url */
 	'Want to support another great GoodBids? <a class="button" href="%1$s">View all auctions</a>',
 	'{auctions_url}'
 );
 
-echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );
+$instance->plain_text_footer();

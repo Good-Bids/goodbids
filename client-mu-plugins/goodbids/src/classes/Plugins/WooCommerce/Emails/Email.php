@@ -260,17 +260,8 @@ class Email extends WC_Email {
 			return;
 		}
 
-		// Default Vars & Placeholders.
-		$this->init_defaults();
-
-		// Allow Email Classes to customize the vars.
-		$this->init_vars();
-
-		// Fill Placeholders with Values.
-		$this->init_placeholders();
-
-		// Allow emails to be customized.
-		$this->init_customizations();
+		// Initialize template variables and hooks.
+		$this->init_template();
 
 		// Woohoo, send the email!
 		$this->send(
@@ -296,31 +287,36 @@ class Email extends WC_Email {
 	}
 
 	/**
-	 * Set default vars and placeholders
+	 * Set template vars and placeholders
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function init_defaults(): void {
-		// Default Vars.
-		$this->add_email_var( 'instance', $this );
-		$this->add_email_var( 'email', $this->get_recipient() );
-		$this->add_email_var( 'email_heading', $this->get_heading() );
-		$this->add_email_var( 'button_text', $this->get_button_text() );
-		$this->add_email_var( 'button_url', $this->get_button_url() );
-		$this->add_email_var( 'additional_content', $this->get_additional_content() );
-
+	private function init_template(): void {
+		// Default placeholders.
 		$this->default_placeholders();
 
-		// Default Template Customizations.
-		add_action( 'woocommerce_email_header', [ $this, 'greeting_html' ], 12 );
-		add_action( 'woocommerce_email_footer', [ $this, 'button_html' ], 5 );
-		add_action( 'woocommerce_email_footer', [ $this, 'additional_content_html' ], 8 );
+		// Fill Placeholders with Values.
+		$this->init_placeholders();
+
+		// Default Vars.
+		$this->default_vars();
+
+		// Allow Email Classes to customize the vars.
+		$this->init_vars();
+
+		// Default Customizations.
+		$this->default_customizations();
+
+		// Allow emails to be customized.
+		$this->init_customizations();
 	}
 
 	/**
 	 * Set default placeholders
+	 *
+	 * Placeholders should be present at all times. If the related object or ID is not yet set, default to a blank string.
 	 *
 	 * @since 1.0.0
 	 *
@@ -343,17 +339,20 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( 'n/j/Y g:i a' ) );
 
 		// Bid Details
-		$this->add_placeholder( '{auction.starting_bid}', $auction?->get_starting_bid() );
+		$starting_bid = wc_price( $auction?->get_starting_bid() );
+		$this->add_placeholder( '{auction.starting_bid}', $starting_bid );
 		$this->add_placeholder( '{auction.bid_increment}', $auction?->get_bid_increment() );
 		$this->add_placeholder( '{auction.bid_extension}', $auction?->get_bid_extension() );
-		$this->add_placeholder( '{auction.high_bid}', $auction?->get_last_bid()?->get_subtotal() );
+
+		$high_bid = wc_price( $auction?->get_last_bid()?->get_subtotal() );
+		$this->add_placeholder( '{auction.high_bid}', $high_bid );
 
 		// Auction Stats.
-		$this->add_placeholder( '{auction.total_raised}', $auction?->get_total_raised() );
+		$this->add_placeholder( '{auction.total_raised}', $auction?->get_total_raised_formatted() );
 		$this->add_placeholder( '{auction.bid_count}', $auction?->get_bid_count() );
 		$this->add_placeholder( '{auction.goal}', $auction?->get_goal_formatted() );
-		$this->add_placeholder( '{auction.estimated_value}', $auction?->get_estimated_value() );
-		$this->add_placeholder( '{auction.expected_high_bid}', $auction?->get_expected_high_bid() );
+		$this->add_placeholder( '{auction.estimated_value}', $auction?->get_estimated_value_formatted() );
+		$this->add_placeholder( '{auction.expected_high_bid}', $auction?->get_expected_high_bid_formatted() );
 
 		// Reward Details.
 		$this->add_placeholder( '{reward.title}', $reward?->get_title() );
@@ -363,13 +362,44 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{reward.days_to_claim}', 'TBD' );
 
 		// User Details.
-		$user_bid_count     = $this->user_id ? $auction?->get_user_bid_count( $this->user_id ) : '';
-		$user_total_donated = $this->user_id ? $auction?->get_user_total_donated( $this->user_id ) : '';
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
-		$this->add_placeholder( '{user.bid_count}', $user_bid_count );
 		$this->add_placeholder( '{user.last_bid_amount}', 'TBD' );
+
+		$user_bid_count = $this->user_id ? $auction?->get_user_bid_count( $this->user_id ) : '';
+		$this->add_placeholder( '{user.bid_count}', $user_bid_count );
+
+		$user_total_donated = $this->user_id ? $auction?->get_user_total_donated_formatted( $this->user_id ) : '';
 		$this->add_placeholder( '{user.total_donated}', $user_total_donated );
 	}
+
+	/**
+	 * Set default Template Vars.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function default_vars(): void {
+		$this->add_email_var( 'instance', $this );
+		$this->add_email_var( 'email_heading', wp_strip_all_tags( $this->format_string( $this->get_heading() ) ) );
+		$this->add_email_var( 'button_text', $this->get_button_text() );
+		$this->add_email_var( 'button_url', $this->get_button_url() );
+		$this->add_email_var( 'additional_content', $this->format_string( $this->get_additional_content() ) );
+	}
+
+	/**
+	 * Set default Template Customizations.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function default_customizations(): void {
+		add_action( 'woocommerce_email_header', [ $this, 'greeting_html' ], 12 );
+		add_action( 'woocommerce_email_footer', [ $this, 'button_html' ], 5 );
+		add_action( 'woocommerce_email_footer', [ $this, 'additional_content_html' ], 8 );
+	}
+
 	/**
 	 * Get the email recipient
 	 *
@@ -675,6 +705,8 @@ class Email extends WC_Email {
 			echo esc_html( wp_strip_all_tags( wptexturize( $this->get_additional_content() ) ) );
 			echo "\n\n----------------------------------------\n\n";
 		}
+
+		echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );
 	}
 
 	/**

@@ -6,8 +6,6 @@
  * @version 1.0.0
  * @package GoodBids
  *
- * @var string $email
- *
  * @var AuctionWinnerConfirmation $instance
  */
 
@@ -33,5 +31,3 @@ echo "\n\n----------------------------------------\n\n";
 echo '{reward.purchase_note}';
 
 $instance->plain_text_footer();
-
-echo wp_kses_post( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) );
