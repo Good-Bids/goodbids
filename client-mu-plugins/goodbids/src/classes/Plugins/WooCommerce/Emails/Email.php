@@ -11,7 +11,6 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
-use GoodBids\Utilities\Log;
 use WC_Email;
 use WP_User;
 
@@ -90,11 +89,6 @@ class Email extends WC_Email {
 		if ( $this->get_default_button_text() ) {
 			$this->add_button_support();
 		}
-
-		// Default Template Customizations.
-		add_action( 'woocommerce_email_header', [ $this, 'greeting_html' ], 12 );
-		add_action( 'woocommerce_email_footer', [ $this, 'button_html' ], 5 );
-		add_action( 'woocommerce_email_footer', [ $this, 'additional_content_html' ], 8 );
 	}
 
 	/**
@@ -139,6 +133,15 @@ class Email extends WC_Email {
 	 * @return void
 	 */
 	protected function init_placeholders(): void {}
+
+	/**
+	 * Initialize custom email hooks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function init_customizations(): void {}
 
 	/**
 	 * Initialize custom email fields.
@@ -266,6 +269,9 @@ class Email extends WC_Email {
 		// Fill Placeholders with Values.
 		$this->init_placeholders();
 
+		// Allow emails to be customized.
+		$this->init_customizations();
+
 		// Woohoo, send the email!
 		$this->send(
 			$this->get_recipient(),
@@ -306,6 +312,11 @@ class Email extends WC_Email {
 		$this->add_email_var( 'additional_content', $this->get_additional_content() );
 
 		$this->default_placeholders();
+
+		// Default Template Customizations.
+		add_action( 'woocommerce_email_header', [ $this, 'greeting_html' ], 12 );
+		add_action( 'woocommerce_email_footer', [ $this, 'button_html' ], 5 );
+		add_action( 'woocommerce_email_footer', [ $this, 'additional_content_html' ], 8 );
 	}
 
 	/**

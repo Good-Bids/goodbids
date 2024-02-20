@@ -25,12 +25,29 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
-		esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
-		'{auction.title}',
-		'{site_title}',
-		'{auction.goal}',
-		'{auction.url}'
+		'%s <a href="%s">%s</a> %s',
+
+		// Before
+		sprintf(
+			/* translators: %1$s: Auction Title  */
+			esc_html__( 'The %1$s auction you are watching is now open for bidding.', 'goodbids' ),
+			'{auction.title}'
+		),
+
+		// URL
+		'{auction.url}',
+
+		// Link Text
+		esc_html__( 'Visit the auction', 'goodbids' ),
+
+		// After.
+		sprintf(
+			/* translators: %1$s: Site Title, Auction Goal, Reward Product Title */
+			esc_html__( 'to support %1$s goal of raising %2$s and place a bid for your chance to win the %3$s!', 'goodbids' ),
+			'{site_title}',
+			'{auction.goal}',
+			'{reward.title}'
+		)
 	);
 	?>
 </p>

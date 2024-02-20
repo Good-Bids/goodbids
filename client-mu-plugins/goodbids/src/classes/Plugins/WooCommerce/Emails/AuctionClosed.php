@@ -33,7 +33,16 @@ class AuctionClosed extends Email {
 		$this->template_plain = 'emails/plain/auction-closed.php';
 		$this->watcher_email  = true;
 		$this->bidder_email   = true;
+	}
 
+	/**
+	 * Add a custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function init_customizations(): void {
 		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
 	}
 
@@ -97,10 +106,10 @@ class AuctionClosed extends Email {
 	 */
 	public function all_auctions_html(): void {
 		printf(
-			'<p>%s <a href="%s">%s</a>',
-	esc_html__( 'Want to support another great GoodBids?', 'goodbids' ),
+			'<p style="text-align:center;">%s <a href="%s">%s</a>',
+		esc_html__( 'Want to support another great GoodBids?', 'goodbids' ),
 			'{auctions_url}',
-			esc_html__( 'View all auctions', 'goodbids' )
+			esc_html__( 'View All Auctions', 'goodbids' )
 		);
 	}
 }
