@@ -11,7 +11,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
-use GoodBids\Auctions\Watchers;
+use GoodBids\Utilities\Log;
 use WC_Email;
 use WP_User;
 
@@ -62,6 +62,14 @@ class Email extends WC_Email {
 	 * @var bool
 	 */
 	protected bool $watcher_email = false;
+
+	/**
+	 * Default Recipient to empty string so it doesn't break WC get_recipient method.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $recipient = '';
 
 	/**
 	 * Set default vars and placeholders
@@ -209,23 +217,17 @@ class Email extends WC_Email {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $url
-	 *
 	 * @return void
 	 */
-	public function button_html( string $url = '' ): void {
-		if ( ! $url ) {
-			$url = $this->get_button_url();
-		}
-
-		if ( ! $this->get_button_text() || ! $url ) {
+	public function button_html(): void {
+		if ( ! $this->get_button_text() || ! $this->get_button_url() ) {
 			return;
 		}
 
 		printf(
 			/* translators: %1$s: reward checkout page url, %2$s: Claim Your Reward */
 			'<p class="button-wrapper"><a class="button" href="%1$s">%2$s</a></p>',
-			esc_html( $url ),
+			esc_html( $this->get_button_url() ),
 			esc_html( $this->get_button_text() )
 		);
 	}
@@ -243,16 +245,16 @@ class Email extends WC_Email {
 	public function trigger( mixed $object = null, ?int $user_id = null ): void {
 		$this->setup_locale();
 
-		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
-			return;
-		}
-
 		if ( $object ) {
 			$this->object = $object;
 		}
 
 		if ( $user_id ) {
 			$this->user_id = $user_id;
+		}
+
+		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
+			return;
 		}
 
 		// Default Vars & Placeholders.
@@ -277,6 +279,17 @@ class Email extends WC_Email {
 	}
 
 	/**
+	 * Perform Placeholder Replacements throughout the content.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_content(): string {
+		return $this->format_string( parent::get_content() );
+	}
+
+	/**
 	 * Set default vars and placeholders
 	 *
 	 * @since 1.0.0
@@ -286,6 +299,7 @@ class Email extends WC_Email {
 	private function init_defaults(): void {
 		// Default Vars.
 		$this->add_email_var( 'instance', $this );
+		$this->add_email_var( 'email', $this->get_recipient() );
 		$this->add_email_var( 'email_heading', $this->get_heading() );
 		$this->add_email_var( 'button_text', $this->get_button_text() );
 		$this->add_email_var( 'button_url', $this->get_button_url() );
@@ -312,6 +326,7 @@ class Email extends WC_Email {
 
 		// Auction Details.
 		$this->add_placeholder( '{auction.url}', $auction?->get_url() );
+		$this->add_placeholder( '{auction.admin_url}', get_edit_post_link( $auction?->get_id() ) );
 		$this->add_placeholder( '{auction.title}', $auction?->get_title() );
 		$this->add_placeholder( '{auction.start_date_time}', $auction?->get_start_date_time( 'n/j/Y g:i a' ) );
 		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( 'n/j/Y g:i a' ) );
@@ -325,7 +340,7 @@ class Email extends WC_Email {
 		// Auction Stats.
 		$this->add_placeholder( '{auction.total_raised}', $auction?->get_total_raised() );
 		$this->add_placeholder( '{auction.bid_count}', $auction?->get_bid_count() );
-		$this->add_placeholder( '{auction.goal}', $auction?->get_goal() );
+		$this->add_placeholder( '{auction.goal}', $auction?->get_goal_formatted() );
 		$this->add_placeholder( '{auction.estimated_value}', $auction?->get_estimated_value() );
 		$this->add_placeholder( '{auction.expected_high_bid}', $auction?->get_expected_high_bid() );
 
@@ -337,10 +352,12 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{reward.days_to_claim}', 'TBD' );
 
 		// User Details.
+		$user_bid_count     = $this->user_id ? $auction?->get_user_bid_count( $this->user_id ) : '';
+		$user_total_donated = $this->user_id ? $auction?->get_user_total_donated( $this->user_id ) : '';
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
-		$this->add_placeholder( '{user.bid_count}', $auction?->get_user_bid_count( $this->user_id ) );
+		$this->add_placeholder( '{user.bid_count}', $user_bid_count );
 		$this->add_placeholder( '{user.last_bid_amount}', 'TBD' );
-		$this->add_placeholder( '{user.total_donated}', $auction?->get_user_total_donated( $this->user_id ) );
+		$this->add_placeholder( '{user.total_donated}', $user_total_donated );
 	}
 	/**
 	 * Get the email recipient
@@ -371,23 +388,24 @@ class Email extends WC_Email {
 
 		$recipients = [];
 
-		if ( $this->is_watcher_email() ) {
-			$auction    = $this->object instanceof Auction ? $this->object : null;
-			$watchers   = goodbids()->watchers->get_auction_watcher_emails( $auction?->get_id() );
-			$recipients = array_merge( $recipients, $watchers );
-		}
-
 		// Set to customer email
-		if ( $this->is_customer_email() || $this->is_bidder_email() ) {
-			$recipients[] = get_userdata( $this->user_id )?->user_email;
+		if ( $this->user_id && ( $this->is_customer_email() || $this->is_bidder_email() || $this->is_watcher_email() ) ) {
+			$user = get_user_by( 'ID', $this->user_id );
+			if ( $user ) {
+				$recipients[] = $user->user_email;
+			}
 		}
 
-		// if none was entered, just use the WP admin email as a fallback
+		// Use Site Admin Email for Admin Emails.
 		if ( $this->is_admin_email() ) {
 			$recipients[] = get_option( 'admin_email' );
 		}
 
 		$recipients = array_filter( $recipients, 'is_email' );
+
+		if ( ! $recipients ) {
+			return false;
+		}
 
 		return implode( ', ', $recipients );
 	}
@@ -569,11 +587,20 @@ class Email extends WC_Email {
 	 * @return void
 	 */
 	public function greeting_html(): void {
-		printf(
-			'<p>%s %s,</p>',
-			esc_html__( 'Hi', 'goodbids' ),
-			esc_html( $this->get_user_name() )
-		);
+		$greeting = __( 'Hi', 'goodbids' );
+
+		if ( ! $this->user_id ) {
+			printf(
+				'<p>%s,</p>',
+				esc_html( $greeting )
+			);
+		} else {
+			printf(
+				'<p>%s %s,</p>',
+				esc_html( $greeting ),
+				esc_html( $this->get_user_name() )
+			);
+		}
 	}
 
 	/**
@@ -636,6 +663,23 @@ class Email extends WC_Email {
 
 			echo esc_html( wp_strip_all_tags( wptexturize( $this->get_additional_content() ) ) );
 			echo "\n\n----------------------------------------\n\n";
+		}
+	}
+
+	/**
+	 * Send the email to all Watchers
+	 *
+	 * @param Auction $auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function send_to_watchers( Auction $auction ): void {
+		$watchers = goodbids()->watchers->get_watchers_by_auction( $auction->get_id() );
+		foreach ( $watchers as $watcher ) {
+			$user_id = goodbids()->watchers->get_user_id( $watcher );
+			$this->trigger( $auction, $user_id );
 		}
 	}
 }

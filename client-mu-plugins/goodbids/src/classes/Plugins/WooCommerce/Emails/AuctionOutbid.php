@@ -19,13 +19,6 @@ defined( 'ABSPATH' ) || exit;
 class AuctionOutbid extends Email {
 
 	/**
-	 * This email is sent to the Bidder.
-	 *
-	 * @var bool
-	 */
-	protected bool $bidder_email = true;
-
-	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -38,6 +31,7 @@ class AuctionOutbid extends Email {
 		$this->description    = __( 'Notification email is sent when a user is out bid on an auction.', 'goodbids' );
 		$this->template_html  = 'emails/auction-outbid.php';
 		$this->template_plain = 'emails/plain/auction-outbid.php';
+		$this->bidder_email   = true;
 	}
 
 	/**

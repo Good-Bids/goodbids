@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use DateInterval;
+use GoodBids\Core;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 use WC_Product_Variation;
@@ -102,7 +103,7 @@ class Auctions {
 	 */
 	public function __construct() {
 		// Disable Auctions on Main Site.
-		if ( is_main_site() ) {
+		if ( is_main_site() && ! Core::is_dev_env() ) {
 			return;
 		}
 

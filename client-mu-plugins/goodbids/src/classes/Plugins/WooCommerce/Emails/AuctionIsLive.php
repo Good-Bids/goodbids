@@ -9,6 +9,7 @@
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Utilities\Log;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,14 +20,6 @@ defined( 'ABSPATH' ) || exit;
  * @extends Email
  */
 class AuctionIsLive extends Email {
-
-	/**
-	 * This email is sent to Watchers.
-	 *
-	 * @since 1.0.0
-	 * @var bool
-	 */
-	protected bool $watcher_email = true;
 
 	/**
 	 * Set email defaults
@@ -43,6 +36,7 @@ class AuctionIsLive extends Email {
 		$this->description    = __( 'Email the Watchers when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live.php';
 		$this->template_plain = 'emails/plain/auction-is-live.php';
+		$this->watcher_email  = true;
 
 		$this->trigger_on_auction_start();
 	}
@@ -58,8 +52,9 @@ class AuctionIsLive extends Email {
 		add_action(
 			'goodbids_auction_start',
 			function ( int $auction_id ) {
+				Log::debug( 'Triggering Auction is Live emails for Auction: ' . $auction_id );
 				$auction = goodbids()->auctions->get( $auction_id );
-				$this->trigger( $auction );
+				$this->send_to_watchers( $auction );
 			},
 			10,
 			2
@@ -109,7 +104,7 @@ class AuctionIsLive extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return '#';
+		return '{auction.url}';
 	}
 
 	/**

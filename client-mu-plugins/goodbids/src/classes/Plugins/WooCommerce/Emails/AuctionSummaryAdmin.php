@@ -21,14 +21,6 @@ defined( 'ABSPATH' ) || exit;
 class AuctionSummaryAdmin extends Email {
 
 	/**
-	 * This email is sent to the site admin
-	 *
-	 * @since 1.0.0
-	 * @var bool
-	 */
-	protected bool $admin_email = true;
-
-	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -41,6 +33,7 @@ class AuctionSummaryAdmin extends Email {
 		$this->description    = __( 'Auction Summary for site admins when an Auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-summary-admin.php';
 		$this->template_plain = 'emails/plain/auction-summary-admin.php';
+		$this->admin_email    = true;
 	}
 
 	/**

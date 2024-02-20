@@ -19,13 +19,6 @@ defined( 'ABSPATH' ) || exit;
 class AuctionRewardReminder extends Email {
 
 	/**
-	 * This email is sent to Customers.
-	 *
-	 * @var bool
-	 */
-	protected $customer_email = true;
-
-	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -38,6 +31,7 @@ class AuctionRewardReminder extends Email {
 		$this->description    = __( 'Notification email to remind a user they still need to claim their reward', 'goodbids' );
 		$this->template_html  = 'emails/auction-reward-reminder.php';
 		$this->template_plain = 'emails/plain/auction-reward-reminder.php';
+		$this->customer_email = true;
 	}
 
 	/**

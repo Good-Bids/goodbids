@@ -19,13 +19,6 @@ defined( 'ABSPATH' ) || exit;
 class AuctionWinnerConfirmation extends Email {
 
 	/**
-	 * This email is sent to Customers.
-	 *
-	 * @var bool
-	 */
-	protected $customer_email = true;
-
-	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -38,6 +31,7 @@ class AuctionWinnerConfirmation extends Email {
 		$this->description    = __( 'Notification email is sent when a user has won an auction.', 'goodbids' );
 		$this->template_html  = 'emails/auction-winner-confirmation.php';
 		$this->template_plain = 'emails/plain/auction-winner-confirmation.php';
+		$this->customer_email = true;
 	}
 
 	/**

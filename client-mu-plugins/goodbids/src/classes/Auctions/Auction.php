@@ -365,7 +365,7 @@ class Auction {
 		$bid_extension = $this->get_setting( 'bid_extension' );
 
 		if ( ! $bid_extension ) {
-			Log::error( '[CONFIG] Unable to load Bid Extension' );
+			Log::error( '[CONFIG] Unable to load Bid Extension', [ 'auction_id' => $this->get_id() ] );
 			return null;
 		}
 
@@ -422,6 +422,17 @@ class Auction {
 	 */
 	public function get_goal(): int {
 		return intval( $this->get_setting( 'auction_goal' ) );
+	}
+
+	/**
+	 * Get the Auction Goal Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_goal_formatted(): string {
+		return wc_price( $this->get_goal() );
 	}
 
 	/**

@@ -9,17 +9,17 @@
  * @var string $email_heading
  * @var string $email
  *
- * @var AuctionWatchersLive $instance
+ * @var AuctionIsLive $instance
  */
 
-use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
 
 defined( 'ABSPATH' ) || exit;
 
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading );
+do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 
 <p>

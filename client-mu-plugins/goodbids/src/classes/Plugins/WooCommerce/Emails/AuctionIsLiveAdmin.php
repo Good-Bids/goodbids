@@ -21,22 +21,6 @@ defined( 'ABSPATH' ) || exit;
 class AuctionIsLiveAdmin extends AuctionIsLive {
 
 	/**
-	 * This email is sent to the site admin
-	 *
-	 * @since 1.0.0
-	 * @var bool
-	 */
-	protected bool $admin_email = true;
-
-	/**
-	 * This email is NOT sent to watchers
-	 *
-	 * @since 1.0.0
-	 * @var bool
-	 */
-	protected bool $watcher_email = false;
-
-	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -49,6 +33,8 @@ class AuctionIsLiveAdmin extends AuctionIsLive {
 		$this->description    = __( 'This Email is sent to the site admin when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live-admin.php';
 		$this->template_plain = 'emails/plain/auction-is-live-admin.php';
+		$this->watcher_email  = false; // Override parent class value.
+		$this->admin_email    = true;
 	}
 
 	/**
@@ -79,7 +65,7 @@ class AuctionIsLiveAdmin extends AuctionIsLive {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return '{auction.url}';
+		return '{auction.admin_url}';
 	}
 
 	/**

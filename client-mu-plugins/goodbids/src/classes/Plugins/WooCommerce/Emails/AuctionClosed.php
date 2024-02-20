@@ -19,20 +19,6 @@ defined( 'ABSPATH' ) || exit;
 class AuctionClosed extends Email {
 
 	/**
-	 * This email is sent to the Bidder.
-	 *
-	 * @var bool
-	 */
-	protected bool $bidder_email = true;
-
-	/**
-	 * This email is sent to Watchers.
-	 *
-	 * @var bool
-	 */
-	protected bool $watcher_email = true;
-
-	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -45,6 +31,8 @@ class AuctionClosed extends Email {
 		$this->description    = __( 'Notification email is sent when an auction goes closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-closed.php';
 		$this->template_plain = 'emails/plain/auction-closed.php';
+		$this->watcher_email  = true;
+		$this->bidder_email   = true;
 
 		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
 	}
