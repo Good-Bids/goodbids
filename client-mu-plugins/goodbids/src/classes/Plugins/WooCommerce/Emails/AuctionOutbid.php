@@ -62,7 +62,7 @@ class AuctionOutbid extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return '#';
+		return '{auction.url}';
 	}
 
 	/**
