@@ -26,7 +26,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	printf(
 		/* translators: %1$s: User last bid, %2$s: Auction Title, %3$s: Auction reward title, %4$s: Site title */
 		esc_html__( 'Congratulations! Your %1$s bid was the highest GOODBID for the %2$s auction, and you are the winner. Please claim your %3$s with %4$s within 40 days.', 'goodbids' ),
-		'{auction.userLastBid}',
+		'{user.last_bid_amount}',
 		'{auction.title}',
 		'{reward.title}',
 		'{site_title}',

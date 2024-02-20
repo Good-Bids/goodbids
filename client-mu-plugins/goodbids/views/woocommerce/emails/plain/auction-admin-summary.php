@@ -43,7 +43,7 @@ echo '{auction.start_date_time}';
 echo "\n\n----------------------------------------\n\n";
 
 esc_html_e( 'Starting Bid:', 'goodbids' );
-echo '{auction.startingBid}';
+echo '{auction.starting_bid}';
 
 echo "\n\n----------------------------------------\n\n";
 

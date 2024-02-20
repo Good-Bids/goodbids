@@ -96,9 +96,9 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension, %2$s: Auction Bid Extension */
 		esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by %3$s minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
-		'{auction.endTime}',
-		'{auction.bidExtension}',
-		'{auction.bidExtension}',
+		'{auction.end_date_time}',
+		'{auction.bid_extension}',
+		'{auction.bid_extension}',
 	);
 	?>
 </p>

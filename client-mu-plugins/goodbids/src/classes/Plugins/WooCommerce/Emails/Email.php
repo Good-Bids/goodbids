@@ -319,6 +319,7 @@ class Email extends WC_Email {
 		// Bid Details
 		$this->add_placeholder( '{auction.starting_bid}', $auction?->get_starting_bid() );
 		$this->add_placeholder( '{auction.bid_increment}', $auction?->get_bid_increment() );
+		$this->add_placeholder( '{auction.bid_extension}', $auction?->get_bid_extension() );
 		$this->add_placeholder( '{auction.high_bid}', $auction?->get_last_bid()?->get_subtotal() );
 
 		// Auction Stats.
@@ -326,15 +327,19 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{auction.bid_count}', $auction?->get_bid_count() );
 		$this->add_placeholder( '{auction.goal}', $auction?->get_goal() );
 		$this->add_placeholder( '{auction.estimated_value}', $auction?->get_estimated_value() );
+		$this->add_placeholder( '{auction.expected_high_bid}', $auction?->get_expected_high_bid() );
 
 		// Reward Details.
 		$this->add_placeholder( '{reward.title}', $reward?->get_title() );
+		$this->add_placeholder( '{reward.type}', 'TBD' );
 		$this->add_placeholder( '{reward.purchase_note}', $reward?->get_purchase_note() );
+		$this->add_placeholder( '{reward.claim_url}', goodbids()->rewards->get_claim_reward_url( $auction?->get_id() ) );
 		$this->add_placeholder( '{reward.days_to_claim}', 'TBD' );
 
 		// User Details.
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
 		$this->add_placeholder( '{user.bid_count}', $auction?->get_user_bid_count( $this->user_id ) );
+		$this->add_placeholder( '{user.last_bid_amount}', 'TBD' );
 		$this->add_placeholder( '{user.total_donated}', $auction?->get_user_total_donated( $this->user_id ) );
 	}
 	/**
