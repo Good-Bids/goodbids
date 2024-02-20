@@ -626,63 +626,6 @@ class Auctions {
 	}
 
 
-
-	/**
-	 * Get the Auction Remaining Time returns a formatted string with the optional icon
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int     $auction_id
-	 * @param ?string $icon
-	 *
-	 * @return void
-	 */
-	public function get_remaining_time( int $auction_id, ?string $icon = null ): void {
-		$class        = 'flex items-center gap-2 ';
-		$svg_img      = '<img class="w-5 h-5" src="' . goodbids()->utilities->get_svg_path( $icon ) . '" />';
-		$time_zone    = new \DateTimeZone( wp_timezone_string( 'timezone' ) );
-		$current_date = new \DateTime( 'now', $time_zone );
-
-		if ( $this->has_started( $auction_id ) ) {
-			$end_date       = new \DateTime( $this->get_end_date_time( $auction_id ), $time_zone );
-			$remaining_time = $current_date->diff( $end_date );
-
-			if ( $remaining_time->h < 1 ) {
-				$class .= 'text-red-500';
-				$time   = $svg_img . $remaining_time->format( '-%im' );
-			} elseif ( $remaining_time->d < 1 ) {
-				$time = $svg_img . $remaining_time->format( '-%hh %im' );
-			} else {
-				$time = 'Ending ' . $this->get_end_date_time( $auction_id, 'M d' );
-			}
-
-			printf(
-				'<div class="%s">%s</div>',
-				$class, // phpcs:ignore escaping in the template
-				$time // phpcs:ignore escaping in the template
-			);
-
-		} else {
-			$start_date     = new \DateTime( $this->get_start_date_time( $auction_id ), $time_zone );
-			$remaining_time = $current_date->diff( $start_date );
-
-			if ( $remaining_time->h < 1 ) {
-				$time = $svg_img . 'Coming in ' . $remaining_time->format( '%im' );
-			} elseif ( $remaining_time->d < 1 ) {
-				$time = $svg_img . 'Coming in ' . $remaining_time->format( '%hh %im' );
-			} else {
-				$time = 'Coming ' . $this->get_start_date_time( $auction_id, 'M d' );
-			}
-
-			printf(
-				'<div class="%s">%s</div>',
-				$class, // phpcs:ignore escaping in the template
-				$time // phpcs:ignore escaping in the template
-			);
-		}
-	}
-
-
 	/**
 	 * Check if an Auction has started.
 	 *

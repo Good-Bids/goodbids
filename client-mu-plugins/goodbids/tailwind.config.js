@@ -22,8 +22,9 @@ export default {
 				'spin-left': 'spin-left 1.5s linear infinite',
 			},
 			borderRadius: {
-				DEFAULT: '2rem',
+				xs: '0.5rem',
 				sm: '1rem',
+				DEFAULT: '2rem',
 			},
 			borderWidth: {
 				DEFAULT: '1px',
