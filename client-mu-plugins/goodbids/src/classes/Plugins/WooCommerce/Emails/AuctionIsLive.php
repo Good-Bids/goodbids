@@ -43,6 +43,27 @@ class AuctionIsLive extends Email {
 		$this->description    = __( 'Email the Watchers when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live.php';
 		$this->template_plain = 'emails/plain/auction-is-live.php';
+
+		$this->trigger_on_auction_start();
+	}
+
+	/**
+	 * Trigger send when Auction Starts
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_start(): void {
+		add_action(
+			'goodbids_auction_start',
+			function ( int $auction_id ) {
+				$auction = goodbids()->auctions->get( $auction_id );
+				$this->trigger( $auction );
+			},
+			10,
+			2
+		);
 	}
 
 	/**
