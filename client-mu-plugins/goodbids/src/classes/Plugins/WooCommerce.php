@@ -15,12 +15,12 @@ use GoodBids\Plugins\WooCommerce\API\Credentials;
 use GoodBids\Plugins\WooCommerce\Cart;
 use GoodBids\Plugins\WooCommerce\Checkout;
 use GoodBids\Plugins\WooCommerce\Coupons;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminSummary;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionisLiveAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Orders;
 use WC_Product;
@@ -443,12 +443,12 @@ class WooCommerce {
 			'woocommerce_email_classes',
 			function ( array $email_classes ): array {
 				$goodbids_emails = [
-					'AuctionAdminLive'          => new AuctionAdminLive(),
+					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
 					'AuctionAdminSummary'       => new AuctionAdminSummary(),
 					'AuctionClosed'             => new AuctionClosed(),
 					'AuctionOutbid'             => new AuctionOutbid(),
 					'AuctionRewardReminder'     => new AuctionRewardReminder(),
-					'AuctionWatchersLive'       => new AuctionWatchersLive(),
+					'AuctionIsLive'             => new AuctionIsLive(),
 					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
 				];
 

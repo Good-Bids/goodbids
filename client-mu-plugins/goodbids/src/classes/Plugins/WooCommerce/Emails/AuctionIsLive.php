@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live: Email the users that are watching when an Auction goes live.
+ * Auction is Live: Email the Watchers when an Auction goes live.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.0.0
  * @extends Email
  */
-class AuctionWatchersLive extends Email {
+class AuctionIsLive extends Email {
 
 	/**
 	 * This email is sent to Watchers.
@@ -38,11 +38,11 @@ class AuctionWatchersLive extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_watchers_live';
-		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Email the users that are watching when an Auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-watchers-live.php';
-		$this->template_plain = 'emails/plain/auction-watchers-live.php';
+		$this->id             = 'goodbids_auction_live';
+		$this->title          = __( 'Auction is Live', 'goodbids' );
+		$this->description    = __( 'Email the Watchers when an Auction goes live.', 'goodbids' );
+		$this->template_html  = 'emails/auction-is-live.php';
+		$this->template_plain = 'emails/plain/auction-is-live.php';
 	}
 
 	/**

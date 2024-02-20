@@ -11,10 +11,10 @@
  * @var ?string $auction_expected_high_bid
  * @var ?string $auction_estimated_value
  *
- * @var AuctionAdminLive $instance
+ * @var AuctionisLiveAdmin $instance
  */
 
-use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionisLiveAdmin;
 
 defined( 'ABSPATH' ) || exit;
 

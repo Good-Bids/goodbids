@@ -16,9 +16,9 @@ defined( 'ABSPATH' ) || exit;
  * Auction Admin Live extends the custom AuctionWatchersLive class
  *
  * @since 1.0.0
- * @extends AuctionWatchersLive
+ * @extends AuctionIsLive
  */
-class AuctionAdminLive extends AuctionWatchersLive {
+class AuctionIsLiveAdmin extends AuctionIsLive {
 
 	/**
 	 * This email is sent to the site admin
@@ -44,11 +44,11 @@ class AuctionAdminLive extends AuctionWatchersLive {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_admin_live';
-		$this->title          = __( 'Auction Admin Live', 'goodbids' );
+		$this->id             = 'goodbids_auction_live_admin';
+		$this->title          = __( 'Auction is Live (Admin)', 'goodbids' );
 		$this->description    = __( 'This Email is sent to the site admin when an Auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-admin-live.php';
-		$this->template_plain = 'emails/plain/auction-admin-live.php';
+		$this->template_html  = 'emails/auction-is-live-admin.php';
+		$this->template_plain = 'emails/plain/auction-is-live-admin.php';
 	}
 
 	/**
