@@ -444,6 +444,45 @@ class Watchers {
 	}
 
 	/**
+	 * Get all Watchers from all sites for a given User ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_all_auctions_for_watchers_by_user( ?int $user_id = null ): array {
+		return goodbids()->sites->loop(
+			function ( $site_id ) use ( $user_id ) {
+				if ( is_main_site() ) {
+					return;
+				}
+
+				$watchers = $this->get_watchers_by_user( $user_id );
+
+				foreach ( $watchers as $key => $watcher ) {
+					$auction_id                  = get_post_meta( $watcher, self::AUCTION_ID_META_KEY, true );
+					$auctions[ $key ]['post_id'] = $auction_id;
+					$auctions[ $key ]['site_id'] = $site_id;
+				}
+
+				return $auctions;
+			}
+		);
+	}
+
+	/**
+	 * Get all Auctions that are being watched for a given User ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_all_auctions_watched_by_user( ?int $user_id = null ): array {
+		return $this->get_all_watchers_by_user( $user_id );
+	}
+
+
+	/**
 	 * Handle the AJAX request to toggle watching an Auction
 	 *
 	 * @since 1.0.0

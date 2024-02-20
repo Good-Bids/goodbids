@@ -53,28 +53,14 @@ $allowed_html = array(
 
 <?php
 
-// dd( goodbids()->watchers->get_watchers_by_user( get_current_user_id() ) );
+// $watched_auctions = goodbids()->watchers->get_all_auctions_for_watchers_by_user();
 
-$the_block = new AllAuctions( $block );
-$page_url  = $the_block->get_current_url();
-$sort_url  = remove_query_arg( AllAuctions::SORT_QUERY_ARG, $page_url );
-
-// Apply filters and sorting to auctions.
-$auctions = $the_block->apply_filters();
-$auctions = $the_block->apply_sort( $auctions );
-
-// Apply pagination.
-$total_count = count( $auctions );
-$total_pages = ceil( $total_count / $the_block->get_auctions_per_page() );
-$auctions    = $the_block->apply_pagination( $auctions );
-
-goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) );
-
-if ( $total_pages > 1 ) :
-	echo wp_kses_post( $the_block->get_pagination( $total_pages ) );
-endif;
-
+$auctions = [];
 ?>
+
+<?php goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) ); ?>
+
+
 
 <?php
 	/**
