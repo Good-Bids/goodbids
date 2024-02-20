@@ -47,6 +47,17 @@ class AuctionClosed extends Email {
 	}
 
 	/**
+	 * Remove custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function remove_customizations(): void {
+		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
+	}
+
+	/**
 	 * Get email subject.
 	 *
 	 * @since  1.0.0

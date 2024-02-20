@@ -272,6 +272,9 @@ class Email extends WC_Email {
 			$this->get_attachments()
 		);
 
+		// Reset the template.
+		$this->reset_template();
+
 		$this->restore_locale();
 	}
 
@@ -312,6 +315,47 @@ class Email extends WC_Email {
 		// Allow emails to be customized.
 		$this->init_customizations();
 	}
+
+	/**
+	 * Reset the template after sending the email.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function reset_template(): void {
+		// Remove Default Customizations.
+		$this->remove_default_customizations();
+
+		// Remove Template Customizations.
+		$this->remove_customizations();
+
+		// Reset vars.
+		$this->email_vars   = [];
+		$this->placeholders = [];
+	}
+
+	/**
+	 * Remove default hooks
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function remove_default_customizations(): void {
+		remove_action( 'woocommerce_email_header', [ $this, 'greeting_html' ], 12 );
+		remove_action( 'woocommerce_email_footer', [ $this, 'button_html' ], 5 );
+		remove_action( 'woocommerce_email_footer', [ $this, 'additional_content_html' ], 8 );
+	}
+
+	/**
+	 * Templates can remove their customizations.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function remove_customizations(): void {}
 
 	/**
 	 * Set default placeholders
