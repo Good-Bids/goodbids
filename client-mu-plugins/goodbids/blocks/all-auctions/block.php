@@ -16,7 +16,7 @@ use GoodBids\Auctions\Auctions;
  *
  * @since 1.0.0
  */
-class AllAuctions {
+class AllAuctions extends ACFBlock {
 
 	/**
 	 * @since 1.0.0
@@ -106,20 +106,6 @@ class AllAuctions {
 	 * @return array
 	 */
 	public function get_all_auctions(): array {
-
-		// goodbids()->sites->get_user_bid_orders();
-
-		if ( is_account_page() ) {
-			return collect( goodbids()->sites->get_all_auctions() )
-			->sortBy(
-				fn( array $auction ) => goodbids()->sites->swap(
-					fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
-					$auction['site_id']
-				)
-			)
-			->all();
-		}
-
 		// if on the main site, get all auctions from all site
 		if ( is_main_site() ) {
 			return goodbids()->sites->get_all_auctions();

@@ -22,6 +22,8 @@ $allowed_html = array(
 );
 ?>
 
+<h1 class="mt-0"><?php esc_html_e( 'Dashboard', 'goodbids' ); ?></h1>
+
 <p>
 	<?php
 	printf(
@@ -50,16 +52,13 @@ $allowed_html = array(
 	?>
 </p>
 
-
+<div class="py-12 my-12 border-b-2 border-solid border-contrast border-b-transparent border-x-transparent">
 <?php
+	$auctions = goodbids()->sites->get_watched_bid_auctions_by_user();
 
-// $watched_auctions = goodbids()->watchers->get_all_auctions_for_watchers_by_user();
-
-$auctions = [];
+	goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) );
 ?>
-
-<?php goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) ); ?>
-
+</div>
 
 
 <?php

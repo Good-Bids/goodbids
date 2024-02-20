@@ -1005,6 +1005,80 @@ class Sites {
 		return $this->get_user_orders( $user_id, $status, Rewards::ITEM_TYPE );
 	}
 
+
+	/**
+	 * Get all watched and bid auctions from all sites for a User ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_watched_bid_auctions_by_user( ?int $user_id = null ): array {
+		if ( is_null( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
+		$goodbids_orders = goodbids()->sites->get_user_bid_orders();
+		$auctions        = [];
+
+		// Get user Bids from all sites
+		foreach ( $goodbids_orders as $goodbids_order ) {
+			$post_id = goodbids()->sites->swap(
+				fn () => goodbids()->woocommerce->orders->get_auction_id( $goodbids_order['order_id'] ),
+				$goodbids_order['site_id']
+			);
+			if ( ! in_array( $post_id, array_column( $auctions, 'post_id' ) ) ) {
+				$bid_auction = [
+					'site_id' => $goodbids_order['site_id'],
+					'post_id' => $post_id,
+				];
+				$auctions[]  = $bid_auction;
+			}
+		}
+
+		// Get all Watchers for user from all sites
+		goodbids()->sites->loop(
+			function ( $site_id ) use ( &$auctions, $user_id ) {
+				if ( is_main_site() ) {
+					return;
+				}
+
+				$watchers = goodbids()->watchers->get_watchers_by_user( $user_id );
+
+				foreach ( $watchers as $watcher ) {
+					$post_id = get_post_meta( $watcher, goodbids()->watchers::AUCTION_ID_META_KEY, true );
+
+					if ( ! in_array( $post_id, array_column( $auctions, 'post_id' ) ) ) {
+						$wached_auctions = [
+							'site_id' => $site_id,
+							'post_id' => $post_id,
+						];
+						$auctions[]      = $wached_auctions;
+					}
+				}
+
+				return $auctions;
+			}
+		);
+
+		// Filter by started and not ended and sort by end date
+		$auctions = collect( $auctions )
+			->filter(
+				fn ( array $auction ) => goodbids()->sites->swap(
+					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
+					$auction['site_id']
+				)
+			)
+			->sortBy(
+				fn( array $auction ) => goodbids()->sites->swap(
+					fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
+					$auction['site_id']
+				)
+			)
+			->all();
+
+		return $auctions;
+	}
+
 	/**
 	 * Display custom content on Network Sites page
 	 *
@@ -1027,7 +1101,7 @@ class Sites {
 				if ( 'standing' === $column ) {
 					if ( get_main_site_id() !== intval( $site_id ) ) {
 						goodbids()->sites->swap(
-							function() {
+							function () {
 								if ( goodbids()->invoices->has_overdue_invoices() ) {
 									esc_html_e( 'Delinquent', 'goodbids' );
 									return;
