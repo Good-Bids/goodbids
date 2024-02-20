@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Outbid: Send an email to the user that was out bid on an auction.
+ * Auction Outbid: Email the user that was out bid on an auction.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -9,8 +9,9 @@
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
 defined( 'ABSPATH' ) || exit;
+
 /**
- * Auction Outbid extend the custom BaseEmail class
+ * Bidder has been Outbid Email
  *
  * @since 1.0.0
  * @extends Email

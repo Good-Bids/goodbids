@@ -11,7 +11,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Auction Watchers Live extend the custom BaseEmail class
+ * Auction Winner Confirmation Email
  *
  * @since 1.0.0
  * @extends Email

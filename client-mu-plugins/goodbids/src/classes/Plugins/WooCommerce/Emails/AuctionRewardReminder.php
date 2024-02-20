@@ -11,7 +11,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Auction Reward Reminder extend the custom BaseEmail class
+ * Auction Reward Reminder email
  *
  * @since 1.0.0
  * @extends Email

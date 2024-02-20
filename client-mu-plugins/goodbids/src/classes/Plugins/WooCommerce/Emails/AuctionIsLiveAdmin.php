@@ -13,7 +13,7 @@ use GoodBids\Auctions\Auction;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Auction Admin Live extends the custom AuctionWatchersLive class
+ * Auction Starting Email (Admin)
  *
  * @since 1.0.0
  * @extends AuctionIsLive
