@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live: Email the users that are watching when an auction goes live.
+ * Auction Summary Admin: Summary of Auction for Admins
  *
  * @since 1.0.0
  * @package GoodBids
@@ -13,12 +13,12 @@ use GoodBids\Auctions\Auction;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Auction Watchers Live extend the custom BaseEmail class
+ * Auction Summary Admin email
  *
  * @since 1.0.0
  * @extends Email
  */
-class AuctionAdminSummary extends Email {
+class AuctionSummaryAdmin extends Email {
 
 	/**
 	 * This email is sent to the site admin
@@ -36,11 +36,11 @@ class AuctionAdminSummary extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_admin_summary';
-		$this->title          = __( 'Auction Admin Summary', 'goodbids' );
-		$this->description    = __( 'Notification email sent to admins when an auction closes.', 'goodbids' );
-		$this->template_html  = 'emails/auction-admin-summary.php';
-		$this->template_plain = 'emails/plain/auction-admin-summary.php';
+		$this->id             = 'goodbids_auction_summary_admin';
+		$this->title          = __( 'Auction Summary (Admin)', 'goodbids' );
+		$this->description    = __( 'Auction Summary for site admins when an Auction closes.', 'goodbids' );
+		$this->template_html  = 'emails/auction-summary-admin.php';
+		$this->template_plain = 'emails/plain/auction-summary-admin.php';
 	}
 
 	/**
