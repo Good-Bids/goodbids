@@ -58,7 +58,7 @@ class AuctionWinnerConfirmation extends Email {
 		return sprintf(
 			/* translators: %s: reward product title */
 			__( 'You generosity earned a %s!', 'goodbids' ),
-			'{auction.reward_title}'
+			'{reward.title}'
 		);
 	}
 
@@ -80,6 +80,6 @@ class AuctionWinnerConfirmation extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return '#';
+		return '{reward.claim_url}';
 	}
 }
