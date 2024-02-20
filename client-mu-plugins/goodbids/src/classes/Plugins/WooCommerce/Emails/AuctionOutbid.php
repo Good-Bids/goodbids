@@ -18,6 +18,13 @@ defined( 'ABSPATH' ) || exit;
 class AuctionOutbid extends Email {
 
 	/**
+	 * This email is sent to the Bidder.
+	 *
+	 * @var bool
+	 */
+	protected bool $bidder_email = true;
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0

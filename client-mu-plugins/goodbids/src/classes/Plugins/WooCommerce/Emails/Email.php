@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Auctions\Watchers;
 use WC_Email;
 use WP_User;
 
@@ -37,6 +38,30 @@ class Email extends WC_Email {
 	 * @var string[]
 	 */
 	public array $email_vars = [];
+
+	/**
+	 * If email is sent to admins.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $admin_email = false;
+
+	/**
+	 * If email is sent to Bidders.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $bidder_email = false;
+
+	/**
+	 * If email is sent to Watchers.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $watcher_email = false;
 
 	/**
 	 * Set default vars and placeholders
@@ -322,17 +347,119 @@ class Email extends WC_Email {
 	public function get_recipient(): string {
 		$recipient = parent::get_recipient();
 
-		if ( ! $recipient ) {
-			// this sets the recipient to the settings defined below in init_form_fields()
-			$recipient = $this->get_option( 'recipient' );
+		if ( $recipient ) {
+			return $recipient;
+		}
+
+		// Check for a recipient value in the settings.
+		$recipient = $this->get_option( 'recipient' );
+
+		if ( $recipient ) {
+			$recipients = array_map( 'trim', explode( ',', $recipient ) );
+			$recipients = array_filter( $recipients, 'is_email' );
+			return implode( ', ', $recipients );
+		}
+
+		if ( $this->is_admin_screen() ) {
+			return $this->admin_screen_recipients();
+		}
+
+		$recipients = [];
+
+		if ( $this->is_watcher_email() ) {
+			$auction    = $this->object instanceof Auction ? $this->object : null;
+			$watchers   = goodbids()->watchers->get_auction_watcher_emails( $auction?->get_id() );
+			$recipients = array_merge( $recipients, $watchers );
+		}
+
+		// Set to customer email
+		if ( $this->is_customer_email() || $this->is_bidder_email() ) {
+			$recipients[] = get_userdata( $this->user_id )?->user_email;
 		}
 
 		// if none was entered, just use the WP admin email as a fallback
-		if ( ! $recipient ) {
-			$recipient = get_option( 'admin_email' );
+		if ( $this->is_admin_email() ) {
+			$recipients[] = get_option( 'admin_email' );
 		}
 
-		return $recipient;
+		$recipients = array_filter( $recipients, 'is_email' );
+
+		return implode( ', ', $recipients );
+	}
+
+	/**
+	 * Check if on Admin Screen
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	private function is_admin_screen(): bool {
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			if ( 'woocommerce_page_wc-settings' === $screen->id ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Display Generic Text in Admin Email Settings.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	private function admin_screen_recipients(): string {
+		$recipients = [];
+
+		if ( $this->is_watcher_email() ) {
+			$recipients[] = __( 'Watchers', 'goodbids' );
+		}
+
+		if ( $this->is_bidder_email() ) {
+			$recipients[] = __( 'Bidder', 'goodbids' );
+		}
+
+		if ( $this->is_admin_email() ) {
+			$recipients[] = __( 'Admin', 'goodbids' );
+		}
+
+		if ( ! $recipients ) {
+			return __( 'Not Set', 'goodbids' );
+		}
+
+		return implode( ', ', $recipients );
+	}
+
+	/**
+	 * Check if the email is sent to the Admin.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	public function is_admin_email(): bool {
+		return $this->admin_email;
+	}
+
+	/**
+	 * Check if the email is sent to the Bidders.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	public function is_bidder_email(): bool {
+		return $this->bidder_email;
+	}
+
+	/**
+	 * Check if the email is sent to the Watchers.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	public function is_watcher_email(): bool {
+		return $this->watcher_email;
 	}
 
 	/**

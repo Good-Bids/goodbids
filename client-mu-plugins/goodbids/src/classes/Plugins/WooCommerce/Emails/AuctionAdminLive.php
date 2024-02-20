@@ -21,6 +21,22 @@ defined( 'ABSPATH' ) || exit;
 class AuctionAdminLive extends AuctionWatchersLive {
 
 	/**
+	 * This email is sent to the site admin
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $admin_email = true;
+
+	/**
+	 * This email is NOT sent to watchers
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $watcher_email = false;
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0

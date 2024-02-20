@@ -21,6 +21,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionWatchersLive extends Email {
 
 	/**
+	 * This email is sent to Watchers.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $watcher_email = true;
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0

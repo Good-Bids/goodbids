@@ -21,6 +21,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionAdminSummary extends Email {
 
 	/**
+	 * This email is sent to the site admin
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $admin_email = true;
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0

@@ -19,6 +19,13 @@ defined( 'ABSPATH' ) || exit;
 class AuctionWinnerConfirmation extends Email {
 
 	/**
+	 * This email is sent to Customers.
+	 *
+	 * @var bool
+	 */
+	protected $customer_email = true;
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0

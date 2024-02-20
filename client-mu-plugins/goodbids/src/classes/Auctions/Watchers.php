@@ -431,6 +431,29 @@ class Watchers {
 	}
 
 	/**
+	 * Get all Watcher emails for a given Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 * @return string[]
+	 */
+	public function get_auction_watcher_emails( ?int $auction_id = null ): array {
+		$watchers = $this->get_watchers_by_auction( $auction_id );
+		$emails   = [];
+
+		foreach ( $watchers as $watcher_id ) {
+			$user_id = get_post_meta( $watcher_id, self::USER_ID_META_KEY, true );
+			$user    = get_user_by( 'ID', $user_id );
+			if ( $user ) {
+				$emails[] = $user->user_email;
+			}
+		}
+
+		return $emails;
+	}
+
+	/**
 	 * Get the number of Watchers for a given Auction
 	 *
 	 * @since 1.0.0
