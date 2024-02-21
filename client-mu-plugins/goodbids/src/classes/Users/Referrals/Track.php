@@ -8,6 +8,8 @@
 
 namespace GoodBids\Users\Referrals;
 
+use GoodBids\Utilities\Cookies;
+
 /**
  * Class for Tracking Referrals
  *
@@ -86,8 +88,8 @@ class Track {
 	 * @return int
 	 */
 	private function get_expire_time(): int {
-		$days = goodbids()->get_config( 'referrals.cookie-expire-days' );
-		return $days ? time() + ( $days * DAY_IN_SECONDS ) : time() + ( 30 * DAY_IN_SECONDS );
+		$days = goodbids()->get_config( 'referrals.cookie-expire-days' ) ?? 30;
+		return time() + ( intval( $days ) * DAY_IN_SECONDS );
 	}
 
 	/**
@@ -99,21 +101,13 @@ class Track {
 	 * @return void
 	 */
 	private function set_cookie( array $data, ?int $expire = null ): void {
-		if ( headers_sent() ) {
-			return;
-		}
-
 		if ( null === $expire ) {
 			$expire = $this->get_expire_time();
 		}
 
 		$cookie = empty( $data ) ? '' : wp_json_encode( $data );
 
-		setcookie( self::REFERRER_COOKIE, $cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true ); // phpcs:ignore
-
-		if ( COOKIEPATH != SITECOOKIEPATH ) {
-			setcookie( self::REFERRER_COOKIE, $cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, is_ssl(), true ); // phpcs:ignore
-		}
+		Cookies::set( self::REFERRER_COOKIE, $cookie, $expire );
 	}
 
 	/**
@@ -124,11 +118,7 @@ class Track {
 	 * @return ?string
 	 */
 	public function get_cookie(): ?string {
-		if ( empty( $_COOKIE[ self::REFERRER_COOKIE ] ) ) {
-			return null;
-		}
-
-		return sanitize_text_field( wp_unslash( $_COOKIE[ self::REFERRER_COOKIE ] ) ); // phpcs:ignore
+		return Cookies::get( self::REFERRER_COOKIE );
 	}
 
 	/**
@@ -139,11 +129,7 @@ class Track {
 	 * @return void
 	 */
 	public function clear_cookie(): void {
-		$this->set_cookie( [], time() - YEAR_IN_SECONDS );
-
-		if ( isset( $_COOKIE[ self::REFERRER_COOKIE ] ) ) {
-			unset( $_COOKIE[ self::REFERRER_COOKIE ] ); // phpcs:ignore
-		}
+		Cookies::clear( self::REFERRER_COOKIE );
 	}
 
 	/**

@@ -52,7 +52,7 @@ $(() => {
 		e.preventDefault();
 
 		const referrerID = $(this).data('referrer-id');
-		let toAddUserId = searchUserSelect.val();
+		const toAddUserId = searchUserSelect.val();
 
 		const addReferralAjaxButton = new AjaxButton(
 			$(this),
