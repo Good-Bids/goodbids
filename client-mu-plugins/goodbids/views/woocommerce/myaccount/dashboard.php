@@ -4,6 +4,8 @@
  *
  * Shows the first intro screen on the account dashboard.
  *
+ * @var WP_User $current_user
+ *
  * @see     https://woo.com/document/template-structure/
  * @package WooCommerce\Templates
  * @version 4.4.0
@@ -12,8 +14,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
-
-use GoodBids\Blocks\AllAuctions;
 
 $allowed_html = array(
 	'a' => array(
@@ -55,11 +55,9 @@ $allowed_html = array(
 <div class="py-12 my-12 border-b-2 border-solid border-contrast border-b-transparent border-x-transparent">
 <?php
 	$auctions = goodbids()->sites->get_watched_bid_auctions_by_user();
-
 	goodbids()->load_view( 'parts/auctions-grid.php', compact( 'auctions' ) );
 ?>
 </div>
-
 
 <?php
 	/**

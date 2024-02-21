@@ -1011,12 +1011,15 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?int $user_id
+	 *
 	 * @return array
 	 */
 	public function get_watched_bid_auctions_by_user( ?int $user_id = null ): array {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
+
 		$goodbids_orders = goodbids()->sites->get_user_bid_orders();
 		$auctions        = [];
 
@@ -1048,20 +1051,18 @@ class Sites {
 					$post_id = get_post_meta( $watcher, goodbids()->watchers::AUCTION_ID_META_KEY, true );
 
 					if ( ! in_array( $post_id, array_column( $auctions, 'post_id' ) ) ) {
-						$wached_auctions = [
+						$watched_auction = [
 							'site_id' => $site_id,
 							'post_id' => $post_id,
 						];
-						$auctions[]      = $wached_auctions;
+						$auctions[]      = $watched_auction;
 					}
 				}
-
-				return $auctions;
 			}
 		);
 
 		// Filter by started and not ended and sort by end date
-		$auctions = collect( $auctions )
+		return collect( $auctions )
 			->filter(
 				fn ( array $auction ) => goodbids()->sites->swap(
 					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
@@ -1075,8 +1076,6 @@ class Sites {
 				)
 			)
 			->all();
-
-		return $auctions;
 	}
 
 	/**
