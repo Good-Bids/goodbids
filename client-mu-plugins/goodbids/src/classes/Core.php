@@ -14,7 +14,6 @@ use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Products;
 use GoodBids\Auctions\Rewards;
-use GoodBids\Auctions\Wizard;
 use GoodBids\Auctions\Watchers;
 use GoodBids\Blocks\Blocks;
 use GoodBids\Frontend\Assets;
@@ -74,12 +73,6 @@ class Core {
 	 * @var Dashboard
 	 */
 	public Dashboard $dashboard;
-
-	/**
-	 * @since 1.0.0
-	 * @var Wizard
-	 */
-	public Wizard $wizard;
 
 	/**
 	 * @since 1.0.0
@@ -429,7 +422,6 @@ class Core {
 				$this->users       = new Users();
 				$this->watchers    = new Watchers();
 				$this->referrals   = new Referrals();
-				$this->wizard      = new Wizard();
 
 				// Init Modules not part of the API.
 				new Patterns();

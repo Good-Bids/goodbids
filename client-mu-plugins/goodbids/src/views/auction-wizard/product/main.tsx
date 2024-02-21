@@ -16,11 +16,7 @@ export function Main() {
 						<Form />
 
 						<Tips>
-							<p>
-								You can upload multiple images for your product.
-								The "Product Image" image will be used as the
-								main product image.
-							</p>
+							<p>{gbAuctionWizard.strings.productTips}</p>
 						</Tips>
 					</div>
 
@@ -28,9 +24,9 @@ export function Main() {
 						<button
 							type="submit"
 							form={REWARD_FORM_ID}
-							className="py-2 px-6 border-none rounded-admin-sm bg-admin-main text-white text-admin-content hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 w-full max-w-80"
+							className="py-2 px-6 cursor-pointer border-none rounded-admin-sm bg-admin-main text-white text-admin-content hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 w-full max-w-80"
 						>
-							Save and Continue
+							{gbAuctionWizard.strings.nextButtonText}
 						</button>
 					</div>
 				</Wrapper>

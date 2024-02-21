@@ -62,11 +62,9 @@ export function ProductImage({
 		<div className="flex flex-col gap-3">
 			<div className="flex gap-2 items-center">
 				<h3 className="text-admin-label font-bold m-0">
-					Product Image
+					{gbAuctionWizard.strings.productImageLabel}
 				</h3>
-				<Tooltip>
-					Select a single image as the focal image of your product.
-				</Tooltip>
+				<Tooltip>{gbAuctionWizard.strings.productImageTooltip}</Tooltip>
 			</div>
 			<div className="rounded-md bg-gray-200 w-fit p-2 mx-4">
 				{image ? (
@@ -78,7 +76,7 @@ export function ProductImage({
 							onClick={handleProductImageUploadClick}
 							className="w-44 h-32 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
 						>
-							Click to upload
+							{gbAuctionWizard.strings.imageUploadSingle}
 						</button>
 						<input
 							className="hidden"

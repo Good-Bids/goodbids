@@ -173,6 +173,9 @@ class Auctions {
 
 		// Restrict operations when a Nonprofit is delinquent.
 		$this->restrict_delinquent_sites();
+
+		// Init Auction Wizard.
+		new Wizard();
 	}
 
 	/**

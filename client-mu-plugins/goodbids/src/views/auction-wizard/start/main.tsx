@@ -9,26 +9,18 @@ export function Main() {
 					<img src={AuctionStartImage} />
 				</div>
 				<h1 className="text-6xl font-bold text-admin-main m-0">
-					Build an Auction!
+					{gbAuctionWizard.strings.introHeading}
 				</h1>
 				<div className="max-w-xl">
 					<p className="text-admin-content">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-						sed do eiusmod tempor incididunt ut labore et dolore
-						magna aliqua. Ut enim ad minim veniam, quis nostrud
-						exercitation ullamco laboris nisi ut aliquip ex ea
-						commodo consequat. Duis aute irure dolor in
-						reprehenderit in voluptate velit esse cillum dolore eu
-						fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-						non proident, sunt in culpa qui officia deserunt mollit
-						anim id est laborum.
+						{gbAuctionWizard.strings.introText}
 					</p>
 				</div>
 				<a
-					href="/wp-admin/admin.php?page=gb-auction-wizard-product"
+					href={gbAuctionWizard.baseURL + 'product'}
 					className="py-2 px-6 border border-solid rounded-admin-sm border-admin-main text-admin-main text-admin-content no-underline"
 				>
-					Let's get started
+					{gbAuctionWizard.strings.introButtonText}
 				</a>
 			</div>
 		</Wrapper>

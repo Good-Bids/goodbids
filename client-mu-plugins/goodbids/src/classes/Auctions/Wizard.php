@@ -15,6 +15,8 @@ namespace GoodBids\Auctions;
  */
 class Wizard {
 
+	const BASE_URL = 'edit.php?post_type=';
+
 	/**
 	 * @since 1.0.0
 	 * @var string
@@ -25,82 +27,151 @@ class Wizard {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->init_settings();
+		// Init Admin Menu Page.
+		$this->init_admin_page();
+
+		// Localize Variables
+		$this->localize_variables();
 	}
 
 	/**
-	 * Initialize custom fields.
+	 * Initialize admin menu page.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function init_settings(): void {
-		add_action('admin_menu', function(): void {
-			// Wizard entry point
-			add_menu_page(
-				esc_html__( 'Auction Wizard', 'goodbids' ),
-				esc_html__( 'Auction Wizard', 'goodbids' ),
-				'manage_options',
-				self::PAGE_SLUG,
-				[ $this, 'wizard_start_page' ],
-				'dashicons-money-alt',
-				5
-			);
-
-			// Production Creation Page
-			add_submenu_page(
-				null,
-				esc_html__( 'Create Product', 'goodbids' ),
-				esc_html__( 'Create Product', 'goodbids' ),
-				'manage_options',
-				self::PAGE_SLUG . "-product",
-				[ $this, 'wizard_product_page' ]
-			);
-
-			// TODO: Auction Creation Page
-			add_submenu_page(
-				null,
-				esc_html__( 'Create Auction', 'goodbids' ),
-				esc_html__( 'Create Auction', 'goodbids' ),
-				'manage_options',
-				self::PAGE_SLUG . "-auction",
-				[ $this, 'wizard_start_page' ]
-			);
-
-			// TODO: Finish Page
-			add_submenu_page(
-				null,
-				esc_html__( 'Finish', 'goodbids' ),
-				esc_html__( 'Finish', 'goodbids' ),
-				'manage_options',
-				self::PAGE_SLUG . "-finish",
-				[ $this, 'wizard_start_page' ]
-			);
-		});
+	private function init_admin_page(): void {
+		add_action(
+			'admin_menu',
+			function(): void {
+				add_submenu_page(
+					self::BASE_URL . goodbids()->auctions->get_post_type(),
+					esc_html__( 'Auction Wizard', 'goodbids' ),
+					esc_html__( 'Auction Wizard', 'goodbids' ),
+					'create_auctions',
+					self::PAGE_SLUG,
+					[ $this, 'wizard_admin_page' ],
+					5
+				);
+			}
+		);
 	}
 
 	/**
-	 * Auction Wizard Start Page
+	 * Auction Wizard Admin Page
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function wizard_start_page(): void {
-		require GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/wizard-start.php';
+	public function wizard_admin_page(): void {
+		$step = sanitize_text_field( filter_input( INPUT_GET, 'step', FILTER_SANITIZE_ENCODED ) );
+
+		$slug = match ( $step ) {
+			'product' => 'product',
+			'auction' => 'auction',
+			'finish'  => 'finish',
+			default   => 'start',
+		};
+
+		$data = [
+			'namespace' => self::PAGE_SLUG,
+			'slug'      => $slug,
+		];
+
+		goodbids()->load_view( 'admin/auctions/wizard.php', $data );
 	}
 
 	/**
-	 * Auction Wizard Product Page
+	 * Get the URL for the wizard
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $step
+	 *
+	 * @return string
+	 */
+	private function get_url( string $step = '' ): string {
+		return admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . self::PAGE_SLUG . '&step=' . $step );
+	}
+
+	/**
+	 * Set some variables for JS
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function wizard_product_page(): void {
-		require GOODBIDS_PLUGIN_PATH . 'views/admin/auctions/wizard-product.php';
+	public function localize_variables(): void {
+		add_action(
+			'goodbids_enqueue_admin_scripts',
+			function( string $js_handle ): void {
+				$js_vars = [
+					// Misc.
+					'baseURL' => $this->get_url(),
+
+					// WP Variables.
+					'rewardCategorySlug' => Rewards::ITEM_TYPE,
+
+					'strings' => [
+						// Start Page.
+						'introHeading' => __( 'Build an Auction!', 'goodbids' ),
+						'introText'    => __( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 'goodbids' ),
+						'introButtonText' => __( 'Let\'s get started', 'goodbids' ),
+
+						// Product Page.
+						'productTips' => __( 'You can upload multiple images for your product. The "Product Image" image will be used as the main product image.', 'goodbids' ),
+
+						'createRewardHeading'    => __( 'Create Auction Reward', 'goodbids' ),
+						'createRewardSubheading' => __( 'What are you auctioning?', 'goodbids' ),
+
+						'productTitle'         => __( 'Title', 'goodbids' ),
+						'productTitleTooltip'  => __( 'Product title.', 'goodbids' ),
+						'productTitleRequired' => __( 'Title is required', 'goodbids' ),
+
+						'fairMarketValueLabel'    => __( 'Fair Market Value', 'goodbids' ),
+						'fairMarketValueTooltip'  => __( 'The fair market value of your reward', 'goodbids' ),
+						'fairMarketValueRequired' => __( 'Fair Market Value is required', 'goodbids' ),
+
+						'productImageLabel'   => __( 'Product Image', 'goodbids' ),
+						'productImageTooltip' => __( 'Select a single image as the focal image of your product.', 'goodbids' ),
+						'imageUploadSingle'   => __( 'Click to upload', 'goodbids' ),
+
+						'productGalleryLabel'   => __( 'Product Gallery', 'goodbids' ),
+						'productGalleryTooltip' => __( 'Select additional images for your product gallery.', 'goodbids' ),
+						'imageUploadMultiple'   => __( 'Click to upload multiple', 'goodbids' ),
+
+						'productTypeLabel'      => __( 'What type of product is it?', 'goodbids' ),
+						'productTypePhysical'   => __( 'Physical', 'goodbids' ),
+						'productTypeDigital'    => __( 'Digital', 'goodbids' ),
+						'productTypeExperience' => __( 'Experience', 'goodbids' ),
+
+						// Dimensions
+						'productWeightLabel'   => __( 'Weight (lbs)', 'goodbids' ),
+						'productWeightTooltip' => __( 'Product weight in lbs.', 'goodbids' ),
+						'productLengthLabel'   => __( 'Length (in)', 'goodbids' ),
+						'productLengthTooltip' => __( 'Product length in inches', 'goodbids' ),
+						'productWidthLabel'    => __( 'Width (in)', 'goodbids' ),
+						'productWidthTooltip'  => __( 'Product width in inches', 'goodbids' ),
+						'productHeightLabel'   => __( 'Height (in)', 'goodbids' ),
+						'productHeightTooltip' => __( 'Product height in inches', 'goodbids' ),
+
+						'purchaseNoteLabel'   => __( 'Redemption Details for Auction Winner', 'goodbids' ),
+						'purchaseNoteTooltip' => __( 'Instructions for the auction winner to redeem their reward', 'goodbids' ),
+
+						'shippingClassLabel'   => __( 'Shipping Class', 'goodbids' ),
+						'shippingClassTooltip' => __( 'Determines base shipping cost', 'goodbids' ),
+						'shippingClassNone'    => __( 'No Shipping Class', 'goodbids' ),
+
+						// Validation
+						'invalidDecimal' => __( 'Invalid value. Must match format 0.00', 'goodbids' ),
+						'nextButtonText' => __( 'Save and Continue', 'goodbids' ),
+					],
+				];
+
+				wp_localize_script( $js_handle, 'gbAuctionWizard', $js_vars );
+			}
+		);
 	}
-
-
 }

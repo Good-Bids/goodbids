@@ -59,7 +59,7 @@ export function Form() {
 
 	const onSubmit: SubmitHandler<RewardInputs> = (data) => {
 		const category = productCategories.data?.find(
-			(category) => category.slug === 'rewards',
+			(category) => category.slug === gbAuctionWizard.rewardCategorySlug,
 		);
 
 		if (!(category && productType)) {
@@ -117,10 +117,10 @@ export function Form() {
 	return (
 		<div className="flex flex-col gap-4">
 			<h1 className="text-4xl text-admin-main m-0">
-				Create Auction Reward
+				{gbAuctionWizard.strings.createRewardHeading}
 			</h1>
 			<h2 className="text-admin-large text-admin-main m-0">
-				What are you auctioning?
+				{gbAuctionWizard.strings.createRewardSubheading}
 			</h2>
 
 			<form
@@ -131,13 +131,17 @@ export function Form() {
 				<div className="flex flex-col gap-4">
 					<div className="w-full max-w-80">
 						<TextInput
-							label="Title"
-							tooltip="Product title"
+							label={gbAuctionWizard.strings.productTitle}
+							tooltip={
+								gbAuctionWizard.strings.productTitleTooltip
+							}
 							error={errors.name?.message}
 							{...register('name', {
 								required: {
 									value: true,
-									message: 'Title is required',
+									message:
+										gbAuctionWizard.strings
+											.productTitleRequired,
 								},
 							})}
 						/>
@@ -146,19 +150,23 @@ export function Form() {
 					<div className="w-full max-w-60">
 						<TextInput
 							inputMode="decimal"
-							label="Fair Market Value"
-							tooltip="The fair market value of your reward"
+							label={gbAuctionWizard.strings.fairMarketValueLabel}
+							tooltip={
+								gbAuctionWizard.strings.fairMarketValueTooltip
+							}
 							startIcon={<MoneyIcon width={16} />}
 							error={
 								errors.regular_price?.message ||
 								getFieldState('regular_price')?.invalid
-									? 'Invalid value. Must match format 0.00'
+									? gbAuctionWizard.strings.invalidDecimal
 									: undefined
 							}
 							{...register('regular_price', {
 								required: {
 									value: true,
-									message: 'Fair Market Value is required',
+									message:
+										gbAuctionWizard.strings
+											.fairMarketValueRequired,
 								},
 								validate: (value) => validateDecimal(value),
 							})}
@@ -180,24 +188,35 @@ export function Form() {
 					/>
 				</div>
 				<RadioInput
-					label="What type of product is it?"
+					label={gbAuctionWizard.strings.productTypeLabel}
 					value={productType}
 					onValueChange={handleProductTypeChange}
+					className="cursor-pointer"
 				>
-					<RadioItem value="physical">Physical</RadioItem>
-					<RadioItem value="digital">Digital</RadioItem>
-					<RadioItem value="experience">Experience</RadioItem>
+					<RadioItem value="physical" className="cursor-pointer">
+						{gbAuctionWizard.strings.productTypePhysical}
+					</RadioItem>
+					<RadioItem value="digital" className="cursor-pointer">
+						{gbAuctionWizard.strings.productTypeDigital}
+					</RadioItem>
+					<RadioItem value="experience" className="cursor-pointer">
+						{gbAuctionWizard.strings.productTypeExperience}
+					</RadioItem>
 				</RadioInput>
 				{productType === 'physical' && (
 					<>
 						<div className="w-full max-w-80">
 							<TextInput
-								label="Weight (lbs)"
-								tooltip="Product weight in lbs."
+								label={
+									gbAuctionWizard.strings.productWeightLabel
+								}
+								tooltip={
+									gbAuctionWizard.strings.productWeightTooltip
+								}
 								error={
 									errors.weight?.message ||
 									getFieldState('weight')?.invalid
-										? 'Invalid value. Must match format 0.00'
+										? gbAuctionWizard.strings.invalidDecimal
 										: undefined
 								}
 								{...register('weight', {
@@ -211,12 +230,19 @@ export function Form() {
 						<div className="grid grid-cols-3 gap-2 w-full max-w-120">
 							<div className="w-full">
 								<TextInput
-									label="Length (in)"
-									tooltip="Product length in inches"
+									label={
+										gbAuctionWizard.strings
+											.productLengthLabel
+									}
+									tooltip={
+										gbAuctionWizard.strings
+											.productLengthTooltip
+									}
 									error={
 										errors.length?.message ||
 										getFieldState('length')?.invalid
-											? 'Invalid value. Must match format 0.00'
+											? gbAuctionWizard.strings
+													.invalidDecimal
 											: undefined
 									}
 									{...register('length', {
@@ -229,12 +255,19 @@ export function Form() {
 
 							<div className="w-full">
 								<TextInput
-									label="Width (in)"
-									tooltip="Product width in inches"
+									label={
+										gbAuctionWizard.strings
+											.productWidthLabel
+									}
+									tooltip={
+										gbAuctionWizard.strings
+											.productWidthTooltip
+									}
 									error={
 										errors.width?.message ||
 										getFieldState('width')?.invalid
-											? 'Invalid value. Must match format 0.00'
+											? gbAuctionWizard.strings
+													.invalidDecimal
 											: undefined
 									}
 									{...register('width', {
@@ -247,12 +280,19 @@ export function Form() {
 
 							<div className="w-full">
 								<TextInput
-									label="Height (in)"
-									tooltip="Product height in inches"
+									label={
+										gbAuctionWizard.strings
+											.productHeightLabel
+									}
+									tooltip={
+										gbAuctionWizard.strings
+											.productHeightTooltip
+									}
 									error={
 										errors.height?.message ||
 										getFieldState('height')?.invalid
-											? 'Invalid value. Must match format 0.00'
+											? gbAuctionWizard.strings
+													.invalidDecimal
 											: undefined
 									}
 									{...register('height', {
@@ -269,8 +309,10 @@ export function Form() {
 					productType === 'experience') && (
 					<div className="w-full max-w-120">
 						<TextArea
-							label="Redemption Details for Auction Winner"
-							tooltip="Instructions for the auction winner to redeem their reward"
+							label={gbAuctionWizard.strings.purchaseNoteLabel}
+							tooltip={
+								gbAuctionWizard.strings.purchaseNoteTooltip
+							}
 							{...register('purchase_note')}
 						/>
 					</div>
@@ -284,8 +326,14 @@ export function Form() {
 							render={({ field: { value, onChange } }) => (
 								<Select
 									id="shipping-class"
-									label="Shipping Class"
-									tooltip="Determines base shipping cost"
+									label={
+										gbAuctionWizard.strings
+											.shippingClassLabel
+									}
+									tooltip={
+										gbAuctionWizard.strings
+											.shippingClassTooltip
+									}
 									value={value}
 									onValueChange={onChange}
 									disabled={
@@ -293,7 +341,10 @@ export function Form() {
 									}
 								>
 									<SelectItem value="none">
-										No Shipping Class
+										{
+											gbAuctionWizard.strings
+												.shippingClassNone
+										}
 									</SelectItem>
 									{shippingClasses.data?.map(
 										(shippingClass) => (

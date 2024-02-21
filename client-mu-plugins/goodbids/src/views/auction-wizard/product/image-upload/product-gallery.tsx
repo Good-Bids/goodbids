@@ -77,10 +77,10 @@ export function ProductGallery({
 		<div className="flex flex-col gap-3">
 			<div className="flex gap-2 items-center">
 				<h3 className="text-admin-label font-bold m-0">
-					Product Gallery
+					{gbAuctionWizard.strings.productGalleryLabel}
 				</h3>
 				<Tooltip>
-					Select additional images for your product gallery.
+					{gbAuctionWizard.strings.productGalleryTooltip}
 				</Tooltip>
 			</div>
 			<div className="rounded-md bg-gray-200 w-fit p-2 mx-4 grid grid-cols-4 gap-2">
@@ -97,7 +97,7 @@ export function ProductGallery({
 						onClick={handleProductGalleryUploadClick}
 						className="min-w-88 min-h-32 col-span-2 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
 					>
-						Click to upload multiple
+						{gbAuctionWizard.strings.imageUploadMultiple}
 					</button>
 					<input
 						className="hidden"
