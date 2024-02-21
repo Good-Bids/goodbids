@@ -1053,14 +1053,19 @@ class Sites {
 
 		// Get user Bids from all sites
 		foreach ( $goodbids_orders as $goodbids_order ) {
-			$post_id = goodbids()->sites->swap(
+			$auction_id = goodbids()->sites->swap(
 				fn () => goodbids()->woocommerce->orders->get_auction_id( $goodbids_order['order_id'] ),
 				$goodbids_order['site_id']
 			);
-			if ( ! in_array( $post_id, array_column( $auctions, 'post_id' ) ) ) {
+
+			if ( 'published' !== get_post_status( $auction_id ) ) {
+				continue;
+			}
+
+			if ( ! in_array( $auction_id, array_column( $auctions, 'post_id' ) ) ) {
 				$bid_auction = [
 					'site_id' => $goodbids_order['site_id'],
-					'post_id' => $post_id,
+					'post_id' => $auction_id,
 				];
 				$auctions[]  = $bid_auction;
 			}
@@ -1075,13 +1080,17 @@ class Sites {
 
 				$watchers = goodbids()->watchers->get_watchers_by_user( $user_id );
 
-				foreach ( $watchers as $watcher ) {
-					$post_id = get_post_meta( $watcher, goodbids()->watchers::AUCTION_ID_META_KEY, true );
+				foreach ( $watchers as $watcher_id ) {
+					$auction_id = goodbids()->watchers->get_auction_id( $watcher_id );
 
-					if ( ! in_array( $post_id, array_column( $auctions, 'post_id' ) ) ) {
+					if ( 'published' !== get_post_status( $auction_id ) ) {
+						continue;
+					}
+
+					if ( ! in_array( $auction_id, array_column( $auctions, 'post_id' ) ) ) {
 						$watched_auction = [
 							'site_id' => $site_id,
-							'post_id' => $post_id,
+							'post_id' => $auction_id,
 						];
 						$auctions[]      = $watched_auction;
 					}
@@ -1092,15 +1101,21 @@ class Sites {
 		// Filter by started and not ended and sort by end date
 		return collect( $auctions )
 			->filter(
-				fn ( array $auction ) => goodbids()->sites->swap(
-					fn () => goodbids()->auctions->has_started( $auction['post_id'] ) && ! goodbids()->auctions->has_ended( $auction['post_id'] ),
-					$auction['site_id']
+				fn ( array $auction_data ) => goodbids()->sites->swap(
+					function () use ( $auction_data ) {
+						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+						return $auction->has_started() && ! $auction->has_ended();
+					},
+					$auction_data['site_id']
 				)
 			)
 			->sortBy(
-				fn( array $auction ) => goodbids()->sites->swap(
-					fn() => goodbids()->auctions->get_end_date_time( $auction['post_id'] ),
-					$auction['site_id']
+				fn( array $auction_data ) => goodbids()->sites->swap(
+					function () use ( $auction_data ) {
+						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+						return $auction->get_end_date_time();
+					},
+					$auction_data['site_id']
 				)
 			)
 			->all();
