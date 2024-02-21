@@ -1,15 +1,24 @@
 {
-	"name": "authentication",
-	"title": "User Authentication Form",
-	"description": "Displays a user login and registration form for GoodBids.",
-	"icon": "feedback",
-	"category": "goodbids",
-	"textdomain": "goodbids",
-	"keywords": ["custom", "sign", "up", "register", "registration", "form", "users", "authentication"],
-	"acf": {
-		"mode": "preview"
-	},
-	"supports": {
-		"jsx": false
-	}
+  "name": "authentication",
+  "title": "User Authentication Form",
+  "description": "Displays a user login and registration form for GoodBids.",
+  "icon": "feedback",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": [
+    "custom",
+    "sign",
+    "up",
+    "register",
+    "registration",
+    "form",
+    "users",
+    "authentication"
+  ],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
 }

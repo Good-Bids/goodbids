@@ -1,15 +1,15 @@
 {
-	"name": "bid-now",
-	"title": "Bid Now Button",
-	"description": "Displays a bid now button for the current Auction.",
-	"icon": "money-alt",
-	"category": "goodbids",
-	"textdomain": "goodbids",
-	"keywords": ["bid", "purchase", "donate", "button", "submit", "cart"],
-	"acf": {
-		"mode": "preview"
-	},
-	"supports": {
-		"jsx": false
-	}
+  "name": "bid-now",
+  "title": "Bid Now Button",
+  "description": "Displays a bid now button for the current Auction.",
+  "icon": "money-alt",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["bid", "purchase", "donate", "button", "submit", "cart"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
 }

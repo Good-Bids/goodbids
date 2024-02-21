@@ -206,6 +206,15 @@ class Patterns {
 			return false;
 		}
 
+		if ( ! str_contains( $name, '/' ) ) {
+			$name = self::DEFAULT_NAMESPACE . '/' . $name;
+		}
+
+		if ( empty( $pattern['slug'] ) ) {
+			list( $namespace, $slug ) = explode( '/', $name );
+			$pattern['slug'] = $slug;
+		}
+
 		if ( empty( $pattern['categories'] ) ) {
 			$pattern['categories'] = [ self::DEFAULT_NAMESPACE ];
 		}
@@ -219,10 +228,6 @@ class Patterns {
 		}
 
 		$pattern['content'] = $content;
-
-		if ( ! str_contains( $name, '/' ) ) {
-			$name = self::DEFAULT_NAMESPACE . '/' . $name;
-		}
 
 		return register_block_pattern( $name, $pattern );
 	}

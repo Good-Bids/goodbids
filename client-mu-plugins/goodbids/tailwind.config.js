@@ -23,6 +23,7 @@ export default {
 			},
 			borderRadius: {
 				DEFAULT: 'var(--wp--preset--spacing--20)',
+				xs: '0.5rem',
 				sm: 'var(--wp--preset--spacing--10)',
 			},
 			borderWidth: {
@@ -71,7 +72,7 @@ export default {
 		({ addComponents }) => {
 			//set up btn classes
 			const buttonBase = {
-				'@apply rounded py-2 px-6 border border-solid border-transparent no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2':
+				'@apply rounded py-2 px-6 border border-solid border-transparent leading-normal no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2 hover:cursor-pointer':
 					{},
 			};
 
@@ -84,7 +85,7 @@ export default {
 				},
 				'.btn-fill-secondary': {
 					...buttonBase,
-					'@apply bg-contrast-3 text-contrast hover:bg-base focus:bg-base focus:text-base-2':
+					'@apply bg-contrast-3 text-contrast hover:bg-contrast hover:text-base-2 focus:bg-contrast focus:text-base-2':
 						{},
 				},
 				'.btn-outline': {
