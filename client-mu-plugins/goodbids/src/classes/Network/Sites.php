@@ -753,14 +753,14 @@ class Sites {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_bid_count();
 							},
-							$auction['site_id']
+							$auction_data['site_id']
 						),
 						'total_raised' => $this->swap(
 							function() use ( $auction_data ) {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_total_raised();
 							},
-							$auction['site_id']
+							$auction_data['site_id']
 						),
 					]
 				)
