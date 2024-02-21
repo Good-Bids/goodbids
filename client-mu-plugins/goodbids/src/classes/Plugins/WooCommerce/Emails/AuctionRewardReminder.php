@@ -8,6 +8,9 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Auctions\Rewards;
+use GoodBids\Utilities\Log;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -32,6 +35,35 @@ class AuctionRewardReminder extends Email {
 		$this->template_html  = 'emails/auction-reward-reminder.php';
 		$this->template_plain = 'emails/plain/auction-reward-reminder.php';
 		$this->customer_email = true;
+
+		$this->check_for_unclaimed_rewards();
+	}
+
+	/**
+	 * Trigger this email when an Auction has an unclaimed reward.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function check_for_unclaimed_rewards(): void {
+		add_action(
+			Rewards::CRON_UNCLAIMED_REMINDER_HOOK,
+			function (): void {
+				$auctions = goodbids()->auctions->get_unclaimed_reward_auctions();
+
+				if ( ! $auctions ) {
+					return;
+				}
+
+				foreach ( $auctions as $auction_id ) {
+					Log::debug( 'Triggering Auction Reward Claim Reminder email for Auction: ' . $auction_id );
+					$auction = goodbids()->auctions->get( $auction_id );
+					$winner  = $auction->get_winning_bidder();
+					$this->trigger( $auction, $winner->ID );
+				}
+			}
+		);
 	}
 
 	/**

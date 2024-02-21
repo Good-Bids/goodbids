@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Utilities\Log;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -32,6 +34,29 @@ class AuctionWinnerConfirmation extends Email {
 		$this->template_html  = 'emails/auction-winner-confirmation.php';
 		$this->template_plain = 'emails/plain/auction-winner-confirmation.php';
 		$this->customer_email = true;
+
+		$this->trigger_on_auction_end();
+	}
+
+	/**
+	 * Trigger this email on Auction End.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				Log::debug( 'Triggering Winner Confirmation email for Auction: ' . $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
+				$winner  = $auction->get_winning_bidder();
+				$this->trigger( $auction, $winner->ID );
+			},
+			10,
+			2
+		);
 	}
 
 	/**

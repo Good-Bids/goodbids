@@ -69,7 +69,6 @@ class AuctionClosed extends Email {
 			10,
 			2
 		);
-
 	}
 
 	/**

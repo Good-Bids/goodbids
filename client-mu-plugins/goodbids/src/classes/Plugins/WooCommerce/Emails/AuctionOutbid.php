@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Utilities\Log;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -32,6 +34,58 @@ class AuctionOutbid extends Email {
 		$this->template_html  = 'emails/auction-outbid.php';
 		$this->template_plain = 'emails/plain/auction-outbid.php';
 		$this->bidder_email   = true;
+
+		$this->trigger_on_bid_order();
+	}
+
+	/**
+	 * Trigger this email on Bid Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_bid_order(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$auction    = goodbids()->auctions->get( $auction_id );
+				$bid_orders = $auction->get_bid_orders( 5 ); // Account for multiple bids in a row.
+
+				// No previous bid orders.
+				if ( count( $bid_orders < 2 ) ) {
+					return;
+				}
+
+				// Get the order before the current one.
+				$next  = false;
+				$order = false;
+				foreach ( $bid_orders as $bid_order ) {
+					if ( $bid_order === $order_id ) {
+						$next = true;
+						continue;
+					}
+
+					if ( $next ) {
+						$order = wc_get_order( $bid_order );
+						break;
+					}
+				}
+
+				if ( ! $order ) {
+					return;
+				}
+
+				Log::debug( 'Triggering Outbid email for Auction: ' . $auction_id );
+				$this->trigger( $auction, $order->get_user_id() );
+			},
+			10,
+			1
+		);
 	}
 
 	/**

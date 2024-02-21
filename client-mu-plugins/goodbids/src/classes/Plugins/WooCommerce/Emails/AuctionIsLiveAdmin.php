@@ -35,6 +35,8 @@ class AuctionIsLiveAdmin extends AuctionIsLive {
 		$this->template_plain = 'emails/plain/auction-is-live-admin.php';
 		$this->watcher_email  = false; // Override parent class value.
 		$this->admin_email    = true;
+
+		// Parent class triggers this email on auction start.
 	}
 
 	/**

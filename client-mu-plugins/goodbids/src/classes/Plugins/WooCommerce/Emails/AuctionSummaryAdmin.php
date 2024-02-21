@@ -9,6 +9,7 @@
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Utilities\Log;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -34,6 +35,28 @@ class AuctionSummaryAdmin extends Email {
 		$this->template_html  = 'emails/auction-summary-admin.php';
 		$this->template_plain = 'emails/plain/auction-summary-admin.php';
 		$this->admin_email    = true;
+
+		$this->trigger_on_auction_end();
+	}
+
+	/**
+	 * Trigger this email on Auction End.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				Log::debug( 'Triggering Auction Summary Admin emails for Auction: ' . $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
+				$this->send_to_admins( $auction );
+			},
+			10,
+			2
+		);
 	}
 
 	/**

@@ -329,10 +329,6 @@ class Email extends WC_Email {
 
 		// Remove Template Customizations.
 		$this->remove_customizations();
-
-		// Reset vars.
-		$this->email_vars   = [];
-		$this->placeholders = [];
 	}
 
 	/**
@@ -473,17 +469,12 @@ class Email extends WC_Email {
 
 		$recipients = [];
 
-		// Set to customer email
-		if ( $this->user_id && ( $this->is_customer_email() || $this->is_bidder_email() || $this->is_watcher_email() ) ) {
+		// Set to User Email
+		if ( $this->user_id ) {
 			$user = get_user_by( 'ID', $this->user_id );
 			if ( $user ) {
 				$recipients[] = $user->user_email;
 			}
-		}
-
-		// Use Site Admin Email for Admin Emails.
-		if ( $this->is_admin_email() ) {
-			$recipients[] = get_option( 'admin_email' ); // TODO: Get all site admin emails.
 		}
 
 		$recipients = array_filter( $recipients, 'is_email' );
@@ -782,6 +773,26 @@ class Email extends WC_Email {
 	public function send_to_bidders( Auction $auction ): void {
 		$bidders = $auction->get_bidder_ids();
 		foreach ( $bidders as $user_id ) {
+			$this->trigger( $auction, $user_id );
+		}
+	}
+
+	/**
+	 * Send the email to all Admins
+	 *
+	 * TODO: Get all site admin emails.
+	 *
+	 * @param Auction $auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function send_to_admins( Auction $auction ): void {
+		$admin  = get_user_by( 'email', get_option( 'admin_email' ) );
+		$admins = [ $admin->ID ];
+
+		foreach ( $admins as $user_id ) {
 			$this->trigger( $auction, $user_id );
 		}
 	}
