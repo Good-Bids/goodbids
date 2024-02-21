@@ -1058,7 +1058,7 @@ class Sites {
 				$goodbids_order['site_id']
 			);
 
-			if ( 'published' !== get_post_status( $auction_id ) ) {
+			if ( 'publish' !== get_post_status( $auction_id ) ) {
 				continue;
 			}
 
@@ -1083,7 +1083,7 @@ class Sites {
 				foreach ( $watchers as $watcher_id ) {
 					$auction_id = goodbids()->watchers->get_auction_id( $watcher_id );
 
-					if ( 'published' !== get_post_status( $auction_id ) ) {
+					if ( 'publish' !== get_post_status( $auction_id ) ) {
 						continue;
 					}
 
