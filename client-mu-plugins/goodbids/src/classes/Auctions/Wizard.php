@@ -47,12 +47,18 @@ class Wizard {
 			function(): void {
 				add_submenu_page(
 					self::BASE_URL . goodbids()->auctions->get_post_type(),
-					esc_html__( 'Auction Wizard', 'goodbids' ),
-					esc_html__( 'Auction Wizard', 'goodbids' ),
+					esc_html__( 'Add New', 'goodbids' ),
+					esc_html__( 'Add New', 'goodbids' ),
 					'create_auctions',
 					self::PAGE_SLUG,
 					[ $this, 'wizard_admin_page' ],
-					5
+					2
+				);
+
+				// Remove the default "Add New" link.
+				remove_submenu_page(
+					self::BASE_URL . goodbids()->auctions->get_post_type(),
+					'post-new.php?post_type=' . goodbids()->auctions->get_post_type(),
 				);
 			}
 		);
