@@ -371,7 +371,7 @@ class Auctions {
 				[
 					'key'     => self::AUCTION_CLOSE_META_KEY,
 					'value'   => $threshold,
-					'compare' => '<',
+					'compare' => '<=',
 				],
 				[
 					'key'     => Rewards::REDEEMED_META_KEY,
