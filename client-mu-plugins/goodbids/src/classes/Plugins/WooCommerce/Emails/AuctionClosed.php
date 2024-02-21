@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Utilities\Log;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -33,6 +35,8 @@ class AuctionClosed extends Email {
 		$this->template_plain = 'emails/plain/auction-closed.php';
 		$this->watcher_email  = true;
 		$this->bidder_email   = true;
+
+		$this->trigger_on_auction_end();
 	}
 
 	/**
@@ -44,6 +48,28 @@ class AuctionClosed extends Email {
 	 */
 	protected function init_customizations(): void {
 		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
+	}
+
+	/**
+	 * Trigger this email on Auction End.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				Log::debug( 'Triggering Auction Close emails for Auction: ' . $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
+				$this->send_to_watchers( $auction );
+				$this->send_to_bidders( $auction );
+			},
+			10,
+			2
+		);
+
 	}
 
 	/**

@@ -606,6 +606,23 @@ class Auction {
 	public function get_bid_order_ids( int $limit = -1, ?int $user_id = null ): array {
 		return goodbids()->auctions->get_bid_order_ids( $this->get_id(), $limit, $user_id );
 	}
+
+	/**
+	 * Get all Bidders for an Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int[]
+	 */
+	public function get_bidder_ids(): array {
+		$orders  = $this->get_bid_orders();
+		$bidders = [];
+		foreach ( $orders as $order ) {
+			$bidders[] = $order->get_user_id();
+		}
+		return $bidders;
+	}
+
 	/**
 	 * Get Order IDs that have been placed using a Free Bid.
 	 *

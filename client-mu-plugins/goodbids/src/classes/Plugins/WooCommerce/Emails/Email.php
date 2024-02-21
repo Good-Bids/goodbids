@@ -483,7 +483,7 @@ class Email extends WC_Email {
 
 		// Use Site Admin Email for Admin Emails.
 		if ( $this->is_admin_email() ) {
-			$recipients[] = get_option( 'admin_email' );
+			$recipients[] = get_option( 'admin_email' ); // TODO: Get all site admin emails.
 		}
 
 		$recipients = array_filter( $recipients, 'is_email' );
@@ -766,6 +766,22 @@ class Email extends WC_Email {
 		$watchers = goodbids()->watchers->get_watchers_by_auction( $auction->get_id() );
 		foreach ( $watchers as $watcher ) {
 			$user_id = goodbids()->watchers->get_user_id( $watcher );
+			$this->trigger( $auction, $user_id );
+		}
+	}
+
+	/**
+	 * Send the email to all Bidders
+	 *
+	 * @param Auction $auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function send_to_bidders( Auction $auction ): void {
+		$bidders = $auction->get_bidder_ids();
+		foreach ( $bidders as $user_id ) {
 			$this->trigger( $auction, $user_id );
 		}
 	}
