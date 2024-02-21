@@ -64,7 +64,7 @@ if ( $auction->has_started() ) {
 			<?php if ( has_post_thumbnail() ) : ?>
 				<?php the_post_thumbnail( 'woocommerce_thumbnail', [ 'class' => 'w-full h-full object-cover' ] ); ?>
 			<?php else : ?>
-				<?php echo wp_kses_post( goodbids()->rewards->get_product( $auction->get_id() )->get_image( null, [ 'class' => 'w-full h-full object-cover' ] ) ); ?>
+				<?php echo wp_kses_post( goodbids()->rewards->get_product( $auction->get_id() )->get_image( 'woocommerce_thumbnail', [ 'class' => 'w-full h-full object-cover' ] ) ); ?>
 			<?php endif; ?>
 		</figure>
 	</a>

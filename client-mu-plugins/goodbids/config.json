@@ -47,7 +47,7 @@
       "auctions-per-page": 9
     },
     "watch-auction": {
-      "post-types": [ "gb-auction" ]
+      "post-types": ["gb-auction"]
     }
   },
   "invoices": {
@@ -64,6 +64,13 @@
     "expiration-days": 30
   },
   "onetrust": {
-    "domain-script": "27e668a7-1a27-4468-a980-700744dc0a20-test"
+    "staging": {
+      "domain-script": "018db271-d57e-7feb-8af7-6abf9b08d9cc-test",
+      "script-url": "https://cookie-cdn.cookiepro.com/consent/018db271-d57e-7feb-8af7-6abf9b08d9cc-test/OtAutoBlock.js"
+    },
+    "production": {
+      "domain-script": "018db277-8821-7adb-9a46-541376bb3a13",
+      "script-url": "https://cookie-cdn.cookiepro.com/consent/018db277-8821-7adb-9a46-541376bb3a13/OtAutoBlock.js"
+    }
   }
 }
