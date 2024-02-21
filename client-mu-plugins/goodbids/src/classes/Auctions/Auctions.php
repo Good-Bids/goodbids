@@ -336,7 +336,7 @@ class Auctions {
 			function ( int $ttl, WP_REST_Response $response ): int {
 				$handler = $response->get_matched_handler();
 
-				if ( empty( $handler['callback'][0] ) || ! is_object(  $handler['callback'][0] ) ) {
+				if ( empty( $handler['callback'][0] ) || ! is_object( $handler['callback'][0] ) ) {
 					return $ttl;
 				}
 
@@ -624,6 +624,7 @@ class Auctions {
 
 		return goodbids()->utilities->format_date_time( $end, $format );
 	}
+
 
 	/**
 	 * Check if an Auction has started.
@@ -1662,7 +1663,14 @@ class Auctions {
 				$count = count( $auctions->posts );
 
 				if ( $count !== $starts ) {
-					Log::warning( 'Not all Auctions were started', [ 'starts' => $starts, 'expected' => $count, 'posts' => $auctions->posts ] );
+					Log::warning(
+						'Not all Auctions were started',
+						[
+							'starts'   => $starts,
+							'expected' => $count,
+							'posts'    => $auctions->posts,
+						]
+					);
 				}
 			}
 		);
