@@ -24,7 +24,7 @@ endif;
 	<?php foreach ( $referrals as $referral_data ) :
 		goodbids()->sites->swap(
 			function() use ( $referral_data ) {
-				$referral = new Referral( get_the_ID() );
+				$referral = new Referral( $referral_data['referral_id'] );
 				$user_id  = $referral->get_user_id();
 				$user     = $referral->get_user();
 				?>
