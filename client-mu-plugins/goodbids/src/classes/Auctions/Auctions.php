@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Core;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
@@ -145,7 +146,7 @@ class Auctions {
 		$this->rewards = new Rewards();
 
 		// Disable Auctions on Main Site.
-		if ( is_main_site() ) {
+		if ( is_main_site() && ! Core::is_dev_env() ) {
 			return;
 		}
 
@@ -892,11 +893,11 @@ class Auctions {
 	 *
 	 * @param ?int   $auction_id
 	 * @param ?int   $user_id
-	 * @param string $description
+	 * @param string $details
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $auction_id, ?int $user_id = null, string $description = '' ): bool {
+	public function maybe_award_free_bid( ?int $auction_id, ?int $user_id = null, string $details = '' ): bool {
 		$free_bids = $this->get_free_bids_available( $auction_id );
 		if ( ! $free_bids ) {
 			return false;
@@ -906,7 +907,7 @@ class Auctions {
 			$user_id = get_current_user_id();
 		}
 
-		if ( goodbids()->users->award_free_bid( $user_id, $auction_id, $description ) ) {
+		if ( goodbids()->users->award_free_bid( $user_id, $auction_id, FreeBid::TYPE_PAID_BID, $details ) ) {
 			--$free_bids;
 			$this->update_free_bids( $auction_id, $free_bids );
 			return true;

@@ -82,13 +82,15 @@ class Users {
 	 *
 	 * @param int $user_id
 	 * @param int $auction_id
-	 * @param string $description
+	 * @param string $type
+	 * @param string $details
 	 *
 	 * @return bool
 	 */
-	public function award_free_bid( int $user_id, int $auction_id, string $description = '' ): bool {
+	public function award_free_bid( int $user_id, int $auction_id, string $type = FreeBid::TYPE_PAID_BID, string $details = '' ): bool {
 		$free_bid = new FreeBid( $auction_id );
-		$free_bid->set_description( $description );
+		$free_bid->set_type( $type );
+		$free_bid->set_details( $details );
 
 		$free_bids   = $this->get_free_bids( $user_id );
 		$free_bids[] = $free_bid;

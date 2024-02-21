@@ -597,17 +597,33 @@ class Sites {
 					return;
 				}
 
-				$site_id = get_current_blog_id();
-
-				// Check if the user is already registered on the site.
-				if ( is_user_member_of_blog( $user_id, $site_id ) ) {
-					return;
-				}
-
-				// Add the user to the site.
-				add_user_to_blog( $site_id, $user_id, 'customer' );
+				$this->add_user_to_site( $user_id );
 			}
 		);
+	}
+
+	/**
+	 * Adds a user to a site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int  $user_id
+	 * @param ?int $site_id
+	 *
+	 * @return void
+	 */
+	public function add_user_to_site( int $user_id, ?int $site_id = null ): void {
+		if ( null === $site_id ) {
+			$site_id = get_current_blog_id();
+		}
+
+		// Check if the user is already registered on the site.
+		if ( is_user_member_of_blog( $user_id, $site_id ) ) {
+			return;
+		}
+
+		// Add the user to the site.
+		add_user_to_blog( $site_id, $user_id, 'customer' );
 	}
 
 	/**

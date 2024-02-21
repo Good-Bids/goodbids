@@ -23,6 +23,7 @@ export default {
 			},
 			borderRadius: {
 				DEFAULT: 'var(--wp--preset--spacing--20)',
+				xs: '0.5rem',
 				sm: 'var(--wp--preset--spacing--10)',
 			},
 			borderWidth: {

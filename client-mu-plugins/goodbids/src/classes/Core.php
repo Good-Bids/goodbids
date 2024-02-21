@@ -25,6 +25,7 @@ use GoodBids\Nonprofits\Invoices;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\Referrals;
 use GoodBids\Users\Users;
 use GoodBids\Utilities\Log;
 use GoodBids\Utilities\Utilities;
@@ -147,6 +148,12 @@ class Core {
 	 * @var Users
 	 */
 	public Users $users;
+
+	/**
+	 * @since 1.0.0
+	 * @var Referrals
+	 */
+	public Referrals $referrals;
 
 	/**
 	 * @since 1.0.0
@@ -392,6 +399,7 @@ class Core {
 				$this->notices     = new Notices();
 				$this->users       = new Users();
 				$this->watchers    = new Watchers();
+				$this->referrals   = new Referrals();
 			}
 		);
 	}
