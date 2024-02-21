@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "20a81e78397decd0c3e110bfec30238e",
+    "content-hash": "86781cbe93fb3354226bc873ce8e019a",
     "packages": [
         {
             "name": "composer/installers",
@@ -1345,6 +1345,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/woocommerce-services/"
+        },
+        {
+            "name": "wpackagist-plugin/wp-referral-code",
+            "version": "1.4.10",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wp-referral-code/",
+                "reference": "tags/1.4.10"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wp-referral-code.1.4.10.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/wp-referral-code/"
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",

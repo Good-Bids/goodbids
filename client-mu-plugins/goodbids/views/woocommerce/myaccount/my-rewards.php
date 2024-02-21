@@ -49,19 +49,22 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 			foreach ( $reward_orders as $reward_order ) {
 				goodbids()->sites->swap(
 					function () use ( $reward_order, $disabled_columns ) {
-						$order      = wc_get_order( $reward_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-						$item_count = $order->get_item_count() - $order->get_item_count_refunded();
+						$order = wc_get_order( $reward_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 						?>
 						<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
 							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-reward" data-title="<?php esc_attr_e( 'Reward', 'goodbids' ); ?>">
-								<?php foreach ( $order->get_items() as $item ) : ?>
-									<?php $product = $item->get_product(); ?>
-									<?php if ( $product ) : ?>
+								<?php
+								foreach ( $order->get_items() as $item ) :
+									$product = $item->get_product();
+									if ( $product ) :
+										?>
 										<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
 											<?php echo esc_html( $item['name'] ); ?>
 										</a>
-									<?php endif; ?>
-								<?php endforeach; ?>
+										<?php
+									endif;
+								endforeach;
+								?>
 							</td>
 							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-nonprofit" data-title="<?php esc_attr_e( 'Nonprofit', 'goodbids' ); ?>">
 								<a href="<?php echo esc_url( get_blog_details( $reward_order['site_id'] )->siteurl ); ?>">

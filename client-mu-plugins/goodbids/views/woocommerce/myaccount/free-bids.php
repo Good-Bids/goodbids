@@ -2,15 +2,16 @@
 /**
  * My Account: Free Bids Page
  *
- * @global \GoodBids\Auctions\FreeBid[] $free_bids
+ * @global FreeBid[] $free_bids
  *
  * @package GoodBids
  */
 
+use GoodBids\Auctions\FreeBid;
+
 ?>
 <div class="goodbids-free-bids">
 	<h1><?php esc_html_e( 'Free Bids', 'goodbids' ); ?></h1>
-
 
 	<?php if ( ! count( $free_bids ) ) : ?>
 		<p><?php esc_html_e( 'You have not earned any free bids yet.', 'goodbids' ); ?></p>
@@ -32,8 +33,8 @@
 							<span><?php echo esc_html( $index + 1 ); ?></span>
 						</td>
 						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-earned" data-title="<?php esc_attr_e( 'Earned', 'goodbids' ); ?>">
-							<div title="<?php echo esc_attr( $free_bid->description ); ?>">
-								<span><?php $free_bid->display_auction_link( $free_bid->auction_id_earned, $free_bid->description ); ?></span>
+							<div title="<?php echo esc_attr( $free_bid->get_details() ); ?>">
+								<span><?php $free_bid->display_auction_link( $free_bid->auction_id_earned, $free_bid->get_details() ); ?></span>
 								<?php esc_html_e( 'on', 'goodbids' ); ?>
 								<span><?php $free_bid->display_earned_date(); ?></span>
 							</div>

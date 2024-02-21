@@ -9,16 +9,17 @@
  * @package GoodBids
  */
 
+$auction = goodbids()->auctions->get( $auction_id );
 ?>
 <h3>
 	<strong><?php esc_html_e( 'Auction:', 'goodbids' ); ?></strong>
 	<a href="<?php echo esc_url( get_edit_post_link( $auction_id ) ); ?>">
-		<?php echo esc_html( get_the_title( $auction_id ) ); ?>
+		<?php echo esc_html( $auction->get_title() ); ?>
 	</a>
 </h3>
 <p>
 	<strong><?php esc_html_e( 'Total Raised:', 'goodbids' ); ?></strong>
-	<?php echo wp_kses_post( wc_price( goodbids()->auctions->get_total_raised( $auction_id ) ) ); ?><br>
+	<?php echo wp_kses_post( wc_price( $auction->get_total_raised() ) ); ?><br>
 
 	<strong><?php esc_html_e( 'Invoice Amount:', 'goodbids' ); ?></strong>
 	<?php echo wp_kses_post( wc_price( $invoice->get_amount() ) ); ?><br>

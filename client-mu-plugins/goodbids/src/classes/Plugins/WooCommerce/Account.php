@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\Referrals\Referrer;
 
 /**
  * Class for Account Methods
@@ -28,6 +29,9 @@ class Account {
 		/**
 		 * Note: Tabs will be added in reverse order.
 		 */
+
+		// 4. Custom My Account > Referrals page.
+		$this->add_referrals_tab();
 
 		// 3. Custom My Account > Rewards page.
 		$this->add_rewards_tab();
@@ -117,6 +121,30 @@ class Account {
 		);
 
 		$this->init_new_account_page( $slug, __( 'Rewards', 'goodbids' ) );
+	}
+
+	/**
+	 * Create a new Referrals tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_referrals_tab(): void {
+		$slug = 'my-referrals';
+
+		add_filter(
+			'goodbids_account_' . $slug . '_args',
+			function ( $args ) {
+				$referrer = new Referrer();
+
+				$args['referrals'] = $referrer->get_referrals();
+
+				return $args;
+			}
+		);
+
+		$this->init_new_account_page( $slug, __( 'Referrals', 'goodbids' ) );
 	}
 
 	/**
@@ -298,29 +326,28 @@ class Account {
 		return $this->get_user_order_ids( $user_id, $args );
 	}
 
-
 	/**
 	 * Removes the "Order Again" button from the order details.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	private function remove_order_again_button() {
+	private function remove_order_again_button(): void {
 		remove_action( 'woocommerce_order_details_after_order_table', 'woocommerce_order_again_button' );
 	}
 
-
 	/**
-	 * Removes the "Bid Instance" meta data from the order details.
+	 * Removes the "Bid Instance" metadata from the order details.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
-	private function remove_bid_instance_from_order() {
+	private function remove_bid_instance_from_order(): void {
 		add_filter(
 			'woocommerce_order_item_get_formatted_meta_data',
-			function ( $formatted_meta ) {
+			function ( array $formatted_meta ): array {
 				unset( $formatted_meta['bid_instance'] );
+				return $formatted_meta;
 			}
 		);
 	}

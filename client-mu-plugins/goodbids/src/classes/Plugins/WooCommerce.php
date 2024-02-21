@@ -123,6 +123,9 @@ class WooCommerce {
 		// New Site Setup.
 		$this->configure_new_site();
 
+		// Change the default registration URL.
+		$this->modify_registration_url();
+
 		// Auth Redirects.
 		// $this->authentication_redirect();
 		// $this->prevent_wp_login_access();
@@ -237,7 +240,7 @@ class WooCommerce {
 	private function configure_new_site(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( int $site_id ): void {
+			function (): void {
 				// Disable Guest Checkout.
 				update_option( 'woocommerce_enable_guest_checkout', 'no' );
 
@@ -266,6 +269,21 @@ class WooCommerce {
 				);
 				update_option( 'woocommerce_email_footer_text', $email_footer_text );
 			},
+			5
+		);
+	}
+
+	/**
+	 * Adjust the default registration URL.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_registration_url(): void {
+		add_filter(
+			'register_url',
+			fn () => wc_get_page_permalink( 'myaccount' ),
 			5
 		);
 	}
@@ -488,7 +506,7 @@ class WooCommerce {
 	private function modify_checkout_actions_block(): void {
 		add_filter(
 			'render_block_data',
-			function ( $parsed_block, $source_block, $parent_block ) {
+			function ( $parsed_block ) {
 				if ( empty( $parsed_block['blockName'] ) || 'woocommerce/checkout-actions-block' !== $parsed_block['blockName'] || is_admin() ) {
 					return $parsed_block;
 				}
@@ -496,43 +514,8 @@ class WooCommerce {
 				$parsed_block['attrs']['showReturnToCart'] = false;
 
 				return $parsed_block;
-			},
-			10,
-			3
+			}
 		);
-	}
-
-
-	/**
-	 * Get User Email Addresses. If no user_id is provided, the current user is used.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $user_id
-	 *
-	 * @return array
-	 */
-	public function get_user_emails( int $user_id = null ): array {
-		$emails = [];
-
-		if ( ! $user_id ) {
-			$user_id = get_current_user_id();
-		}
-
-		$user = get_user_by( 'id', $user_id );
-
-		if ( ! $user ) {
-			return $emails;
-		}
-
-		$emails[] = $user->user_email;
-
-		$billing_email = get_user_meta( $user_id, 'billing_email', true );
-		if ( $billing_email ) {
-			$emails[] = $billing_email;
-		}
-
-		return $emails;
 	}
 
 	/**
@@ -560,61 +543,6 @@ class WooCommerce {
 			},
 			8,
 			3
-		);
-	}
-
-	/**
-	 * Create a new Free Bids tab on My Account page
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_free_bids_account_tab(): void {
-		$slug = 'free-bids';
-
-		add_action(
-			'init',
-			function () use ( $slug ): void {
-				add_rewrite_endpoint( $slug, EP_ROOT | EP_PAGES );
-			}
-		);
-
-		add_filter(
-			'query_vars',
-			function ( $vars ) use ( $slug ): array {
-				if ( ! in_array( $slug, $vars, true ) ) {
-					$vars[] = $slug;
-				}
-				return $vars;
-			}
-		);
-
-		add_filter(
-			'woocommerce_account_menu_items',
-			function ( $items ) use ( $slug ): array {
-				if ( array_key_exists( $slug, $items ) ) {
-					return $items;
-				}
-
-				$new_items = [];
-				foreach ( $items as $id => $item ) {
-					$new_items[ $id ] = $item;
-					if ( 'orders' === $id ) {
-						$new_items[ $slug ] = __( 'Free Bids', 'goodbids' );
-					}
-				}
-
-				return $new_items;
-			}
-		);
-
-		add_action(
-			'woocommerce_account_' . $slug . '_endpoint',
-			function () use ( $slug ) {
-				$free_bids = goodbids()->users->get_free_bids();
-				wc_get_template( 'myaccount/' . $slug . '.php', [ 'free_bids' => $free_bids ] );
-			}
 		);
 	}
 

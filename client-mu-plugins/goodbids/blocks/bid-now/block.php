@@ -9,6 +9,7 @@
 
 namespace GoodBids\Blocks;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Plugins\ACF\ACFBlock;
 
 /**
@@ -23,6 +24,12 @@ class BidNow extends ACFBlock {
 	 * @var ?int
 	 */
 	private ?int $auction_id = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?Auction
+	 */
+	private ?Auction $auction = null;
 
 	/**
 	 * @since 1.0.0
@@ -43,7 +50,8 @@ class BidNow extends ACFBlock {
 		$this->auction_id = goodbids()->auctions->get_auction_id();
 
 		if ( $this->auction_id ) {
-			$this->bid_variation_id = goodbids()->auctions->bids->get_variation_id( $this->auction_id );
+			$this->auction          = goodbids()->auctions->get( $this->auction_id );
+			$this->bid_variation_id = goodbids()->bids->get_variation_id( $this->auction_id );
 		}
 	}
 
@@ -72,9 +80,9 @@ class BidNow extends ACFBlock {
 	 * @return string
 	 */
 	public function get_button_text( bool $is_free_bid = false ): string {
-		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
+		if ( $this->auction->has_ended() ) {
 
-			if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
+			if ( $this->auction->is_current_user_winner() ) {
 				return __( 'Claim Your Reward', 'goodbids' );
 			}
 
@@ -114,7 +122,7 @@ class BidNow extends ACFBlock {
 			return '#';
 		}
 
-		if ( ! goodbids()->auctions->has_ended( $this->auction_id ) ) {
+		if ( ! $this->auction->has_ended() ) {
 			if ( ! $this->bid_variation_id ) {
 				return '#';
 			}
@@ -133,8 +141,8 @@ class BidNow extends ACFBlock {
 			return '#';
 		}
 
-		if ( goodbids()->auctions->is_current_user_winner( $this->auction_id ) ) {
-			return goodbids()->auctions->rewards->get_claim_reward_url( $this->auction_id );
+		if ( $this->auction->is_current_user_winner() ) {
+			return goodbids()->rewards->get_claim_reward_url( $this->auction_id );
 		}
 
 		return '#'; // Disable button for non-winners.
@@ -159,7 +167,7 @@ class BidNow extends ACFBlock {
 	 * @return bool
 	 */
 	public function has_auction_started(): bool {
-		if ( ! goodbids()->auctions->has_started( $this->auction_id ) ) {
+		if ( ! $this->auction->has_started() ) {
 			return false;
 		}
 
@@ -188,7 +196,7 @@ class BidNow extends ACFBlock {
 	 */
 	public function show_free_bid_button(): bool {
 		// Make sure the auction hasn't ended.
-		if ( goodbids()->auctions->has_ended( $this->auction_id ) ) {
+		if ( $this->auction->has_ended() ) {
 			return false;
 		}
 
@@ -203,7 +211,7 @@ class BidNow extends ACFBlock {
 		}
 
 		// Make sure free bids are allowed.
-		if ( ! goodbids()->auctions->are_free_bids_allowed( $this->auction_id ) ) {
+		if ( ! $this->auction->are_free_bids_allowed() ) {
 			return false;
 		}
 

@@ -8,9 +8,10 @@
  * @package GoodBids
  */
 
-$goal              = goodbids()->auctions->get_goal();
-$estimated_value   = goodbids()->auctions->get_estimated_value();
-$expected_high_bid = goodbids()->auctions->get_expected_high_bid();
+$auction           = goodbids()->auctions->get();
+$goal              = $auction->get_goal();
+$estimated_value   = $auction->get_estimated_value();
+$expected_high_bid = $auction->get_expected_high_bid();
 
 // Display an Admin message to make the block easier to find.
 if ( ! $goal && ! $estimated_value && ! $expected_high_bid && is_admin() ) :

@@ -66,7 +66,7 @@ class Vite {
 	public function __construct() {
 		$this->site_url   = get_site_url();
 		$this->port       = 5173;
-		$this->dev_server = "{$this->site_url}:{$this->port}";
+		$this->dev_server = "$this->site_url:$this->port";
 
 		$this->dist_url  = GOODBIDS_PLUGIN_URL . 'dist/';
 		$this->dist_path = GOODBIDS_PLUGIN_PATH . 'dist/';
@@ -182,7 +182,7 @@ class Vite {
 					window.__vite_plugin_react_preamble_installed__ = true
 			  	</script>",
 				"<script type=\"module\" src=\"http://localhost:5173/@vite/client\"></script>",
-				"<script type=\"module\" src=\"http://localhost:5173/{$entry}\"></script>",
+				"<script type=\"module\" src=\"http://localhost:5173/$entry\"></script>",
 			];
 
 			return implode( PHP_EOL, $scripts );
@@ -427,7 +427,12 @@ class Vite {
 		$url = $this->get_asset_url( $this->get_entry( $entry ) );
 
 		if ( $url ) {
-			wp_enqueue_script( 'goodbids-script-admin', $url, [ 'jquery' ], goodbids()->get_version(), true );
+			$handle = 'goodbids-script-admin';
+			wp_register_script( $handle, $url, [ 'jquery' ], goodbids()->get_version(), true );
+
+			do_action( 'goodbids_enqueue_admin_script', $handle );
+
+			wp_enqueue_script( $handle );
 		}
 	}
 
@@ -440,7 +445,7 @@ class Vite {
 	 *
 	 * @return void
 	 */
-	public function block_assets( $entry = '' ): void {
+	public function block_assets( string $entry = '' ): void {
 		if ( ! $entry ) {
 			$screen = get_current_screen();
 			$entry  = $screen && 'site-editor' === $screen->base ? 'default' : 'editor';
@@ -482,6 +487,7 @@ class Vite {
 		];
 
 		$script_url = $this->get_asset_url( $file );
+		$handle     = 'goodbids-script-editor-main';
 
 		if ( Core::is_dev_env() ) {
 			$vite_client = $this->dev_server . '/@vite/client';
@@ -495,21 +501,27 @@ class Vite {
 				true
 			);
 
+			do_action( 'goodbids_enqueue_editor_script', $handle );
+
 			wp_enqueue_script(
-				'goodbids-script-editor-vite-entry',
+				$handle,
 				$vite_entry,
 				[ 'goodbids-script-editor-vite-client' ],
 				goodbids()->get_version(),
 				true
 			);
 		} else {
-			wp_enqueue_script(
-				'goodbids-script-editor-main',
+			wp_register_script(
+				$handle,
 				$script_url,
 				$js_dependencies,
 				goodbids()->get_version(),
 				true
 			);
+
+			do_action( 'goodbids_enqueue_editor_script', $handle );
+
+			wp_enqueue_script( $handle );
 		}
 	}
 

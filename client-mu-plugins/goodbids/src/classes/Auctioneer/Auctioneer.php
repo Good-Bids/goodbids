@@ -11,6 +11,7 @@ namespace GoodBids\Auctioneer;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use GoodBids\Auctioneer\Endpoints\Auctions;
+use GoodBids\Utilities\Cookies;
 use GoodBids\Utilities\Log;
 
 /**
@@ -391,11 +392,7 @@ class Auctioneer {
 			'set_logged_in_cookie',
 			function ( $cookie, $expire, $expiration, $user_id ) {
 				$session_cookie = $this->generate_auctioneer_cookie( $user_id );
-				setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, COOKIEPATH, COOKIE_DOMAIN, true, false );
-
-				if ( COOKIEPATH != SITECOOKIEPATH ) {
-					setcookie( self::AUCTIONEER_COOKIE, $session_cookie, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, true, false );
-				}
+				Cookies::set( self::AUCTIONEER_COOKIE, $session_cookie, $expire, false );
 			},
 			10,
 			4
@@ -444,8 +441,7 @@ class Auctioneer {
 		add_action(
 			'clear_auth_cookie',
 			function() {
-				setcookie( self::AUCTIONEER_COOKIE, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
-				setcookie( self::AUCTIONEER_COOKIE, ' ', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN );
+				Cookies::clear( self::AUCTIONEER_COOKIE );
 			}
 		);
 	}

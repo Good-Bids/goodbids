@@ -55,6 +55,10 @@ class Dashboard {
 					'data:image/svg+xml;base64,' . base64_encode( $icon )
 				);
 
+				if ( ! is_super_admin() ) {
+					return;
+				}
+
 				// Settings Page
 				add_submenu_page(
 					'goodbids',

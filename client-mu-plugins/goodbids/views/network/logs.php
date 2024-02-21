@@ -12,7 +12,7 @@ use GoodBids\Network\Logs;
 	<h2><?php esc_html_e( 'Logs', 'goodbids' ); ?></h2>
 
 	<?php goodbids()->sites->loop(
-		function ( $site_id ) {
+		function () {
 			$log_files = goodbids()->network->logs->get_log_files();
 
 			if ( empty( $log_files ) ) {

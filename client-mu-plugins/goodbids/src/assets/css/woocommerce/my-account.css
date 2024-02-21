@@ -42,4 +42,8 @@
 	.mo-oauth-login .mofa {
 		@apply flex items-center !rounded;
 	}
+
+	.goodbids-referrals-copy-link {
+		@apply mb-5;
+	}
 }

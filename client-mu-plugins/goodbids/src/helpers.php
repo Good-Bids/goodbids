@@ -30,10 +30,12 @@ if ( ! function_exists( 'dd' ) ) {
 	 * @link https://gist.github.com/james2doyle/abfbd4dc5754712bac022faf4e2881a6
 	 *
 	 * @param mixed $data
+	 * @param string $method
+	 * @param bool  $die
 	 *
 	 * @return void
 	 */
-	function dd( mixed $data ): void {
+	function dd( mixed $data, string $method = 'export', bool $die = true ): void {
 		// Disable if not in dev environment.
 		if ( ! GoodBids\Core::is_dev_env() ) {
 			return;
@@ -45,7 +47,23 @@ if ( ! function_exists( 'dd' ) ) {
 		ini_set( 'highlight.keyword', '#7FA3BC; font-weight: bold' );
 		ini_set( 'highlight.string', '#F2C47E' );
 
-		$output = highlight_string( "<?php\n\n" . var_export( $data, true ), true );
-		die( "<div style=\"background-color: #1C1E21; padding: 1rem\">{$output}</div>" );
+		if ( 'dump' === $method ) {
+			ob_start();
+			var_dump( $data ); // phpcs:ignore
+			$dump = ob_get_clean();
+		} elseif ( 'printr' ) {
+			$dump = print_r( $data, true ); // phpcs:ignore
+		} else {
+			$dump = var_export( $data, true ); // phpcs:ignore
+		}
+
+		$output = highlight_string( "<?php\n\n" . $dump, true ); // phpcs:ignore
+		echo "<div style=\"background-color: #1C1E21; padding: 1rem\">{$output}</div>"; // phpcs:ignore
+
+		if ( ! $die ) {
+			return;
+		}
+
+		die();
 	}
 }

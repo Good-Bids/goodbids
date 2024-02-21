@@ -15,6 +15,7 @@
  * @package GoodBids
  */
 
+$class = $field['class'] ?? 'regular-text';
 ?>
 <?php if ( $wrap ) : ?>
 	<tr class="form-field<?php echo $required ? ' form-required' : ''; ?>">
@@ -40,7 +41,7 @@
 		<input
 			name="<?php echo esc_attr( $prefix ); ?>[<?php echo esc_attr( $key ); ?>]"
 			type="<?php echo esc_attr( $field['type'] ); ?>"
-			class="regular-text"
+			class="<?php echo esc_attr( $class ); ?>"
 			id="<?php echo esc_attr( $field_id ); ?>"
 			placeholder="<?php echo esc_attr( $placeholder ); ?>"
 			value="<?php echo esc_attr( $value ); ?>"

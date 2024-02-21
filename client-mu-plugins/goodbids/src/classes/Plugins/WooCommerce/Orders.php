@@ -8,6 +8,7 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use Exception;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Plugins\WooCommerce;
@@ -56,7 +57,8 @@ class Orders {
 			try {
 				$auction_id = wc_get_order_item_meta( $item->get_id(), WooCommerce::AUCTION_META_KEY );
 				$order_type = wc_get_order_item_meta( $item->get_id(), WooCommerce::TYPE_META_KEY );
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
+				Log::error( $e->getMessage() );
 				continue;
 			}
 
@@ -156,7 +158,6 @@ class Orders {
 
 		$order = wc_get_order( $order_id );
 
-		// TODO: Temporary Solution until Free Bids are implemented.
 		if ( 0 < $order->get_total( 'edit' ) ) {
 			return false;
 		}

@@ -103,15 +103,17 @@ class Checkout {
 					return;
 				}
 
+				$auction = goodbids()->auctions->get( $info['auction_id'] );
+
 				// Make sure Auction has started.
-				if ( ! goodbids()->auctions->has_started( $info['auction_id'] ) ) {
+				if ( ! $auction->has_started() ) {
 					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
 					wc_add_notice( $notice['message'], $notice['type'] );
 					return;
 				}
 
 				// Make sure Auction has not ended.
-				if ( goodbids()->auctions->has_ended( $info['auction_id'] ) ) {
+				if ( $auction->has_ended() ) {
 					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
 					wc_add_notice( $notice['message'], $notice['type'] );
 					return;
@@ -123,7 +125,7 @@ class Checkout {
 				}
 
 				// Make sure Free Bids are allowed.
-				if ( ! goodbids()->auctions->are_free_bids_allowed( $info['auction_id'] ) ) {
+				if ( ! $auction->are_free_bids_allowed() ) {
 					$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
 					wc_add_notice( $notice['message'], $notice['type'] );
 					return;

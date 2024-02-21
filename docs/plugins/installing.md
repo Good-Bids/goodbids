@@ -6,8 +6,12 @@ We are using [Composer](https://getcomposer.org/) and [WPackagist](https://wpack
 composer require wpackagist-plugin/plugin-name
 ```
 
-Once added to composer, update the main `.gitignore` file to exclude the plugin from version control.
-
 ### Custom/Premium Plugins
 
-Plugins that do not exist in [WPackagist](https://wpackagist.org/) can be added manually by placing the plugin folder directly in the `plugins` directory and updating `config.json`.
+Plugins that do not exist in [WPackagist](https://wpackagist.org/) can be added manually by placing the plugin folder directly in the `plugins` directory.
+
+You will also need to update the main `.gitignore` file to exclude the plugin being ignore so it can be added into version control.
+
+## Continue Reading
+
+* [Activating Plugins](activating.md)

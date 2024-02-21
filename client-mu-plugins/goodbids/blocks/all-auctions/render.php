@@ -43,29 +43,31 @@ $auctions    = $the_block->apply_pagination( $auctions );
 			<?php endforeach; ?>
 		</ul>
 
-		<div class="flex justify-end">
-			<select
-				aria-label="<?php esc_attr_e( 'Sort Auctions', 'goodbids' ); ?>"
-				class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
-				name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
-				hx-get="<?php echo esc_url( $sort_url ); ?>"
-				hx-select="[data-auction-grid]"
-				hx-target="[data-auction-grid]"
-				hx-indicator="[data-auctions-spinner]"
-				hx-swap="outerHTML transition:true settle:0s"
-				hx-trigger="change"
-				hx-push-url="true"
-			>
-				<?php foreach ( $the_block->get_sort_options() as $option => $label ) : ?>
-					<option
-						value="<?php echo esc_attr( $option ); ?>"
-						<?php selected( $option, $the_block->get_current_sort() ); ?>
-					>
-						<?php echo esc_html( $label ); ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</div>
+		<?php if ( $total_count > 1 ) : ?>
+			<div class="flex justify-end">
+				<select
+					aria-label="<?php esc_attr_e( 'Sort Auctions', 'goodbids' ); ?>"
+					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
+					name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
+					hx-get="<?php echo esc_url( $sort_url ); ?>"
+					hx-select="[data-auction-grid]"
+					hx-target="[data-auction-grid]"
+					hx-indicator="[data-auctions-spinner]"
+					hx-swap="outerHTML transition:true settle:0s"
+					hx-trigger="change"
+					hx-push-url="true"
+				>
+					<?php foreach ( $the_block->get_sort_options() as $option => $label ) : ?>
+						<option
+							value="<?php echo esc_attr( $option ); ?>"
+							<?php selected( $option, $the_block->get_current_sort() ); ?>
+						>
+							<?php echo esc_html( $label ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<div data-auctions-spinner class="relative group">
