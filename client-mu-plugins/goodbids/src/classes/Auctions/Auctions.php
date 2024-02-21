@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use DateInterval;
+use Exception;
 use GoodBids\Core;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
