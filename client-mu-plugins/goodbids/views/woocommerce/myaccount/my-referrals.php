@@ -13,7 +13,7 @@ use GoodBids\Users\Referrals\Referral;
 <div class="goodbids-account-referrals">
 	<h1><?php esc_html_e( 'Referrals', 'goodbids' ); ?></h1>
 
-	<div><p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p></div>
+	<p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p>
 	<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
 
 	<?php if ( ! $referrals ) : ?>
