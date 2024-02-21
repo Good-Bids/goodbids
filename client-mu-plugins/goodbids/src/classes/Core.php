@@ -16,10 +16,10 @@ use GoodBids\Auctions\Products;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Auctions\Wizard;
 use GoodBids\Auctions\Watchers;
-use GoodBids\Frontend\Blocks;
+use GoodBids\Blocks\Blocks;
+use GoodBids\Frontend\Assets;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
-use GoodBids\Frontend\BuiltAssets;
 use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
@@ -312,8 +312,8 @@ class Core {
 	private function load_dependencies(): void {
 		require_once GOODBIDS_PLUGIN_PATH . '/src/helpers.php';
 
-		// Init built assets.
-		new BuiltAssets();
+		// Init Assets.
+		new Assets();
 	}
 
 	/**
