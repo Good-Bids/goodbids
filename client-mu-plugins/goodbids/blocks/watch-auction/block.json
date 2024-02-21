@@ -1,16 +1,16 @@
 {
-	"name": "watch-auction",
-	"title": "Watch Auction",
-	"description": "Control for toggling watching Auctions.",
-	"icon": "visibility",
-	"category": "goodbids",
-	"textdomain": "goodbids",
-	"keywords": ["follow", "watch", "auction", "goodbids"],
-	"acf": {
-		"mode": "preview"
-	},
-	"supports": {
-		"jsx": false
-	},
-	"script": "goodbids-watch-auction-block"
+  "name": "watch-auction",
+  "title": "Watch Auction",
+  "description": "Control for toggling watching Auctions.",
+  "icon": "visibility",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["follow", "watch", "auction", "goodbids"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  },
+  "script": "goodbids-watch-auction-block"
 }

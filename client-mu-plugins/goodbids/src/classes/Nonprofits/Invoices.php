@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use DateTimeZone;
+use GoodBids\Core;
 use GoodBids\Utilities\Log;
 use WP_Post;
 use WP_Query;
@@ -46,7 +47,7 @@ class Invoices {
 		$this->stripe = new Stripe();
 
 		// Disable Invoices on Main Site.
-		if ( is_main_site() ) {
+		if ( is_main_site() && ! Core::is_dev_env() ) {
 			return;
 		}
 

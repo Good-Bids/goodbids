@@ -1,0 +1,15 @@
+{
+  "name": "auction-watchers",
+  "title": "Auction Watchers",
+  "description": "Show the number of watchers for an Auction.",
+  "icon": "visibility",
+  "category": "goodbids",
+  "textdomain": "goodbids",
+  "keywords": ["follow", "watch", "auction", "goodbids"],
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
+}

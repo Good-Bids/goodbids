@@ -34,13 +34,11 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 	<table class="bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 		<thead>
 			<tr class="bg-base-3">
-				<?php foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) : ?>
-					<th class="woocommerce-orders-table__header woocommerce-orders-table__header-<?php echo esc_attr( $column_id ); ?>">
-						<span class="<?php echo esc_attr( 'order-actions' === $column_id ? 'sr-only' : 'nobr' ); ?>">
-							<?php echo esc_html( $column_name ); ?>
-						</span>
-					</th>
-				<?php endforeach; ?>
+				<th class="woocommerce-orders-table__header woocommerce-orders-table__header-donation"><span class="nobr"><?php esc_html_e( 'Donation', 'goodbids' ); ?></span></th>
+				<th class="woocommerce-orders-table__header woocommerce-orders-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Nonprofit', 'goodbids' ); ?></span></th>
+				<th class="woocommerce-orders-table__header woocommerce-orders-table__header-total"><span class="nobr"><?php esc_html_e( 'Total', 'goodbids' ); ?></span></th>
+				<th class="woocommerce-orders-table__header woocommerce-orders-table__header-date"><span class="nobr"><?php esc_html_e( 'Date', 'goodbids' ); ?></span></th>
+				<th class="woocommerce-orders-table__header woocommerce-orders-table__header-actions"><span class="sr-only"><?php esc_html_e( 'Actions', 'goodbids' ); ?></span></th>
 			</tr>
 		</thead>
 
@@ -52,56 +50,51 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 						$order = wc_get_order( $goodbids_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 						?>
 						<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
-							<?php foreach ( wc_get_account_orders_columns() as $column_id => $column_name ) : ?>
-								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-<?php echo esc_attr( $column_id ); ?>" data-title="<?php echo esc_attr( $column_name ); ?>">
-									<?php
-									if ( has_action( 'woocommerce_my_account_my_orders_column_' . $column_id ) ) :
-										do_action( 'woocommerce_my_account_my_orders_column_' . $column_id, $order, $goodbids_order['site_id'] );
-									elseif ( 'order-donation' === $column_id ) :
-
-										foreach ( $order->get_items() as $item ) :
-											$product = $item->get_product();
-											if ( $product ) :
-												?>
-												<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
-													<?php echo esc_html( $item['name'] ); ?>
-												</a>
-												<?php
-											endif;
-										endforeach;
-
-									elseif ( 'order-nonprofit' === $column_id ) :
-										?>
-										<a href="<?php echo esc_url( get_blog_details( $goodbids_order['site_id'] )->siteurl ); ?>">
-											<?php echo esc_html( get_blog_details( $goodbids_order['site_id'] )->blogname ); ?>
+							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-donation" data-title="donation">
+									<?php foreach ( $order->get_items() as $item ) : ?>
+										<?php $product = $item->get_product(); ?>
+										<?php if ( $product ) : ?>
+										<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
+											<?php echo esc_html( $item['name'] ); ?>
 										</a>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							</td>
 
-									<?php elseif ( 'order-date' === $column_id ) : ?>
-										<time datetime="<?php echo esc_attr( $order->get_date_created()->date( 'c' ) ); ?>">
-											<?php echo esc_html( $order->get_date_created()->date( 'h/i/s' ) ); ?>
-										</time>
+							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-nonprofit" data-title="nonprofit">
+								<a href="<?php echo esc_url( get_blog_details( $goodbids_order['site_id'] )->siteurl ); ?>">
+									<?php echo esc_html( get_blog_details( $goodbids_order['site_id'] )->blogname ); ?>
+								</a>
+							</td>
 
-										<?php
-									elseif ( 'order-total' === $column_id ) :
-										/* translators: 1: formatted order total 2: total order items */
-										echo wp_kses_post( sprintf( '%1$s', $order->get_formatted_order_total() ) );
+							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-date" data-title="date">
+								<?php
+								/* translators: 1: formatted order total 2: total order items */
+								echo wp_kses_post( $order->get_formatted_order_total() );
+								?>
+							</td>
 
-									elseif ( 'order-actions' === $column_id ) :
-										$actions = wc_get_account_orders_actions( $order );
-										if ( ! empty( $actions ) ) {
-											foreach ( $actions as $key => $action ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-												printf(
-													'<a href="%s" class="btn-fill-sm !m-0 %s">%s</a>',
-													esc_url( $action['url'] ),
-													sanitize_html_class( $key ),
-													esc_html( $action['name'] )
-												);
-											}
-										}
-									endif;
-									?>
-								</td>
-							<?php endforeach; ?>
+							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-total" data-title="total">
+								<time datetime="<?php echo esc_attr( $order->get_date_created()->date( 'c' ) ); ?>">
+									<?php echo esc_html( $order->get_date_created()->date( 'm/d/y' ) ); ?>
+								</time>
+							</td>
+
+							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-actions" data-title="actions">
+								<?php
+								$actions = wc_get_account_orders_actions( $order );
+								if ( ! empty( $actions ) ) {
+									foreach ( $actions as $key => $wc_action ) {
+										printf(
+											'<a href="%s" class="!inline !mb-0 capitalize btn-fill-sm">%s</a>',
+											esc_url( $wc_action['url'] ),
+											sanitize_html_class( $key ),
+											esc_html( $wc_action['name'] )
+										);
+									}
+								}
+								?>
+							</td>
 						</tr>
 						<?php
 					},

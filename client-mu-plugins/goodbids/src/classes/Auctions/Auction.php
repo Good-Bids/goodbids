@@ -91,7 +91,7 @@ class Auction {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id = null;
+	private ?int $auction_id;
 
 	/**
 	 * Initialize Auctions
@@ -112,9 +112,9 @@ class Auction {
 	 * Get the Auction ID.
 	 *
 	 * @since 1.0.0
-	 * @return ?int
+	 * @return int
 	 */
-	public function get_id(): ?int {
+	public function get_id(): int {
 		return $this->auction_id;
 	}
 
@@ -219,17 +219,6 @@ class Auction {
 	 */
 	public function get_estimated_value(): int {
 		return intval( $this->get_setting( 'estimated_value' ) );
-	}
-
-	/**
-	 * Get the Auction Reward Estimated Value formatted.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	public function get_estimated_value_formatted(): string {
-		return wc_price( $this->get_estimated_value() );
 	}
 
 	/**
@@ -376,7 +365,7 @@ class Auction {
 		$bid_extension = $this->get_setting( 'bid_extension' );
 
 		if ( ! $bid_extension ) {
-			Log::error( '[CONFIG] Unable to load Bid Extension', [ 'auction_id' => $this->get_id() ] );
+			Log::error( '[CONFIG] Unable to load Bid Extension' );
 			return null;
 		}
 
@@ -384,35 +373,6 @@ class Auction {
 		$seconds = ! empty( $bid_extension['seconds'] ) ? intval( $bid_extension['seconds'] ) : 0;
 
 		return ( $minutes * MINUTE_IN_SECONDS ) + $seconds;
-	}
-
-	/**
-	 * Get the formatted Auction Bid Extension time
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	public function get_bid_extension_formatted(): string {
-		$bid_extension = $this->get_setting( 'bid_extension' );
-		$formatted     = '';
-
-		if ( ! $bid_extension ) {
-			return $formatted;
-		}
-
-		if ( ! empty( $bid_extension['minutes'] ) ) {
-			$formatted = number_format( $bid_extension['minutes'], 0 ) . ' ' . __( 'minutes', 'goodbids' );
-		}
-
-		if ( ! empty( $bid_extension['seconds'] ) ) {
-			if ( $formatted ) {
-				$formatted .= ' ' . __( 'and', 'goodbids' ) . ' ';
-			}
-			$formatted .= number_format( $bid_extension['seconds'], 0 ) . ' ' . __( 'seconds', 'goodbids' );
-		}
-
-		return $formatted;
 	}
 
 	/**
@@ -424,17 +384,6 @@ class Auction {
 	 */
 	public function get_bid_increment(): int {
 		return intval( $this->get_setting( 'bid_increment' ) );
-	}
-
-	/**
-	 * Get the Formatted Auction Bid Increment amount
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	public function get_bid_increment_formatted(): string {
-		return wc_price( $this->get_bid_increment() );
 	}
 
 	/**
@@ -476,17 +425,6 @@ class Auction {
 	}
 
 	/**
-	 * Get the Auction Goal Amount
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	public function get_goal_formatted(): string {
-		return wc_price( $this->get_goal() );
-	}
-
-	/**
 	 * Get the Auction Expected High Bid Amount
 	 *
 	 * @since 1.0.0
@@ -495,17 +433,6 @@ class Auction {
 	 */
 	public function get_expected_high_bid(): int {
 		return intval( $this->get_setting( 'expected_high_bid' ) );
-	}
-
-	/**
-	 * Get the Auction Expected High Bid Amount formatted
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	public function get_expected_high_bid_formatted(): string {
-		return wc_price( $this->get_expected_high_bid() );
 	}
 
 	/**
@@ -606,23 +533,6 @@ class Auction {
 	public function get_bid_order_ids( int $limit = -1, ?int $user_id = null ): array {
 		return goodbids()->auctions->get_bid_order_ids( $this->get_id(), $limit, $user_id );
 	}
-
-	/**
-	 * Get all Bidders for an Auction
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return int[]
-	 */
-	public function get_bidder_ids(): array {
-		$orders  = $this->get_bid_orders();
-		$bidders = [];
-		foreach ( $orders as $order ) {
-			$bidders[] = $order->get_user_id();
-		}
-		return $bidders;
-	}
-
 	/**
 	 * Get Order IDs that have been placed using a Free Bid.
 	 *
@@ -705,23 +615,6 @@ class Auction {
 	}
 
 	/**
-	 * Get bids for a specific User
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $user_id
-	 * @param int $limit
-	 *
-	 * @return array
-	 */
-	public function get_user_bid_order_ids( ?int $user_id = null, int $limit = -1 ): array {
-		if ( ! $user_id ) {
-			$user_id = get_current_user_id();
-		}
-		return $this->get_bid_order_ids( $limit, $user_id );
-	}
-
-	/**
 	 * Get total bids for a specific User on an Auction.
 	 *
 	 * @since 1.0.0
@@ -731,31 +624,8 @@ class Auction {
 	 * @return int
 	 */
 	public function get_user_bid_count( int $user_id ): int {
-		$orders = $this->get_user_bid_order_ids( $user_id );
+		$orders = $this->get_bid_order_ids( -1, $user_id );
 		return count( $orders );
-	}
-
-	/**
-	 * Get last bid order for a specific User
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?int $user_id
-	 *
-	 * @return ?WC_Order
-	 */
-	public function get_user_last_bid( ?int $user_id = null): ?WC_Order {
-		if ( ! $user_id ) {
-			$user_id = get_current_user_id();
-		}
-
-		$bid_order_ids = $this->get_bid_order_ids( 1, $user_id );
-
-		if ( ! $bid_order_ids ) {
-			return null;
-		}
-
-		return wc_get_order( $bid_order_ids[0] );
 	}
 
 	/**
@@ -782,17 +652,6 @@ class Auction {
 	}
 
 	/**
-	 * Get the formatted Auction Total Raised
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string
-	 */
-	public function get_total_raised_formatted(): string {
-		return wc_price( $this->get_total_raised() );
-	}
-
-	/**
 	 * Get the Auction Total Donated by User
 	 *
 	 * @since 1.0.0
@@ -804,19 +663,6 @@ class Auction {
 	public function get_user_total_donated( int $user_id ): float {
 		return collect( $this->get_bid_orders( -1, $user_id ) )
 			->sum( fn( $order ) => $order->get_total( 'edit' ) );
-	}
-
-	/**
-	 * Get the formatted Total Donated by User
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $user_id
-	 *
-	 * @return string
-	 */
-	public function get_user_total_donated_formatted( int $user_id ): string {
-		return wc_price( $this->get_user_total_donated( $user_id ) );
 	}
 
 	/**

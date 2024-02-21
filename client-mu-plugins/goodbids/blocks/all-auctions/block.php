@@ -155,7 +155,7 @@ class AllAuctions extends ACFBlock {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return Auction::STATUS_UPCOMING === $auction->get_status();
 							},
-						$auction['site_id']
+						$auction_data['site_id']
 					)
 				)
 				->all();
@@ -167,7 +167,7 @@ class AllAuctions extends ACFBlock {
 							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 							return $auction->has_started() && ! $auction->has_ended();
 						},
-						$auction['site_id']
+						$auction_data['site_id']
 					)
 				)
 				->all();
@@ -257,12 +257,12 @@ class AllAuctions extends ACFBlock {
 							}
 
 							if ( 'bid_variation_price' === $sort_method ) {
-								return goodbids()->bids->get_variation( $auction['post_id'] )?->get_price( 'edit' );
+								return goodbids()->bids->get_variation( $auction->get_id() )?->get_price( 'edit' );
 							}
 
 							return null;
 						},
-						$auction['site_id']
+						$auction_data['site_id']
 					)
 				)
 				->all();

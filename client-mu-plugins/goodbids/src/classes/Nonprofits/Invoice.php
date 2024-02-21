@@ -419,7 +419,7 @@ class Invoice {
 			->setTimezone( new DateTimeZone( 'GMT' ) )
 			->format( 'Y-m-d 23:59:59' );
 
-		if ( $now > $due_date ) {
+		if ( $now_eod > $due_date ) {
 			return self::STATUS_OVERDUE;
 		}
 
@@ -448,11 +448,7 @@ class Invoice {
 	 * @return void
 	 */
 	public function mark_as_sent(): void {
-		$this->set_sent_date(
-			current_datetime()
-			->setTimezone( new DateTimeZone( 'GMT' ) )
-			->format( 'Y-m-d H:i:s' )
-		);
+		$this->set_sent_date( current_time( 'mysql', true ) );
 	}
 
 	/**

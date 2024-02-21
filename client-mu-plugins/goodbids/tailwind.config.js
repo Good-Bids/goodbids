@@ -4,7 +4,7 @@ export default {
 		preflight: false,
 	},
 	content: [
-		'./src/**/*.{css,js,jsx,tsx}',
+		'./src/**/*.{css,js,jsx,tsx,php}',
 		'./blocks/**/*.{php,css,js}',
 		'./views/**/*.{php,html}',
 	],
@@ -22,8 +22,9 @@ export default {
 				'spin-left': 'spin-left 1.5s linear infinite',
 			},
 			borderRadius: {
-				DEFAULT: 'var(--wp--preset--spacing--20)',
-				sm: 'var(--wp--preset--spacing--10)',
+				xs: '0.5rem',
+				sm: '1rem',
+				DEFAULT: '2rem',
 			},
 			borderWidth: {
 				DEFAULT: '1px',
@@ -45,7 +46,6 @@ export default {
 				'accent-3': 'var(--wp--preset--color--accent-3)',
 				'accent-4': 'var(--wp--preset--color--accent-4)',
 				transparent: 'transparent',
-				// warning: '#fcd34d',
 				warning: {
 					text: '#000',
 					bg: '#fcda82',
@@ -53,6 +53,9 @@ export default {
 				error: {
 					text: '#000',
 					bg: '#f87171',
+				},
+				red: {
+					500: '#c70808',
 				},
 			},
 			keyframes: {
@@ -71,7 +74,7 @@ export default {
 		({ addComponents }) => {
 			//set up btn classes
 			const buttonBase = {
-				'@apply rounded py-2 px-6 border border-solid border-transparent no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2':
+				'@apply rounded py-2 px-6 border border-solid border-transparent leading-normal no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2 hover:cursor-pointer':
 					{},
 			};
 
@@ -84,7 +87,7 @@ export default {
 				},
 				'.btn-fill-secondary': {
 					...buttonBase,
-					'@apply bg-contrast-3 text-contrast hover:bg-base focus:bg-base focus:text-base-2':
+					'@apply bg-contrast-3 text-contrast hover:bg-contrast hover:text-base-2 focus:bg-contrast focus:text-base-2':
 						{},
 				},
 				'.btn-outline': {

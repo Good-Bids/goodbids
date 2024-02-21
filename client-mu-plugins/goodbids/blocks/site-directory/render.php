@@ -12,16 +12,19 @@ if ( ! is_main_site() ) :
 	return;
 endif;
 
-$site_directory = new GoodBids\Blocks\SiteDirectory( $block );
 ?>
-<div <?php block_attr( $block, 'flex flex-wrap gap-5' ); ?>>
-	<?php foreach ( $site_directory->get_sites() as $nonprofit ) : ?>
-		<div>
-			<h3>
-				<a href="<?php echo is_admin() ? '#' : esc_url( $nonprofit['siteurl'] ); ?>">
-					<?php echo esc_html( $nonprofit['blogname'] ); ?>
-				</a>
-			</h3>
-		</div>
-	<?php endforeach; ?>
+<div <?php block_attr( $block, 'my-8' ); ?>>
+	<ul class="grid grid-cols-5 gap-8 p-0 m-0 list-none">
+		<?php
+		goodbids()->sites->loop(
+			function ( $site_id ) {
+				// Skip main site
+				if ( get_main_site_id() === $site_id ) {
+					return;
+				}
+				goodbids()->load_view( 'parts/site-grid.php', compact( 'site_id' ) );
+			}
+		);
+		?>
+	</ul>
 </div>

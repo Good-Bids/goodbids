@@ -10,6 +10,7 @@ namespace GoodBids\Utilities;
 
 use GoodBids\Core;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\NewRelicHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
@@ -86,8 +87,8 @@ class Log {
 	 */
 	public static function init(): void {
 		self::set_config();
-		self::init_monolog();
 		self::init_new_relic();
+		self::init_monolog();
 	}
 
 	/**
@@ -187,18 +188,24 @@ class Log {
 	 * @return void
 	 */
 	private static function init_monolog(): void {
-		if ( ! self::get_log_file() ) {
-			return;
+		self::$monolog = new Logger( 'GoodBids' );
+
+		if ( Core::is_dev_env() ) {
+			if ( ! self::get_log_file() ) {
+				return;
+			}
+
+			$output    = "%datetime% | %level_name% %message% %context% %extra%" . PHP_EOL;
+			$formatter = new LineFormatter( $output );
+			$formatter->ignoreEmptyContextAndExtra();
+
+			$handler = new StreamHandler( self::get_log_file(), Level::Debug );
+			$handler->setFormatter( $formatter );
+		} else {
+			$level   = self::$debug_mode ? Level::Debug : Level::Error;
+			$handler = new NewRelicHandler( $level );
 		}
 
-		$output    = "%datetime% | %level_name% %message% %context% %extra%" . PHP_EOL;
-		$formatter = new LineFormatter( $output );
-		$formatter->ignoreEmptyContextAndExtra();
-
-		$handler = new StreamHandler( self::get_log_file(), Level::Debug );
-		$handler->setFormatter( $formatter );
-
-		self::$monolog = new Logger( 'GoodBids' );
 		self::$monolog->pushHandler( $handler );
 	}
 

@@ -599,17 +599,33 @@ class Sites {
 					return;
 				}
 
-				$site_id = get_current_blog_id();
-
-				// Check if the user is already registered on the site.
-				if ( is_user_member_of_blog( $user_id, $site_id ) ) {
-					return;
-				}
-
-				// Add the user to the site.
-				add_user_to_blog( $site_id, $user_id, 'customer' );
+				$this->add_user_to_site( $user_id );
 			}
 		);
+	}
+
+	/**
+	 * Adds a user to a site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int  $user_id
+	 * @param ?int $site_id
+	 *
+	 * @return void
+	 */
+	public function add_user_to_site( int $user_id, ?int $site_id = null ): void {
+		if ( null === $site_id ) {
+			$site_id = get_current_blog_id();
+		}
+
+		// Check if the user is already registered on the site.
+		if ( is_user_member_of_blog( $user_id, $site_id ) ) {
+			return;
+		}
+
+		// Add the user to the site.
+		add_user_to_blog( $site_id, $user_id, 'customer' );
 	}
 
 	/**
@@ -737,14 +753,14 @@ class Sites {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_bid_count();
 							},
-							$auction['site_id']
+							$auction_data['site_id']
 						),
 						'total_raised' => $this->swap(
 							function() use ( $auction_data ) {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_total_raised();
 							},
-							$auction['site_id']
+							$auction_data['site_id']
 						),
 					]
 				)
@@ -990,10 +1006,13 @@ class Sites {
 	public function get_user_auctions_won( ?int $user_id = null ): array {
 		return collect( $this->get_user_participating_auctions( $user_id ) )
 			->filter(
-				function ( $auction ) {
+				function ( $auction_data ) {
 					return $this->swap(
-						fn () => goodbids()->auctions->is_current_user_winner( $auction['auction_id'] ),
-						$auction['site_id']
+						function() use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['auction_id'] );
+							return $auction->is_current_user_winner();
+						},
+						$auction_data['site_id']
 					);
 				}
 			)
@@ -1036,7 +1055,7 @@ class Sites {
 				if ( 'standing' === $column ) {
 					if ( get_main_site_id() !== intval( $site_id ) ) {
 						goodbids()->sites->swap(
-							function() {
+							function () {
 								if ( goodbids()->invoices->has_overdue_invoices() ) {
 									esc_html_e( 'Delinquent', 'goodbids' );
 									return;

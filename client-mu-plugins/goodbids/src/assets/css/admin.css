@@ -1,3 +1,5 @@
+@import 'referral-copy-link.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -106,4 +108,10 @@
 
 .gb-toggle {
 	@apply inline-block;
+}
+
+.goodbids-referrals {
+	li {
+		@apply flex items-center gap-2;
+	}
 }

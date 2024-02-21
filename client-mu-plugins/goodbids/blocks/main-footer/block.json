@@ -1,13 +1,13 @@
 {
-	"name": "main-footer",
-	"title": "Main Footer",
-	"description": "Displays the main site footer",
-	"icon": "text-page",
-	"textdomain": "goodbids",
-	"acf": {
-		"mode": "preview"
-	},
-	"supports": {
-		"jsx": false
-	}
+  "name": "main-footer",
+  "title": "Main Footer",
+  "description": "Displays the main site footer",
+  "icon": "text-page",
+  "textdomain": "goodbids",
+  "acf": {
+    "mode": "preview"
+  },
+  "supports": {
+    "jsx": false
+  }
 }
