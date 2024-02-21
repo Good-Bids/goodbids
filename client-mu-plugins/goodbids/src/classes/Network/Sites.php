@@ -1052,7 +1052,7 @@ class Sites {
 				if ( 'standing' === $column ) {
 					if ( get_main_site_id() !== intval( $site_id ) ) {
 						goodbids()->sites->swap(
-							function() {
+							function () {
 								if ( goodbids()->invoices->has_overdue_invoices() ) {
 									esc_html_e( 'Delinquent', 'goodbids' );
 									return;
