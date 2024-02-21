@@ -1,4 +1,12 @@
 @layer components {
+	a.custom-logo-link {
+		@apply h-[48px];
+	}
+
+	.wp-block-site-logo img.custom-logo {
+		@apply h-full w-[48px] object-contain;
+	}
+
 	.wp-block-woocommerce-customer-account {
 		a {
 			@apply btn-fill py-2 px-5 !text-base-2 hover:!text-contrast focus:!text-contrast;
