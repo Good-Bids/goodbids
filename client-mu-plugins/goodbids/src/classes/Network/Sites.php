@@ -1006,10 +1006,13 @@ class Sites {
 	public function get_user_auctions_won( ?int $user_id = null ): array {
 		return collect( $this->get_user_participating_auctions( $user_id ) )
 			->filter(
-				function ( $auction ) {
+				function ( $auction_data ) {
 					return $this->swap(
-						fn () => goodbids()->auctions->is_current_user_winner( $auction['auction_id'] ),
-						$auction['site_id']
+						function() use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['auction_id'] );
+							return $auction->is_current_user_winner();
+						},
+						$auction_data['site_id']
 					);
 				}
 			)
