@@ -8,6 +8,9 @@
 
 namespace GoodBids\Utilities;
 
+use DateTimeImmutable;
+use Exception;
+
 /**
  * Utilities Methods
  *
@@ -38,8 +41,8 @@ class Utilities {
 		$formatted = $datetime;
 
 		try {
-			$formatted = ( new \DateTimeImmutable( $datetime ) )->format( $format );
-		} catch ( \Exception $e ) {
+			$formatted = ( new DateTimeImmutable( $datetime ) )->format( $format );
+		} catch ( Exception $e ) {
 			Log::error( $e->getMessage(), compact( 'datetime', 'format' ) );
 		}
 

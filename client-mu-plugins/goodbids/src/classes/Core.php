@@ -11,10 +11,12 @@ namespace GoodBids;
 use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
 use GoodBids\Auctions\Auctions;
+use GoodBids\Auctions\Bids;
+use GoodBids\Auctions\Products;
+use GoodBids\Auctions\Rewards;
 use GoodBids\Auctions\Watchers;
-use GoodBids\Blocks\Blocks;
+use GoodBids\Frontend\Blocks;
 use GoodBids\Frontend\Notices;
-use GoodBids\Frontend\OneTrust;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Frontend\Vite;
 use GoodBids\Network\Dashboard;
@@ -24,6 +26,7 @@ use GoodBids\Network\Sites;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Referrals;
 use GoodBids\Users\Users;
@@ -67,12 +70,6 @@ class Core {
 
 	/**
 	 * @since 1.0.0
-	 * @var Dashboard
-	 */
-	public Dashboard $dashboard;
-
-	/**
-	 * @since 1.0.0
 	 * @var Settings
 	 */
 	public Settings $settings;
@@ -109,33 +106,33 @@ class Core {
 
 	/**
 	 * @since 1.0.0
+	 * @var Products
+	 */
+	public Products $products;
+
+	/**
+	 * @since 1.0.0
+	 * @var Bids
+	 */
+	public Bids $bids;
+
+	/**
+	 * @since 1.0.0
+	 * @var Rewards
+	 */
+	public Rewards $rewards;
+
+	/**
+	 * @since 1.0.0
 	 * @var WooCommerce
 	 */
 	public WooCommerce $woocommerce;
 
 	/**
 	 * @since 1.0.0
-	 * @var Partners
-	 */
-	public Partners $partners;
-
-	/**
-	 * @since 1.0.0
 	 * @var Invoices
 	 */
 	public Invoices $invoices;
-
-	/**
-	 * @since 1.0.0
-	 * @var Patterns
-	 */
-	public Patterns $patterns;
-
-	/**
-	 * @since 1.0.0
-	 * @var Blocks
-	 */
-	public Blocks $blocks;
 
 	/**
 	 * @since 1.0.0
@@ -304,8 +301,6 @@ class Core {
 
 		// Init vite.
 		new Vite();
-		// Init OneTrust.
-		new OneTrust();
 	}
 
 	/**
@@ -387,19 +382,25 @@ class Core {
 				$this->admin       = new Admin();
 				$this->auctioneer  = new Auctioneer();
 				$this->auctions    = new Auctions();
-				$this->partners    = new Partners();
+				$this->products    = new Products();
+				$this->bids        = new Bids();
+				$this->rewards     = new Rewards();
 				$this->invoices    = new Invoices();
-				$this->patterns    = new Patterns();
-				$this->dashboard   = new Dashboard();
 				$this->settings    = new Settings();
 				$this->network     = new Network();
 				$this->sites       = new Sites();
 				$this->woocommerce = new WooCommerce();
-				$this->blocks      = new Blocks();
 				$this->notices     = new Notices();
 				$this->users       = new Users();
 				$this->watchers    = new Watchers();
 				$this->referrals   = new Referrals();
+
+				// Init Modules not part of the API.
+				new Patterns();
+				new Partners();
+				new Dashboard();
+				new Blocks();
+				new OneTrust();
 			}
 		);
 	}

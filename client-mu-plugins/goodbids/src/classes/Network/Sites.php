@@ -8,11 +8,13 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
+use WP_Block_Type_Registry;
 use WP_Post;
 use WP_Site;
 
@@ -503,7 +505,7 @@ class Sites {
 				];
 
 				if ( ! is_array( $allowed_block_types ) ) {
-					$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+					$allowed_block_types = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
 				}
 
 				// Remove the block from the allowed blocks.
@@ -636,7 +638,7 @@ class Sites {
 	private function create_about_page(): void {
 		add_action(
 			'goodbids_init_site',
-			function ( int $site_id ): void {
+			function (): void {
 				ob_start();
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );
@@ -653,7 +655,7 @@ class Sites {
 				$about_id = wp_insert_post( $about );
 
 				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
-					// Use the $site_id to update post meta to track which $about_id is the About page.
+					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
 				}
 			},
 			20
@@ -745,14 +747,20 @@ class Sites {
 					]
 				)
 				->sortByDesc(
-					fn ( array $auction ) => [
+					fn ( array $auction_data ) => [
 						'bid_count'    => $this->swap(
-							fn () => goodbids()->auctions->get_bid_count( $auction['post_id'] ),
-							$auction['site_id']
+							function() use ( $auction_data ) {
+								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+								return $auction->get_bid_count();
+							},
+							$auction_data['site_id']
 						),
 						'total_raised' => $this->swap(
-							fn () => goodbids()->auctions->get_total_raised( $auction['post_id'] ),
-							$auction['site_id']
+							function() use ( $auction_data ) {
+								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+								return $auction->get_total_raised();
+							},
+							$auction_data['site_id']
 						),
 					]
 				)
@@ -977,7 +985,8 @@ class Sites {
 			->filter(
 				fn( array $item ) => $this->swap(
 					function () use ( &$item ) {
-						return Auctions::STATUS_LIVE === goodbids()->auctions->get_status( $item['auction_id'] );
+						$auction = goodbids()->auctions->get( $item['auction_id'] );
+						return Auction::STATUS_LIVE === $auction->get_status();
 					},
 					$item['site_id']
 				)
@@ -997,10 +1006,13 @@ class Sites {
 	public function get_user_auctions_won( ?int $user_id = null ): array {
 		return collect( $this->get_user_participating_auctions( $user_id ) )
 			->filter(
-				function ( $auction ) {
+				function ( $auction_data ) {
 					return $this->swap(
-						fn () => goodbids()->auctions->is_current_user_winner( $auction['auction_id'] ),
-						$auction['site_id']
+						function() use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['auction_id'] );
+							return $auction->is_current_user_winner();
+						},
+						$auction_data['site_id']
 					);
 				}
 			)

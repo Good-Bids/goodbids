@@ -58,7 +58,7 @@ class Coupons {
 	 * @return ?string
 	 */
 	public function get_reward_coupon_code( int $auction_id, int $reward_id ): ?string {
-		$reward = goodbids()->auctions->rewards->get_product( $auction_id );
+		$reward = goodbids()->rewards->get_product( $auction_id );
 
 		if ( ! $reward ) {
 			return null;
@@ -88,24 +88,7 @@ class Coupons {
 			esc_html( $reward_id )
 		);
 
-		$coupon = new WC_Coupon();
-		$coupon->set_code( $coupon_code ); // Coupon code.
-		$coupon->set_description( $description );
-
-		// Restrictions.
-		$coupon->set_individual_use( true );
-		$coupon->set_usage_limit_per_user( 1 );
-		$coupon->set_usage_limit( 1 );
-		$coupon->set_limit_usage_to_x_items( 1 ); // Limit to 1 item.
-		$coupon->set_email_restrictions( goodbids()->users->get_emails() ); // Restrict by user email(s).
-		$coupon->set_product_ids( [ $reward_id ] ); // Restrict to this Reward Product.
-
-		// Amount.
-		$coupon->set_discount_type( 'percent' );
-		$coupon->set_amount( 100 ); // 100% Discount.
-		$coupon->set_maximum_amount( $reward_price ); // Additional price restriction.
-
-		$coupon->save();
+		$this->generate( $coupon_code, $description, $reward_id, $reward_price );
 
 		update_post_meta( $reward_id, sprintf( self::REWARD_COUPON_META_KEY, $auction_id ), $coupon_code );
 
@@ -123,7 +106,7 @@ class Coupons {
 	 * @return ?string
 	 */
 	public function get_free_bid_coupon_code( int $auction_id, int $bid_variation_id ): ?string {
-		$bid_variation = goodbids()->auctions->bids->get_variation( $auction_id );
+		$bid_variation = goodbids()->bids->get_variation( $auction_id );
 
 		if ( ! $bid_variation ) {
 			return null;
@@ -151,8 +134,28 @@ class Coupons {
 			esc_html( $auction_id )
 		);
 
+		$this->generate( $coupon_code, $description, $bid_variation_id, $reward_price );
+
+		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), $coupon_code );
+
+		return $coupon_code;
+	}
+
+	/**
+	 * Generate a new coupon
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $code
+	 * @param string $description
+	 * @param int    $product_id
+	 * @param float  $amount
+	 *
+	 * @return void
+	 */
+	private function generate( string $code, string $description, int $product_id, float $amount ): void {
 		$coupon = new WC_Coupon();
-		$coupon->set_code( $coupon_code ); // Coupon code.
+		$coupon->set_code( $code ); // Coupon code.
 		$coupon->set_description( $description );
 
 		// Restrictions.
@@ -161,18 +164,14 @@ class Coupons {
 		$coupon->set_usage_limit( 1 );
 		$coupon->set_limit_usage_to_x_items( 1 ); // Limit to 1 item.
 		$coupon->set_email_restrictions( goodbids()->users->get_emails() ); // Restrict by user email(s).
-		$coupon->set_product_ids( [ $bid_variation_id ] ); // Restrict to this Reward Product.
+		$coupon->set_product_ids( [ $product_id ] ); // Restrict to a specific Product type.
 
 		// Amount.
 		$coupon->set_discount_type( 'percent' );
 		$coupon->set_amount( 100 ); // 100% Discount.
-		$coupon->set_maximum_amount( $reward_price ); // Additional price restriction.
+		$coupon->set_maximum_amount( $amount ); // Additional price restriction.
 
 		$coupon->save();
-
-		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), $coupon_code );
-
-		return $coupon_code;
 	}
 
 	/**
@@ -191,7 +190,7 @@ class Coupons {
 					return $url;
 				}
 
-				$product_type = goodbids()->auctions->get_product_type( $product->get_id() );
+				$product_type = goodbids()->products->get_type( $product->get_id() );
 				$redirect_url = wc_get_page_permalink( 'myaccount' );
 				$coupon_code  = false;
 
@@ -199,17 +198,19 @@ class Coupons {
 					return $url;
 				}
 
-				$auction_id = goodbids()->auctions->get_auction_id_from_product_id( $product->get_id() );
+				$auction_id = goodbids()->products->get_auction_id_from_product( $product->get_id() );
 
 				if ( ! $auction_id ) {
 					return add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $url );
 				}
 
+				$auction = goodbids()->auctions->get( $auction_id );
+
 				if ( Rewards::ITEM_TYPE === $product_type ) {
 
-					$redirect_url = get_permalink( $auction_id );
+					$redirect_url = $auction->get_url();
 
-					if ( ! goodbids()->auctions->is_current_user_winner( $auction_id ) ) {
+					if ( ! $auction->is_current_user_winner() ) {
 						WC()->cart->empty_cart();
 						return add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $url );
 					}
@@ -221,7 +222,7 @@ class Coupons {
 					}
 				} elseif ( Bids::ITEM_TYPE === $product_type ) {
 					if ( ! empty( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
-						if ( ! goodbids()->auctions->are_free_bids_allowed( $auction_id ) ) {
+						if ( ! $auction->are_free_bids_allowed() ) {
 							return add_query_arg( 'gb-notice', Notices::FREE_BIDS_NOT_ELIGIBLE, $url );
 						}
 

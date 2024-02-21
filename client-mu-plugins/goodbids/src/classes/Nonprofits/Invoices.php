@@ -8,8 +8,10 @@
 
 namespace GoodBids\Nonprofits;
 
+use DateTimeZone;
 use GoodBids\Core;
 use GoodBids\Utilities\Log;
+use WP_Post;
 use WP_Query;
 
 /**
@@ -159,11 +161,11 @@ class Invoices {
 		 * @since 1.0.0
 		 *
 		 * @param mixed $delete
-		 * @param \WP_Post $post
+		 * @param WP_Post $post
 		 *
 		 * @return mixed
 		 */
-		$prevent_delete = function ( mixed $delete, \WP_Post $post ): mixed {
+		$prevent_delete = function ( mixed $delete, WP_Post $post ): mixed {
 			if ( $this->get_post_type() !== get_post_type( $post ) ) {
 				return $delete;
 			}
@@ -258,7 +260,7 @@ class Invoices {
 	private function clear_post_state(): void {
 		add_filter(
 			'display_post_states',
-			function ( array $post_states, \WP_Post $post ): array {
+			function ( array $post_states, WP_Post $post ): array {
 				if ( $this->get_post_type() !== get_post_type( $post ) ) {
 					return $post_states;
 				}
@@ -292,7 +294,7 @@ class Invoices {
 				add_meta_box(
 					'goodbids-invoice-details',
 					__( 'Invoice Details', 'goodbids' ),
-					function ( \WP_Post $post ): void {
+					function ( WP_Post $post ): void {
 						$invoice = $this->get_invoice( $post->ID );
 
 						if ( ! $invoice ) {
@@ -310,7 +312,7 @@ class Invoices {
 				add_meta_box(
 					'goodbids-invoice-actions',
 					__( 'Actions', 'goodbids' ),
-					function ( \WP_Post $post ): void {
+					function ( WP_Post $post ): void {
 						$invoice = $this->get_invoice( $post->ID );
 
 						if ( ! $invoice ) {
@@ -389,9 +391,12 @@ class Invoices {
 	 * @return ?Invoice
 	 */
 	public function get_invoice( int $post_id, ?int $auction_id = null ): ?Invoice {
-		if ( null !== $auction_id && goodbids()->auctions->get_invoice_id( $auction_id ) ) {
-			_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
-			return null;
+		if ( ! is_null( $auction_id ) ) {
+			$auction = goodbids()->auctions->get( $auction_id );
+			if ( $auction->get_invoice_id() ) {
+				_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
+				return null;
+			}
 		}
 
 		return new Invoice( $post_id, $auction_id );
@@ -434,7 +439,7 @@ class Invoices {
 				'meta_query' => [
 					[
 						'key'     => Invoice::DUE_DATE_META_KEY,
-						'value'   => current_datetime()->setTimezone( new \DateTimeZone( 'GMT' ) )->format( 'Y-m-d 23:59:59' ),
+						'value'   => current_datetime()->setTimezone( new DateTimeZone( 'GMT' ) )->format( 'Y-m-d 23:59:59' ),
 						'compare' => '<',
 						'type'    => 'DATE',
 					],
@@ -572,13 +577,15 @@ class Invoices {
 			return;
 		}
 
+		$auction = goodbids()->auctions->get( $auction_id );
+
 		// Bail early if invoice already exists.
-		if ( goodbids()->auctions->get_invoice_id( $auction_id ) ) {
+		if ( $auction->get_invoice_id() ) {
 			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
 			return;
 		}
 
-		if ( ! goodbids()->auctions->get_total_raised( $auction_id ) ) {
+		if ( ! $auction->get_total_raised() ) {
 			Log::warning( 'No funds were raised for Auction.', compact( 'auction_id' ) );
 			return;
 		}

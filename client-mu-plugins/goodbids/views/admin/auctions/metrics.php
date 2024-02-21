@@ -2,15 +2,15 @@
 /**
  * Auction Details Meta Box Content
  *
- * @global \GoodBids\Auctions\Auctions $this
  * @global int $auction_id
  *
  * @since 1.0.0
  * @package GoodBids
  */
 
-$bid_product = wc_get_product( goodbids()->auctions->bids->get_product_id( $auction_id ) );
-$last_bid    = goodbids()->auctions->get_last_bid( $auction_id );
+$auction     = goodbids()->auctions->get( $auction_id );
+$bid_product = wc_get_product( goodbids()->bids->get_product_id( $auction_id ) );
+$last_bid    = $auction->get_last_bid();
 ?>
 <div class="gb-auction-metrics">
 	<h3><?php esc_html_e( 'Auction Metrics', 'goodbids' ); ?></h3>
@@ -19,25 +19,25 @@ $last_bid    = goodbids()->auctions->get_last_bid( $auction_id );
 	printf(
 		'<p><strong>%s</strong><br>%s</p>',
 		esc_html__( 'Total Bids', 'goodbids' ),
-		esc_html( goodbids()->auctions->get_bid_count( $auction_id ) )
+		esc_html( $auction->get_bid_count() )
 	);
 
 	printf(
 		'<p><strong>%s</strong><br>%s</p>',
 		esc_html__( 'Available Free Bids', 'goodbids' ),
-		esc_html( goodbids()->auctions->get_free_bids_available( $auction_id ) )
+		esc_html( $auction->get_free_bids_available() )
 	);
 
 	printf(
 		'<p><strong>%s</strong><br>%s</p>',
 		esc_html__( 'Total Extensions', 'goodbids' ),
-		esc_html( goodbids()->auctions->get_extensions( $auction_id ) )
+		esc_html( $auction->get_extensions() )
 	);
 
 	printf(
 		'<p><strong>%s</strong><br>%s</p>',
 		esc_html__( 'Total Raised', 'goodbids' ),
-		wp_kses_post( wc_price( goodbids()->auctions->get_total_raised( $auction_id ) ) )
+		wp_kses_post( wc_price( $auction->get_total_raised() ) )
 	);
 
 	if ( $bid_product ) :

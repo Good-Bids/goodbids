@@ -9,6 +9,8 @@
 namespace GoodBids\Plugins\ACF;
 
 use GoodBids\Utilities\Log;
+use WP_Block_Type_Registry;
+use function acf_is_acf_block_json;
 
 /**
  * ACF Blocks Class
@@ -206,7 +208,7 @@ class Blocks {
 		add_filter(
 			'block_type_metadata',
 			function ( array $metadata ) : array { // phpcs:ignore
-				if ( ! function_exists( '\acf_is_acf_block_json' ) || ! \acf_is_acf_block_json( $metadata ) ) {
+				if ( ! function_exists( '\acf_is_acf_block_json' ) || ! acf_is_acf_block_json( $metadata ) ) {
 					return $metadata;
 				}
 
@@ -359,7 +361,7 @@ class Blocks {
 				}
 
 				if ( ! is_array( $allowed_block_types ) ) {
-					$allowed_block_types = array_keys( \WP_Block_Type_Registry::get_instance()->get_all_registered() );
+					$allowed_block_types = array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
 				}
 
 				// Remove the block from the allowed blocks.

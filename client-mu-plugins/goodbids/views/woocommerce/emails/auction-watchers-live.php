@@ -2,7 +2,15 @@
 /**
  * Auction Watchers Live email
  *
+ * @var string $email_heading
+ * @var string $site_name
+ * @var string $user_name
+ * @var string $email
+ * @var string $button_text
+ * @var string $additional_content
+ *
  * @version 1.0.0
+ * @package GoodBids
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+do_action( 'woocommerce_email_header', $email_heading ); ?>
 
 <p>
 	<?php
@@ -28,7 +36,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
 		esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
 		'{auction.title}',
-		'{site_title}',
+		esc_html( $site_name ),
 		'{auction.goal}',
 		'{auction.url}'
 	);
@@ -40,7 +48,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Auction Start Date/Time */
 		esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-		'{auction.startingBid}',
+		'{auction.start_date_time}'
 	);
 	?>
 </p>
@@ -50,7 +58,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	printf(
 		/* translators: %1$s: Site Name */
 		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-		'{site_title}',
+		esc_html( $site_name )
 	);
 	?>
 </p>

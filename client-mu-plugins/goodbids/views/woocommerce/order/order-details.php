@@ -6,7 +6,8 @@
  * @package WooCommerce\Templates
  * @version 8.5.0
  *
- * @var bool $show_downloads Controls whether the downloads table should be rendered.
+ * @global bool $show_downloads Controls whether the downloads table should be rendered.
+ * @global int  $order_id      Order ID.
  */
 
 defined( 'ABSPATH' ) || exit;

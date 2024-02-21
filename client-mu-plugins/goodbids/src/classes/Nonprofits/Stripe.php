@@ -12,6 +12,7 @@ use GoodBids\Nonprofits\Stripe\Webhooks;
 use GoodBids\Utilities\Log;
 use stdClass;
 use WC_Stripe_API;
+use WC_Stripe_Exception;
 
 /**
  * Stripe Invoices Class
@@ -25,11 +26,6 @@ class Stripe {
 	 * @var string
 	 */
 	const STRIPE_CUSTOMER_ID_OPT = '_goodbids_stripe_customer_id';
-
-	/**
-	 * @var ?Webhooks
-	 */
-	private ?Webhooks $webhooks = null;
 
 	/**
 	 * @since 1.0.0
@@ -82,14 +78,14 @@ class Stripe {
 			return;
 		}
 
-		if ( ! \WC_Stripe_API::get_secret_key() ) {
+		if ( ! WC_Stripe_API::get_secret_key() ) {
 			Log::warning( 'Stripe is not configured.' );
 			return;
 		}
 
 		// Initialize webhooks.
 		if ( class_exists( '\WC_Stripe_Webhook_Handler' ) ) {
-			$this->webhooks = new Webhooks();
+			new Webhooks();
 		} else {
 			Log::warning( 'Could not initialize Stripe Webhooks.' );
 		}
@@ -106,7 +102,7 @@ class Stripe {
 	 *
 	 * @return void
 	 */
-	public function set_invoice( Invoice $invoice ) {
+	public function set_invoice( Invoice $invoice ): void {
 		$this->invoice = $invoice;
 	}
 
@@ -217,7 +213,7 @@ class Stripe {
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'customers' );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not create a Stripe Customer: ' . $e->getMessage(), $context);
 					return null;
 				}
@@ -282,7 +278,7 @@ class Stripe {
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'invoices' );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not create Stripe Invoice: ' . $e->getMessage(), $context );
 					return null;
 				}
@@ -333,7 +329,7 @@ class Stripe {
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'invoiceitems' );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not create Stripe Invoice Item: ' . $e->getMessage(), $context );
 					return null;
 				}
@@ -382,7 +378,7 @@ class Stripe {
 			function() use ( $stripe_invoice_id, $context ): ?stdClass {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/finalize', $stripe_invoice_id ) );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not finalize Stripe Invoice: ' . $e->getMessage(), $context );
 					return null;
 				}
@@ -433,7 +429,7 @@ class Stripe {
 			function() use ( $stripe_invoice_id, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s/send', $stripe_invoice_id ) );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not send Stripe Invoice: ' . $e->getMessage(), $context );
 					return null;
 				}
@@ -471,7 +467,7 @@ class Stripe {
 			function() {
 				try {
 					$response = WC_Stripe_API::request( [], 'invoices', 'GET' );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not get Stripe Invoices: ' . $e->getMessage() );
 					return [];
 				}
@@ -507,7 +503,7 @@ class Stripe {
 			function() use ( $stripe_invoice_id ): ?stdClass {
 				try {
 					$response = WC_Stripe_API::request( [], sprintf( 'invoices/%s', $stripe_invoice_id ), 'GET' );
-				} catch ( \WC_Stripe_Exception $e ) {
+				} catch ( WC_Stripe_Exception $e ) {
 					Log::error( 'Could not lookup Stripe Invoice: ' . $e->getMessage(), compact( 'stripe_invoice_id' ) );
 					return null;
 				}

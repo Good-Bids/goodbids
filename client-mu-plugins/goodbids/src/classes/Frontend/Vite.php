@@ -66,7 +66,7 @@ class Vite {
 	public function __construct() {
 		$this->site_url   = get_site_url();
 		$this->port       = 5173;
-		$this->dev_server = "{$this->site_url}:{$this->port}";
+		$this->dev_server = "$this->site_url:$this->port";
 
 		$this->dist_url  = GOODBIDS_PLUGIN_URL . 'dist/';
 		$this->dist_path = GOODBIDS_PLUGIN_PATH . 'dist/';
@@ -182,7 +182,7 @@ class Vite {
 					window.__vite_plugin_react_preamble_installed__ = true
 			  	</script>",
 				"<script type=\"module\" src=\"http://localhost:5173/@vite/client\"></script>",
-				"<script type=\"module\" src=\"http://localhost:5173/{$entry}\"></script>",
+				"<script type=\"module\" src=\"http://localhost:5173/$entry\"></script>",
 			];
 
 			return implode( PHP_EOL, $scripts );

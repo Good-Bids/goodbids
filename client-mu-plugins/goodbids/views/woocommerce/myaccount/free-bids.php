@@ -2,10 +2,12 @@
 /**
  * My Account: Free Bids Page
  *
- * @global \GoodBids\Auctions\FreeBid[] $free_bids
+ * @global FreeBid[] $free_bids
  *
  * @package GoodBids
  */
+
+use GoodBids\Auctions\FreeBid;
 
 ?>
 <div class="goodbids-free-bids">

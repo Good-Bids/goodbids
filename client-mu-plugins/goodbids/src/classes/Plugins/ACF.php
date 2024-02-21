@@ -8,6 +8,7 @@
 
 namespace GoodBids\Plugins;
 
+use Exception;
 use GoodBids\Plugins\ACF\Blocks;
 
 /**
@@ -42,10 +43,19 @@ class ACF {
 		// Initialize Submodules.
 		$this->blocks = new Blocks();
 
+		// Use constant to define the ACF License key.
 		$this->define_license_key();
+
+		// Disable ACF Admin per WP VIP Documentation
 		$this->disable_admin();
+
+		// Per WP VIP Documentation
 		$this->discourage_the_field_usage();
+
+		// Save ACF JSON to the plugin directory.
 		$this->modify_save_directory();
+
+		// Disable database setting storage.
 		$this->disable_database_storage();
 	}
 
@@ -171,7 +181,7 @@ class ACF {
 	 */
 	private function called_from_the_field() : bool {
 		// Create an exception
-		$ex = new \Exception();
+		$ex = new Exception();
 
 		// Call getTrace function
 		$trace = $ex->getTrace();

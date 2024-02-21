@@ -8,6 +8,10 @@
 
 namespace GoodBids\Nonprofits;
 
+use DateInterval;
+use DateTimeZone;
+use Exception;
+use GoodBids\Auctions\Auction;
 use GoodBids\Utilities\Log;
 use stdClass;
 use WP_Post;
@@ -271,6 +275,22 @@ class Invoice {
 	}
 
 	/**
+	 * Get the invoice Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?Auction
+	 */
+	public function get_auction(): ?Auction {
+		$auction_id = $this->get_auction_id();
+		if ( ! $auction_id ) {
+			return null;
+		}
+
+		return goodbids()->auctions->get( $auction_id );
+	}
+
+	/**
 	 * Set the Invoice Auction ID
 	 *
 	 * @since 1.0.0
@@ -320,7 +340,8 @@ class Invoice {
 	 */
 	private function set_amount( ?int $amount = null ): bool|int {
 		if ( is_null( $amount ) ) {
-			$total_raised = goodbids()->auctions->get_total_raised( $this->get_auction_id() );
+			$auction      = $this->get_auction();
+			$total_raised = $auction->get_total_raised();
 			$percent      = intval( goodbids()->get_config( 'invoices.percent' ) );
 			$amount       = $total_raised * ( $percent / 100 );
 		} else {
@@ -365,16 +386,16 @@ class Invoice {
 
 			try {
 				$due_date = current_datetime()
-					->setTimezone( new \DateTimeZone( 'GMT' ) )
-					->add( new \DateInterval( 'P' . $payment_terms . 'D' ) )
+					->setTimezone( new DateTimeZone( 'GMT' ) )
+					->add( new DateInterval( 'P' . $payment_terms . 'D' ) )
 					->format( 'Y-m-d 23:59:59' );
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
 				// Log the error.
 				Log::error( 'Error setting invoice due date: ' . $e->getMessage(), [ 'invoice_id' => $this->get_id() ] );
 				return false;
 			}
 		} else {
-			$due_date = wp_date( 'Y-m-d 23:59:59', $due_date, new \DateTimeZone( 'GMT' ) );
+			$due_date = wp_date( 'Y-m-d 23:59:59', $due_date, new DateTimeZone( 'GMT' ) );
 		}
 
 		// Set the invoice due date in GMT
@@ -570,7 +591,7 @@ class Invoice {
 	public function mark_as_paid( string $stripe_payment_id ): void {
 		$this->set_payment_date(
 			current_datetime()
-				->setTimezone( new \DateTimeZone( 'GMT' ) )
+				->setTimezone( new DateTimeZone( 'GMT' ) )
 				->format( 'Y-m-d H:i:s' )
 		);
 		$this->set_payment_id( $stripe_payment_id );
