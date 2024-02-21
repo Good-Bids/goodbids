@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live email (plain text)
+ * Auction Closed email (plain text)
  *
  * @version 1.0.0
  */
@@ -21,37 +21,37 @@ printf(
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
-	esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
+	/* translators: %1$s: Auction title, %2$s: Auction total Bids, %3$s: Auction total Raised, %4$s: Site title, %5$s: user Total Bids, %6$s: User Total Donated */
+	esc_html__( 'The %1$s auction has ended with %2$s placed and %3$s raised for %4$s. You supported this auction with %5$s for a total donation of %6$s', 'goodbids' ),
 	'{auction.title}',
+	'{auction.totalBids}',
+	'{auction.totalRaised}',
 	'{site_title}',
-	'{auction.goal}',
-	'{auction.url}'
+	'{auction.userTotalBids}',
+	'{auction.userTotalDonated}'
+);
+
+echo "\n\n----------------------------------------\n\n";
+
+esc_html_e( 'Check your email or visit the auction page to see if you won!', 'goodbids' );
+
+
+echo "\n\n----------------------------------------\n\n";
+
+printf(
+	/* translators: %1$s: Auction page url, %2$s: Bid Now */
+	'<a class="button" href="%1$s">%2$s</a>',
+	'{auction.url}',
+	esc_html( $button_text )
 );
 
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Auction Start Date/Time */
-	esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-	'{auction.startingBid}',
-);
-
-echo "\n\n----------------------------------------\n\n";
-
-printf(
-	/* translators: %1$s: Site Name */
-	esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-	'{site_title}',
-);
-
-echo "\n\n----------------------------------------\n\n";
-
-printf(
-	/* translators: %1$s: Bid Now, %2$s: Auction page url */
-	'%1$s at %2$s',
-	esc_html( $button_text ),
-	'{auction.url}'
+	/* translators: %1$s: Main site All Auctions page url */
+	'Want to support another great GoodBids? <a class="button" href="%1$s">View all auctions</a>',
+	'{auction.url}',
+	'{main.allAuctionsUrl}'
 );
 
 /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live email
+ * Auction Reward Reminder
  *
  * @version 1.0.0
  */
@@ -24,43 +24,28 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <p>
 	<?php
+	// TODO: Change out '{auction.endTime}' to the auction end time plus 15 days
 	printf(
-		/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
-		esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
+		/* translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Auction end time plus 15 days */
+		esc_html__( 'You still need to claim the %1$s you earned on the %2$s auction with %3$s. You have until %4$s to claim your reward.', 'goodbids' ),
+		'{auction.rewardTitle}',
 		'{auction.title}',
 		'{site_title}',
-		'{auction.goal}',
-		'{auction.url}'
+		'{auction.endTime}',
 	);
 	?>
 </p>
 
 <p>
-	<?php
-	printf(
-		/* translators: %1$s: Auction Start Date/Time */
-		esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-		'{auction.startingBid}',
-	);
-	?>
-</p>
-
-<p>
-	<?php
-	printf(
-		/* translators: %1$s: Site Name */
-		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
-		'{site_title}',
-	);
-	?>
+	{auction.rewardClaimInstructions}
 </p>
 
 <p class="button-wrapper">
 	<?php
 	printf(
-		/* translators: %1$s: Auction page url, %2$s: Bid Now */
+		/* translators: %1$s: reward checkout page url, %2$s: Claim Your Reward */
 		'<a class="button" href="%1$s">%2$s</a>',
-		'{auction.url}',
+		esc_html( $button_reward_url ),
 		esc_html( $button_text )
 	);
 	?>

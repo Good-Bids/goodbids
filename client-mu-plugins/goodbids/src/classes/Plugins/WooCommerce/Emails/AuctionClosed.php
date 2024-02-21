@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live: Send an email to the users that are watching when an auction goes live.
+ * Auction Closed: Send an email to the users when an auction closes.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -18,7 +18,7 @@ use GoodBids\Plugins\WooCommerce\Emails\BaseEmail;
  * @since 1.0.0
  * @extends BaseEmail
  */
-class AuctionWatchersLive extends BaseEmail {
+class AuctionClosed extends BaseEmail {
 
 	/**
 	 * User ID.
@@ -33,11 +33,11 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'goodbids_auction_watchers_live';
-		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-watchers-live.php';
-		$this->template_plain = 'emails/plain/auction-watchers-live.php';
+		$this->id             = 'goodbids_auction_closed';
+		$this->title          = __( 'Auction Closed', 'goodbids' );
+		$this->description    = __( 'Notification email is sent when an auction goes closes.', 'goodbids' );
+		$this->template_html  = 'emails/auction-closed.php';
+		$this->template_plain = 'emails/plain/auction-closed.php';
 
 		// TODO: Trigger this email.
 
@@ -54,7 +54,7 @@ class AuctionWatchersLive extends BaseEmail {
 	public function get_default_subject() {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s is live', 'goodbids' ),
+			__( '[%1$s] %2$s has ended', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -67,7 +67,12 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Ready to GOODBID?', 'goodbids' );
+		return sprintf(
+			/* translators: %1$s: site title, %2$s: auction total raised */
+			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
+			'{site_title}',
+			'{auction.totalRaised}'
+		);
 	}
 
 	/**
@@ -77,7 +82,7 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @return string
 	 */
 	public function get_default_button_text() {
-		return __( 'Bid Now', 'goodbids' );
+		return __( 'See Auction Results', 'goodbids' );
 	}
 
 	/**

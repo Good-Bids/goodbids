@@ -18,7 +18,7 @@ use GoodBids\Plugins\WooCommerce\Emails\BaseEmail;
  * @since 1.0.0
  * @extends BaseEmail
  */
-class AuctionWatchersLive extends BaseEmail {
+class AuctionAdminSummary extends BaseEmail {
 
 	/**
 	 * User ID.
@@ -33,17 +33,18 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'goodbids_auction_watchers_live';
-		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-watchers-live.php';
-		$this->template_plain = 'emails/plain/auction-watchers-live.php';
+		$this->id             = 'goodbids_auction_admin_summary';
+		$this->title          = __( 'Auction Admin Summary', 'goodbids' );
+		$this->description    = __( 'Notification email sent to admins when an auction closes.', 'goodbids' );
+		$this->template_html  = 'emails/auction-admin-summery.php';
+		$this->template_plain = 'emails/plain/auction-admin-summery.php';
 
 		// TODO: Trigger this email.
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
 	}
+
 
 	/**
 	 * Get email subject.
@@ -54,7 +55,7 @@ class AuctionWatchersLive extends BaseEmail {
 	public function get_default_subject() {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s is live', 'goodbids' ),
+			__( '[%1$s] Auction summary for %2$s', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -67,17 +68,12 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Ready to GOODBID?', 'goodbids' );
-	}
-
-	/**
-	 * Get button text
-	 *
-	 * @since   1.0.0
-	 * @return string
-	 */
-	public function get_default_button_text() {
-		return __( 'Bid Now', 'goodbids' );
+		return sprintf(
+			/* translators: %1$s: auction total raised, %2$s: site title */
+			__( '%1$s raised for %2$s!', 'goodbids' ),
+			'{auction.totalRaised}',
+			'{site_title}'
+		);
 	}
 
 	/**
@@ -107,7 +103,6 @@ class AuctionWatchersLive extends BaseEmail {
 			[
 				'instance'      => $this,
 				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}
@@ -125,7 +120,6 @@ class AuctionWatchersLive extends BaseEmail {
 			[
 				'instance'      => $this,
 				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
 			]
 		);
 	}

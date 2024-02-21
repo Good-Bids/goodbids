@@ -5,6 +5,7 @@
 @import 'pagination.css';
 
 /* Patterns */
+@import 'patterns/comments.css';
 @import 'patterns/nonprofit-interest-form.css';
 @import 'patterns/header.css';
 

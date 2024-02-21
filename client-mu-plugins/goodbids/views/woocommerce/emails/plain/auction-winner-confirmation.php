@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live email (plain text)
+ * Auction Closed email (plain text)
  *
  * @version 1.0.0
  */
@@ -21,37 +21,25 @@ printf(
 echo "\n\n----------------------------------------\n\n";
 
 printf(
-	/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
-	esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
+	/* translators: %1$s: User last bid, %2$s: Auction Title, %3$s: Auction reward title, %4$s: Site title */
+	esc_html__( 'Congratulations! Your %1$s bid was the highest GOODBID for the %2$s auction, and you are the winner. Please claim your %3$s with %4$s within 40 days.', 'goodbids' ),
+	'{auction.userLastBid}',
 	'{auction.title}',
-	'{site_title}',
-	'{auction.goal}',
-	'{auction.url}'
-);
-
-echo "\n\n----------------------------------------\n\n";
-
-printf(
-	/* translators: %1$s: Auction Start Date/Time */
-	esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-	'{auction.startingBid}',
-);
-
-echo "\n\n----------------------------------------\n\n";
-
-printf(
-	/* translators: %1$s: Site Name */
-	esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
+	'{auction.rewardTitle}',
 	'{site_title}',
 );
 
 echo "\n\n----------------------------------------\n\n";
 
+echo '{auction.rewardClaimInstructions}';
+
+echo "\n\n----------------------------------------\n\n";
+
 printf(
-	/* translators: %1$s: Bid Now, %2$s: Auction page url */
-	'%1$s at %2$s',
-	esc_html( $button_text ),
-	'{auction.url}'
+	/* translators: %1$s: reward checkout page url, %2$s: Claim Your Reward */
+	'<a class="button" href="%1$s">%2$s</a>',
+	esc_html( $button_reward_url ),
+	esc_html( $button_text )
 );
 
 /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live: Send an email to the users that are watching when an auction goes live.
+ * Auction Outbid: Send an email to the user that was out bid on an auction.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -11,14 +11,13 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Plugins\WooCommerce\Emails\BaseEmail;
-
 /**
- * Auction Watchers Live extend the custom BaseEmail class
+ * Auction Outbid extend the custom BaseEmail class
  *
  * @since 1.0.0
  * @extends BaseEmail
  */
-class AuctionWatchersLive extends BaseEmail {
+class AuctionOutbid extends BaseEmail {
 
 	/**
 	 * User ID.
@@ -33,31 +32,16 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'goodbids_auction_watchers_live';
-		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-watchers-live.php';
-		$this->template_plain = 'emails/plain/auction-watchers-live.php';
+		$this->id             = 'goodbids_auction_outbid';
+		$this->title          = __( 'Auction Outbid', 'goodbids' );
+		$this->description    = __( 'Notification email is sent when a user is out bid on an auction.', 'goodbids' );
+		$this->template_html  = 'emails/auction-outbid.php';
+		$this->template_plain = 'emails/plain/auction-outbid.php';
 
 		// TODO: Trigger this email.
 
 		// Call parent constructor to load any other defaults not explicitly defined here
 		parent::__construct();
-	}
-
-	/**
-	 * Get email subject.
-	 *
-	 * @since  1.0.0
-	 * @return string
-	 */
-	public function get_default_subject() {
-		return sprintf(
-			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s is live', 'goodbids' ),
-			'{site_title}',
-			'{auction.title}'
-		);
 	}
 
 	/**
@@ -67,7 +51,7 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Ready to GOODBID?', 'goodbids' );
+		return __( 'It’s not too late!', 'goodbids' );
 	}
 
 	/**
@@ -78,6 +62,20 @@ class AuctionWatchersLive extends BaseEmail {
 	 */
 	public function get_default_button_text() {
 		return __( 'Bid Now', 'goodbids' );
+	}
+
+	/**
+	 * Get email subject.
+	 *
+	 * @since  1.0.0
+	 * @return string
+	 */
+	public function get_default_subject() {
+		return sprintf(
+			/* translators: %s: site title */
+			__( '[%s] You’ve been outbid', 'goodbids' ),
+			'{site_title}',
+		);
 	}
 
 	/**

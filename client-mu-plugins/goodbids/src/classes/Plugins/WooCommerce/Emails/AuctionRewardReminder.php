@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Watchers Live: Send an email to the users that are watching when an auction goes live.
+ * Auction Reward Reminder: Send an email to the user that still needs to claim their reward.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -13,12 +13,12 @@ defined( 'ABSPATH' ) || exit;
 use GoodBids\Plugins\WooCommerce\Emails\BaseEmail;
 
 /**
- * Auction Watchers Live extend the custom BaseEmail class
+ * Auction Reward Reminder extend the custom BaseEmail class
  *
  * @since 1.0.0
  * @extends BaseEmail
  */
-class AuctionWatchersLive extends BaseEmail {
+class AuctionRewardReminder extends BaseEmail {
 
 	/**
 	 * User ID.
@@ -33,11 +33,11 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->id             = 'goodbids_auction_watchers_live';
-		$this->title          = __( 'Auction Watchers Live', 'goodbids' );
-		$this->description    = __( 'Notification emails is sent when an auction goes live.', 'goodbids' );
-		$this->template_html  = 'emails/auction-watchers-live.php';
-		$this->template_plain = 'emails/plain/auction-watchers-live.php';
+		$this->id             = 'goodbids_auction_reward_reminder';
+		$this->title          = __( 'Auction Reward Reminder', 'goodbids' );
+		$this->description    = __( 'Notification email to remind a user they still need to claim their reward', 'goodbids' );
+		$this->template_html  = 'emails/auction-reward-reminder.php';
+		$this->template_plain = 'emails/plain/auction-reward-reminder.php';
 
 		// TODO: Trigger this email.
 
@@ -53,10 +53,9 @@ class AuctionWatchersLive extends BaseEmail {
 	 */
 	public function get_default_subject() {
 		return sprintf(
-			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s is live', 'goodbids' ),
+			/* translators: %s: site title */
+			__( '[%s] Remember to claim your reward', 'goodbids' ),
 			'{site_title}',
-			'{auction.title}'
 		);
 	}
 
@@ -67,7 +66,11 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Ready to GOODBID?', 'goodbids' );
+		return sprintf(
+			/* translators: %s: reward title */
+			__( 'Your %s is still waiting', 'goodbids' ),
+			'{auction.rewardTitle}',
+		);
 	}
 
 	/**
@@ -77,7 +80,18 @@ class AuctionWatchersLive extends BaseEmail {
 	 * @return string
 	 */
 	public function get_default_button_text() {
-		return __( 'Bid Now', 'goodbids' );
+		return __( 'Claim Your Reward', 'goodbids' );
+	}
+
+	/**
+	 * Get Reward checkout flow url
+	 *
+	 * @since   1.0.0
+	 * @return string
+	 */
+	public function get_reward_checkout_url() {
+		// TODO set this up to pull the reward checkout url
+		return '#';
 	}
 
 	/**
@@ -105,9 +119,10 @@ class AuctionWatchersLive extends BaseEmail {
 		return wc_get_template_html(
 			$this->template_html,
 			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
+				'instance'          => $this,
+				'email_heading'     => $this->get_default_heading(),
+				'button_text'       => $this->get_default_button_text(),
+				'button_reward_url' => $this->get_reward_checkout_url(),
 			]
 		);
 	}
@@ -123,9 +138,10 @@ class AuctionWatchersLive extends BaseEmail {
 		return wc_get_template_html(
 			$this->template_plain,
 			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
+				'instance'          => $this,
+				'email_heading'     => $this->get_default_heading(),
+				'button_text'       => $this->get_default_button_text(),
+				'button_reward_url' => $this->get_reward_checkout_url(),
 			]
 		);
 	}

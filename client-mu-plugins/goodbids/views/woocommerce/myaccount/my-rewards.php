@@ -75,7 +75,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-date" data-title="<?php esc_attr_e( 'Date', 'goodbids' ); ?>">
 								<time datetime="<?php echo esc_attr( $order->get_date_created()->date( 'c' ) ); ?>">
-									<?php echo esc_html( $order->get_date_created()->date( 'h/i/s' ) ); ?>
+									<?php echo esc_html( $order->get_date_created()->date( 'm/d/y' ) ); ?>
 								</time>
 							</td>
 

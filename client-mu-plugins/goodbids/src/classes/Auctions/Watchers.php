@@ -491,9 +491,10 @@ class Watchers {
 
 				wp_send_json_success(
 					[
-						'isWatching' => $this->is_watching( $auction_id, $user_id ),
+						'isWatching'    => $this->is_watching( $auction_id, $user_id ),
 						'totalWatchers' => $this->get_watcher_count( $auction_id ),
-					] );
+					]
+				);
 			}
 		);
 	}
