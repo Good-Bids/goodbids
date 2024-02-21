@@ -30,13 +30,35 @@ class AuctionIsLiveAdmin extends AuctionIsLive {
 
 		$this->id             = 'goodbids_auction_live_admin';
 		$this->title          = __( 'Auction is Live (Admin)', 'goodbids' );
-		$this->description    = __( 'This Email is sent to the site admin when an Auction goes live.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to all site admins when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live-admin.php';
 		$this->template_plain = 'emails/plain/auction-is-live-admin.php';
 		$this->watcher_email  = false; // Override parent class value.
 		$this->admin_email    = true;
 
 		// Parent class triggers this email on auction start.
+	}
+
+	/**
+	 * Add a custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function init_customizations(): void {
+		add_action( 'woocommerce_email_footer', [ $this, 'login_link' ], 7, 2 );
+	}
+
+	/**
+	 * Remove custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function remove_customizations(): void {
+		remove_action( 'woocommerce_email_footer', [ $this, 'login_link' ], 7 );
 	}
 
 	/**
@@ -123,5 +145,21 @@ class AuctionIsLiveAdmin extends AuctionIsLive {
 		$this->add_email_var( 'auction_goal_formatted', $auction?->get_goal_formatted() );
 		$this->add_email_var( 'auction_expected_high_bid', $auction?->get_expected_high_bid() );
 		$this->add_email_var( 'auction_expected_high_bid_formatted', $auction?->get_expected_high_bid_formatted() );
+	}
+
+	/**
+	 * Display a login link
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function login_link(): void {
+		printf(
+			'<p><a href="%s">%s</a> %s</p>',
+			'{login_url}',
+			esc_html__( 'Login to your site', 'goodbids' ),
+			esc_html__( 'to view additional auction information.', 'goodbids' )
+		);
 	}
 }

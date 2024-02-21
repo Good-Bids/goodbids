@@ -77,10 +77,6 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
 				<td class="th"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
 				<td class="td">{reward.title}</td>
 			</tr>
-			<tr>
-				<td class="th"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
-				<td class="td">{reward.type}</td>
-			</tr>
 			<?php if ( $auction_estimated_value ) : ?>
 				<tr>
 					<td class="th"><?php esc_html_e( 'Fair Market Value', 'goodbids' ); ?></td>
@@ -94,11 +90,14 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension, %2$s: Auction Bid Extension */
-		esc_html__( 'The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by %3$s minutes. We will send you an auction summary when the auction has closed.', 'goodbids' ),
+		'%s <strong>%s</strong> %s %s %s %s. %s.',
+		esc_html__( 'The auction will end on', 'goodbids' ),
 		'{auction.end_date_time}',
+		esc_html__( 'unless a bid is placed within', 'goodbids' ),
 		'{auction.bid_extension}',
+		esc_html__( 'of the scheduled time. Each subsequent bid will extend the auction length by', 'goodbids' ),
 		'{auction.bid_extension}',
+		esc_html__( 'We will send you an auction summary when the auction has closed', 'goodbids' )
 	);
 	?>
 </p>
@@ -111,17 +110,6 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
 		'{auction.url}',
 		esc_html__( 'the auction page', 'goodbids' ),
 		esc_html__( 'for live bidding updates!', 'goodbids' )
-	);
-	?>
-</p>
-
-<p>
-	<?php
-	printf(
-		'<a href="%s">%s</a> %s',
-		'{login_url}',
-		esc_html__( 'Login to your site', 'goodbids' ),
-		esc_html__( 'to view additional auction information.', 'goodbids' )
 	);
 	?>
 </p>

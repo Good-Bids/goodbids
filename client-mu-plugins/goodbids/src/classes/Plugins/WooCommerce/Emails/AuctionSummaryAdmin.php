@@ -31,7 +31,7 @@ class AuctionSummaryAdmin extends Email {
 
 		$this->id             = 'goodbids_auction_summary_admin';
 		$this->title          = __( 'Auction Summary (Admin)', 'goodbids' );
-		$this->description    = __( 'Auction Summary for site admins when an Auction closes.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to all site admins when an Auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-summary-admin.php';
 		$this->template_plain = 'emails/plain/auction-summary-admin.php';
 		$this->admin_email    = true;

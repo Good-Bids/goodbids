@@ -42,7 +42,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		// After.
 		sprintf(
 			/* translators: %1$s: Site Title, Auction Goal, Reward Product Title */
-			esc_html__( 'to support %1$s goal of raising %2$s and place a bid for your chance to win the %3$s!', 'goodbids' ),
+			esc_html__( 'to support %1$s\'s goal of raising %2$s and place a bid for your chance to win the %3$s!', 'goodbids' ),
 			'{site_title}',
 			'{auction.goal}',
 			'{reward.title}'
@@ -54,9 +54,13 @@ do_action( 'woocommerce_email_header', $email_heading );
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Auction Start Date/Time */
-		esc_html__( 'Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid.', 'goodbids' ),
-		'{auction.start_date_time}'
+		'%s %s %s <strong>%s</strong> %s',
+		/* translators: %1$s: Auction Starting Bid */
+		esc_html__( 'Bidding starts at', 'goodbids' ),
+		'{auction.starting_bid}',
+		esc_html__( 'and the', 'goodbids' ),
+		esc_html__( 'first five paid bidders', 'goodbids' ),
+		esc_html__( 'on this auction will earn a Free Bid.', 'goodbids' )
 	);
 	?>
 </p>
@@ -65,7 +69,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 	<?php
 	printf(
 		/* translators: %1$s: Site Name */
-		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
+		esc_html__( 'Every GOODBID on this auction is a donation to %1$s.', 'goodbids' ),
 		'{site_title}'
 	);
 	?>

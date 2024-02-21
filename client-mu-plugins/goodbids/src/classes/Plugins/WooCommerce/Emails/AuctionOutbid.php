@@ -30,7 +30,7 @@ class AuctionOutbid extends Email {
 
 		$this->id             = 'goodbids_auction_outbid';
 		$this->title          = __( 'Auction Outbid', 'goodbids' );
-		$this->description    = __( 'Notification email is sent when a user is out bid on an auction.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to previous bidder when new bid is placed.', 'goodbids' );
 		$this->template_html  = 'emails/auction-outbid.php';
 		$this->template_plain = 'emails/plain/auction-outbid.php';
 		$this->bidder_email   = true;
@@ -128,7 +128,7 @@ class AuctionOutbid extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %s: site title */
-			__( '[%s] You’ve been outbid', 'goodbids' ),
+			__( '[%s] Yikes, you’ve been outbid', 'goodbids' ),
 			'{site_title}',
 		);
 	}

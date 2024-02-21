@@ -30,7 +30,7 @@ class AuctionClosed extends Email {
 
 		$this->id             = 'goodbids_auction_closed';
 		$this->title          = __( 'Auction Closed', 'goodbids' );
-		$this->description    = __( 'Notification email is sent when an auction goes closes.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to all participants when an auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-closed.php';
 		$this->template_plain = 'emails/plain/auction-closed.php';
 		$this->watcher_email  = true;
@@ -48,6 +48,17 @@ class AuctionClosed extends Email {
 	 */
 	protected function init_customizations(): void {
 		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
+	}
+
+	/**
+	 * Remove custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function remove_customizations(): void {
+		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
 	}
 
 	/**
@@ -72,17 +83,6 @@ class AuctionClosed extends Email {
 	}
 
 	/**
-	 * Remove custom footer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function remove_customizations(): void {
-		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
-	}
-
-	/**
 	 * Get email subject.
 	 *
 	 * @since  1.0.0
@@ -91,7 +91,7 @@ class AuctionClosed extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s has ended', 'goodbids' ),
+			__( '[%1$s] %2$s auction has ended', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -143,7 +143,7 @@ class AuctionClosed extends Email {
 	public function all_auctions_html(): void {
 		printf(
 			'<p style="text-align:center;">%s <a href="%s">%s</a>',
-		esc_html__( 'Want to support another great GoodBids?', 'goodbids' ),
+		esc_html__( 'Want to support another great GOODBIDS cause?', 'goodbids' ),
 			'{auctions_url}',
 			esc_html__( 'View All Auctions', 'goodbids' )
 		);

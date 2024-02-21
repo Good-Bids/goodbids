@@ -30,7 +30,7 @@ class AuctionWinnerConfirmation extends Email {
 
 		$this->id             = 'goodbids_auction_winner_confirmation';
 		$this->title          = __( 'Auction Winner Confirmation', 'goodbids' );
-		$this->description    = __( 'Notification email is sent when a user has won an auction.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to high bidder when an Auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-winner-confirmation.php';
 		$this->template_plain = 'emails/plain/auction-winner-confirmation.php';
 		$this->customer_email = true;

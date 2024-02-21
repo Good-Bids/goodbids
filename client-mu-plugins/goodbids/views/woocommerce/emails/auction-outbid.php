@@ -37,7 +37,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 	<?php
 	printf(
 		/* translators: %1$s: Site Name */
-		esc_html__( 'Every GoodBid on this auction is a donation to %1$s.', 'goodbids' ),
+		esc_html__( 'Every GOODBID on this auction is a donation to %1$s.', 'goodbids' ),
 		'{site_title}',
 	);
 	?>

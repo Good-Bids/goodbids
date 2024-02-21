@@ -33,7 +33,7 @@ class AuctionIsLive extends Email {
 
 		$this->id             = 'goodbids_auction_live';
 		$this->title          = __( 'Auction is Live', 'goodbids' );
-		$this->description    = __( 'Email the Watchers when an Auction goes live.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to all Watchers when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live.php';
 		$this->template_plain = 'emails/plain/auction-is-live.php';
 		$this->watcher_email  = true;
@@ -70,7 +70,7 @@ class AuctionIsLive extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			// translators: %1$s: Site Name, %2$s: Auction Title
-			__( '[%1$s] %2$s is live', 'goodbids' ),
+			__( '[%1$s] %2$s auction is live', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);

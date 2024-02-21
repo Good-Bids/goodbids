@@ -31,7 +31,7 @@ class AuctionRewardReminder extends Email {
 
 		$this->id             = 'goodbids_auction_reward_reminder';
 		$this->title          = __( 'Auction Reward Reminder', 'goodbids' );
-		$this->description    = __( 'Notification email to remind a user they still need to claim their reward', 'goodbids' );
+		$this->description    = __( 'Notification email sent to winner when reward is unclaimed.', 'goodbids' );
 		$this->template_html  = 'emails/auction-reward-reminder.php';
 		$this->template_plain = 'emails/plain/auction-reward-reminder.php';
 		$this->customer_email = true;

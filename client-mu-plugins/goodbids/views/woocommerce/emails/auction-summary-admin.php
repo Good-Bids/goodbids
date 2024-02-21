@@ -83,10 +83,6 @@ do_action( 'woocommerce_email_header', $email_heading );
 				<td class="th"><?php esc_html_e( 'Auction Reward', 'goodbids' ); ?></td>
 				<td class="td">{reward.title}</td>
 			</tr>
-			<tr>
-				<td class="th"><?php esc_html_e( 'Reward Type', 'goodbids' ); ?></td>
-				<td class="td">{reward.type}</td>
-			</tr>
 			<?php if ( $auction_estimated_value ) : ?>
 				<tr>
 					<td class="th"><?php esc_html_e( 'Fair Market Value', 'goodbids' ); ?></td>
@@ -117,7 +113,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 </div>
 
 <p>
-	<?php esc_html_e( 'The auction has ended. The auctioneer has chosen a winner. The winner will be notified by email and will be notified by text. The winner has 40 days to claim their reward. We will send you a confirmation email once the reward has been claimed.', 'goodbids' ); ?>
+	<?php esc_html_e( 'The auction has ended. The winner will be notified by email and will be notified by text. The winner has 40 days to claim their reward. We will send you a confirmation email once the reward has been claimed.', 'goodbids' ); ?>
 </p>
 
 <p>
