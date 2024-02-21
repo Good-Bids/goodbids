@@ -135,7 +135,7 @@ class Auctions {
 		$this->adjust_rest_timeout();
 
 		// Attempt to trigger events for opened/closed auctions.
-//		$this->maybe_trigger_events();
+		$this->maybe_trigger_events();
 
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
