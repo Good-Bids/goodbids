@@ -705,6 +705,23 @@ class Auction {
 	}
 
 	/**
+	 * Get bids for a specific User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 * @param int $limit
+	 *
+	 * @return array
+	 */
+	public function get_user_bid_order_ids( ?int $user_id = null, int $limit = -1 ): array {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+		return $this->get_bid_order_ids( $limit, $user_id );
+	}
+
+	/**
 	 * Get total bids for a specific User on an Auction.
 	 *
 	 * @since 1.0.0
@@ -714,8 +731,31 @@ class Auction {
 	 * @return int
 	 */
 	public function get_user_bid_count( int $user_id ): int {
-		$orders = $this->get_bid_order_ids( -1, $user_id );
+		$orders = $this->get_user_bid_order_ids( $user_id );
 		return count( $orders );
+	}
+
+	/**
+	 * Get last bid order for a specific User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return ?WC_Order
+	 */
+	public function get_user_last_bid( ?int $user_id = null): ?WC_Order {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$bid_order_ids = $this->get_bid_order_ids( 1, $user_id );
+
+		if ( ! $bid_order_ids ) {
+			return null;
+		}
+
+		return wc_get_order( $bid_order_ids[0] );
 	}
 
 	/**

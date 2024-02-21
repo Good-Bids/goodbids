@@ -402,8 +402,10 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{reward.days_to_claim}', 'TBD' );
 
 		// User Details.
+		$last_bid        = $auction?->get_user_last_bid( $this->user_id );
+		$last_bid_amount = $last_bid ? $last_bid->get_subtotal() : 0;
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
-		$this->add_placeholder( '{user.last_bid_amount}', 'TBD' );
+		$this->add_placeholder( '{user.last_bid_amount}', wc_price( $last_bid_amount ) );
 
 		$user_bid_count = $this->user_id ? $auction?->get_user_bid_count( $this->user_id ) : '';
 		$this->add_placeholder( '{user.bid_count}', $user_bid_count );
