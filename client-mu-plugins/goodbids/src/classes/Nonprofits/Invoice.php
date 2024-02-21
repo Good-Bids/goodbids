@@ -394,9 +394,11 @@ class Invoice {
 		}
 
 		$due_date = $this->get_due_date();
-		$now      = current_time( 'mysql', true );
+		$now_eod  = current_datetime()
+			->setTimezone( new \DateTimeZone( 'GMT' ) )
+			->format( 'Y-m-d 23:59:59' );
 
-		if ( $now > $due_date ) {
+		if ( $now_eod > $due_date ) {
 			return self::STATUS_OVERDUE;
 		}
 

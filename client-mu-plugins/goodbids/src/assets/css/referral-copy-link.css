@@ -1,9 +1,7 @@
 @layer components {
 	.goodbids-referrals-copy-link {
-		.tooltip {
-			.tooltip-visible {
-				@apply visible block opacity-100;
-			}
+		.tooltip .tooltip-visible {
+			@apply visible block opacity-100;
 		}
 	}
 }
