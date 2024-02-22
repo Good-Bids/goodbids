@@ -13,6 +13,7 @@ use DateTimeImmutable;
 use Exception;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
+use Goodbids\Network\Sites;
 use WC_Order;
 use WP_User;
 
@@ -191,7 +192,7 @@ class Auction {
 	 *
 	 * @return void
 	 */
-	public function set_bid_variation_id(int $bid_variation_id ): void {
+	public function set_bid_variation_id( int $bid_variation_id ): void {
 		update_post_meta( $this->get_id(), Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
 	}
 
@@ -780,6 +781,8 @@ class Auction {
 		// Update the Auction meta to indicate it has started.
 		// This is used for the sole purposes of filtering started auctions from get_starting_auctions() method.
 		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
+		// Reset the Auction transients.
+		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
 
 		return true;
 	}
@@ -817,6 +820,8 @@ class Auction {
 		// Update the Auction meta to indicate it has closed.
 		// This is used for the sole purposes of filtering started auctions from get_closing_auctions() method.
 		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
+		// Reset the Auction transients.
+		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
 
 		return true;
 	}

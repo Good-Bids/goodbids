@@ -120,6 +120,15 @@ class AllAuctions extends ACFBlock {
 					'site_id' => get_current_blog_id(),
 				]
 			)
+			->filter(
+				fn ( array $auction_data ) => goodbids()->sites->swap(
+					function () use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+							return ! $auction->has_ended();
+						},
+					$auction_data['site_id']
+				)
+			)
 			->sortByDesc(
 				function ( array $auction_data ): array {
 					$auction = goodbids()->auctions->get( $auction_data['post_id'] );
@@ -232,9 +241,6 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	private function sort_auctions_by( string $sort, array $auctions = [] ): array {
-		if ( ! $auctions ) {
-			$auctions = $this->get_all_auctions();
-		}
 
 		$sort_method = match ( $sort ) {
 			'newest'   => 'get_start_date_time',
