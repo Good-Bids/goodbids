@@ -15,12 +15,12 @@ use GoodBids\Plugins\WooCommerce\API\Credentials;
 use GoodBids\Plugins\WooCommerce\Cart;
 use GoodBids\Plugins\WooCommerce\Checkout;
 use GoodBids\Plugins\WooCommerce\Coupons;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminLive;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionAdminSummary;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionWatchersLive;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Orders;
 use WC_Product;
@@ -450,8 +450,8 @@ class WooCommerce {
 		);
 	}
 
-	/*
-		Add a custom email to the list of emails WooCommerce
+	/**
+	 * Add a custom email to the list of emails WooCommerce
 	 *
 	 * @since 1.0.0
 	 * @return void
@@ -459,17 +459,18 @@ class WooCommerce {
 	private function setup_email_notifications(): void {
 		add_filter(
 			'woocommerce_email_classes',
-			function ( $email_classes ): array {
+			function ( array $email_classes ): array {
+				$goodbids_emails = [
+					'AuctionClosed'             => new AuctionClosed(),
+					'AuctionIsLive'             => new AuctionIsLive(),
+					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
+					'AuctionOutbid'             => new AuctionOutbid(),
+					'AuctionRewardReminder'     => new AuctionRewardReminder(),
+					'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
+					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
+				];
 
-				// add the email class to the list of email classes that WooCommerce loads
-				$email_classes['AuctionAdminLive']          = new AuctionAdminLive();
-				$email_classes['AuctionAdminSummary']       = new AuctionAdminSummary();
-				$email_classes['AuctionClosed']             = new AuctionClosed();
-				$email_classes['AuctionOutbid']             = new AuctionOutbid();
-				$email_classes['AuctionRewardReminder']     = new AuctionRewardReminder();
-				$email_classes['AuctionWatchersLive']       = new AuctionWatchersLive();
-				$email_classes['AuctionWinnerConfirmation'] = new AuctionWinnerConfirmation();
-				return $email_classes;
+				return array_merge( $email_classes, $goodbids_emails );
 			}
 		);
 	}

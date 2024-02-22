@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Winner Confirmation: Send an email to the user that won an auction.
+ * Auction Winner Confirmation: Email the user that won an Auction.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -8,24 +8,17 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Utilities\Log;
+
 defined( 'ABSPATH' ) || exit;
 
-use GoodBids\Plugins\WooCommerce\Emails\BaseEmail;
-
 /**
- * Auction Watchers Live extend the custom BaseEmail class
+ * Auction Winner Confirmation Email
  *
  * @since 1.0.0
- * @extends BaseEmail
+ * @extends Email
  */
-class AuctionWinnerConfirmation extends BaseEmail {
-
-	/**
-	 * User ID.
-	 *
-	 * @var integer
-	 */
-	public $user_id;
+class AuctionWinnerConfirmation extends Email {
 
 	/**
 	 * Set email defaults
@@ -33,16 +26,37 @@ class AuctionWinnerConfirmation extends BaseEmail {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		parent::__construct();
+
 		$this->id             = 'goodbids_auction_winner_confirmation';
 		$this->title          = __( 'Auction Winner Confirmation', 'goodbids' );
-		$this->description    = __( 'Notification email is sent when a user has won an auction.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to high bidder when an Auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-winner-confirmation.php';
 		$this->template_plain = 'emails/plain/auction-winner-confirmation.php';
+		$this->customer_email = true;
 
-		// TODO: Trigger this email.
+		$this->trigger_on_auction_end();
+	}
 
-		// Call parent constructor to load any other defaults not explicitly defined here
-		parent::__construct();
+	/**
+	 * Trigger this email on Auction End.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				Log::debug( 'Triggering Winner Confirmation email for Auction: ' . $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
+				$winner  = $auction->get_winning_bidder();
+				$this->trigger( $auction, $winner->ID );
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -51,7 +65,7 @@ class AuctionWinnerConfirmation extends BaseEmail {
 	 * @since  1.0.0
 	 * @return string
 	 */
-	public function get_default_subject() {
+	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %s: site title */
 			__( '[%s] Congratulations, you won!', 'goodbids' ),
@@ -65,11 +79,11 @@ class AuctionWinnerConfirmation extends BaseEmail {
 	 * @since   1.0.0
 	 * @return string
 	 */
-	public function get_default_heading() {
+	public function get_default_heading(): string {
 		return sprintf(
-			/* translators: %s: reward title */
-			__( 'You generosity earned a %s !', 'goodbids' ),
-			'{auction.rewardTitle}'
+			/* translators: %s: reward product title */
+			__( 'You generosity earned a %s!', 'goodbids' ),
+			'{reward.title}'
 		);
 	}
 
@@ -79,70 +93,18 @@ class AuctionWinnerConfirmation extends BaseEmail {
 	 * @since   1.0.0
 	 * @return string
 	 */
-	public function get_default_button_text() {
+	public function get_default_button_text(): string {
 		return __( 'Claim Your Reward', 'goodbids' );
 	}
 
 	/**
-	 * Get Reward checkout flow url
-	 *
-	 * @since   1.0.0
-	 * @return string
-	 */
-	public function get_reward_checkout_url() {
-		// TODO set this up to pull the reward checkout url
-		return '#';
-	}
-
-	/**
-	 * Determine if the email should actually be sent and setup email merge variables
+	 * Set Button URL
 	 *
 	 * @since 1.0.0
-	 * @param mixed $user_id
-	 * @return void
-	 */
-	public function trigger( $user_id ): void {
-		$this->setup_locale();
-
-		$this->default_trigger( $user_id );
-
-		$this->restore_locale();
-	}
-
-	/**
-	 * get_content_html function.
 	 *
-	 * @since 1.0.0
 	 * @return string
 	 */
-	public function get_content_html(): string {
-		return wc_get_template_html(
-			$this->template_html,
-			[
-				'instance'          => $this,
-				'email_heading'     => $this->get_default_heading(),
-				'button_text'       => $this->get_default_button_text(),
-				'button_reward_url' => $this->get_reward_checkout_url(),
-			]
-		);
-	}
-
-
-	/**
-	 * get_content_plain function.
-	 *
-	 * @since 1.0.0
-	 * @return string
-	 */
-	public function get_content_plain(): string {
-		return wc_get_template_html(
-			$this->template_plain,
-			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
-				'reward_url'    => $this->get_reward_checkout_url(),
-			]
-		);
+	public function get_button_url(): string {
+		return '{reward.claim_url}';
 	}
 }

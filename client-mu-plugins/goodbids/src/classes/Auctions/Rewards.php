@@ -32,6 +32,12 @@ class Rewards {
 	const REDEEMED_META_KEY = '_goodbids_reward_redeemed';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const CRON_UNCLAIMED_REMINDER_HOOK = 'goodbids_unclaimed_reward_reminder_event';
+
+	/**
 	 * Initialize Rewards
 	 *
 	 * @since 1.0.0
