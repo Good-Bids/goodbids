@@ -101,10 +101,10 @@ export function Form({ shippingClasses }: FormProps) {
 				defaultValue={productType.value}
 				onValueChange={(value) => setProductValue('productType', value)}
 			>
-				<RadioItem value="physical">
+				<RadioItem value="physical" id="physical">
 					{gbAuctionWizard.strings.productTypePhysical}
 				</RadioItem>
-				<RadioItem value="non-physical">
+				<RadioItem value="non-physical" id="non-physical">
 					{gbAuctionWizard.strings.productTypeNonPhysical}
 				</RadioItem>
 			</RadioInput>

@@ -34,7 +34,7 @@ export function Select(props: SelectProps) {
 			</div>
 
 			<Primitive.Root {...rest}>
-				<Primitive.Trigger className={triggerClasses}>
+				<Primitive.Trigger id={id} className={triggerClasses}>
 					<Primitive.Value />
 					<Primitive.Icon />
 				</Primitive.Trigger>
