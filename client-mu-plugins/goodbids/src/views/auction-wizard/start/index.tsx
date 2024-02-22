@@ -2,7 +2,13 @@ import AuctionStartImage from '../../../../assets/images/auction-start.png';
 import { Button } from '../../../components/button';
 import { useAuctionWizardState } from '../store';
 
+// TODO: Uncomment when i18n is ready
+// import { useI18n } from '@wordpress/react-i18n';
+
 export function AuctionWizardStart() {
+	// TODO: Uncomment when i18n is ready
+	// const { __ } = useI18n();
+
 	const {
 		setStep,
 		clearStore,
@@ -24,6 +30,8 @@ export function AuctionWizardStart() {
 				<img src={AuctionStartImage} />
 			</div>
 			<h1 className="text-6xl font-bold text-admin-main m-0">
+				{/* TODO: Uncomment when i18n is ready */}
+				{/* {__('Build an Auction!', 'goodbids')} */}
 				{gbAuctionWizard.strings.introHeading}
 			</h1>
 			<div className="max-w-xl">

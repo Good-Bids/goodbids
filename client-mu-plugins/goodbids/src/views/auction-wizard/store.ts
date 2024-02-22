@@ -115,7 +115,14 @@ const useAuctionWizardStore = create<
 		{
 			name: 'auction-wizard',
 			storage: createJSONStorage(() => sessionStorage),
-			partialize: (state) => ({ product: state.product }),
+			partialize: (state) => ({
+				product: state.product,
+				step:
+					// Maintain step during dev for easier navigation
+					process.env.NODE_ENV === 'development'
+						? state.step
+						: undefined,
+			}),
 		},
 	),
 );
