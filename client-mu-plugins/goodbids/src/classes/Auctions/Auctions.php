@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use DateInterval;
+use Exception;
 use GoodBids\Core;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
@@ -118,6 +119,11 @@ class Auctions {
 			'name'     => '30sec',
 			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
 		];
+		$this->cron_intervals['daily'] = [
+			'interval' => DAY_IN_SECONDS,
+			'name'     => 'Daily',
+			'display'  => __( 'Every Day', 'goodbids' ),
+		];
 
 		// Register Post Type.
 		$this->register_post_type();
@@ -157,6 +163,9 @@ class Auctions {
 
 		// Schedule a cron job to trigger the close of auctions.
 		$this->schedule_auction_close_cron();
+
+		// Schedule a cron job to remind users to claim their rewards.
+		$this->schedule_reward_claim_reminder();
 
 		// Use cron action to start auctions.
 		$this->check_for_starting_auctions();
@@ -337,6 +346,43 @@ class Auctions {
 		];
 
 		return new WP_Query( array_merge( $args, $query_args ) );
+	}
+
+	/**
+	 * Get Auctions where Rewards have been unclaimed after a certain time.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_unclaimed_reward_auctions(): array {
+		$reminder_days = intval( goodbids()->get_config( 'auctions.reward-claim-reminder-days' ) );
+
+		try {
+			// Use the Current Date - X days to check for Auctions that have been closed for 7 days.
+			$threshold = current_datetime()->sub( new DateInterval( 'P' . $reminder_days . 'D' ) )->format( 'Y-m-d H:i:s' );
+		} catch ( Exception $e ) {
+			Log::error( 'Error getting unclaimed reward auctions.', [ 'error' => $e->getMessage() ] );
+			return [];
+		}
+
+		$query_args = [
+			'meta_query' => [
+				[
+					'key'     => self::AUCTION_CLOSE_META_KEY,
+					'value'   => $threshold,
+					'compare' => '<=',
+				],
+				[
+					'key'     => Rewards::REDEEMED_META_KEY,
+					'compare' => 'NOT EXISTS',
+				],
+			],
+		];
+
+		$unclaimed = $this->get_all( $query_args );
+
+		return $unclaimed->posts;
 	}
 
 	/**
@@ -776,6 +822,26 @@ class Auctions {
 	}
 
 	/**
+	 * Schedule a cron job that runs every day to trigger unclaimed rewards reminder
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function schedule_reward_claim_reminder(): void {
+		add_action(
+			'init',
+			function (): void {
+				if ( wp_next_scheduled( Rewards::CRON_UNCLAIMED_REMINDER_HOOK ) ) {
+					return;
+				}
+
+				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['daily']['name'], Rewards::CRON_UNCLAIMED_REMINDER_HOOK );
+			}
+		);
+	}
+
+	/**
 	 * Check for Auctions that are starting during cron hook.
 	 *
 	 * @since 1.0.0
@@ -860,13 +926,8 @@ class Auctions {
 	private function get_starting_auctions(): WP_Query {
 		// Use the current time + 1min to get Auctions about to start.
 		$auction_start = current_datetime()->add( new DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
-
-		$args = [
-			'post_type'      => $this->get_post_type(),
-			'post_status'    => [ 'publish' ],
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'meta_query'     => [
+		$query_args    = [
+			'meta_query' => [
 				[
 					'key'     => 'auction_start',
 					'value'   => $auction_start,
@@ -879,7 +940,7 @@ class Auctions {
 			],
 		];
 
-		return new WP_Query( $args );
+		return $this->get_all( $query_args );
 	}
 
 	/**
@@ -891,13 +952,8 @@ class Auctions {
 	 */
 	private function get_closing_auctions(): WP_Query {
 		$current_time = current_datetime()->format( 'Y-m-d H:i:s' );
-
-		$args = [
-			'post_type'      => $this->get_post_type(),
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'return'         => 'ids',
-			'meta_query'     => [
+		$query_args   = [
+			'meta_query' => [
 				[
 					'key'     => self::AUCTION_CLOSE_META_KEY,
 					'value'   => $current_time,
@@ -910,7 +966,7 @@ class Auctions {
 			],
 		];
 
-		return new WP_Query( $args );
+		return $this->get_all( $query_args );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Closed: Send an email to the users when an auction closes.
+ * Auction Closed: Email the users when an auction closes.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -8,24 +8,17 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
+use GoodBids\Utilities\Log;
+
 defined( 'ABSPATH' ) || exit;
 
-use GoodBids\Plugins\WooCommerce\Emails\BaseEmail;
-
 /**
- * Auction Watchers Live extend the custom BaseEmail class
+ * Auction Ending Email
  *
  * @since 1.0.0
- * @extends BaseEmail
+ * @extends Email
  */
-class AuctionClosed extends BaseEmail {
-
-	/**
-	 * User ID.
-	 *
-	 * @var integer
-	 */
-	public $user_id;
+class AuctionClosed extends Email {
 
 	/**
 	 * Set email defaults
@@ -33,16 +26,60 @@ class AuctionClosed extends BaseEmail {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		parent::__construct();
+
 		$this->id             = 'goodbids_auction_closed';
 		$this->title          = __( 'Auction Closed', 'goodbids' );
-		$this->description    = __( 'Notification email is sent when an auction goes closes.', 'goodbids' );
+		$this->description    = __( 'Notification email sent to all participants when an auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-closed.php';
 		$this->template_plain = 'emails/plain/auction-closed.php';
+		$this->watcher_email  = true;
+		$this->bidder_email   = true;
 
-		// TODO: Trigger this email.
+		$this->trigger_on_auction_end();
+	}
 
-		// Call parent constructor to load any other defaults not explicitly defined here
-		parent::__construct();
+	/**
+	 * Add a custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function init_customizations(): void {
+		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
+	}
+
+	/**
+	 * Remove custom footer.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function remove_customizations(): void {
+		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
+	}
+
+	/**
+	 * Trigger this email on Auction End.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				Log::debug( 'Triggering Auction Close emails for Auction: ' . $auction_id );
+				$auction = goodbids()->auctions->get( $auction_id );
+				$this->send_to_watchers( $auction );
+				$this->send_to_bidders( $auction );
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -51,10 +88,10 @@ class AuctionClosed extends BaseEmail {
 	 * @since  1.0.0
 	 * @return string
 	 */
-	public function get_default_subject() {
+	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s has ended', 'goodbids' ),
+			__( '[%1$s] %2$s auction has ended', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -66,12 +103,12 @@ class AuctionClosed extends BaseEmail {
 	 * @since   1.0.0
 	 * @return string
 	 */
-	public function get_default_heading() {
+	public function get_default_heading(): string {
 		return sprintf(
-			/* translators: %1$s: site title, %2$s: auction total raised */
+			/* translators: %1$s: Site Title, %2$s: Total Raised by Auction */
 			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
 			'{site_title}',
-			'{auction.totalRaised}'
+			'{auction.total_raised}'
 		);
 	}
 
@@ -81,57 +118,34 @@ class AuctionClosed extends BaseEmail {
 	 * @since   1.0.0
 	 * @return string
 	 */
-	public function get_default_button_text() {
+	public function get_default_button_text(): string {
 		return __( 'See Auction Results', 'goodbids' );
 	}
 
 	/**
-	 * Determine if the email should actually be sent and setup email merge variables
+	 * Set Button URL
 	 *
 	 * @since 1.0.0
-	 * @param mixed $user_id
+	 *
+	 * @return string
+	 */
+	public function get_button_url(): string {
+		return '{auction.url}';
+	}
+
+	/**
+	 * Display Link to All Auctions
+	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
 	 */
-	public function trigger( $user_id ): void {
-		$this->setup_locale();
-
-		$this->default_trigger( $user_id );
-
-		$this->restore_locale();
-	}
-
-	/**
-	 * get_content_html function.
-	 *
-	 * @since 1.0.0
-	 * @return string
-	 */
-	public function get_content_html(): string {
-		return wc_get_template_html(
-			$this->template_html,
-			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
-			]
-		);
-	}
-
-
-	/**
-	 * get_content_plain function.
-	 *
-	 * @since 1.0.0
-	 * @return string
-	 */
-	public function get_content_plain(): string {
-		return wc_get_template_html(
-			$this->template_plain,
-			[
-				'instance'      => $this,
-				'email_heading' => $this->get_default_heading(),
-				'button_text'   => $this->get_default_button_text(),
-			]
+	public function all_auctions_html(): void {
+		printf(
+			'<p style="text-align:center;">%s <a href="%s">%s</a>',
+		esc_html__( 'Want to support another great GOODBIDS cause?', 'goodbids' ),
+			'{auctions_url}',
+			esc_html__( 'View All Auctions', 'goodbids' )
 		);
 	}
 }

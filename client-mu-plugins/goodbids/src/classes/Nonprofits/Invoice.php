@@ -415,8 +415,8 @@ class Invoice {
 		}
 
 		$due_date = $this->get_due_date();
-		$now_eod  = current_datetime()
-			->setTimezone( new \DateTimeZone( 'GMT' ) )
+		$now      = current_datetime()
+			->setTimezone( new DateTimeZone( 'GMT' ) )
 			->format( 'Y-m-d 23:59:59' );
 
 		if ( $now_eod > $due_date ) {
