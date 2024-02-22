@@ -7,7 +7,7 @@ export function CloseIcon({ width = 24 }: CloseIconProps) {
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			width={width}
-			viewBox="0 -24 24 24"
+			viewBox="0 -960 960 960"
 			aria-hidden
 		>
 			<path

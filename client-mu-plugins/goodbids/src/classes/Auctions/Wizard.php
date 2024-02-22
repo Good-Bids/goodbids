@@ -84,8 +84,6 @@ class Wizard {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $step
-	 *
 	 * @return string
 	 */
 	private function get_url(): string {

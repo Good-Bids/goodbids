@@ -106,7 +106,7 @@ class Assets {
 		wp_register_script(
 			$auction_wizard_handle,
 			GOODBIDS_PLUGIN_URL . 'build/views/auction-wizard.js',
-			[ 'wp-element', 'wp-api-fetch', 'wp-block-editor', 'wp-media-utils' ],
+			[ 'wp-element', 'wp-api-fetch' ],
 			goodbids()->get_version(),
 			[ 'strategy' => 'defer' ]
 		);
@@ -124,7 +124,7 @@ class Assets {
 		// Allow variables to be localized.
 		do_action( 'goodbids_enqueue_admin_scripts', $js_handle );
 
-		wp_enqueue_script( $js_handle );
 		wp_enqueue_media();
+		wp_enqueue_script( $js_handle );
 	}
 }
