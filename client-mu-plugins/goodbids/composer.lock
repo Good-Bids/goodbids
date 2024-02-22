@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86781cbe93fb3354226bc873ce8e019a",
+    "content-hash": "fd51b52a7816f8656c1feadc0e14e2a8",
     "packages": [
         {
             "name": "composer/installers",
@@ -1276,15 +1276,15 @@
         },
         {
             "name": "wpackagist-plugin/user-switching",
-            "version": "1.7.2",
+            "version": "1.7.3",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.7.2"
+                "reference": "tags/1.7.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.7.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.7.3.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1294,15 +1294,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce",
-            "version": "8.5.2",
+            "version": "8.6.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce/",
-                "reference": "tags/8.5.2"
+                "reference": "tags/8.6.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.5.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.6.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1345,24 +1345,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/woocommerce-services/"
-        },
-        {
-            "name": "wpackagist-plugin/wp-referral-code",
-            "version": "1.4.10",
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/wp-referral-code/",
-                "reference": "tags/1.4.10"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-referral-code.1.4.10.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/wp-referral-code/"
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",

@@ -112,9 +112,9 @@ class Auction {
 	 * Get the Auction ID.
 	 *
 	 * @since 1.0.0
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_id(): int {
+	public function get_id(): ?int {
 		return $this->auction_id;
 	}
 
