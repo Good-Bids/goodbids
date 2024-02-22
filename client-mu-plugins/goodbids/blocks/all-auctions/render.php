@@ -22,6 +22,8 @@ $auctions = $the_block->apply_sort( $auctions );
 $total_count = count( $auctions );
 $total_pages = ceil( $total_count / $the_block->get_auctions_per_page() );
 $auctions    = $the_block->apply_pagination( $auctions );
+
+$active_class = 'btn-fill-secondary outline-dotted outline-1 outline-offset-2 hover:bg-contrast-3 hover:text-contrast focus:text-contrast focus:bg-contrast-3';
 ?>
 <section <?php block_attr( $block ); ?>>
 	<div class="mb-12 text-center text-contrast">
@@ -35,7 +37,7 @@ $auctions    = $the_block->apply_pagination( $auctions );
 				<li class="me-2">
 					<a
 						href="<?php echo esc_url( $filter_url ); ?>"
-						class="<?php echo esc_attr( $is_current ? 'btn-fill-secondary' : 'btn-fill' ); ?> block my-1"
+						class="<?php echo esc_attr( $is_current ? $active_class : 'btn-fill' ); ?> block my-1"
 					>
 						<?php echo esc_html( $filter['label'] ); ?>
 					</a>

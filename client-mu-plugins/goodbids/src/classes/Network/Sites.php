@@ -746,17 +746,26 @@ class Sites {
 						'site_id' => $site_id,
 					]
 				)
+				->filter(
+					fn ( array $auction_data ) => goodbids()->sites->swap(
+						function () use ( $auction_data ) {
+								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+								return ! $auction->has_ended();
+							},
+						$auction_data['site_id']
+					)
+				)
 				->sortByDesc(
 					fn ( array $auction_data ) => [
 						'bid_count'    => $this->swap(
-							function() use ( $auction_data ) {
+							function () use ( $auction_data ) {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_bid_count();
 							},
 							$auction_data['site_id']
 						),
 						'total_raised' => $this->swap(
-							function() use ( $auction_data ) {
+							function () use ( $auction_data ) {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_total_raised();
 							},
@@ -799,6 +808,7 @@ class Sites {
 	 * @return void
 	 */
 	private function maybe_clear_transients(): void {
+
 		add_action(
 			'transition_post_status',
 			function ( string $new_status, string $old_status, WP_Post $post ): void {
@@ -1008,7 +1018,7 @@ class Sites {
 			->filter(
 				function ( $auction_data ) {
 					return $this->swap(
-						function() use ( $auction_data ) {
+						function () use ( $auction_data ) {
 							$auction = goodbids()->auctions->get( $auction_data['auction_id'] );
 							return $auction->is_current_user_winner();
 						},
