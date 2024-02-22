@@ -46,6 +46,8 @@ class Sites {
 		$this->set_default_posts_per_page();
 		$this->disable_blocks_for_nonprofits();
 		$this->create_about_page();
+		$this->create_all_auctions_page();
+		$this->delete_sample_page();
 		$this->lock_block_editor();
 
 		// Sites Custom Columns
@@ -361,7 +363,7 @@ class Sites {
 	}
 
 	/**
-	 * Sets a pattern template for the page post type
+	 * Create the GOODBIDS About page and sets the pattern template
 	 *
 	 * @since 1.0.0
 	 *
@@ -375,16 +377,16 @@ class Sites {
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );
 
-				$about = [
+				$about_page = [
 					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
 					'post_content' => ob_get_clean(),
 					'post_type'    => 'page',
-					'post_status'  => [ 'publish' ],
+					'post_status'  => 'publish',
 					'post_author'  => 1,
 					'post_name'    => 'about',
 				];
 
-				$about_id = wp_insert_post( $about );
+				$about_id = wp_insert_post( $about_page );
 
 				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
 					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
@@ -393,6 +395,64 @@ class Sites {
 			20
 		);
 	}
+
+	/**
+	 * Create the Explore Auctions page and sets the pattern template
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function create_all_auctions_page(): void {
+		add_action(
+			'goodbids_init_site',
+			function (): void {
+				ob_start();
+
+				goodbids()->load_view( 'patterns/template-archive-auction.php' );
+
+				$auctions_page = [
+					'post_title'   => __( 'Explore Auctions', 'goodbids' ),
+					'post_content' => ob_get_clean(),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => 'explore-auctions',
+				];
+
+				$auctions_id = wp_insert_post( $auctions_page );
+
+				if ( is_numeric( $auctions_id ) ) { // This function can return a WP_Error object.
+					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
+				}
+			},
+			25
+		);
+	}
+
+	/**
+	 * Delete the sample page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function delete_sample_page(): void {
+		add_action(
+			'goodbids_init_site',
+			function (): bool {
+				$deleted = wp_delete_post( 2 );
+
+				if ( ! $deleted ) {
+					Log::error( 'There was a problem deleting the Sample Page' );
+					return false;
+				}
+			},
+			25
+		);
+	}
+
+
 
 	/**
 	 * Get the privacy policy link for the site.
