@@ -66,12 +66,14 @@ export function Form({ shippingClasses }: FormProps) {
 						onChange={(e) => handleDebounce('name', e.target.value)}
 						defaultValue={name.value}
 						error={name.error}
+						id="product-name"
 					/>
 				</div>
 
 				<div className="w-full max-w-60">
 					<TextInput
 						inputMode="decimal"
+						id="regular-price"
 						label={gbAuctionWizard.strings.fairMarketValueLabel}
 						tooltip={gbAuctionWizard.strings.fairMarketValueTooltip}
 						startIcon={<MoneyIcon width={16} />}
@@ -94,6 +96,7 @@ export function Form({ shippingClasses }: FormProps) {
 			</div>
 
 			<RadioInput
+				id="product-type"
 				label={gbAuctionWizard.strings.productTypeLabel}
 				defaultValue={productType.value}
 				onValueChange={(value) => setProductValue('productType', value)}
@@ -110,6 +113,7 @@ export function Form({ shippingClasses }: FormProps) {
 				<>
 					<div className="w-full max-w-80">
 						<TextInput
+							id="product-weight"
 							label={gbAuctionWizard.strings.productWeightLabel}
 							tooltip={
 								gbAuctionWizard.strings.productWeightTooltip
@@ -129,6 +133,7 @@ export function Form({ shippingClasses }: FormProps) {
 					<div className="grid grid-cols-3 gap-2 w-full max-w-120">
 						<div className="w-full">
 							<TextInput
+								id="product-length"
 								label={
 									gbAuctionWizard.strings.productLengthLabel
 								}
@@ -149,6 +154,7 @@ export function Form({ shippingClasses }: FormProps) {
 
 						<div className="w-full">
 							<TextInput
+								id="product-width"
 								label={
 									gbAuctionWizard.strings.productWidthLabel
 								}
@@ -169,6 +175,7 @@ export function Form({ shippingClasses }: FormProps) {
 
 						<div className="w-full">
 							<TextInput
+								id="product-height"
 								label={
 									gbAuctionWizard.strings.productHeightLabel
 								}
@@ -191,6 +198,7 @@ export function Form({ shippingClasses }: FormProps) {
 			) : (
 				<div className="w-full max-w-120">
 					<TextArea
+						id="purchase-note"
 						label={gbAuctionWizard.strings.purchaseNoteLabel}
 						tooltip={gbAuctionWizard.strings.purchaseNoteTooltip}
 						defaultValue={purchaseNote.value}
