@@ -749,14 +749,14 @@ class Sites {
 				->sortByDesc(
 					fn ( array $auction_data ) => [
 						'bid_count'    => $this->swap(
-							function() use ( $auction_data ) {
+							function () use ( $auction_data ) {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_bid_count();
 							},
 							$auction_data['site_id']
 						),
 						'total_raised' => $this->swap(
-							function() use ( $auction_data ) {
+							function () use ( $auction_data ) {
 								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 								return $auction->get_total_raised();
 							},
@@ -1008,7 +1008,7 @@ class Sites {
 			->filter(
 				function ( $auction_data ) {
 					return $this->swap(
-						function() use ( $auction_data ) {
+						function () use ( $auction_data ) {
 							$auction = goodbids()->auctions->get( $auction_data['auction_id'] );
 							return $auction->is_current_user_winner();
 						},
@@ -1062,13 +1062,11 @@ class Sites {
 				continue;
 			}
 
-			if ( ! in_array( $auction_id, array_column( $auctions, 'post_id' ) ) ) {
-				$bid_auction = [
-					'site_id' => $goodbids_order['site_id'],
-					'post_id' => $auction_id,
-				];
-				$auctions[]  = $bid_auction;
-			}
+			$bid_auction = [
+				'site_id' => $goodbids_order['site_id'],
+				'post_id' => $auction_id,
+			];
+			$auctions[]  = $bid_auction;
 		}
 
 		// Get all Watchers for user from all sites
@@ -1087,19 +1085,22 @@ class Sites {
 						continue;
 					}
 
-					if ( ! in_array( $auction_id, array_column( $auctions, 'post_id' ) ) ) {
-						$watched_auction = [
-							'site_id' => $site_id,
-							'post_id' => $auction_id,
-						];
-						$auctions[]      = $watched_auction;
-					}
+					$watched_auction = [
+						'site_id' => $site_id,
+						'post_id' => $auction_id,
+					];
+					$auctions[]      = $watched_auction;
 				}
 			}
 		);
 
 		// Filter by started and not ended and sort by end date
 		return collect( $auctions )
+			->unique(
+				function ( $auction_data ) {
+					return $auction_data['site_id'] . '|' . $auction_data['post_id'];
+				}
+			)
 			->filter(
 				fn ( array $auction_data ) => goodbids()->sites->swap(
 					function () use ( $auction_data ) {
