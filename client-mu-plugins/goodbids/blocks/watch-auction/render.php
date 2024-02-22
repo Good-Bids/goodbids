@@ -20,7 +20,7 @@ $button_text   = $watching ? $unwatch_text : $watch_text;
 $watch_class   = 'btn-fill';
 $unwatch_class = 'btn-fill-secondary';
 $button_class  = $watching ? $watch_class : $unwatch_class;
-$post_url      = str_replace( untrailingslashit( site_url() ), '', admin_url( 'admin-ajax.php' ) );
+$post_url      = admin_url( 'admin-ajax.php' );
 ?>
 <div <?php block_attr( $block ); ?>>
 	<button
