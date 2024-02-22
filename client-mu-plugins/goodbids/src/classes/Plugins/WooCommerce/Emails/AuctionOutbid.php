@@ -57,7 +57,7 @@ class AuctionOutbid extends Email {
 				$bid_orders = $auction->get_bid_orders( 5 ); // Account for multiple bids in a row.
 
 				// No previous bid orders.
-				if ( count( $bid_orders < 2 ) ) {
+				if ( count( $bid_orders ) < 2 ) {
 					return;
 				}
 
