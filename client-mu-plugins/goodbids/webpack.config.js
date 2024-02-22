@@ -49,21 +49,13 @@ module.exports = {
 			import: path.resolve(process.cwd(), 'src', 'main.tsx'),
 			filename: 'main.js',
 		},
-		auctionWizardStart: {
+		auctionWizard: {
 			import: path.resolve(
 				process.cwd(),
-				'src/views/auction-wizard/start',
+				'src/views/auction-wizard',
 				'index.tsx',
 			),
-			filename: 'views/auction-wizard/start.js',
-		},
-		auctionWizardProduct: {
-			import: path.resolve(
-				process.cwd(),
-				'src/views/auction-wizard/product',
-				'index.tsx',
-			),
-			filename: 'views/auction-wizard/product.js',
+			filename: 'views/auction-wizard.js',
 		},
 	},
 	output: {

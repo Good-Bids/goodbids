@@ -1,5 +1,5 @@
 import * as Primitive from '@radix-ui/react-select';
-import { Tooltip } from '@radix-ui/react-tooltip';
+import { Tooltip } from './tooltip';
 import clsx from 'clsx';
 
 type SelectProps = Primitive.SelectProps & {
@@ -25,13 +25,14 @@ export function Select(props: SelectProps) {
 	});
 
 	return (
-		<div>
+		<div className="flex flex-col gap-2">
 			<div className="flex gap-3 items-center">
 				<label htmlFor={id} className={labelClasses}>
 					{label}
 				</label>
 				<Tooltip>{tooltip}</Tooltip>
 			</div>
+
 			<Primitive.Root {...rest}>
 				<Primitive.Trigger className={triggerClasses}>
 					<Primitive.Value />
@@ -44,6 +45,8 @@ export function Select(props: SelectProps) {
 					</Primitive.Content>
 				</Primitive.Portal>
 			</Primitive.Root>
+
+			{error && <span className="text-error-bg">{error}</span>}
 		</div>
 	);
 }

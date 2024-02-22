@@ -18,7 +18,7 @@ export function useCreateProduct(
 	});
 }
 
-export type ProductType = 'physical' | 'digital' | 'experience';
+export type ProductType = 'physical' | 'non-physical';
 
 type BaseProductBody = {
 	name: string;
@@ -39,7 +39,7 @@ type PhysicalProductBody = BaseProductBody & {
 };
 
 type NonPhysicalProductBody = BaseProductBody & {
-	type: 'digital' | 'experience';
+	type: 'non-physical';
 	purchase_note: string;
 };
 
@@ -70,20 +70,11 @@ function createProductBody(body: CreateProductBody) {
 		};
 	}
 
-	if (body.type === 'digital') {
-		return {
-			...base,
-			virtual: true,
-			tax_status: 'taxable',
-			tax_rate: 'standard',
-			purchase_note: body.purchase_note,
-		};
-	}
-
 	return {
 		...base,
 		virtual: true,
-		tax_status: 'none',
+		tax_status: 'taxable',
+		tax_rate: 'standard',
 		purchase_note: body.purchase_note,
 	};
 }

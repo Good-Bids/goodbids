@@ -10,4 +10,4 @@
  */
 
 ?>
-<div id="<?php echo esc_attr( $namespace ); ?>-<?php echo esc_attr( $slug ); ?>"></div>
+<div id="<?php echo esc_attr( $namespace ); ?>"></div>

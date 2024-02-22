@@ -24,10 +24,10 @@ export function Tooltip({ children }: TooltipProps) {
 			<Primitive.Portal>
 				<Primitive.Content
 					side="bottom"
-					className="text-admin-content max-w-60 bg-gray-100 shadow-sm p-1 rounded-md"
+					className="text-admin-content max-w-60 bg-gray-300 shadow-md p-2 rounded-md"
 				>
 					{children}
-					<Primitive.Arrow className="bg-gray-200" />
+					<Primitive.Arrow className="fill-gray-300" />
 				</Primitive.Content>
 			</Primitive.Portal>
 		</Primitive.Root>

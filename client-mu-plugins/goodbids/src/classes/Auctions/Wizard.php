@@ -72,18 +72,8 @@ class Wizard {
 	 * @return void
 	 */
 	public function wizard_admin_page(): void {
-		$step = sanitize_text_field( filter_input( INPUT_GET, 'step', FILTER_SANITIZE_ENCODED ) );
-
-		$slug = match ( $step ) {
-			'product' => 'product',
-			'auction' => 'auction',
-			'finish'  => 'finish',
-			default   => 'start',
-		};
-
 		$data = [
 			'namespace' => self::PAGE_SLUG,
-			'slug'      => $slug,
 		];
 
 		goodbids()->load_view( 'admin/auctions/wizard.php', $data );
@@ -98,8 +88,8 @@ class Wizard {
 	 *
 	 * @return string
 	 */
-	private function get_url( string $step = '' ): string {
-		return admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . self::PAGE_SLUG . '&step=' . $step );
+	private function get_url(): string {
+		return admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . self::PAGE_SLUG );
 	}
 
 	/**
@@ -150,8 +140,7 @@ class Wizard {
 
 						'productTypeLabel'      => __( 'What type of product is it?', 'goodbids' ),
 						'productTypePhysical'   => __( 'Physical', 'goodbids' ),
-						'productTypeDigital'    => __( 'Digital', 'goodbids' ),
-						'productTypeExperience' => __( 'Experience', 'goodbids' ),
+						'productTypeNonPhysical'    => __( 'Digital or Experience', 'goodbids' ),
 
 						// Dimensions
 						'productWeightLabel'   => __( 'Weight (lbs)', 'goodbids' ),

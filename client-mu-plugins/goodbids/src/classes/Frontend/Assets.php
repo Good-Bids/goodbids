@@ -101,26 +101,16 @@ class Assets {
 
 		$js_deps = [];
 
-		// Enqueue the auction wizard start script.
-		$wizard_start_handle = 'goodbids-auction-wizard-start';
+		// Enqueue the auction wizard script.
+		$auction_wizard_handle = 'goodbids-auction-wizard';
 		wp_register_script(
-			$wizard_start_handle,
-			GOODBIDS_PLUGIN_URL . 'build/views/auction-wizard/start.js',
-			[ 'wp-element' ],
+			$auction_wizard_handle,
+			GOODBIDS_PLUGIN_URL . 'build/views/auction-wizard.js',
+			[ 'wp-element', 'wp-api-fetch', 'wp-block-editor', 'wp-media-utils' ],
 			goodbids()->get_version(),
 			[ 'strategy' => 'defer' ]
 		);
-		$js_deps[] = $wizard_start_handle;
-
-		$wizard_product_handle = 'goodbids-auction-wizard-product';
-		wp_register_script(
-			$wizard_product_handle,
-			GOODBIDS_PLUGIN_URL . 'build/views/auction-wizard/product.js',
-			[ 'wp-element', 'wp-api-fetch' ],
-			goodbids()->get_version(),
-			[ 'strategy' => 'defer' ]
-		);
-		$js_deps[] = $wizard_product_handle;
+		$js_deps[] = $auction_wizard_handle;
 
 		$js_handle = 'goodbids-admin-scripts';
 		wp_register_script(
@@ -135,5 +125,6 @@ class Assets {
 		do_action( 'goodbids_enqueue_admin_scripts', $js_handle );
 
 		wp_enqueue_script( $js_handle );
+		wp_enqueue_media();
 	}
 }

@@ -13,7 +13,7 @@ export function RadioItem(props: RadioItemProps) {
 			<Primitive.Item
 				id={id}
 				{...rest}
-				className="bg-white w-6 h-6 rounded-full shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-admin-accent focus:ring-offset-2 border-none"
+				className="bg-white w-6 h-6 rounded-full shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-admin-accent focus:ring-offset-2 border-none cursor-pointer"
 			>
 				<Primitive.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-3 after:h-3 after:rounded-full after:bg-admin-main" />
 			</Primitive.Item>

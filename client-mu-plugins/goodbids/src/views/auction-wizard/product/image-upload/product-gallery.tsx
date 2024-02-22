@@ -1,77 +1,35 @@
-import { useRef, useState } from 'react';
-import { ImageType, UploadedImageType } from './types';
-import { useUploadImage } from './upload-image';
 import { Image } from './image';
-import { useDeleteImage } from './delete-image';
-import { Tooltip } from '../../components/tooltip';
+import { Tooltip } from '../../../../components/tooltip';
+import { useWizardState } from '../../store';
 
-type ProductGalleryProps = {
-	uploadedProductGalleryImages: UploadedImageType[];
-	setUploadedProductGalleryImages: (images: UploadedImageType[]) => void;
-};
+export function ProductGallery() {
+	const {
+		addToProductGallery,
+		removeFromProductGallery,
+		product: { productGallery },
+	} = useWizardState();
 
-export function ProductGallery({
-	uploadedProductGalleryImages,
-	setUploadedProductGalleryImages,
-}: ProductGalleryProps) {
-	const [images, setImages] = useState<ImageType[]>([]);
-	const productGalleryUploaderRef = useRef<HTMLInputElement>(null);
-
-	const uploadImage = useUploadImage({
-		onSuccess: (data) => {
-			setUploadedProductGalleryImages([
-				data,
-				...uploadedProductGalleryImages,
-			]);
-		},
+	const mediaUploader = wp.media({
+		title: 'Select Product Gallery',
+		button: { text: 'Set Product Gallery' },
+		library: { type: 'image' },
+		multiple: true,
 	});
 
-	const deleteImage = useDeleteImage();
-
-	const handleProductGalleryUploadClick = () => {
-		productGalleryUploaderRef.current?.click();
-	};
-
-	const handleProductGalleryUpload = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		const files = event.target.files;
-		const filesForState: ImageType[] = images;
-
-		if (files) {
-			for (const file of files) {
-				const reader = new FileReader();
-
-				reader.onload = (e) => {
-					filesForState.push({
-						url: e.target?.result as string,
-						fileName: file.name,
-					});
-
-					uploadImage.mutate(file);
-				};
-
-				reader.readAsDataURL(file);
-			}
-		}
-
-		setImages(filesForState);
-	};
-
-	const handleDeleteImage = (fileName: string) => {
-		const id = uploadedProductGalleryImages.find(
-			(image) => image.fileName === fileName,
-		)?.id;
-
-		if (id) {
-			deleteImage.mutate(id);
-		}
-
-		setUploadedProductGalleryImages(
-			uploadedProductGalleryImages.filter((image) => image.id !== id),
-		);
-		setImages(images.filter((image) => image.fileName !== fileName));
-	};
+	mediaUploader.on('select', () => {
+		mediaUploader
+			.state()
+			.get('selection')
+			// TODO: Type better
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			.map((attachment: any) => {
+				const attachmentData = attachment.toJSON();
+				addToProductGallery({
+					id: attachmentData.id,
+					src: attachmentData.url,
+				});
+			});
+	});
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -84,29 +42,22 @@ export function ProductGallery({
 				</Tooltip>
 			</div>
 			<div className="rounded-md bg-gray-200 w-fit p-2 mx-4 grid grid-cols-4 gap-2">
-				{images.map((image, index) => (
+				{productGallery.map((image) => (
 					<Image
-						key={image.fileName + index}
-						src={image.url}
-						onRemove={() => handleDeleteImage(image.fileName)}
+						key={image.value.id}
+						src={image.value.src}
+						onRemove={() =>
+							removeFromProductGallery(image.value.id)
+						}
 					/>
 				))}
-				<>
-					<button
-						type="button"
-						onClick={handleProductGalleryUploadClick}
-						className="min-w-88 min-h-32 col-span-2 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
-					>
-						{gbAuctionWizard.strings.imageUploadMultiple}
-					</button>
-					<input
-						className="hidden"
-						type="file"
-						multiple
-						ref={productGalleryUploaderRef}
-						onChange={handleProductGalleryUpload}
-					/>
-				</>
+				<button
+					type="button"
+					onClick={() => mediaUploader.open()}
+					className="min-w-88 min-h-32 col-span-2 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
+				>
+					{gbAuctionWizard.strings.imageUploadMultiple}
+				</button>
 			</div>
 		</div>
 	);
