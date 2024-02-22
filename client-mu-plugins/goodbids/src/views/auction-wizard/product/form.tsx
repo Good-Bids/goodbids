@@ -4,10 +4,10 @@ import { TextInput } from '../../../components/text-input';
 import { ShippingClasses } from '../api/shipping-classes';
 import { TextArea } from '../../../components/text-area';
 import { Select, SelectItem } from '../../../components/select';
-import { validateDecimal } from './validate-decimal';
+import { validateDecimal } from '../../../utils/validate-decimal';
 import { ProductImage } from './image-upload/product-image';
 import { ProductGallery } from './image-upload/product-gallery';
-import { AuctionWizardProductState, useWizardState } from '../store';
+import { AuctionWizardProductState, useAuctionWizardState } from '../store';
 import { useDebouncedCallback } from 'use-debounce';
 
 export type FormProps = {
@@ -28,7 +28,7 @@ export function Form({ shippingClasses }: FormProps) {
 			purchaseNote,
 			shippingClass,
 		},
-	} = useWizardState();
+	} = useAuctionWizardState();
 
 	const handleDebounce = useDebouncedCallback(
 		(

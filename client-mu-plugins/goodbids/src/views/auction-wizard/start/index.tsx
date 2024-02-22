@@ -1,13 +1,13 @@
 import AuctionStartImage from '../../../../assets/images/auction-start.png';
 import { Button } from '../../../components/button';
-import { useWizardStore } from '../store';
+import { useAuctionWizardState } from '../store';
 
 export function AuctionWizardStart() {
 	const {
 		setStep,
 		clearStore,
 		product: { name },
-	} = useWizardStore();
+	} = useAuctionWizardState();
 
 	const setProductStep = () => {
 		setStep('product');

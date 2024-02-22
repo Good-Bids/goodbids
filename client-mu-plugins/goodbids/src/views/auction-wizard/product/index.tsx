@@ -1,6 +1,6 @@
 import { Form, FormProps } from './form';
 import { Tips } from '../../../components/tips';
-import { useWizardState } from '../store';
+import { useAuctionWizardState } from '../store';
 
 type AuctionWizardProductProps = FormProps;
 
@@ -11,7 +11,7 @@ export function AuctionWizardProduct({
 		setProductValue,
 		setStep,
 		product: { name, regularPrice, productType, purchaseNote },
-	} = useWizardState();
+	} = useAuctionWizardState();
 
 	const handleNextPage = () => {
 		let anyInvalid = false;

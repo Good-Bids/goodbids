@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createTrackedSelector } from 'react-tracked';
+import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'edit';
 
@@ -61,7 +62,7 @@ type AuctionWizardStoreActions = {
 	clearStore: () => void;
 };
 
-export const useWizardStore = create<
+const useAuctionWizardStore = create<
 	AuctionWizardStoreState & AuctionWizardStoreActions
 >()(
 	persist(
@@ -119,4 +120,10 @@ export const useWizardStore = create<
 	),
 );
 
-export const useWizardState = createTrackedSelector(useWizardStore);
+export const useAuctionWizardState = createTrackedSelector(
+	useAuctionWizardStore,
+);
+
+if (process.env.NODE_ENV === 'development') {
+	mountStoreDevtool('Auction Wizard Store', useAuctionWizardStore);
+}

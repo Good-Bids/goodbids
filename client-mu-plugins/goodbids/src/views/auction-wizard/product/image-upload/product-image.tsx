@@ -1,13 +1,13 @@
 import { Image } from './image';
 import { Tooltip } from '../../../../components/tooltip';
-import { useWizardState } from '../../store';
+import { useAuctionWizardState } from '../../store';
 
 export function ProductImage() {
 	const {
 		setProductImage,
 		clearProductImage,
 		product: { productImage },
-	} = useWizardState();
+	} = useAuctionWizardState();
 
 	const mediaUploader = wp.media({
 		title: 'Select Product Image',

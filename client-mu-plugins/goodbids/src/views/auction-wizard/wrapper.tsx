@@ -1,4 +1,4 @@
-import { useWizardState } from './store';
+import { useAuctionWizardState } from './store';
 import { Button } from '../../components/button';
 import { Logo } from '../../components/logo';
 import { ProgressBar, ProgressBarProps } from '../../components/progress-bar';
@@ -8,7 +8,7 @@ type WrapperProps = ProgressBarProps & {
 };
 
 export function Wrapper({ children, progress }: WrapperProps) {
-	const { step, setStep } = useWizardState();
+	const { step, setStep } = useAuctionWizardState();
 
 	const handleBack = () => {
 		if (step === 'finish') {

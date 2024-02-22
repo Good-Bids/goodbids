@@ -1,6 +1,6 @@
 import { Wrapper } from './wrapper';
 import { AuctionWizardStart } from './start';
-import { StepType, useWizardState } from './store';
+import { StepType, useAuctionWizardState } from './store';
 import { AuctionWizardProduct } from './product';
 import { useGetShippingClasses } from './api/shipping-classes';
 import { useGetProductCategories } from './api/product-categories';
@@ -14,7 +14,7 @@ const stepProgress: Record<StepType, number> = {
 };
 
 export function CreateWizard() {
-	const { step } = useWizardState();
+	const { step } = useAuctionWizardState();
 
 	const shippingClasses = useGetShippingClasses();
 	const productCategories = useGetProductCategories();
