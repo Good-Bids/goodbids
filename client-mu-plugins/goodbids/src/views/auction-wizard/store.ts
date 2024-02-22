@@ -43,9 +43,34 @@ const defaultProductState: AuctionWizardProductState = {
 	shippingClass: { value: 'none' },
 };
 
+export type AuctionState = {
+	startDate: ValueType<string>;
+	endDate: ValueType<string>;
+	bidIncrement: ValueType<string>;
+	startingBid: ValueType<string>;
+	bidExtensionMinutes: ValueType<string>;
+	bidExtensionSeconds: ValueType<string>;
+	auctionGoal: ValueType<string>;
+	expectedHighBid: ValueType<string>;
+	estimatedRetailValue: ValueType<string>;
+};
+
+const defaultAuctionState: AuctionState = {
+	startDate: { value: '' },
+	endDate: { value: '' },
+	bidIncrement: { value: '' },
+	startingBid: { value: '' },
+	bidExtensionMinutes: { value: '' },
+	bidExtensionSeconds: { value: '' },
+	auctionGoal: { value: '' },
+	expectedHighBid: { value: '' },
+	estimatedRetailValue: { value: '' },
+};
+
 export type AuctionWizardStoreState = {
 	step: StepType;
 	product: AuctionWizardProductState;
+	auction: AuctionState;
 };
 
 type AuctionWizardStoreActions = {
@@ -59,6 +84,11 @@ type AuctionWizardStoreActions = {
 		value: string,
 		error?: string,
 	) => void;
+	setAuctionValue: (
+		key: keyof AuctionState,
+		value: string,
+		error?: string,
+	) => void;
 	clearStore: () => void;
 };
 
@@ -69,6 +99,7 @@ const useAuctionWizardStore = create<
 		(set) => ({
 			step: 'start',
 			product: defaultProductState,
+			auction: defaultAuctionState,
 			setStep: (step) => set({ step }),
 			setProductImage: (image) =>
 				set((state) => ({
@@ -110,13 +141,25 @@ const useAuctionWizardStore = create<
 						[key]: { value, error },
 					},
 				})),
-			clearStore: () => set({ product: defaultProductState }),
+			setAuctionValue: (key, value, error) =>
+				set((state) => ({
+					auction: {
+						...state.auction,
+						[key]: { value, error },
+					},
+				})),
+			clearStore: () =>
+				set({
+					product: defaultProductState,
+					auction: defaultAuctionState,
+				}),
 		}),
 		{
 			name: 'auction-wizard',
 			storage: createJSONStorage(() => sessionStorage),
 			partialize: (state) => ({
 				product: state.product,
+				auction: state.auction,
 				step:
 					// Maintain step during dev for easier navigation
 					process.env.NODE_ENV === 'development'

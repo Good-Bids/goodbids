@@ -4,7 +4,7 @@ import { TextInput } from '../../../components/text-input';
 import { ShippingClasses } from '../api/shipping-classes';
 import { TextArea } from '../../../components/text-area';
 import { Select, SelectItem } from '../../../components/select';
-import { validateDecimal } from '../../../utils/validate-decimal';
+import { validateDecimal } from '../../../utils/number';
 import { ProductImage } from './image-upload/product-image';
 import { ProductGallery } from './image-upload/product-gallery';
 import { AuctionWizardProductState, useAuctionWizardState } from '../store';

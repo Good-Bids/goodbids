@@ -2,6 +2,7 @@ import { Form, FormProps } from './form';
 import { Tips } from '../../../components/tips';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
+import { Button } from '../../../components/button';
 
 type AuctionWizardProductProps = FormProps;
 
@@ -35,7 +36,10 @@ export function AuctionWizardProduct({
 			setProductValue(
 				'purchaseNote',
 				'',
-				__('Click to upload', 'goodbids'),
+				__(
+					'Purchase note is required for digital products and experiences',
+					'goodbids',
+				),
 			);
 			anyInvalid = true;
 		}
@@ -61,12 +65,9 @@ export function AuctionWizardProduct({
 			</div>
 
 			<div className="w-full flex justify-center">
-				<button
-					onClick={handleNextPage}
-					className="py-2 px-6 cursor-pointer border-none rounded-admin-sm bg-admin-main text-white text-admin-content hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 w-full max-w-80"
-				>
+				<Button variant="solid" onClick={handleNextPage}>
 					{__('Save and Continue', 'goodbids')}
-				</button>
+				</Button>
 			</div>
 		</>
 	);

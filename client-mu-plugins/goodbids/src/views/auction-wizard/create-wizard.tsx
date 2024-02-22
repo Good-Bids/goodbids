@@ -4,6 +4,7 @@ import { StepType, useAuctionWizardState } from './store';
 import { AuctionWizardProduct } from './product';
 import { useGetShippingClasses } from './api/shipping-classes';
 import { useGetProductCategories } from './api/product-categories';
+import { AuctionScreen } from './auction';
 
 const stepProgress: Record<StepType, number> = {
 	start: 5,
@@ -34,7 +35,7 @@ export function CreateWizard() {
 					shippingClasses={shippingClasses.data || []}
 				/>
 			)}
-			{step === 'auction' && <div>Auction</div>}
+			{step === 'auction' && <AuctionScreen />}
 			{step === 'finish' && <div>Finish</div>}
 		</Wrapper>
 	);
