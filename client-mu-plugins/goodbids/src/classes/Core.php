@@ -315,6 +315,28 @@ class Core {
 	}
 
 	/**
+	 * Checks if current environment is staging.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_staging_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'staging' === VIP_GO_APP_ENVIRONMENT;
+	}
+
+	/**
+	 * Checks if current environment is production.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_prod_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'production' === VIP_GO_APP_ENVIRONMENT;
+	}
+
+	/**
 	 * Load 3rd Party Plugins.
 	 *
 	 * @since 1.0.0

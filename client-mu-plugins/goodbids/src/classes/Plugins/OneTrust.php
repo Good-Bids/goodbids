@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins;
 
+use GoodBids\Core;
+
 /**
  * This class handles loading OneTrust assets.
  *
@@ -21,7 +23,9 @@ class OneTrust {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->load_assets();
+		if ( ! Core::is_dev_env() ) {
+			$this->load_assets();
+		}
 	}
 
 	/**
@@ -31,12 +35,19 @@ class OneTrust {
 	 * @return void
 	 */
 	private function load_assets(): void {
+		// default to production
+		$script_url    = goodbids()->get_config( 'onetrust.production.script-url' );
+		$domain_script = goodbids()->get_config( 'onetrust.production.domain-script' );
+
+		if ( Core::is_staging_env() ) {
+			$script_url    = goodbids()->get_config( 'onetrust.staging.script-url' );
+			$domain_script = goodbids()->get_config( 'onetrust.staging.domain-script' );
+		}
+
+
 		add_action(
 			'wp_footer',
-			function () {
-				$script_url    = 'https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js';
-				$domain_script = goodbids()->get_config( 'onetrust.domain-script' );
-
+			function () use ( $script_url, $domain_script ) {
 				printf(
 					'<script src="%s" type="text/javascript" charset="UTF-8" data-domain-script="%s"></script><script type="text/javascript">function OptanonWrapper() { }</script>',
 					esc_url( $script_url ),
