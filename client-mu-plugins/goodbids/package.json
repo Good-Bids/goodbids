@@ -12,7 +12,7 @@
     "compile": "tsc",
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses",
-    "dev": "wp-scripts start --hot",
+    "dev": "webpack serve",
     "format": "prettier --check ./src/**/*.{css,ts,tsx,js}",
     "format:fix": "prettier --write ./src/**/*.{css,ts,tsx,js}",
     "lint": "eslint ./src/**/*.{ts,tsx}",

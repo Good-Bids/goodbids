@@ -3,6 +3,23 @@ const defaults = require('@wordpress/scripts/config/webpack.config.js');
 
 module.exports = {
 	...defaults,
+	devServer: {
+		devMiddleware: {
+			writeToDisk: true,
+		},
+		allowedHosts: 'all',
+		host: 'localhost',
+		port: 8887,
+		proxy: {
+			'/build': {
+				pathRewrite: {
+					'^/build': '',
+				},
+			},
+		},
+		liveReload: true,
+		watchFiles: ['src/**/*'],
+	},
 	entry: {
 		biddingView: {
 			import: path.resolve(

@@ -1,5 +1,3 @@
-interface LooseObject {
-	[key: string]: string|LooseObject
-}
+type Internationalization = Record<string, Internationalization>;
 
-declare const gbAuctionWizard: LooseObject;
+declare const gbAuctionWizard: Internationalization;
