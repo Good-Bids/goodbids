@@ -377,18 +377,21 @@ class Sites {
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );
 
-				wp_insert_post(
+				$about_id = wp_insert_post(
 					[
 						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
 						'post_content' => ob_get_clean(),
 						'post_type'    => 'page',
-						'post_status'  => 'publish',
+						'post_status'  => 'draft',
 						'post_author'  => 1,
 						'post_name'    => 'about',
 					]
 				);
-			},
-			20
+
+				if ( is_wp_error( $about_id ) ) {
+					Log::error( $about_id->get_error_message() );
+				}
+			}
 		);
 	}
 
@@ -407,18 +410,21 @@ class Sites {
 
 				goodbids()->load_view( 'patterns/template-archive-auction.php' );
 
-				wp_insert_post(
+				$auctions_id = wp_insert_post(
 					[
 						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
 						'post_content' => ob_get_clean(),
 						'post_type'    => 'page',
-						'post_status'  => 'publish',
+						'post_status'  => 'draft',
 						'post_author'  => 1,
 						'post_name'    => 'explore-auctions',
 					]
 				);
-			},
-			20
+
+				if ( is_wp_error( $auctions_id ) ) {
+					Log::error( $auctions_id->get_error_message() );
+				}
+			}
 		);
 	}
 
@@ -431,16 +437,14 @@ class Sites {
 	 */
 	private function delete_sample_page(): void {
 		add_action(
-			'goodbids_init_site',
-			function (): bool {
+			'init',
+			function (): void {
 				$deleted = wp_delete_post( 2 );
 
 				if ( ! $deleted ) {
 					Log::error( 'There was a problem deleting the Sample Page' );
-					return false;
 				}
-			},
-			20
+			}
 		);
 	}
 

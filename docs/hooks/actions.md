@@ -2,7 +2,7 @@
 
 ### goodbids_init_site
 
-Action performed when a new site is created. `switch_to_blog()` has already been called to change to the new site.
+Action performed when a new site is created. `swap()` has already been called to change to the new site.
 
 ```php
 add_action(
@@ -28,6 +28,7 @@ add_action(
 	2
 );
 ```
+
 ### goodbids_auction_start_event
 
 Cron event, fired every minute.
