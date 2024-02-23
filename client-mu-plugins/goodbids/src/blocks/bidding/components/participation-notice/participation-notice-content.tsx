@@ -83,7 +83,7 @@ function LiveToClosingWithBids() {
 
 	return (
 		<ContentWrapper>
-			You placed <b>{userTotalBids}</b> for a total donation of{' '}
+			You've placed <b>{userTotalBids} bids</b> for a total donation of{' '}
 			<b>${userTotalDonated}</b>.
 		</ContentWrapper>
 	);
@@ -110,7 +110,7 @@ function ClosedWithBids() {
 
 	return (
 		<ContentWrapper>
-			You placed <b>{userTotalBids}</b> for a total donation of{' '}
+			You placed <b>{userTotalBids} bids</b> for a total donation of{' '}
 			<b>${userTotalDonated}</b>.
 		</ContentWrapper>
 	);

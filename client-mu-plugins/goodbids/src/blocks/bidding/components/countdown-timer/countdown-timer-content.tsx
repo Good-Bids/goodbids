@@ -11,33 +11,39 @@ const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 export function CountdownTimerContent() {
 	const { auctionStatus, isLastBidder, userTotalBids } = useBiddingState();
 
-	return (
-		<>
-			{upcomingStatuses.includes(auctionStatus) && (
-				<UpcomingAndStarting />
-			)}
+	if (upcomingStatuses.includes(auctionStatus)) {
+		return <UpcomingAndStarting />;
+	}
 
-			{auctionStatus === 'prelive' && <Prelive />}
+	if (auctionStatus === 'prelive') {
+		return <Prelive />;
+	}
 
-			{auctionStatus === 'live' && isLastBidder && <LiveAndLastBidder />}
+	if (auctionStatus === 'live' && isLastBidder) {
+		return <LiveAndLastBidder />;
+	}
 
-			{auctionStatus === 'live' && !isLastBidder && <Live />}
+	if (auctionStatus === 'live') {
+		return <Live />;
+	}
 
-			{closingStatuses.includes(auctionStatus) && (
-				<ClosingAndPreclosing />
-			)}
+	if (closingStatuses.includes(auctionStatus)) {
+		return <ClosingAndPreclosing />;
+	}
 
-			{auctionStatus === 'closed' && isLastBidder && (
-				<ClosedAndLastBidder />
-			)}
+	if (auctionStatus === 'closed' && isLastBidder) {
+		return <ClosedAndLastBidder />;
+	}
 
-			{auctionStatus === 'closed' && userTotalBids > 0 && (
-				<ClosedAndUserPlacedBids />
-			)}
+	if (auctionStatus === 'closed' && userTotalBids > 0) {
+		return <ClosedAndUserPlacedBids />;
+	}
 
-			{auctionStatus === 'closed' && <Closed />}
-		</>
-	);
+	if (auctionStatus === 'closed') {
+		return <Closed />;
+	}
+
+	return null;
 }
 
 type ContentWrapperProps = {
