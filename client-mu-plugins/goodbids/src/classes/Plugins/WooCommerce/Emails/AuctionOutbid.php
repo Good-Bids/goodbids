@@ -84,7 +84,7 @@ class AuctionOutbid extends Email {
 				$this->trigger( $auction, $order->get_user_id() );
 			},
 			10,
-			1
+			2
 		);
 	}
 
