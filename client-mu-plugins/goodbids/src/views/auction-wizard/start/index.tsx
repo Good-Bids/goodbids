@@ -1,9 +1,14 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import AuctionStartImage from '../../../../assets/images/auction-start.png';
 import { Button } from '../../../components/button';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 
-export function AuctionWizardStart() {
+type AuctionWizardStartProps = {
+	loading: boolean;
+};
+
+export function AuctionWizardStart({ loading }: AuctionWizardStartProps) {
 	const {
 		setStep,
 		clearStore,
@@ -36,26 +41,61 @@ export function AuctionWizardStart() {
 				</p>
 			</div>
 
-			{name.value.length > 0 ? (
-				<div className="mt-4 flex flex-col items-center gap-3">
-					<h2 className="text-2xl font-bold text-admin-main m-0">
-						{__('Pick up where you left off?', 'goodbids')}
-					</h2>
+			<div className="relative">
+				{loading && (
+					<motion.span
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.2 }}
+						className="mt-4 font-bold text-admin-main text-admin-content"
+					>
+						Loading...
+					</motion.span>
+				)}
 
-					<Button autoFocus onClick={setProductStep}>
-						{__('Continue creating', 'goodbids')}
-						{name.value}
-					</Button>
+				<AnimatePresence>
+					{!loading && name.value.length > 0 && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.3 }}
+							className="mt-4 flex flex-col items-center gap-3"
+						>
+							<h2 className="text-2xl font-bold text-admin-main m-0">
+								{__('Pick up where you left off?', 'goodbids')}
+							</h2>
 
-					<Button onClick={clearAndSetProductStep}>
-						{__('Start a new product and auction', 'goodbids')}
-					</Button>
-				</div>
-			) : (
-				<Button onClick={clearAndSetProductStep} autoFocus>
-					{__("Let's get started", 'goodbids')}
-				</Button>
-			)}
+							<Button autoFocus onClick={setProductStep}>
+								{__('Continue creating', 'goodbids')}
+								{name.value}
+							</Button>
+
+							<Button onClick={clearAndSetProductStep}>
+								{__(
+									'Start a new product and auction',
+									'goodbids',
+								)}
+							</Button>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence>
+					{!loading && !name.value.length && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.3 }}
+						>
+							<Button onClick={clearAndSetProductStep} autoFocus>
+								{__("Let's get started", 'goodbids')}
+							</Button>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
 		</div>
 	);
 }

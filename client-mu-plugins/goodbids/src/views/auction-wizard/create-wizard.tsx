@@ -5,12 +5,13 @@ import { AuctionWizardProduct } from './product';
 import { useGetShippingClasses } from './api/shipping-classes';
 import { useGetProductCategories } from './api/product-categories';
 import { AuctionScreen } from './auction';
+import { FinishScreen } from './finish';
 
 const stepProgress: Record<StepType, number> = {
 	start: 5,
 	product: 33,
 	auction: 67,
-	finish: 100,
+	finish: 90,
 	edit: 50,
 };
 
@@ -20,23 +21,35 @@ export function CreateWizard() {
 	const shippingClasses = useGetShippingClasses();
 	const productCategories = useGetProductCategories();
 
-	if (
+	const loading =
+		shippingClasses.status === 'pending' ||
+		productCategories.status === 'pending';
+	const error =
 		shippingClasses.status === 'error' ||
-		productCategories.status === 'error'
-	) {
+		productCategories.status === 'error';
+
+	if (error) {
 		return <div>Something went wrong</div>;
 	}
 
 	return (
 		<Wrapper progress={stepProgress[step]}>
-			{step === 'start' && <AuctionWizardStart />}
-			{step === 'product' && (
+			{(step === 'start' || loading) && (
+				<AuctionWizardStart loading={loading} />
+			)}
+
+			{step === 'product' && !loading && (
 				<AuctionWizardProduct
 					shippingClasses={shippingClasses.data || []}
 				/>
 			)}
-			{step === 'auction' && <AuctionScreen />}
-			{step === 'finish' && <div>Finish</div>}
+			{step === 'auction' && !loading && <AuctionScreen />}
+			{step === 'finish' && !loading && (
+				<FinishScreen
+					shippingClasses={shippingClasses.data || []}
+					productCategories={productCategories.data || []}
+				/>
+			)}
 		</Wrapper>
 	);
 }

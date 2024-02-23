@@ -58,7 +58,7 @@ export function ProductGallery() {
 				<button
 					type="button"
 					onClick={() => mediaUploader.open()}
-					className="min-w-88 min-h-32 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
+					className="w-44 h-32 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
 				>
 					{__('Click to upload multiple', 'goodbids')}
 				</button>
