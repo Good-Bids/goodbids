@@ -30,7 +30,8 @@
   },
   "auctions": {
     "default-free-bids": 5,
-    "reward-claim-reminder-days": 7,
+    "reward-days-to-claim": 40,
+    "reward-claim-reminder-interval-days": 7,
     "rest-api": {
       "cache-timeout": 0
     }

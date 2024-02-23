@@ -24,12 +24,12 @@ do_action( 'woocommerce_email_header', $email_heading );
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Auction end time plus 15 days */
+		/* translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Reward Claim Deadline Date */
 		esc_html__( 'You still need to claim the %1$s you earned on the %2$s auction with %3$s. You have until %4$s to claim your reward.', 'goodbids' ),
 		'{reward.title}',
 		'{auction.title}',
 		'{site_title}',
-		'{reward.days_to_claim}',
+		'{reward.claim_deadline_date}'
 	);
 	?>
 </p>

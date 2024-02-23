@@ -50,7 +50,7 @@ class AuctionRewardReminder extends Email {
 		add_action(
 			Rewards::CRON_UNCLAIMED_REMINDER_HOOK,
 			function (): void {
-				$auctions = goodbids()->auctions->get_unclaimed_reward_auctions();
+				$auctions = goodbids()->auctions->get_unclaimed_reward_auction_emails();
 
 				if ( ! $auctions ) {
 					return;
