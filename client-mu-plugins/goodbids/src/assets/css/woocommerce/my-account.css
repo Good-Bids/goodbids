@@ -8,6 +8,10 @@
 	}
 
 	.woocommerce-account {
+		main .woocommerce {
+			@apply !max-w-full;
+		}
+
 		.woocommerce-MyAccount-navigation {
 			@apply w-1/4;
 

@@ -171,7 +171,7 @@ class Watchers {
 						echo esc_html( $user_id );
 					}
 				} elseif ( 'auction' === $column ) {
-					$auction_id = get_post_meta( $post_id, self::AUCTION_ID_META_KEY, true );
+					$auction_id = $this->get_auction_id( $post_id );
 
 					printf(
 						'<a href="%s">%s</a> (<a href="%s" target="_blank">%s</a>)',
@@ -185,6 +185,25 @@ class Watchers {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Get the Auction ID for a given Watcher
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $watcher_id
+	 *
+	 * @return ?int
+	 */
+	public function get_auction_id( int $watcher_id ): ?int {
+		$auction_id = get_post_meta( $watcher_id, self::AUCTION_ID_META_KEY, true );
+
+		if ( ! $auction_id ) {
+			return null;
+		}
+
+		return $auction_id;
 	}
 
 	/**

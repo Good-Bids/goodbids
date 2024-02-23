@@ -43,3 +43,6 @@ Returns an array of all auctions the given user ID has participated in for all s
 
 `goodbids()->sites->get_user_auctions_won( int $user_id )`
 Returns an array of all auctions the given user ID has won for all sites.
+
+`goodbids()->sites->get_watched_bid_auctions_by_user(int $user_id)`
+Returns an array of auction IDs and site IDs for Watchers and Bids from all sites for a given User ID.
