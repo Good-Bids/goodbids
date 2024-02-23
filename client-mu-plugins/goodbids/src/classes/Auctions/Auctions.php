@@ -419,6 +419,10 @@ class Auctions {
 				$reminder_emails = array_merge( $reminder_emails, $unclaimed );
 			}
 
+			if( $current_interval >= $reward_days_to_claim ) {
+				break;
+			}
+
 			// Increment, but no more than the reward days to claim.
 			$current_interval += $reminder_interval_days;
 			if ( $current_interval > $reward_days_to_claim ) {
