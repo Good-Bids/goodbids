@@ -1,4 +1,14 @@
 @layer components {
+	.header-nonprofit {
+		a.custom-logo-link {
+			@apply size-[48px] rounded-sm flex;
+		}
+
+		.wp-block-site-logo img.custom-logo {
+			@apply object-contain p-1;
+		}
+	}
+
 	.wp-block-woocommerce-customer-account {
 		a {
 			@apply btn-fill py-2 px-5 !text-base-2 hover:!text-contrast focus:!text-contrast;
