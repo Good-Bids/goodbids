@@ -149,6 +149,9 @@ class WooCommerce {
 
 		// Adding Custom Email Styles
 		$this->add_custom_email_styles();
+
+		// Limit access to pages
+		$this->limit_access_to_pages();
 	}
 
 	/**
@@ -599,6 +602,61 @@ class WooCommerce {
 						do_shortcode( '[mo_oauth_login]' ),
 					);
 				}
+			}
+		);
+	}
+
+
+
+	/**
+	 *  Limit access and hide pages from admin
+	 *
+	 * @return void
+	 *
+	 * @since 1.0.0
+	 */
+	private function limit_access_to_pages(): void {
+		$pages = [
+			get_option( 'woocommerce_cart_page_id' ),
+			get_option( 'woocommerce_checkout_page_id' ),
+			get_option( 'woocommerce_myaccount_page_id' ),
+			get_option( 'woocommerce_shop_page_id' ),
+			get_option( 'woocommerce_view_order_page_id' ),
+			get_option( 'woocommerce_authentication_page_id' ),
+		];
+
+		// Block access to pages
+		add_action(
+			'admin_head',
+			function () use ( $pages ) {
+				if ( is_super_admin() ) {
+					return;
+				}
+
+				$current_screen = get_current_screen();
+
+				if ( $current_screen->base === 'post' && $current_screen->post_type === 'page' && isset( $_GET['post'] ) && in_array( $_GET['post'], $pages, true ) ) {
+					wp_safe_redirect( admin_url() );
+					exit;
+				}
+			}
+		);
+
+		// Remove pages from admin view
+		add_filter(
+			'parse_query',
+			function ( $query ) use ( $pages ) {
+				if ( ! is_admin() ) {
+					return $query;
+				}
+
+				global $pagenow, $post_type;
+
+				if ( ! is_super_admin() && $pagenow == 'edit.php' && $post_type == 'page' ) {
+					$query->query_vars['post__not_in'] = $pages;
+				}
+
+				return $query;
 			}
 		);
 	}

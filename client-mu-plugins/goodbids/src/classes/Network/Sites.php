@@ -377,20 +377,16 @@ class Sites {
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );
 
-				$about_page = [
-					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
-					'post_content' => ob_get_clean(),
-					'post_type'    => 'page',
-					'post_status'  => 'publish',
-					'post_author'  => 1,
-					'post_name'    => 'about',
-				];
-
-				$about_id = wp_insert_post( $about_page );
-
-				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
-					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
-				}
+				wp_insert_post(
+					[
+						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+						'post_content' => ob_get_clean(),
+						'post_type'    => 'page',
+						'post_status'  => 'publish',
+						'post_author'  => 1,
+						'post_name'    => 'about',
+					]
+				);
 			},
 			20
 		);
@@ -411,22 +407,18 @@ class Sites {
 
 				goodbids()->load_view( 'patterns/template-archive-auction.php' );
 
-				$auctions_page = [
-					'post_title'   => __( 'Explore Auctions', 'goodbids' ),
-					'post_content' => ob_get_clean(),
-					'post_type'    => 'page',
-					'post_status'  => 'publish',
-					'post_author'  => 1,
-					'post_name'    => 'explore-auctions',
-				];
-
-				$auctions_id = wp_insert_post( $auctions_page );
-
-				if ( is_numeric( $auctions_id ) ) { // This function can return a WP_Error object.
-					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
-				}
+				wp_insert_post(
+					[
+						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
+						'post_content' => ob_get_clean(),
+						'post_type'    => 'page',
+						'post_status'  => 'publish',
+						'post_author'  => 1,
+						'post_name'    => 'explore-auctions',
+					]
+				);
 			},
-			25
+			20
 		);
 	}
 
@@ -448,7 +440,7 @@ class Sites {
 					return false;
 				}
 			},
-			25
+			20
 		);
 	}
 
