@@ -54,6 +54,9 @@ class Rewards {
 		// Connect Reward product to Auctions.
 		$this->connect_reward_product_on_auction_save();
 
+		// Adjust the price of the product to the Winning Bid when the Auction closes.
+		$this->set_price_on_auction_close();
+
 		// Mark Reward as redeemed after Checkout.
 		$this->mark_as_redeemed();
 	}
@@ -239,6 +242,41 @@ class Rewards {
 
 				wp_safe_redirect( get_permalink( $auction_id ) );
 				exit;
+			}
+		);
+	}
+
+	/**
+	 * Adjust the price of the Reward Product to the Winning Bid when the Auction closes.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_price_on_auction_close(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ): void {
+				$reward_id = $this->get_product_id( $auction_id );
+
+				if ( ! $reward_id ) {
+					Log::error( 'Auction missing Reward Product.', compact( 'auction_id' ) );
+					return;
+				}
+
+				$reward = $this->get_product( $auction_id );
+
+				if ( ! $reward ) {
+					Log::error( 'Reward Product not found.', compact( 'auction_id' ) );
+					return;
+				}
+
+				$auction     = goodbids()->auctions->get( $auction_id );
+				$winning_bid = $auction->get_last_bid();
+
+				$reward->set_regular_price( $winning_bid->get_subtotal() );
+				$reward->set_price( $winning_bid->get_subtotal() );
+				$reward->save();
 			}
 		);
 	}
