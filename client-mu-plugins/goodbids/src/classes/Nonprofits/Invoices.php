@@ -547,10 +547,9 @@ class Invoices {
 	 */
 	private function auto_generate(): void {
 		add_action(
-			'goodbids_auction_close',
-			function ( int $auction_id ): void {
-				$this->generate( $auction_id );
-			}
+			'goodbids_auction_end',
+			fn ( int $auction_id ) => $this->generate( $auction_id ),
+			50
 		);
 	}
 

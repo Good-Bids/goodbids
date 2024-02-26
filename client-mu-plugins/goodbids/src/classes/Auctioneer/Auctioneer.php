@@ -157,6 +157,12 @@ class Auctioneer {
 		// Destroy session cookie on log out.
 		$this->destroy_session_cookie();
 
+		// Tell Auctioneer when Auction has started.
+		$this->send_auctioneer_open_event();
+
+		// Tell Auctioneer when Auction has closed.
+		$this->send_auctioneer_close_event();
+
 		$this->initialized = true;
 	}
 
@@ -432,5 +438,35 @@ class Auctioneer {
 	 */
 	public function get_url(): string {
 		return $this->url;
+	}
+
+	/**
+	 * Sends an event to Auctioneer to start an auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function send_auctioneer_open_event(): void {
+		add_action(
+			'goodbids_auction_start',
+			fn ( int $auction_id ) => $this->auctions->start( $auction_id ),
+			200
+		);
+	}
+
+	/**
+	 * Sends an event to Auctioneer to close an auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function send_auctioneer_close_event(): void {
+		add_action(
+			'goodbids_auction_end',
+			fn ( int $auction_id ) => $this->auctions->end( $auction_id ),
+			200
+		);
 	}
 }
