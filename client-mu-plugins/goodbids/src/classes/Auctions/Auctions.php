@@ -275,6 +275,7 @@ class Auctions {
 			'rest_api_init',
 			function () {
 				( new API\Details() )->register_routes();
+				( new API\End() )->register_routes();
 				( new API\User() )->register_routes();
 			}
 		);

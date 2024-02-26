@@ -764,7 +764,7 @@ class Auction {
 	 * @return void
 	 */
 	public function trigger_start(): void {
-		if ( $this->start_triggered() ) {
+		if ( ! $this->has_started() || $this->start_triggered() ) {
 			return;
 		}
 
@@ -801,7 +801,7 @@ class Auction {
 	 * @return void
 	 */
 	public function trigger_close(): void {
-		if ( ! $this->end_triggered() ) {
+		if ( ! $this->has_ended() || $this->end_triggered() ) {
 			return;
 		}
 

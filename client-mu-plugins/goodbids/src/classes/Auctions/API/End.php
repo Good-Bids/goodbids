@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction REST API Details Endpoint
+ * Auction REST API End Endpoint
  *
  * @since 1.0.0
  * @package GoodBids
@@ -23,7 +23,7 @@ use WP_REST_Server;
  *
  * @since 1.0.0
  */
-class Details extends WC_REST_Controller {
+class End extends WC_REST_Controller {
 
 	/**
 	 * Endpoint namespace.
@@ -47,7 +47,7 @@ class Details extends WC_REST_Controller {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	private string $rest_endpoint = 'details';
+	private string $rest_endpoint = 'end';
 
 	/**
 	 * Register routes.
@@ -58,8 +58,8 @@ class Details extends WC_REST_Controller {
 		register_rest_route(
 			$this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/' . $this->rest_endpoint, [
 				[
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => [ $this, 'get_details' ],
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => [ $this, 'end' ],
 					'permission_callback' => '__return_true',
 					'args'                => [
 						'id' => [
@@ -74,7 +74,7 @@ class Details extends WC_REST_Controller {
 	}
 
 	/**
-	 * Returns Details for a given Auction.
+	 * Sends End event for a given Auction.
 	 *
 	 * @since 1.0.0
 	 *
@@ -82,7 +82,7 @@ class Details extends WC_REST_Controller {
 	 *
 	 * @return WP_Error|WP_REST_Response
 	 */
-	public function get_details( WP_REST_Request $request ): WP_Error|WP_REST_Response {
+	public function end( WP_REST_Request $request ): WP_Error|WP_REST_Response {
 		$auction_id = $request['id'];
 
 		if ( ! $auction_id || ! is_numeric( $auction_id ) ) {
@@ -97,23 +97,14 @@ class Details extends WC_REST_Controller {
 			return new WP_Error( 'auction_not_published', __( 'The provided Auction ID does not have a published status.', 'goodbids' ) );
 		}
 
-		$payload_data = [
-			'socketUrl',
-			'accountUrl',
-			'endTime',
-			'startTime',
-			'bidUrl',
-			'totalBids',
-			'totalRaised',
-			'currentBid',
-			'lastBid',
-			'lastBidder',
-			'freeBidsAvailable',
-			'freeBidsAllowed',
-		];
+		$auction = goodbids()->auctions->get( $auction_id );
 
-		$data = ( new Payload( $request['id'], $payload_data ) )->get_data();
+		if ( ! $auction->has_ended() ) {
+			return new WP_Error( 'auction_not_ended', __( 'The provided Auction ID has not ended yet.', 'goodbids' ) );
+		}
 
-		return rest_ensure_response( $data );
+		$auction->trigger_close();
+
+		return rest_ensure_response( 'ok' );
 	}
 }
