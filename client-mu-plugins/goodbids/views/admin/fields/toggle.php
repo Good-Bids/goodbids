@@ -52,7 +52,11 @@
 	if ( ! empty( $field['after'] ) ) :
 		echo wp_kses_post( $field['after'] );
 	endif;
-	?>
+
+	if ( ! empty( $field['description'] ) ) :
+		?>
+		<p class="description"><?php echo wp_kses_post( $field['description'] ); ?></p>
+	<?php endif; ?>
 
 <?php if ( $wrap ) : ?>
 		</td>

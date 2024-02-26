@@ -71,4 +71,29 @@ class Utilities {
 
 		return $number . $ordinal;
 	}
+
+	/**
+	 * Displays an Admin Error Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 * @param bool   $is_dismissible
+	 *
+	 * @return void
+	 */
+	public function display_admin_error( string $message, bool $is_dismissible = true ): void {
+		add_action(
+			'admin_notices',
+			function() use ( $message, $is_dismissible ) {
+				printf(
+					'<div class="notice notice-error%s">
+							<p>%s</p>
+						</div>',
+					$is_dismissible ? ' is-dismissible' : '',
+					esc_html( $message )
+				);
+			}
+		);
+	}
 }

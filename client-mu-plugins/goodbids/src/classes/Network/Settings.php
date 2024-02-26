@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Core;
 use GoodBids\Utilities\Log;
 
 /**
@@ -75,6 +76,36 @@ class Settings {
 	 * @return void
 	 */
 	private function init_settings(): void {
+		$auctioneer_environments = [
+			[
+				'label' => __( 'Develop', 'goodbids' ),
+				'value' => 'develop',
+			],
+			[
+				'label' => __( 'Staging', 'goodbids' ),
+				'value' => 'staging',
+			],
+		];
+
+		// Add support for Local environment if in development.
+		if ( Core::is_local_env() ) {
+			array_unshift(
+				$auctioneer_environments,
+				[
+					'label' => __( 'Local', 'goodbids' ),
+					'value' => 'local',
+				]
+			);
+		}
+
+		// Only allow Production on Production.
+		if ( Core::is_prod_env() ) {
+			$auctioneer_environments[] = [
+				'label' => __( 'Production', 'goodbids' ),
+				'value' => 'production',
+			];
+		}
+
 		$this->settings = [
 			'environment' => [
 				'label'       => __( 'Environment', 'goodbids' ),
@@ -82,46 +113,38 @@ class Settings {
 				'default'     => goodbids()->get_config( 'auctioneer.environment', false ),
 				'required'    => true,
 				'section'     => 'auctioneer',
-				'options'     => [
-					[
-						'label' => __( 'Develop', 'goodbids' ),
-						'value' => 'develop',
-					],
-					[
-						'label' => __( 'Staging', 'goodbids' ),
-						'value' => 'staging',
-					],
-					[
-						'label' => __( 'Production', 'goodbids' ),
-						'value' => 'production',
-					],
-				],
+				'options'     => $auctioneer_environments,
+				'description' => __( 'The environment to use for the Auctioneer API. Ensure the corresponding environment variable is set, or the default environment will be used.', 'goodbids' ),
 			],
 			'code-length' => [
-				'label'    => __( 'Referral Code Length', 'goodbids' ),
-				'type'     => 'number',
-				'default'  => goodbids()->get_config( 'referrals.code-length', false ),
-				'section'  => 'referrals',
-				'class'    => 'small-text',
+				'label'       => __( 'Referral Code Length', 'goodbids' ),
+				'type'        => 'number',
+				'default'     => goodbids()->get_config( 'referrals.code-length', false ),
+				'section'     => 'referrals',
+				'class'       => 'small-text',
+				'description' => __( 'The length of auto-generated referral codes.', 'goodbids' ),
 			],
 			'expiration-days' => [
-				'label'    => __( 'Days until Expiration', 'goodbids' ),
-				'type'     => 'number',
-				'default'  => goodbids()->get_config( 'referrals.expiration-days', false ),
-				'section'  => 'referrals',
-				'class'    => 'small-text',
+				'label'       => __( 'Days until Expiration', 'goodbids' ),
+				'type'        => 'number',
+				'default'     => goodbids()->get_config( 'referrals.expiration-days', false ),
+				'section'     => 'referrals',
+				'class'       => 'small-text',
+				'description' => __( 'Days until a referral code cookie expires.', 'goodbids' ),
 			],
 			'logging' => [
-				'label'    => __( 'Logging', 'goodbids' ),
-				'type'     => 'toggle',
-				'default'  => goodbids()->get_config( 'advanced.logging', false ),
-				'section'  => 'advanced',
+				'label'       => __( 'Logging', 'goodbids' ),
+				'type'        => 'toggle',
+				'default'     => goodbids()->get_config( 'advanced.logging', false ),
+				'section'     => 'advanced',
+				'description' => __( 'Enables logging for this environment.', 'goodbids' ),
 			],
 			'debug-mode' => [
-				'label'    => __( 'Debug Mode', 'goodbids' ),
-				'type'     => 'toggle',
-				'default'  => goodbids()->get_config( 'advanced.debug-mode', false ),
-				'section'  => 'advanced',
+				'label'       => __( 'Debug Mode', 'goodbids' ),
+				'type'        => 'toggle',
+				'default'     => goodbids()->get_config( 'advanced.debug-mode', false ),
+				'section'     => 'advanced',
+				'description' => __( 'Enables a subset of features to help with debugging. Be very cautious enabling this on production!', 'goodbids' ),
 			],
 		];
 

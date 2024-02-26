@@ -37,7 +37,7 @@ if ( ! function_exists( 'dd' ) ) {
 	 */
 	function dd( mixed $data, string $method = 'export', bool $die = true ): void {
 		// Disable if not in dev environment.
-		if ( ! GoodBids\Core::is_dev_env() ) {
+		if ( ! GoodBids\Core::is_local_env() ) {
 			return;
 		}
 

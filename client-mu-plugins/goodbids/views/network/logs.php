@@ -12,7 +12,7 @@ use GoodBids\Network\Logs;
 <div class="wrap <?php echo esc_attr( Logs::PAGE_SLUG ); ?>">
 	<h2><?php esc_html_e( 'Logs', 'goodbids' ); ?></h2>
 
-	<?php if ( Core::is_dev_env() ): ?>
+	<?php if ( Core::is_local_env() ): ?>
 
 		<?php goodbids()->sites->loop(
 			function () {

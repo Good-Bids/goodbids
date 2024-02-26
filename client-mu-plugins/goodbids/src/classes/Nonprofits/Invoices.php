@@ -47,7 +47,7 @@ class Invoices {
 		$this->stripe = new Stripe();
 
 		// Disable Invoices on Main Site.
-		if ( is_main_site() && ! Core::is_dev_env() ) {
+		if ( is_main_site() && ! Core::is_local_env() ) {
 			return;
 		}
 
@@ -170,16 +170,7 @@ class Invoices {
 				return $delete;
 			}
 
-			add_action(
-				'admin_notices',
-				function () {
-					?>
-					<div class="notice notice-error">
-						<p><?php esc_html_e( 'Invoices cannot be deleted.', 'goodbids' ); ?></p>
-					</div>
-					<?php
-				}
-			);
+			goodbids()->utilities->display_admin_error( __( 'Invoices cannot be deleted.', 'goodbids' ), true );
 
 			return false;
 		};
@@ -521,8 +512,9 @@ class Invoices {
 					}
 
 					printf(
-						'<code title="%1$s" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;display: block;">%1$s</code>',
-						esc_attr( $invoice->get_stripe_invoice_number() )
+						'<code title="%s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">%s</code>',
+						esc_attr( $invoice->get_stripe_invoice_number() ),
+						esc_html( $invoice->get_stripe_invoice_number() )
 					);
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );
@@ -638,17 +630,13 @@ class Invoices {
 	 */
 	private function alert_when_delinquent(): void {
 		add_action(
-			'admin_notices',
+			'admin_init',
 			function (): void {
 				if ( ! $this->has_overdue_invoices() ) {
 					return;
 				}
 
-				?>
-				<div class="notice notice-error">
-					<p><?php esc_html_e( 'There are currently delinquent invoices on this account. Please take action to restore full site functionality.', 'goodbids' ); ?></p>
-				</div>
-				<?php
+				goodbids()->utilities->display_admin_error( __( 'There are currently delinquent invoices on this account. Please take action to restore full site functionality.', 'goodbids' ), false );
 			}
 		);
 	}

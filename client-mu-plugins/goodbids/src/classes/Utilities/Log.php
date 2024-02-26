@@ -190,7 +190,7 @@ class Log {
 	private static function init_monolog(): void {
 		self::$monolog = new Logger( 'GoodBids' );
 
-		if ( Core::is_dev_env() ) {
+		if ( Core::is_local_env() ) {
 			if ( ! self::get_log_file() ) {
 				return;
 			}
@@ -217,12 +217,13 @@ class Log {
 	 * @return void
 	 */
 	private static function init_new_relic(): void {
-		if ( self::$new_relic_loaded || ! extension_loaded( 'newrelic' ) || defined( 'VIP_GO_APP_ENVIRONMENT' ) || 'production' !== VIP_GO_APP_ENVIRONMENT ) {
+		if ( self::$new_relic_loaded || ! extension_loaded( 'newrelic' ) ) {
 			return;
 		}
 
 		self::$new_relic_loaded = true;
-		newrelic_set_appname( $_SERVER['HTTP_HOST'] ); // phpcs:ignore
+		$app_name = defined( 'VIP_GO_APP_NAME' ) ? VIP_GO_APP_NAME : $_SERVER['HTTP_HOST']; // phpcs:ignore
+		newrelic_set_appname( $app_name );
 	}
 
 	/**
@@ -294,7 +295,7 @@ class Log {
 			if ( self::$new_relic_loaded && function_exists( 'newrelic_notice_error' ) ) {
 				newrelic_notice_error( $message );
 			}
-		} elseif ( Core::is_dev_env() && ( self::$debug_mode || E_USER_NOTICE !== $php_level ) ) {
+		} elseif ( Core::is_local_env() && ( self::$debug_mode || E_USER_NOTICE !== $php_level ) ) {
 			// Log to console.
 			error_log( $console_message ); // phpcs:ignore
 
