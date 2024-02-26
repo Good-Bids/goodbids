@@ -13,6 +13,8 @@ const freeBidCoupons = (coupons) => {
 	});
 };
 
-registerCheckoutFilters('goodbids/freebid-coupons', {
-	coupons: freeBidCoupons,
-});
+if (registerCheckoutFilters) {
+	registerCheckoutFilters('goodbids/freebid-coupons', {
+		coupons: freeBidCoupons,
+	});
+}

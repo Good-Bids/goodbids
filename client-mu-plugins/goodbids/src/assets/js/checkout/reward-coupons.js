@@ -13,6 +13,8 @@ const rewardCoupons = (coupons) => {
 	});
 };
 
-registerCheckoutFilters('goodbids/reward-coupons', {
-	coupons: rewardCoupons,
-});
+if (registerCheckoutFilters) {
+	registerCheckoutFilters('goodbids/reward-coupons', {
+		coupons: rewardCoupons,
+	});
+}
