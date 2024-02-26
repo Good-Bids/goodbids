@@ -3,7 +3,7 @@ import { CreateWizard } from './create-wizard';
 import { Providers } from './providers';
 
 function renderReact() {
-	const root = document.getElementById('gb-auction-wizard');
+	const root = document.getElementById(gbAuctionWizard.appID);
 
 	if (root) {
 		render(
