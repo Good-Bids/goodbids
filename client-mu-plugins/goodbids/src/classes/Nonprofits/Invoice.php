@@ -27,6 +27,12 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const TYPE = 'Auction';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const AUCTION_ID_META_KEY = '_auction_id';
 
 	/**
@@ -247,6 +253,9 @@ class Invoice {
 		// Add Invoice ID to Auction.
 		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
 
+		// Set the invoice type.
+		$this->set_type();
+
 		// Set the invoice amount.
 		$this->set_amount();
 
@@ -254,6 +263,34 @@ class Invoice {
 		$this->set_due_date();
 
 		return true;
+	}
+
+	/**
+	 * Set the Invoice Type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function set_type(): void {
+		update_post_meta( $this->get_id(), Invoices::TYPE_META_KEY, self::TYPE );
+	}
+
+	/**
+	 * Get the Invoice Type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type(): string {
+		$type = get_post_meta( $this->get_id(), Invoices::TYPE_META_KEY, true );
+
+		if ( ! $type ) {
+			return '';
+		}
+
+		return $type;
 	}
 
 	/**
@@ -418,7 +455,7 @@ class Invoice {
 		}
 
 		$due_date = $this->get_due_date();
-		$now      = current_datetime()
+		$now_eod  = current_datetime()
 			->setTimezone( new DateTimeZone( 'GMT' ) )
 			->format( 'Y-m-d 23:59:59' );
 

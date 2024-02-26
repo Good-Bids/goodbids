@@ -22,6 +22,12 @@ class TaxInvoice extends Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const TYPE = 'Tax';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const ORDER_ID_META_KEY = '_order_id';
 
 	/**
@@ -84,6 +90,9 @@ class TaxInvoice extends Invoice {
 
 		// Add Invoice ID to Auction.
 		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
+
+		// Set the invoice type.
+		$this->set_type();
 
 		// Set the invoice amount.
 		$this->set_amount();

@@ -37,7 +37,7 @@ class Invoices {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const TAX_INVOICE_ID_META_KEY = '_tax_invoice_id';
+	const TYPE_META_KEY = '_invoice_type';
 
 	/**
 	 * @since 1.0.0
@@ -505,6 +505,7 @@ class Invoices {
 						$new_columns['auction']     = __( 'Auction', 'goodbids' );
 						$new_columns['amount']      = __( 'Amount', 'goodbids' );
 						$new_columns['invoice_num'] = __( 'Invoice #', 'goodbids' );
+						$new_columns['type']        = __( 'Type', 'goodbids' );
 						$new_columns['status']      = __( 'Status', 'goodbids' );
 						$new_columns['due_date']    = __( 'Due Date', 'goodbids' );
 					}
@@ -549,6 +550,8 @@ class Invoices {
 						esc_attr( $invoice->get_stripe_invoice_number() ),
 						esc_html( $invoice->get_stripe_invoice_number() )
 					);
+				} elseif ( 'type' === $column ) {
+					echo esc_html( $invoice->get_type() );
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );
 				} elseif ( 'payment' === $column ) {
