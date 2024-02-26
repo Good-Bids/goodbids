@@ -111,25 +111,25 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var ?WP_Post
 	 */
-	private ?WP_Post $post;
+	protected ?WP_Post $post;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $invoice_id = null;
+	protected ?int $invoice_id = null;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id = null;
+	protected ?int $auction_id = null;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?float
 	 */
-	private ?float $amount = null;
+	protected ?float $amount = null;
 
 	/**
 	 * @since 1.0.0
@@ -179,6 +179,9 @@ class Invoice {
 	 * The Auction ID will be connected to the Invoice during initialization.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param int  $post_id
+	 * @param ?int $auction_id
 	 *
 	 * @return ?self
 	 */
@@ -299,7 +302,7 @@ class Invoice {
 	 *
 	 * @return bool|int
 	 */
-	private function set_auction_id( int $auction_id ): bool|int {
+	protected function set_auction_id( int $auction_id ): bool|int {
 		$this->auction_id = $auction_id;
 
 		// Set the invoice auction ID.
@@ -338,7 +341,7 @@ class Invoice {
 	 *
 	 * @return bool|int
 	 */
-	private function set_amount( ?int $amount = null ): bool|int {
+	protected function set_amount( ?int $amount = null ): bool|int {
 		if ( is_null( $amount ) ) {
 			$auction      = $this->get_auction();
 			$total_raised = $auction->get_total_raised();
@@ -380,7 +383,7 @@ class Invoice {
 	 *
 	 * @return bool|int
 	 */
-	private function set_due_date( ?int $due_date = null ): bool|int {
+	protected function set_due_date( ?int $due_date = null ): bool|int {
 		if ( is_null( $due_date ) ) {
 			$payment_terms = intval( goodbids()->get_config( 'invoices.payment-terms-days' ) );
 

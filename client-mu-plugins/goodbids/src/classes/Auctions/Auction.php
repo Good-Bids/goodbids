@@ -159,6 +159,23 @@ class Auction {
 	}
 
 	/**
+	 * Get the Tax Invoice ID for an Auction if available.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_tax_invoice_id(): ?int {
+		$invoice_id = get_post_meta( $this->get_id(), Invoices::TAX_INVOICE_ID_META_KEY, true );
+
+		if ( $invoice_id && get_post_type( $invoice_id ) === goodbids()->invoices->get_post_type() ) {
+			return $invoice_id;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Check if an auction has a Bid product.
 	 *
 	 * @since 1.0.0
