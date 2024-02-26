@@ -57,6 +57,10 @@ export default {
 				red: {
 					500: '#c70808',
 				},
+				'admin-blue': {
+					300: '#2271b1',
+					600: '#135e96',
+				},
 			},
 			keyframes: {
 				'spin-left': {

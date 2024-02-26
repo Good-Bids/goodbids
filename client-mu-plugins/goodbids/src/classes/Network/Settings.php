@@ -106,6 +106,20 @@ class Settings {
 			];
 		}
 
+		// Show Warning if Auctioneer Environment Variable is not set.
+		$environment_after = '';
+		$environment_var   = goodbids()->get_config( 'auctioneer.environment' );
+		if ( $environment_var ) {
+			$environment_const = goodbids()->get_config( 'vip-constants.auctioneer.urls.' . $environment_var );
+			if ( $environment_const && ! defined( $environment_const ) ) {
+				$environment_after = sprintf(
+					'<span class="dashicons dashicons-warning" style="color:darkorange;margin-top:4px" title="%s (%s)"></span>',
+					esc_attr__( 'Warning! Environment variable is not set', 'goodbids' ),
+					esc_attr( $environment_const )
+				);
+			}
+		}
+
 		$this->settings = [
 			'environment' => [
 				'label'       => __( 'Environment', 'goodbids' ),
@@ -115,6 +129,7 @@ class Settings {
 				'section'     => 'auctioneer',
 				'options'     => $auctioneer_environments,
 				'description' => __( 'The environment to use for the Auctioneer API. Ensure the corresponding environment variable is set, or the default environment will be used.', 'goodbids' ),
+				'after'       => $environment_after,
 			],
 			'code-length' => [
 				'label'       => __( 'Referral Code Length', 'goodbids' ),
@@ -234,7 +249,11 @@ class Settings {
 	 */
 	private function handle_overridden( array $setting, string $key ): array {
 		if ( $this->is_overridden( $key ) ) {
-			$setting['after'] = sprintf(
+			if ( ! isset( $setting['after'] ) ) {
+				$setting['after'] = '';
+			}
+
+			$setting['after'] .= sprintf(
 				'<span class="dashicons dashicons-saved" style="margin-top:4px" title="%s"></span>',
 				esc_attr__( 'The config.json setting has been overridden.', 'goodbids' )
 			);
