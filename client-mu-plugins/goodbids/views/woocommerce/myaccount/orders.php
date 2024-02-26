@@ -26,7 +26,7 @@ $goodbids_orders = array_slice( $goodbids_orders, $offset, $max_per_page );
 
 do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
-<?php if ( $has_orders ) : ?>
+<?php if ( $has_orders ):; ?>
 	<h1><?php esc_html_e( 'Bids', 'goodbids' ); ?></h1>
 
 	<?php goodbids()->load_view( 'woocommerce/myaccount/orders-header.php' ); ?>
@@ -50,7 +50,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 					goodbids()->sites->swap(
 						function () use ( $goodbids_order ) {
 							$order = wc_get_order( $goodbids_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-							?>
+				?>
 							<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
 								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-donation" data-title="donation">
 									<?php foreach ( $order->get_items() as $item ) : ?>
@@ -88,55 +88,59 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 									if ( ! empty( $actions ) ) {
 										foreach ( $actions as $key => $wc_action ) {
 											printf(
-												'<a href="%s" class="!mb-0 capitalize btn-fill-sm %s">%s</a>',
-												esc_url( $wc_action['url'] ),
-												sanitize_html_class( $key ),
-												esc_html( $wc_action['name'] )
-											);
-										}
+									<< << <<< HEAD
+									'<a href="%s" class="!mb-0 capitalize btn-fill-sm %s">%s</a>',
+									=======
+									'<a href="%s" class="!inline !mb-0 capitalize btn-fill-sm">%s</a>',
+									>>>>>>> bf193978 ([#470] styling my account pages)
+									esc_url( $wc_action['url'] ),
+									sanitize_html_class( $key ),
+									esc_html( $wc_action['name'] )
+									);
+									}
 									}
 									?>
-								</td>
-							</tr>
-							<?php
-						},
-						$goodbids_order['site_id']
-					);
-				}
-				?>
-			</tbody>
-		</table>
-	</div>
+									</td>
+									</tr>
+									<?php
+									},
+									$goodbids_order['site_id']
+									);
+									}
+									?>
+									</tbody>
+									</table>
+									</div>
 
-	<?php do_action( 'woocommerce_before_account_orders_pagination' ); ?>
+									<?php do_action( 'woocommerce_before_account_orders_pagination' ); ?>
 
-	<?php if ( 1 < $max_pages ) : ?>
-		<div class="woocommerce-pagination woocommerce-pagination--with-numbers woocommerce-Pagination">
-			<?php
-			echo wp_kses_post(
-				paginate_links(
-					[
-						'base'      => esc_url_raw( wc_get_endpoint_url( 'orders', '%_%' ) ),
-						'format'    => '%#%',
-						'add_args'  => false,
-						'current'   => max( 1, $current_page ),
-						'total'     => $max_pages,
-						'prev_text' => '&larr;',
-						'next_text' => '&rarr;',
-						'type'      => 'list',
-						'end_size'  => 3,
-						'mid_size'  => 3,
-					]
-				)
-			);
-			?>
-		</div>
-	<?php endif; ?>
+									<?php if ( 1 < $max_pages ) : ?>
+									<div class="woocommerce-pagination woocommerce-pagination--with-numbers woocommerce-Pagination">
+									<?php
+									echo wp_kses_post(
+									paginate_links(
+									[
+									'base'      => esc_url_raw( wc_get_endpoint_url( 'orders', '%_%' ) ),
+									'format'    => '%#%',
+									'add_args'  => false,
+									'current'   => max( 1, $current_page ),
+									'total'     => $max_pages,
+									'prev_text' => '&larr;',
+									'next_text' => '&rarr;',
+									'type'      => 'list',
+									'end_size'  => 3,
+									'mid_size'  => 3,
+									]
+									)
+									);
+									?>
+									</div>
+									<?php endif; ?>
 
-<?php else : ?>
+									<?php else : ?>
 
-	<?php wc_print_notice( esc_html__( 'You have not bid on any auctions yet.', 'goodbids' ), 'notice' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment ?>
+									<?php wc_print_notice( esc_html__( 'You have not bid on any auctions yet.', 'goodbids' ), 'notice' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment ?>
 
-<?php endif; ?>
+									<?php endif; ?>
 
-<?php do_action( 'woocommerce_after_account_orders', $has_orders ); ?>
+									<?php do_action( 'woocommerce_after_account_orders', $has_orders ); ?>
