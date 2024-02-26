@@ -370,7 +370,7 @@ class Auctions {
 	}
 
 	/**
-	 * Get Auctions where rewards have been claimed and fit within an interval window.
+	 * Get Auctions where the reward is unclaimed and fit within an interval window.
 	 *
 	 * @since 1.0.0
 	 *
@@ -416,7 +416,7 @@ class Auctions {
 			$unclaimed = $this->get_unclaimed_reward_auctions( $query_args );
 
 			if ( count( $unclaimed ) ) {
-				$reminder_emails = array_merge( $reminder_emails, $unclaimed );
+				array_push( $reminder_emails, ...$unclaimed );
 			}
 
 			if( $current_interval >= $reward_days_to_claim ) {
