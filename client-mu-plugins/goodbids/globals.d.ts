@@ -3,9 +3,9 @@ declare module '*.svg';
 declare module '*.jpeg';
 declare module '*.jpg';
 
-type Internationalization = Record<string, Internationalization>;
+type PHPVariables = Record<string, string>;
 
-declare const gbAuctionWizard: Internationalization;
+declare const gbAuctionWizard: PHPVariables;
 
 // TODO: Type this properly
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

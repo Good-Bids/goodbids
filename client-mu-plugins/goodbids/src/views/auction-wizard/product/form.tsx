@@ -9,6 +9,7 @@ import { ProductImage } from './image-upload/product-image';
 import { ProductGallery } from './image-upload/product-gallery';
 import { AuctionWizardProductState, useAuctionWizardState } from '../store';
 import { useDebouncedCallback } from 'use-debounce';
+import { __ } from '@wordpress/i18n';
 
 export type FormProps = {
 	shippingClasses: ShippingClasses;
@@ -51,18 +52,18 @@ export function Form({ shippingClasses }: FormProps) {
 	return (
 		<div className="flex flex-col gap-4">
 			<h1 className="text-4xl text-admin-main m-0">
-				{gbAuctionWizard.strings.createRewardHeading}
+				{__('Create Auction Reward', 'goodbids')}
 			</h1>
 			<h2 className="text-admin-large text-admin-main m-0">
-				{gbAuctionWizard.strings.createRewardSubheading}
+				{__('What are you auctioning?', 'goodbids')}
 			</h2>
 
 			<div className="flex flex-col gap-4">
 				<div className="w-full max-w-80">
 					<TextInput
 						autoFocus
-						label={gbAuctionWizard.strings.productTitle}
-						tooltip={gbAuctionWizard.strings.productTitleTooltip}
+						label={__('Title', 'goodbids')}
+						tooltip={__('Product title.', 'goodbids')}
 						onChange={(e) => handleDebounce('name', e.target.value)}
 						defaultValue={name.value}
 						error={name.error}
@@ -74,8 +75,11 @@ export function Form({ shippingClasses }: FormProps) {
 					<TextInput
 						inputMode="decimal"
 						id="regular-price"
-						label={gbAuctionWizard.strings.fairMarketValueLabel}
-						tooltip={gbAuctionWizard.strings.fairMarketValueTooltip}
+						label={__('Fair Market Value', 'goodbids')}
+						tooltip={__(
+							'The fair market value of your reward',
+							'goodbids',
+						)}
 						startIcon={<MoneyIcon width={16} />}
 						error={regularPrice.error}
 						defaultValue={regularPrice.value}
@@ -97,15 +101,15 @@ export function Form({ shippingClasses }: FormProps) {
 
 			<RadioInput
 				id="product-type"
-				label={gbAuctionWizard.strings.productTypeLabel}
+				label={__('What type of product is it?', 'goodbids')}
 				defaultValue={productType.value}
 				onValueChange={(value) => setProductValue('productType', value)}
 			>
 				<RadioItem value="physical" id="physical">
-					{gbAuctionWizard.strings.productTypePhysical}
+					{__('Physical', 'goodbids')}
 				</RadioItem>
 				<RadioItem value="non-physical" id="non-physical">
-					{gbAuctionWizard.strings.productTypeNonPhysical}
+					{__('Digital or Experience', 'goodbids')}
 				</RadioItem>
 			</RadioInput>
 
@@ -114,10 +118,8 @@ export function Form({ shippingClasses }: FormProps) {
 					<div className="w-full max-w-80">
 						<TextInput
 							id="product-weight"
-							label={gbAuctionWizard.strings.productWeightLabel}
-							tooltip={
-								gbAuctionWizard.strings.productWeightTooltip
-							}
+							label={__('Weight (lbs)', 'goodbids')}
+							tooltip={__('Product weight in lbs.', 'goodbids')}
 							defaultValue={weight.value}
 							onChange={(e) =>
 								handleDebounce(
@@ -134,12 +136,11 @@ export function Form({ shippingClasses }: FormProps) {
 						<div className="w-full">
 							<TextInput
 								id="product-length"
-								label={
-									gbAuctionWizard.strings.productLengthLabel
-								}
-								tooltip={
-									gbAuctionWizard.strings.productLengthTooltip
-								}
+								label={__('Length (in)', 'goodbids')}
+								tooltip={__(
+									'Product length in inches',
+									'goodbids',
+								)}
 								defaultValue={length.value}
 								onChange={(e) =>
 									handleDebounce(
@@ -155,12 +156,11 @@ export function Form({ shippingClasses }: FormProps) {
 						<div className="w-full">
 							<TextInput
 								id="product-width"
-								label={
-									gbAuctionWizard.strings.productWidthLabel
-								}
-								tooltip={
-									gbAuctionWizard.strings.productWidthTooltip
-								}
+								label={__('Width (in)', 'goodbids')}
+								tooltip={__(
+									'Product width in inches',
+									'goodbids',
+								)}
 								defaultValue={width.value}
 								onChange={(e) =>
 									handleDebounce(
@@ -176,12 +176,11 @@ export function Form({ shippingClasses }: FormProps) {
 						<div className="w-full">
 							<TextInput
 								id="product-height"
-								label={
-									gbAuctionWizard.strings.productHeightLabel
-								}
-								tooltip={
-									gbAuctionWizard.strings.productHeightTooltip
-								}
+								label={__('Height (in)', 'goodbids')}
+								tooltip={__(
+									'Product height in inches',
+									'goodbids',
+								)}
 								defaultValue={height.value}
 								onChange={(e) =>
 									handleDebounce(
@@ -199,8 +198,14 @@ export function Form({ shippingClasses }: FormProps) {
 				<div className="w-full max-w-120">
 					<TextArea
 						id="purchase-note"
-						label={gbAuctionWizard.strings.purchaseNoteLabel}
-						tooltip={gbAuctionWizard.strings.purchaseNoteTooltip}
+						label={__(
+							'Redemption Details for Auction Winner',
+							'goodbids',
+						)}
+						tooltip={__(
+							'Instructions for the auction winner to redeem their reward',
+							'goodbids',
+						)}
 						defaultValue={purchaseNote.value}
 						onChange={(e) =>
 							handleDebounce('purchaseNote', e.target.value)
@@ -214,8 +219,11 @@ export function Form({ shippingClasses }: FormProps) {
 				<div className="w-full max-w-80 flex flex-col">
 					<Select
 						id="shipping-class"
-						label={gbAuctionWizard.strings.shippingClassLabel}
-						tooltip={gbAuctionWizard.strings.shippingClassTooltip}
+						label={__('Shipping Class', 'goodbids')}
+						tooltip={__(
+							'Determines base shipping cost',
+							'goodbids',
+						)}
 						value={shippingClass.value}
 						error={shippingClass.error}
 						onValueChange={(value) =>
@@ -223,7 +231,7 @@ export function Form({ shippingClasses }: FormProps) {
 						}
 					>
 						<SelectItem value="none">
-							{gbAuctionWizard.strings.shippingClassNone}
+							{__('No Shipping Class', 'goodbids')}
 						</SelectItem>
 						{shippingClasses.map((shippingClass) => (
 							<SelectItem

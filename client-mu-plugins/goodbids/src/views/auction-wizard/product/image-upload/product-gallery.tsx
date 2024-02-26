@@ -1,6 +1,7 @@
 import { Image } from './image';
 import { Tooltip } from '../../../../components/tooltip';
 import { useAuctionWizardState } from '../../store';
+import { __ } from '@wordpress/i18n';
 
 export function ProductGallery() {
 	const {
@@ -35,13 +36,16 @@ export function ProductGallery() {
 		<div className="flex flex-col gap-3">
 			<div className="flex gap-2 items-center">
 				<h3 className="text-admin-label font-bold m-0">
-					{gbAuctionWizard.strings.productGalleryLabel}
+					{__('Product Gallery', 'goodbids')}
 				</h3>
 				<Tooltip>
-					{gbAuctionWizard.strings.productGalleryTooltip}
+					{__(
+						'Select additional images for your product gallery.',
+						'goodbids',
+					)}
 				</Tooltip>
 			</div>
-			<div className="rounded-md bg-gray-200 w-fit p-2 mx-4 grid grid-cols-4 gap-2">
+			<div className="rounded-md bg-gray-200 w-full p-2 mx-4 grid grid-cols-4 gap-2">
 				{productGallery.map((image) => (
 					<Image
 						key={image.value.id}
@@ -54,9 +58,9 @@ export function ProductGallery() {
 				<button
 					type="button"
 					onClick={() => mediaUploader.open()}
-					className="min-w-88 min-h-32 col-span-2 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
+					className="min-w-88 min-h-32 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
 				>
-					{gbAuctionWizard.strings.imageUploadMultiple}
+					{__('Click to upload multiple', 'goodbids')}
 				</button>
 			</div>
 		</div>

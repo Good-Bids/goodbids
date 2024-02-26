@@ -29,7 +29,10 @@ export function AuctionWizardStart() {
 			</h1>
 			<div className="max-w-xl">
 				<p className="text-admin-content">
-					{__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 'goodbids' )}
+					{__(
+						'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+						'goodbids',
+					)}
 				</p>
 			</div>
 
@@ -50,7 +53,7 @@ export function AuctionWizardStart() {
 				</div>
 			) : (
 				<Button onClick={clearAndSetProductStep} autoFocus>
-					{__( 'Let\'s get started', 'goodbids' )}
+					{__("Let's get started", 'goodbids')}
 				</Button>
 			)}
 		</div>

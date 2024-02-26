@@ -211,55 +211,6 @@ class Wizard {
 
 			// WP/WC Variables.
 			'rewardCategorySlug' => Rewards::ITEM_TYPE,
-
-			'strings' => [
-				// Product Page.
-				'productTips' => __( 'You can upload multiple images for your product. The "Product Image" image will be used as the main product image.', 'goodbids' ),
-
-				'createRewardHeading'    => __( 'Create Auction Reward', 'goodbids' ),
-				'createRewardSubheading' => __( 'What are you auctioning?', 'goodbids' ),
-
-				'productTitle'         => __( 'Title', 'goodbids' ),
-				'productTitleTooltip'  => __( 'Product title.', 'goodbids' ),
-				'productTitleRequired' => __( 'Title is required', 'goodbids' ),
-
-				'fairMarketValueLabel'    => __( 'Fair Market Value', 'goodbids' ),
-				'fairMarketValueTooltip'  => __( 'The fair market value of your reward', 'goodbids' ),
-				'fairMarketValueRequired' => __( 'Fair Market Value is required', 'goodbids' ),
-
-				'productImageLabel'   => __( 'Product Image', 'goodbids' ),
-				'productImageTooltip' => __( 'Select a single image as the focal image of your product.', 'goodbids' ),
-				'imageUploadSingle'   => __( 'Click to upload', 'goodbids' ),
-
-				'productGalleryLabel'   => __( 'Product Gallery', 'goodbids' ),
-				'productGalleryTooltip' => __( 'Select additional images for your product gallery.', 'goodbids' ),
-				'imageUploadMultiple'   => __( 'Click to upload multiple', 'goodbids' ),
-
-				'productTypeLabel'      => __( 'What type of product is it?', 'goodbids' ),
-				'productTypePhysical'   => __( 'Physical', 'goodbids' ),
-				'productTypeNonPhysical'    => __( 'Digital or Experience', 'goodbids' ),
-
-				// Dimensions
-				'productWeightLabel'   => __( 'Weight (lbs)', 'goodbids' ),
-				'productWeightTooltip' => __( 'Product weight in lbs.', 'goodbids' ),
-				'productLengthLabel'   => __( 'Length (in)', 'goodbids' ),
-				'productLengthTooltip' => __( 'Product length in inches', 'goodbids' ),
-				'productWidthLabel'    => __( 'Width (in)', 'goodbids' ),
-				'productWidthTooltip'  => __( 'Product width in inches', 'goodbids' ),
-				'productHeightLabel'   => __( 'Height (in)', 'goodbids' ),
-				'productHeightTooltip' => __( 'Product height in inches', 'goodbids' ),
-
-				'purchaseNoteLabel'   => __( 'Redemption Details for Auction Winner', 'goodbids' ),
-				'purchaseNoteTooltip' => __( 'Instructions for the auction winner to redeem their reward', 'goodbids' ),
-
-				'shippingClassLabel'   => __( 'Shipping Class', 'goodbids' ),
-				'shippingClassTooltip' => __( 'Determines base shipping cost', 'goodbids' ),
-				'shippingClassNone'    => __( 'No Shipping Class', 'goodbids' ),
-
-				// Validation
-				'invalidDecimal' => __( 'Invalid value. Must match format 0.00', 'goodbids' ),
-				'nextButtonText' => __( 'Save and Continue', 'goodbids' ),
-			],
 		];
 	}
 }

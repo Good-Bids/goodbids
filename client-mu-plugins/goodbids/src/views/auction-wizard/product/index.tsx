@@ -1,6 +1,7 @@
 import { Form, FormProps } from './form';
 import { Tips } from '../../../components/tips';
 import { useAuctionWizardState } from '../store';
+import { __ } from '@wordpress/i18n';
 
 type AuctionWizardProductProps = FormProps;
 
@@ -17,11 +18,7 @@ export function AuctionWizardProduct({
 		let anyInvalid = false;
 
 		if (!name.value) {
-			setProductValue(
-				'name',
-				'',
-				gbAuctionWizard.strings.productTitleRequired,
-			);
+			setProductValue('name', '', __('Title is required', 'goodbids'));
 			anyInvalid = true;
 		}
 
@@ -29,7 +26,7 @@ export function AuctionWizardProduct({
 			setProductValue(
 				'regularPrice',
 				'',
-				gbAuctionWizard.strings.fairMarketValueRequired,
+				__('Fair Market Value is required', 'goodbids'),
 			);
 			anyInvalid = true;
 		}
@@ -38,7 +35,7 @@ export function AuctionWizardProduct({
 			setProductValue(
 				'purchaseNote',
 				'',
-				gbAuctionWizard.strings.purchaseNoteRequired,
+				__('Click to upload', 'goodbids'),
 			);
 			anyInvalid = true;
 		}
@@ -56,7 +53,10 @@ export function AuctionWizardProduct({
 				<Form shippingClasses={shippingClasses} />
 
 				<Tips>
-					<p>{gbAuctionWizard.strings.productTips}</p>
+					{__(
+						'You can upload multiple images for your product. The "Product Image" image will be used as the main product image.',
+						'goodbids',
+					)}
 				</Tips>
 			</div>
 
@@ -65,7 +65,7 @@ export function AuctionWizardProduct({
 					onClick={handleNextPage}
 					className="py-2 px-6 cursor-pointer border-none rounded-admin-sm bg-admin-main text-white text-admin-content hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 w-full max-w-80"
 				>
-					{gbAuctionWizard.strings.nextButtonText}
+					{__('Save and Continue', 'goodbids')}
 				</button>
 			</div>
 		</>
