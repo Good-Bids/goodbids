@@ -13,11 +13,8 @@ use GoodBids\Users\Referrals\Referral;
 <div class="goodbids-account-referrals">
 	<h1><?php esc_html_e( 'Referrals', 'goodbids' ); ?></h1>
 
-	<div class="p-4 rounded-sm bg-contrast md:p-8">
-		<h3 class="mt-0 font-bold normal-case text-base-2"><?php esc_html_e( 'Invite friends, bid for free!', 'goodbids' ); ?></h3>
-		<p class="text-sm text-base-2"><?php esc_html_e( 'Earn a free bid for each person who signs up and donates through your link, usable in any GODBIDS network live auction.', 'goodbids' ); ?></p>
-		<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
-	</div>
+	<p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p>
+	<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
 
 	<?php if ( ! $referrals ) : ?>
 		<p><?php esc_html_e( 'You have not made any referrals yet.', 'goodbids' ); ?></p>

@@ -17,7 +17,7 @@
 	<?php else : ?>
 		<?php goodbids()->load_view( 'woocommerce/myaccount/free-bids-header.php' ); ?>
 
-		<h2 class="mt-12 font-normal text-md"><?php esc_html_e( 'Free Bids Earned', 'goodbids' ); ?></h2>
+		<h2 class="mt-12 font-normal text-md">Free Bids Earned</h2>
 		<div class="overflow-hidden border border-solid rounded-sm border-black-100">
 			<table class="!mb-0 !border-0 bg-base-2 goodbids-free-bids-table woocommerce-MyAccount-free-bids shop_table shop_table_responsive my_account_free_bids account-free-bids-table">
 				<thead>
@@ -58,10 +58,7 @@
 			</table>
 		</div>
 
-		<div class="p-4 mt-8 rounded-sm bg-contrast md:p-8">
-			<h3 class="mt-0 font-bold normal-case text-base-2"><?php esc_html_e( 'Invite friends, bid for free!', 'goodbids' ); ?></h3>
-			<p class="text-sm text-base-2"><?php esc_html_e( 'Earn a free bid for each person who signs up and donates through your link, usable in any GODBIDS network live auction.', 'goodbids' ); ?></p>
-			<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
-		</div>
+		<p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p>
+		<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
 	<?php endif; ?>
 </div>
