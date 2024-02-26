@@ -2,13 +2,12 @@
   "name": "goodbids",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "engines": {
     "node": ">=18.19.0",
     "npm": ">=10.2.3"
   },
   "scripts": {
-    "build": "tsc && vite build && wp-scripts build",
+    "build": "wp-scripts build",
     "compile": "tsc",
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses",

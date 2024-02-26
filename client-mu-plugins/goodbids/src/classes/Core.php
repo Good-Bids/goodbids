@@ -15,7 +15,7 @@ use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Products;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Auctions\Watchers;
-use GoodBids\Blocks\Blocks;
+use GoodBids\Frontend\Blocks;
 use GoodBids\Frontend\Assets;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;

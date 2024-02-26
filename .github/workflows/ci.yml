@@ -26,7 +26,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: cd client-mu-plugins/goodbids && npm ci
+        run: cd client-mu-plugins/goodbids && npm install
 
       - name: Lint
         run: cd client-mu-plugins/goodbids && npm run lint
