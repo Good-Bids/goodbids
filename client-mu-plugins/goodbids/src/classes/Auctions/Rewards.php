@@ -8,6 +8,9 @@
 
 namespace GoodBids\Auctions;
 
+use DateInterval;
+use DateTimeImmutable;
+use Exception;
 use GoodBids\Plugins\WooCommerce\Coupons;
 use GoodBids\Utilities\Log;
 use WC_Product;
@@ -137,7 +140,7 @@ class Rewards {
 	 *
 	 * @return string
 	 */
-	public function get_claim_reward_url( int $auction_id = null ): string {
+	public function get_claim_reward_url( ?int $auction_id = null ): string {
 		$reward_product_id = $this->get_product_id( $auction_id );
 
 		if ( ! $reward_product_id ) {
@@ -145,6 +148,37 @@ class Rewards {
 		}
 
 		return add_query_arg( 'add-to-cart', $reward_product_id, wc_get_checkout_url() );
+	}
+
+	/**
+	 * Get deadline date to claim reward
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int   $auction_id
+	 * @param string $format
+	 *
+	 * @return ?string
+	 */
+	public function get_claim_deadline_date( ?int $auction_id = null, string $format = 'n/j/Y' ): ?string {
+		$reward_days_to_claim = intval( goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
+
+		if ( ! $auction_id || ! $reward_days_to_claim ) {
+			return null;
+		}
+
+		$auction    = goodbids()->auctions->get( $auction_id );
+		$close_date = $auction->get_end_date_time( 'Y-m-d H:i:s' );
+
+		try {
+			$close    = new DateTimeImmutable( $close_date );
+			$deadline = $close->add( new DateInterval( 'P' . $reward_days_to_claim . 'D' ) )->format( $format );
+		} catch ( Exception $e ) {
+			Log::error( 'Error getting claim deadline date.', [ 'error' => $e->getMessage() ] );
+			return null;
+		}
+
+		return $deadline;
 	}
 
 	/**

@@ -10,6 +10,7 @@
 use GoodBids\Auctions\FreeBid;
 
 ?>
+
 <div class="goodbids-free-bids">
 	<h1><?php esc_html_e( 'Free Bids', 'goodbids' ); ?></h1>
 
