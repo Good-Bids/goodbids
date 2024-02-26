@@ -382,7 +382,7 @@ class Sites {
 						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
 						'post_content' => ob_get_clean(),
 						'post_type'    => 'page',
-						'post_status'  => 'draft',
+						'post_status'  => 'publish',
 						'post_author'  => 1,
 						'post_name'    => 'about',
 					]
@@ -437,9 +437,14 @@ class Sites {
 	 */
 	private function delete_sample_page(): void {
 		add_action(
-			'init',
+			'goodbids_init_site',
 			function (): void {
-				$deleted = wp_delete_post( 2 );
+				$page    = wpcom_vip_get_page_by_path( 'sample-page' );
+				$deleted = wp_delete_post( $page->ID );
+
+				if ( $page->ID == get_option( 'page_on_front' ) ) {
+					return;
+				}
 
 				if ( ! $deleted ) {
 					Log::error( 'There was a problem deleting the Sample Page' );
