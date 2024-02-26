@@ -55,7 +55,7 @@ class Rewards {
 		$this->connect_reward_product_on_auction_save();
 
 		// Adjust the price of the product to the Winning Bid when the Auction closes.
-		$this->set_price_on_auction_close();
+		$this->set_price_on_auction_end();
 
 		// Mark Reward as redeemed after Checkout.
 		$this->mark_as_redeemed();
@@ -110,8 +110,8 @@ class Rewards {
 	 */
 	private function connect_reward_product_on_auction_save(): void {
 		add_action(
-			'save_post',
-			function ( int $post_id ) {
+			'wp_after_insert_post',
+			function ( int $post_id ): void {
 				// Bail if not an Auction and not published.
 				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
@@ -120,7 +120,6 @@ class Rewards {
 				$reward_id = $this->get_product_id( $post_id );
 
 				if ( ! $reward_id ) {
-					Log::error( 'Auction missing Reward Product.', compact( 'post_id' ) );
 					return;
 				}
 
@@ -253,7 +252,7 @@ class Rewards {
 	 *
 	 * @return void
 	 */
-	private function set_price_on_auction_close(): void {
+	private function set_price_on_auction_end(): void {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ): void {
@@ -270,6 +269,8 @@ class Rewards {
 					Log::error( 'Reward Product not found.', compact( 'auction_id' ) );
 					return;
 				}
+
+				Log::debug( 'Updating Reward Price for Auction ID: ' . $auction_id );
 
 				$auction     = goodbids()->auctions->get( $auction_id );
 				$winning_bid = $auction->get_last_bid();

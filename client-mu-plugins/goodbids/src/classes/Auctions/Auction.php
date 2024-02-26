@@ -271,7 +271,6 @@ class Auction {
 		$start_date_time = $this->get_start_date_time();
 
 		if ( ! $start_date_time ) {
-			Log::warning( 'Auction has no start date/time.', compact( 'this' ) );
 			return false;
 		}
 
@@ -293,7 +292,6 @@ class Auction {
 		$end_date_time = $this->get_end_date_time();
 
 		if ( ! $end_date_time ) {
-			Log::warning( 'Auction has no end date/time.', compact( 'this' ) );
 			return false;
 		}
 
@@ -366,7 +364,6 @@ class Auction {
 		$bid_extension = $this->get_setting( 'bid_extension' );
 
 		if ( ! $bid_extension ) {
-			Log::error( '[CONFIG] Unable to load Bid Extension' );
 			return null;
 		}
 
@@ -764,27 +761,25 @@ class Auction {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function trigger_start(): bool {
+	public function trigger_start(): void {
+		if ( $this->start_triggered() ) {
+			return;
+		}
+
+		Log::debug( 'Triggering Auction Start for Auction ID: ' . $this->get_id() );
+
+		// Update the Auction meta to indicate it has started.
+		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
+
 		/**
 		 * @param int $auction_id
 		 */
 		do_action( 'goodbids_auction_start', $this->get_id() );
 
-		$result = goodbids()->auctioneer->auctions->start( $this->get_id() );
-
-		if ( true !== $result ) {
-			return false;
-		}
-
-		// Update the Auction meta to indicate it has started.
-		// This is used for the sole purposes of filtering started auctions from get_starting_auctions() method.
-		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
 		// Reset the Auction transients.
 		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
-
-		return true;
 	}
 
 	/**
@@ -803,27 +798,25 @@ class Auction {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function trigger_close(): bool {
+	public function trigger_close(): void {
+		if ( ! $this->end_triggered() ) {
+			return;
+		}
+
+		Log::debug( 'Triggering Auction End for Auction ID: ' . $this->get_id() );
+
+		// Update the Auction meta to indicate it has closed.
+		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
+
 		/**
 		 * @param int $auction_id
 		 */
 		do_action( 'goodbids_auction_end', $this->get_id() );
 
-		$result = goodbids()->auctioneer->auctions->end( $this->get_id() );
-
-		if ( true !== $result ) {
-			return false;
-		}
-
-		// Update the Auction meta to indicate it has closed.
-		// This is used for the sole purposes of filtering started auctions from get_closing_auctions() method.
-		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
 		// Reset the Auction transients.
 		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
-
-		return true;
 	}
 
 	/**

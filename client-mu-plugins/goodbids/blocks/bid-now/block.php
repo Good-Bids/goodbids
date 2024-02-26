@@ -80,6 +80,12 @@ class BidNow extends ACFBlock {
 	 * @return string
 	 */
 	public function get_button_text( bool $is_free_bid = false ): string {
+		$button_text = __( 'GOODBID Now', 'goodbids' );
+
+		if ( ! $this->auction ) {
+			return $button_text;
+		}
+
 		if ( $this->auction->has_ended() ) {
 
 			if ( $this->auction->is_current_user_winner() ) {
@@ -88,8 +94,6 @@ class BidNow extends ACFBlock {
 
 			return __( 'Auction has Ended.', 'goodbids' );
 		}
-
-		$button_text = __( 'GOODBID Now', 'goodbids' );
 
 		if ( ! $this->bid_variation_id || is_admin() ) {
 			return $button_text;
@@ -167,6 +171,10 @@ class BidNow extends ACFBlock {
 	 * @return bool
 	 */
 	public function has_auction_started(): bool {
+		if ( ! $this->auction ) {
+			return false;
+		}
+
 		if ( ! $this->auction->has_started() ) {
 			return false;
 		}
