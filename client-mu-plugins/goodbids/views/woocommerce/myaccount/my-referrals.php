@@ -13,8 +13,11 @@ use GoodBids\Users\Referrals\Referral;
 <div class="goodbids-account-referrals">
 	<h1><?php esc_html_e( 'Referrals', 'goodbids' ); ?></h1>
 
-	<p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p>
-	<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
+	<div class="p-4 rounded-sm bg-contrast md:p-8">
+		<h3 class="mt-0 font-bold normal-case text-base-2"><?php esc_html_e( 'Invite friends, bid for free!', 'goodbids' ); ?></h3>
+		<p class="text-sm text-base-2"><?php esc_html_e( 'Earn a free bid for each person who signs up and donates through your link, usable in any GODBIDS network live auction.', 'goodbids' ); ?></p>
+		<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
+	</div>
 
 	<?php if ( ! $referrals ) : ?>
 		<p><?php esc_html_e( 'You have not made any referrals yet.', 'goodbids' ); ?></p>
@@ -39,13 +42,13 @@ use GoodBids\Users\Referrals\Referral;
 								$r_status = $referral->is_converted() ? __( 'Placed Bid!', 'goodbids' ) : __( 'Pending', 'goodbids' );
 								?>
 								<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-referrals-table__row goodbids-referrals-table__row--status-<?php echo esc_attr( strtolower( $r_status ) ); ?> referral">
-									<td class="goodbids-referrals-table__cell goodbids-referrals-table__cell-referral" data-title="<?php esc_attr_e( 'Referral Name', 'goodbids' ); ?>">
+									<td class="text-xs goodbids-referrals-table__cell goodbids-referrals-table__cell-referral" data-title="<?php esc_attr_e( 'Referral Name', 'goodbids' ); ?>">
 										<span><?php echo esc_html( $display ); ?></span>
 									</td>
-									<td class="goodbids-referrals-table__cell goodbids-referrals-table__cell-created" data-title="<?php esc_attr_e( 'Referral Date', 'goodbids' ); ?>">
+									<td class="text-xs goodbids-referrals-table__cell goodbids-referrals-table__cell-created" data-title="<?php esc_attr_e( 'Referral Date', 'goodbids' ); ?>">
 										<span><?php echo esc_html( $referral->get_created_date( 'n/j/Y' ) ); ?></span>
 									</td>
-									<td class="goodbids-referrals-table__cell goodbids-referrals-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
+									<td class="text-xs goodbids-referrals-table__cell goodbids-referrals-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
 										<span><?php echo esc_html( $r_status ); ?></span>
 									</td>
 								</tr>

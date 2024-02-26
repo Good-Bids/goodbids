@@ -28,15 +28,15 @@ export function MetricBlock({ type, value }: MetricBlockProps) {
 
 	return (
 		<div
-			className="rounded bg-contrast-5 px-4 py-2"
+			className="px-4 py-2 rounded-sm bg-contrast-5"
 			role="region"
 			aria-live="polite"
 			aria-atomic="true"
 		>
-			<span className="font-bold text-sm block">
+			<span className="block text-sm font-bold">
 				{formatMetricHeading(type)}
 			</span>
-			<motion.span className="text-sm block">
+			<motion.span className="block text-sm">
 				{calculatedValue}
 			</motion.span>
 		</div>

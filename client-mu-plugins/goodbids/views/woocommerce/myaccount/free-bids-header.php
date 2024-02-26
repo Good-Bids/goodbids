@@ -10,7 +10,6 @@ use GoodBids\Auctions\Bids;
 
 ?>
 <div class="mb-6 first-line:goodbids-auctions-header">
-
 	<ul class="flex flex-wrap gap-6 p-0 m-0 list-none md:grid md:grid-cols-3 goodbids-order-metrics">
 		<li class="w-full p-4 rounded-sm sm:w-auto bg-contrast-5">
 			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Available', 'goodbids' ); ?></p>

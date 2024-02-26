@@ -3,9 +3,9 @@ import { WaveIcon } from '../icons/wave-icon';
 
 export function EditorFreeBidsPromo() {
 	return (
-		<div className="flex justify-start flex-col gap-4 bg-contrast-5 rounded p-4">
+		<div className="flex flex-col justify-start gap-4 p-4 rounded-sm bg-contrast-5">
 			<EditorFreeBidsHeading />
-			<div className="pl-6 flex flex-col gap-4">
+			<div className="flex flex-col gap-4 pl-6">
 				<EditorFreeBidsContent />
 				<EditorFreeBidsInfo />
 			</div>
@@ -17,7 +17,7 @@ function EditorFreeBidsInfo() {
 	return (
 		<div className="flex items-center gap-2">
 			<InfoIcon width={16} />
-			<a href="#" className="text-sm block">
+			<a href="#" className="block text-sm">
 				Learn more
 			</a>
 		</div>
@@ -27,7 +27,7 @@ function EditorFreeBidsInfo() {
 function EditorFreeBidsHeading() {
 	return (
 		<div className="flex items-center gap-3">
-			<div className="h-6 w-6">
+			<div className="w-6 h-6">
 				<WaveIcon />
 			</div>
 			<p className="m-0">

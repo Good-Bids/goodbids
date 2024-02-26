@@ -60,7 +60,7 @@ if ( $auction->has_started() ) {
 ?>
 <li class="block overflow-hidden">
 	<a href="<?php echo esc_url( $url ); ?>" class="no-underline hover:underline hover:text-black">
-		<figure class="m-0 overflow-hidden rounded wp-block-post-featured-image aspect-square">
+		<figure class="m-0 overflow-hidden rounded-sm wp-block-post-featured-image aspect-square">
 			<?php if ( has_post_thumbnail() ) : ?>
 				<?php the_post_thumbnail( 'woocommerce_thumbnail', [ 'class' => 'w-full h-full object-cover' ] ); ?>
 			<?php else : ?>
