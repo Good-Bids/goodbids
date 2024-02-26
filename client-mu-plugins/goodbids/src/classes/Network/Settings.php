@@ -111,9 +111,9 @@ class Settings {
 		$environment_var   = goodbids()->get_config( 'auctioneer.environment' );
 		if ( $environment_var ) {
 			$environment_const = goodbids()->get_config( 'vip-constants.auctioneer.urls.' . $environment_var );
-			if ( $environment_const && ! defined( $environment_const ) ) {
+			if ( $environment_const && ! vip_get_env_var( $environment_const ) ) {
 				$environment_after = sprintf(
-					'<span class="dashicons dashicons-warning" style="color:darkorange;margin-top:4px" title="%s (%s)"></span>',
+					'<span class="dashicons dashicons-warning" style="color:darkorange;margin-top:4px" title="%s: (%s)"></span>',
 					esc_attr__( 'Warning! Environment variable is not set', 'goodbids' ),
 					esc_attr( $environment_const )
 				);
