@@ -811,17 +811,17 @@ class Auction {
 		 */
 		do_action( 'goodbids_auction_end', $this->get_id() );
 
+		// Update the Auction meta to indicate it has closed.
+		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
+
+		// Reset the Auction transients.
+		goodbids()->auctions->clear_transients( $this->get_id() );
+
 		$result = goodbids()->auctioneer->auctions->end( $this->get_id() );
 
 		if ( true !== $result ) {
 			return false;
 		}
-
-		// Update the Auction meta to indicate it has closed.
-		// This is used for the sole purposes of filtering started auctions from get_closing_auctions() method.
-		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
-		// Reset the Auction transients.
-		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
 
 		return true;
 	}

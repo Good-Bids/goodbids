@@ -29,13 +29,13 @@ if ( ! function_exists( 'dd' ) ) {
 	 *
 	 * @link https://gist.github.com/james2doyle/abfbd4dc5754712bac022faf4e2881a6
 	 *
-	 * @param mixed $data
-	 * @param string $method
-	 * @param bool  $die
+	 * @param mixed   $data
+	 * @param ?string $method
+	 * @param bool    $die
 	 *
 	 * @return void
 	 */
-	function dd( mixed $data, string $method = 'export', bool $die = true ): void {
+	function dd( mixed $data, ?string $method = 'export', bool $die = true ): void {
 		// Disable if not in dev environment.
 		if ( ! GoodBids\Core::is_local_env() ) {
 			return;
@@ -47,11 +47,11 @@ if ( ! function_exists( 'dd' ) ) {
 		ini_set( 'highlight.keyword', '#7FA3BC; font-weight: bold' );
 		ini_set( 'highlight.string', '#F2C47E' );
 
-		if ( 'dump' === $method ) {
+		if ( in_array( $method, [ 'var_dump', 'dump' ], true ) ) {
 			ob_start();
 			var_dump( $data ); // phpcs:ignore
 			$dump = ob_get_clean();
-		} elseif ( 'printr' ) {
+		} elseif ( in_array( $method, [ 'print_r', 'printr' ], true ) ) {
 			$dump = print_r( $data, true ); // phpcs:ignore
 		} else {
 			$dump = var_export( $data, true ); // phpcs:ignore

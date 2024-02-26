@@ -11,6 +11,7 @@ namespace GoodBids\Auctions;
 use DateInterval;
 use Exception;
 use GoodBids\Core;
+use GoodBids\Network\Sites;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 use WC_Product_Variation;
@@ -42,18 +43,6 @@ class Auctions {
 	 * @var string
 	 */
 	const SINGULAR_SLUG = 'auction';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const BID_COUNT_TRANSIENT = 'gb:bid-count:%d';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const TOTAL_RAISED_TRANSIENT = 'gb:total-raised:%d';
 
 	/**
 	 * @since 1.0.0
@@ -345,44 +334,103 @@ class Auctions {
 			'fields'         => 'ids',
 		];
 
-		return new WP_Query( array_merge( $args, $query_args ) );
+		return new WP_Query( array_merge_recursive( $args, $query_args ) );
 	}
 
 	/**
-	 * Get Auctions where Rewards have been unclaimed after a certain time.
+	 * Get Closed Auctions where Rewards have been unclaimed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $query_args
+	 *
+	 * @return array
+	 */
+	public function get_unclaimed_reward_auctions( array $query_args = [] ): array {
+		$query_args = array_merge_recursive(
+				[
+				'meta_query' => [
+					[
+						'key'     => self::AUCTION_CLOSED_META_KEY,
+						'value'   => '1',
+						'compare' => '=',
+					],
+					[
+						'key'     => Rewards::REDEEMED_META_KEY,
+						'compare' => 'NOT EXISTS',
+					],
+				],
+			],
+			$query_args
+		);
+
+		$unclaimed = $this->get_all( $query_args );
+
+		return $unclaimed->posts;
+	}
+
+	/**
+	 * Get Auctions where the reward is unclaimed and fit within an interval window.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_unclaimed_reward_auctions(): array {
-		$reminder_days = intval( goodbids()->get_config( 'auctions.reward-claim-reminder-days' ) );
+	public function get_unclaimed_reward_auction_emails(): array {
+		$reminder_interval_days = intval( goodbids()->get_config( 'auctions.reward-claim-reminder-interval-days' ) );
+		$reward_days_to_claim = intval( goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
 
-		try {
-			// Use the Current Date - X days to check for Auctions that have been closed for 7 days.
-			$threshold = current_datetime()->sub( new DateInterval( 'P' . $reminder_days . 'D' ) )->format( 'Y-m-d H:i:s' );
-		} catch ( Exception $e ) {
-			Log::error( 'Error getting unclaimed reward auctions.', [ 'error' => $e->getMessage() ] );
+		if ( $reward_days_to_claim < $reminder_interval_days ) {
+			Log::warning( 'Reminder interval is greater than allowed days to claim reward.' );
 			return [];
 		}
 
-		$query_args = [
-			'meta_query' => [
-				[
-					'key'     => self::AUCTION_CLOSE_META_KEY,
-					'value'   => $threshold,
-					'compare' => '<=',
-				],
-				[
-					'key'     => Rewards::REDEEMED_META_KEY,
-					'compare' => 'NOT EXISTS',
-				],
-			],
-		];
+		$current_interval = $reminder_interval_days;
+		$reminder_emails  = [];
 
-		$unclaimed = $this->get_all( $query_args );
+		while ( $current_interval <= $reward_days_to_claim ) {
+			try {
+				// Use the Current Date - X days to check for Auctions that have been closed for each interval.
+				$threshold_start = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 00:00:00' );
+				$threshold_end = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 23:59:59' );
+			} catch ( Exception $e ) {
+				Log::error( 'Error querying reminders for unclaimed reward auctions.', [ 'error' => $e->getMessage() ] );
+				return [];
+			}
 
-		return $unclaimed->posts;
+			$query_args = [
+				'meta_query' => [
+					[
+						'key'     => self::AUCTION_CLOSE_META_KEY,
+						'value'   => $threshold_start,
+						'compare' => '>=',
+					],
+					[
+						'key'     => self::AUCTION_CLOSE_META_KEY,
+						'value'   => $threshold_end,
+						'compare' => '<=',
+					],
+				],
+			];
+
+			$unclaimed = $this->get_unclaimed_reward_auctions( $query_args );
+
+			if ( count( $unclaimed ) ) {
+				array_push( $reminder_emails, ...$unclaimed );
+			}
+
+			if( $current_interval >= $reward_days_to_claim ) {
+				break;
+			}
+
+			// Increment, but no more than the reward days to claim.
+			$current_interval += $reminder_interval_days;
+			if ( $current_interval > $reward_days_to_claim ) {
+				$current_interval = $reward_days_to_claim;
+			}
+		}
+
+		return $reminder_emails;
 	}
 
 	/**
@@ -621,18 +669,35 @@ class Auctions {
 					return;
 				}
 
-				$transients = [
-					sprintf( self::BID_COUNT_TRANSIENT, $auction_id ),
-					sprintf( self::TOTAL_RAISED_TRANSIENT, $auction_id ),
-				];
-
-				foreach ( $transients as $transient ) {
-					delete_transient( $transient );
-				}
+				$this->clear_transients( $auction_id );
 			},
 			11,
 			2
 		);
+	}
+
+	/**
+	 * Clear Auction-related Transients
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $auction_id
+	 *
+	 * @return void
+	 */
+	public function clear_transients( ?int $auction_id = null ): void {
+		$transients = [
+			Sites::ALL_AUCTIONS_TRANSIENT,
+		];
+
+		if ( $auction_id ) {
+			$transients[] = sprintf( Auction::BID_COUNT_TRANSIENT, $auction_id );
+			$transients[] = sprintf( Auction::TOTAL_RAISED_TRANSIENT, $auction_id );
+		}
+
+		foreach ( $transients as $transient ) {
+			delete_transient( $transient );
+		}
 	}
 
 	/**
