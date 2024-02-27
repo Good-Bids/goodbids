@@ -1,4 +1,5 @@
 import { Button } from '../../../components/button';
+import { ErrorWrapper } from '../../../components/error';
 import { Tips } from '../../../components/tips';
 import { useAuctionWizardState } from '../store';
 import { Form } from './form';
@@ -7,7 +8,7 @@ export function AuctionScreen() {
 	const {
 		setAuctionValue,
 		setStep,
-		auction: { startDate, endDate, bidIncrement },
+		auction: { startDate, endDate, bidIncrement, error },
 	} = useAuctionWizardState();
 
 	const handleNextPage = () => {
@@ -37,6 +38,8 @@ export function AuctionScreen() {
 
 	return (
 		<>
+			<ErrorWrapper>{error}</ErrorWrapper>
+
 			<div className="flex gap-4 justify-between">
 				<Form />
 

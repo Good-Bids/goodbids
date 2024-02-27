@@ -18,12 +18,25 @@ export function CreateScreen({
 	shippingClasses,
 	productCategories,
 }: CreateScreenProps) {
-	const { product, auction, setAuctionId, setStep, clearStore } =
-		useAuctionWizardState();
+	const {
+		product,
+		auction,
+		setAuctionId,
+		setStep,
+		clearStore,
+		setAuctionError,
+		setProductError,
+	} = useAuctionWizardState();
 
 	const createProduct = useCreateProduct({
 		onSuccess: (data) => {
 			handleAuctionSubmit(data.id);
+		},
+		onError: () => {
+			setStep('product');
+			setProductError(
+				'Error creating product. Check your product details.',
+			);
 		},
 	});
 
@@ -33,8 +46,11 @@ export function CreateScreen({
 		onSuccess: (data) => {
 			handleAuctionContentUpdate(data.id);
 		},
-		onError: (error) => {
-			console.error(error);
+		onError: () => {
+			setStep('auction');
+			setAuctionError(
+				'Error creating auction. Check your auction details.',
+			);
 		},
 	});
 
@@ -42,8 +58,11 @@ export function CreateScreen({
 		onSuccess: (data) => {
 			completeAuctionWizard(data.id);
 		},
-		onError: (error) => {
-			console.error(error);
+		onError: () => {
+			setStep('auction');
+			setAuctionError(
+				'Error creating auction. Check your auction details.',
+			);
 		},
 	});
 

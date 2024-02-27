@@ -7,6 +7,7 @@ import { useGetProductCategories } from './api/product-categories';
 import { AuctionScreen } from './auction';
 import { CreateScreen } from './create';
 import { FinishScreen } from './finish';
+import { ErrorWrapper } from '../../components/error';
 
 const stepProgress: Record<StepType, number> = {
 	start: 5,
@@ -25,12 +26,13 @@ export function CreateWizard() {
 	const loading =
 		shippingClasses.status === 'pending' ||
 		productCategories.status === 'pending';
+
 	const error =
 		shippingClasses.status === 'error' ||
 		productCategories.status === 'error';
 
 	if (error) {
-		return <div>Something went wrong</div>;
+		return <ErrorWrapper>Something went wrong</ErrorWrapper>;
 	}
 
 	return (

@@ -27,6 +27,7 @@ export type AuctionWizardProductState = {
 	height: ValueType<string>;
 	purchaseNote: ValueType<string>;
 	shippingClass: ValueType<string>;
+	error: string | null;
 };
 
 const defaultProductState: AuctionWizardProductState = {
@@ -41,6 +42,7 @@ const defaultProductState: AuctionWizardProductState = {
 	height: { value: '' },
 	purchaseNote: { value: '' },
 	shippingClass: { value: 'none' },
+	error: null,
 };
 
 export type AuctionState = {
@@ -53,6 +55,7 @@ export type AuctionState = {
 	auctionGoal: ValueType<string>;
 	expectedHighBid: ValueType<string>;
 	estimatedRetailValue: ValueType<string>;
+	error: string | null;
 };
 
 const defaultAuctionState: AuctionState = {
@@ -65,6 +68,7 @@ const defaultAuctionState: AuctionState = {
 	auctionGoal: { value: '' },
 	expectedHighBid: { value: '' },
 	estimatedRetailValue: { value: '' },
+	error: null,
 };
 
 export type AuctionWizardStoreState = {
@@ -86,11 +90,13 @@ type AuctionWizardStoreActions = {
 		value: string,
 		error?: string,
 	) => void;
+	setProductError: (error: string) => void;
 	setAuctionValue: (
 		key: keyof AuctionState,
 		value: string,
 		error?: string,
 	) => void;
+	setAuctionError: (error: string) => void;
 	clearStore: () => void;
 };
 
@@ -145,6 +151,8 @@ const useAuctionWizardStore = create<
 						[key]: { value, error },
 					},
 				})),
+			setProductError: (error) =>
+				set((state) => ({ product: { ...state.product, error } })),
 			setAuctionValue: (key, value, error) =>
 				set((state) => ({
 					auction: {
@@ -152,6 +160,8 @@ const useAuctionWizardStore = create<
 						[key]: { value, error },
 					},
 				})),
+			setAuctionError: (error) =>
+				set((state) => ({ auction: { ...state.auction, error } })),
 			clearStore: () =>
 				set({
 					product: defaultProductState,

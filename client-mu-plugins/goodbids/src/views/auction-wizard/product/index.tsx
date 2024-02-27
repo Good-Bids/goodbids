@@ -3,6 +3,7 @@ import { Tips } from '../../../components/tips';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../../../components/button';
+import { ErrorWrapper } from '../../../components/error';
 
 type AuctionWizardProductProps = FormProps;
 
@@ -12,7 +13,7 @@ export function AuctionWizardProduct({
 	const {
 		setProductValue,
 		setStep,
-		product: { name, regularPrice, productType, purchaseNote },
+		product: { name, regularPrice, productType, purchaseNote, error },
 	} = useAuctionWizardState();
 
 	const handleNextPage = () => {
@@ -53,6 +54,8 @@ export function AuctionWizardProduct({
 
 	return (
 		<>
+			<ErrorWrapper>{error}</ErrorWrapper>
+
 			<div className="flex gap-4 justify-between">
 				<Form shippingClasses={shippingClasses} />
 
