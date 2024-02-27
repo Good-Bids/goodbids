@@ -12,6 +12,7 @@ use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Nonprofits\Verification;
+use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
 use WP_Block_Type_Registry;
 use WP_Post;
@@ -45,7 +46,7 @@ class Sites {
 		$this->default_child_theme_logo();
 		$this->set_default_posts_per_page();
 
-		// TODO: Need valid hook for these actions.
+		// Initialize Page Management
 		$this->create_about_page();
 		$this->create_all_auctions_page();
 		$this->delete_sample_page();
@@ -391,8 +392,10 @@ class Sites {
 	 */
 	private function create_about_page(): void {
 		add_action(
-			'goodbids_init_default_pages',
+			'goodbids_nonprofit_verified',
 			function (): void {
+				// TODO: Check if the page already exists.
+
 				ob_start();
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );
@@ -424,8 +427,10 @@ class Sites {
 	 */
 	private function create_all_auctions_page(): void {
 		add_action(
-			'goodbids_init_default_pages',
+			'goodbids_nonprofit_verified',
 			function (): void {
+				// TODO: Check if the page already exists.
+
 				ob_start();
 
 				goodbids()->load_view( 'patterns/template-archive-auction.php' );
