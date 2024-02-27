@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctions;
 
+use WP_Admin_Bar;
+
 /**
  * Auction Wizard Class
  *
@@ -233,6 +235,21 @@ class Wizard {
 	 * @return void
 	 */
 	private function adjust_add_new_url(): void {
+		add_action(
+			'wp_before_admin_bar_render',
+			function(): void {
+				/**	@var WP_Admin_Bar $wp_admin_bar */
+				global $wp_admin_bar;
+				$node = $wp_admin_bar->get_node( 'new-' . goodbids()->auctions->get_post_type() );
+
+				if ( $node ) {
+					$node->href = $this->get_url();
+					$wp_admin_bar->add_node( (array) $node );
+				}
+			},
+			30
+		);
+
 		add_action(
 			'admin_footer',
 			function () {
