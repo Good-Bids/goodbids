@@ -45,6 +45,7 @@ $class = $field['class'] ?? 'regular-text';
 			id="<?php echo esc_attr( $field_id ); ?>"
 			placeholder="<?php echo esc_attr( $placeholder ); ?>"
 			value="<?php echo esc_attr( $value ); ?>"
+			<?php disabled( ! empty( $field['disabled'] ) ) ?>
 			<?php echo $required ? 'required' : ''; ?>
 		/>
 

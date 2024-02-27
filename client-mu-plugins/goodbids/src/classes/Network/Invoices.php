@@ -147,9 +147,9 @@ class Invoices {
 	 */
 	private function render_admin_notices(): void {
 		add_action(
-			'network_admin_notices',
+			'admin_init',
 			function (): void {
-				if ( empty( $_GET['done'] ) ) { // phpcs:ignore
+				if ( empty( $_GET['done'] ) || ! is_network_admin() ) { // phpcs:ignore
 					return;
 				}
 
@@ -161,7 +161,7 @@ class Invoices {
 				}
 
 				if ( $message ) {
-					printf( '<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html( $message ) );
+					goodbids()->utilities->display_admin_success( $message, true, true );
 				}
 			}
 		);

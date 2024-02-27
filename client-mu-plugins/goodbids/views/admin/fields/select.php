@@ -40,6 +40,7 @@
 		<select
 			name="<?php echo esc_attr( $prefix ); ?>[<?php echo esc_attr( $key ); ?>]"
 			id="<?php echo esc_attr( $field_id ); ?>"
+			<?php disabled( ! empty( $field['disabled'] ) ) ?>
 			<?php echo $required ? 'required' : ''; ?>
 		>
 			<?php if ( ! $required || ! $value ) : ?>
