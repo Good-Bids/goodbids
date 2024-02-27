@@ -156,9 +156,9 @@ class Admin {
 					'css'      => 'min-width:300px;',
 					'args'     => [
 						'exclude' => [ // phpcs:ignore
-						               wc_get_page_id( 'cart' ),
-						               wc_get_page_id( 'checkout' ),
-						               wc_get_page_id( 'my-account' ),
+							wc_get_page_id( 'cart' ),
+							wc_get_page_id( 'checkout' ),
+							wc_get_page_id( 'my-account' ),
 						],
 					],
 					'desc_tip' => true,
