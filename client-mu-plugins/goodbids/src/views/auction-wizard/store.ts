@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createTrackedSelector } from 'react-tracked';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
-export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'edit';
+export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'create';
 
 type ValueType<T> = {
 	value: T;
@@ -27,6 +27,7 @@ export type AuctionWizardProductState = {
 	height: ValueType<string>;
 	purchaseNote: ValueType<string>;
 	shippingClass: ValueType<string>;
+	error: string | null;
 };
 
 const defaultProductState: AuctionWizardProductState = {
@@ -41,15 +42,45 @@ const defaultProductState: AuctionWizardProductState = {
 	height: { value: '' },
 	purchaseNote: { value: '' },
 	shippingClass: { value: 'none' },
+	error: null,
+};
+
+export type AuctionState = {
+	startDate: ValueType<string>;
+	endDate: ValueType<string>;
+	bidIncrement: ValueType<string>;
+	startingBid: ValueType<string>;
+	bidExtensionMinutes: ValueType<string>;
+	bidExtensionSeconds: ValueType<string>;
+	auctionGoal: ValueType<string>;
+	expectedHighBid: ValueType<string>;
+	estimatedRetailValue: ValueType<string>;
+	error: string | null;
+};
+
+const defaultAuctionState: AuctionState = {
+	startDate: { value: '' },
+	endDate: { value: '' },
+	bidIncrement: { value: '' },
+	startingBid: { value: '' },
+	bidExtensionMinutes: { value: '' },
+	bidExtensionSeconds: { value: '' },
+	auctionGoal: { value: '' },
+	expectedHighBid: { value: '' },
+	estimatedRetailValue: { value: '' },
+	error: null,
 };
 
 export type AuctionWizardStoreState = {
 	step: StepType;
+	auctionId: number | null;
 	product: AuctionWizardProductState;
+	auction: AuctionState;
 };
 
 type AuctionWizardStoreActions = {
 	setStep: (step: StepType) => void;
+	setAuctionId: (id: number) => void;
 	setProductImage: (image: ImageType) => void;
 	clearProductImage: () => void;
 	addToProductGallery: (image: ImageType) => void;
@@ -59,6 +90,13 @@ type AuctionWizardStoreActions = {
 		value: string,
 		error?: string,
 	) => void;
+	setProductError: (error: string) => void;
+	setAuctionValue: (
+		key: keyof AuctionState,
+		value: string,
+		error?: string,
+	) => void;
+	setAuctionError: (error: string) => void;
 	clearStore: () => void;
 };
 
@@ -68,8 +106,11 @@ const useAuctionWizardStore = create<
 	persist(
 		(set) => ({
 			step: 'start',
+			auctionId: null,
 			product: defaultProductState,
+			auction: defaultAuctionState,
 			setStep: (step) => set({ step }),
+			setAuctionId: (id) => set({ auctionId: id }),
 			setProductImage: (image) =>
 				set((state) => ({
 					product: {
@@ -110,18 +151,29 @@ const useAuctionWizardStore = create<
 						[key]: { value, error },
 					},
 				})),
-			clearStore: () => set({ product: defaultProductState }),
+			setProductError: (error) =>
+				set((state) => ({ product: { ...state.product, error } })),
+			setAuctionValue: (key, value, error) =>
+				set((state) => ({
+					auction: {
+						...state.auction,
+						[key]: { value, error },
+					},
+				})),
+			setAuctionError: (error) =>
+				set((state) => ({ auction: { ...state.auction, error } })),
+			clearStore: () =>
+				set({
+					product: defaultProductState,
+					auction: defaultAuctionState,
+				}),
 		}),
 		{
 			name: 'auction-wizard',
 			storage: createJSONStorage(() => sessionStorage),
 			partialize: (state) => ({
 				product: state.product,
-				step:
-					// Maintain step during dev for easier navigation
-					process.env.NODE_ENV === 'development'
-						? state.step
-						: undefined,
+				auction: state.auction,
 			}),
 		},
 	),

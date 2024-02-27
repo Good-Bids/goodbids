@@ -45,7 +45,7 @@ export function ProductGallery() {
 					)}
 				</Tooltip>
 			</div>
-			<div className="rounded-md bg-gray-200 w-full p-2 mx-4 grid grid-cols-4 gap-2">
+			<div className="rounded-md bg-gray-200 p-2 mx-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
 				{productGallery.map((image) => (
 					<Image
 						key={image.value.id}
@@ -58,7 +58,7 @@ export function ProductGallery() {
 				<button
 					type="button"
 					onClick={() => mediaUploader.open()}
-					className="min-w-88 min-h-32 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
+					className="w-44 h-32 border border-dashed border-gray-600 text-admin-large bg-none rounded-md hover:bg-gray-300 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 text-admin-main"
 				>
 					{__('Click to upload multiple', 'goodbids')}
 				</button>

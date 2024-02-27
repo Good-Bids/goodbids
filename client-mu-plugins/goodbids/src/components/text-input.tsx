@@ -5,14 +5,22 @@ import { Tooltip } from './tooltip';
 export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	label: string;
 	error?: string;
-	tooltip: string;
+	tooltip?: string;
 	startIcon?: React.ReactElement;
 };
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 	function TextInput(props, ref) {
-		const { disabled, error, label, id, tooltip, startIcon, ...rest } =
-			props;
+		const {
+			disabled,
+			error,
+			label,
+			id,
+			tooltip,
+			startIcon,
+			required,
+			...rest
+		} = props;
 
 		const inputClasses = clsx('rounded-md w-full border bg-white', {
 			'border-gray-300': !error,
@@ -23,6 +31,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
 		const labelClasses = clsx('text-admin-label font-bold', {
 			'text-error-bg': error,
+			"after:content-['*']": required,
 		});
 
 		return (
@@ -31,10 +40,11 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 					<label htmlFor={id} className={labelClasses}>
 						{label}
 					</label>
-					<Tooltip>{tooltip}</Tooltip>
+					{tooltip && <Tooltip>{tooltip}</Tooltip>}
 				</div>
 				<div className="relative">
 					<input
+						required={required}
 						className={inputClasses}
 						disabled={disabled}
 						id={id}

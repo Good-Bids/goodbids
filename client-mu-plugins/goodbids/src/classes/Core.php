@@ -220,6 +220,7 @@ class Core {
 		$this->load_modules();
 		$this->init_modules();
 		$this->restrict_rest_api_access();
+		$this->disable_css_concatenation();
 
 		$this->initialized = true;
 	}
@@ -517,4 +518,15 @@ class Core {
 			}
 		);
 	}
+
+	/**
+	 * Disable CSS concatenation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	 private function disable_css_concatenation() {
+		add_filter( 'css_do_concat', '__return_false' );
+	 }
 }

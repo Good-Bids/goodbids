@@ -4,13 +4,17 @@ import { StepType, useAuctionWizardState } from './store';
 import { AuctionWizardProduct } from './product';
 import { useGetShippingClasses } from './api/shipping-classes';
 import { useGetProductCategories } from './api/product-categories';
+import { AuctionScreen } from './auction';
+import { CreateScreen } from './create';
+import { FinishScreen } from './finish';
+import { ErrorWrapper } from '../../components/error';
 
 const stepProgress: Record<StepType, number> = {
 	start: 5,
 	product: 33,
 	auction: 67,
+	create: 90,
 	finish: 100,
-	edit: 50,
 };
 
 export function CreateWizard() {
@@ -19,23 +23,40 @@ export function CreateWizard() {
 	const shippingClasses = useGetShippingClasses();
 	const productCategories = useGetProductCategories();
 
-	if (
+	const loading =
+		shippingClasses.status === 'pending' ||
+		productCategories.status === 'pending';
+
+	const error =
 		shippingClasses.status === 'error' ||
-		productCategories.status === 'error'
-	) {
-		return <div>Something went wrong</div>;
+		productCategories.status === 'error';
+
+	if (error) {
+		return <ErrorWrapper>Something went wrong</ErrorWrapper>;
 	}
 
 	return (
 		<Wrapper progress={stepProgress[step]}>
-			{step === 'start' && <AuctionWizardStart />}
-			{step === 'product' && (
+			{(step === 'start' || loading) && (
+				<AuctionWizardStart loading={loading} />
+			)}
+
+			{step === 'product' && !loading && (
 				<AuctionWizardProduct
 					shippingClasses={shippingClasses.data || []}
 				/>
 			)}
-			{step === 'auction' && <div>Auction</div>}
-			{step === 'finish' && <div>Finish</div>}
+
+			{step === 'auction' && !loading && <AuctionScreen />}
+
+			{step === 'create' && !loading && (
+				<CreateScreen
+					shippingClasses={shippingClasses.data || []}
+					productCategories={productCategories.data || []}
+				/>
+			)}
+
+			{step === 'finish' && !loading && <FinishScreen />}
 		</Wrapper>
 	);
 }
