@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import apiFetch from '@wordpress/api-fetch';
 
-type GetProductCategoriesSuccessResponse = {
+export type ProductCategories = {
 	id: number;
 	name: string;
 	slug: string;
@@ -34,7 +34,7 @@ export function useGetProductCategories() {
 	return useQuery({
 		queryKey: ['product-categories'],
 		queryFn: async () =>
-			apiFetch<GetProductCategoriesSuccessResponse>({
+			apiFetch<ProductCategories>({
 				path: '/wc/v3/products/categories',
 			}),
 	});

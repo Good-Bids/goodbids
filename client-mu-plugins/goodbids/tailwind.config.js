@@ -77,6 +77,7 @@ module.exports = {
 				},
 			},
 			maxWidth: {
+				100: '25rem',
 				120: '30rem',
 			},
 			minWidth: {

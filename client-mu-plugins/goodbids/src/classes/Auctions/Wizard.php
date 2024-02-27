@@ -47,6 +47,9 @@ class Wizard {
 
 		// Enqueue Scripts
 		$this->enqueue_scripts();
+
+		// Modify the "Add New" button URL.
+		$this->adjust_add_new_url();
 	}
 
 	/**
@@ -170,7 +173,15 @@ class Wizard {
 				wp_enqueue_media();
 
 				// Get the asset file.
-				$script = require GOODBIDS_PLUGIN_PATH . 'build/views/auction-wizard.asset.php';
+				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/auction-wizard.asset.php';
+				if ( file_exists( $asset_file ) ) {
+					$script = require $asset_file;
+				} else {
+					$script = [
+						'dependencies' => [ 'react', 'react-dom', 'wp-api-fetch', 'wp-element', 'wp-i18n' ],
+						'version'      => goodbids()->get_version()
+					];
+				}
 
 				// Register the auction wizard script.
 				wp_register_script(
@@ -212,5 +223,39 @@ class Wizard {
 			// WP/WC Variables.
 			'rewardCategorySlug' => Rewards::ITEM_TYPE,
 		];
+	}
+
+	/**
+	 * Adjust the Add New button for Auctions.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_add_new_url(): void {
+		add_action(
+			'admin_footer',
+			function () {
+				global $pagenow;
+
+				if ( 'edit.php' !== $pagenow || get_post_type() !== goodbids()->auctions->get_post_type() ) {
+					return;
+				}
+
+				$url = $this->get_url();
+				$url = esc_js( $url );
+				$url = str_replace( '&amp;', '&', $url );
+				?>
+				<script>
+					(function() {
+						var addNewButton = document.querySelector('.page-title-action');
+						if (addNewButton) {
+							addNewButton.href = '<?php echo addslashes( $url ); // phpcs:ignore ?>';
+						}
+					})();
+				</script>
+				<?php
+			}
+		);
 	}
 }

@@ -1,10 +1,11 @@
 import clsx from 'clsx';
 
 type ProgressIconProps = {
+	width?: number;
 	spin?: boolean;
 };
 
-export function ProgressIcon({ spin = false }: ProgressIconProps) {
+export function ProgressIcon({ spin = false, width = 24 }: ProgressIconProps) {
 	const classes = clsx({
 		'motion-safe:animate-spin': spin,
 	});
@@ -12,7 +13,7 @@ export function ProgressIcon({ spin = false }: ProgressIconProps) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			width="24"
+			width={width}
 			viewBox="0 -960 960 960"
 			aria-hidden
 			className={classes}

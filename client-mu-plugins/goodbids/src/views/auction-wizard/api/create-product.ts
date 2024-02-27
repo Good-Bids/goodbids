@@ -1,13 +1,22 @@
 import { UseMutationOptions, useMutation } from '@tanstack/react-query';
 import apiFetch from '@wordpress/api-fetch';
 
+type CreateProductResponse = {
+	id: number;
+};
+
 export function useCreateProduct(
-	options?: UseMutationOptions<unknown, unknown, CreateProductBody, unknown>,
+	options?: UseMutationOptions<
+		CreateProductResponse,
+		unknown,
+		CreateProductBody,
+		unknown
+	>,
 ) {
 	return useMutation({
 		...options,
 		mutationFn: async (body: CreateProductBody) =>
-			apiFetch({
+			apiFetch<CreateProductResponse>({
 				path: '/wc/v3/products',
 				method: 'POST',
 				headers: {
