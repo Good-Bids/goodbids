@@ -74,11 +74,11 @@ class TaxInvoice extends Invoice {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
-	 * @param ?int $order_id
+	 * @param int $order_id
 	 *
 	 * @return bool
 	 */
-	public function init( int $auction_id, ?int $order_id = null ): bool {
+	private function init( int $auction_id, int $order_id ): bool {
 		if ( get_post_type( $auction_id ) !== goodbids()->auctions->get_post_type() ) {
 			_doing_it_wrong( __METHOD__, 'The post ID provided is not an Auction post type.', '1.0.0' );
 			return false;
