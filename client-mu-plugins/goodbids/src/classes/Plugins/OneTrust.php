@@ -23,9 +23,11 @@ class OneTrust {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! Core::is_dev_env() ) {
-			$this->load_assets();
+		if ( Core::is_local_env() ) {
+			return;
 		}
+
+		$this->load_assets();
 	}
 
 	/**

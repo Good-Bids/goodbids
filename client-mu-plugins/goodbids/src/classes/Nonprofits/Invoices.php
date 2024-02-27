@@ -35,6 +35,18 @@ class Invoices {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const TAX_INVOICE_ID_META_KEY = '_tax_invoice_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TYPE_META_KEY = '_invoice_type';
+
+	/**
+	 * @since 1.0.0
 	 * @var ?Stripe
 	 */
 	public ?Stripe $stripe = null;
@@ -47,7 +59,7 @@ class Invoices {
 		$this->stripe = new Stripe();
 
 		// Disable Invoices on Main Site.
-		if ( is_main_site() && ! Core::is_dev_env() ) {
+		if ( is_main_site() && ! Core::is_local_env() ) {
 			return;
 		}
 
@@ -71,6 +83,9 @@ class Invoices {
 
 		// Generate Invoice on Auction Close.
 		$this->auto_generate();
+
+		// Generate an Invoice for tax on Rewards if applicable.
+		$this->maybe_generate_reward_tax_invoice();
 
 		// Add an Admin Notice when Nonprofit is delinquent.
 		$this->alert_when_delinquent();
@@ -170,16 +185,7 @@ class Invoices {
 				return $delete;
 			}
 
-			add_action(
-				'admin_notices',
-				function () {
-					?>
-					<div class="notice notice-error">
-						<p><?php esc_html_e( 'Invoices cannot be deleted.', 'goodbids' ); ?></p>
-					</div>
-					<?php
-				}
-			);
+			goodbids()->utilities->display_admin_error( __( 'Invoices cannot be deleted.', 'goodbids' ), true );
 
 			return false;
 		};
@@ -403,6 +409,30 @@ class Invoices {
 	}
 
 	/**
+	 * Get a Tax Invoice by ID.
+	 * Pass Auction ID and Order ID to initialize a new Tax Invoice.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int  $post_id
+	 * @param ?int $auction_id
+	 * @param ?int $order_id
+	 *
+	 * @return ?TaxInvoice
+	 */
+	public function get_tax_invoice( int $post_id, ?int $auction_id = null, ?int $order_id = null ): ?TaxInvoice {
+		if ( ! is_null( $auction_id ) && ! is_null( $order_id )	) {
+			$auction = goodbids()->auctions->get( $auction_id );
+			if ( $auction->get_tax_invoice_id() ) {
+				_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
+				return null;
+			}
+		}
+
+		return new TaxInvoice( $post_id, $auction_id, $order_id );
+	}
+
+	/**
 	 * Get All Invoice IDs
 	 *
 	 * @since 1.0.0
@@ -481,6 +511,7 @@ class Invoices {
 						$new_columns['auction']     = __( 'Auction', 'goodbids' );
 						$new_columns['amount']      = __( 'Amount', 'goodbids' );
 						$new_columns['invoice_num'] = __( 'Invoice #', 'goodbids' );
+						$new_columns['type']        = __( 'Type', 'goodbids' );
 						$new_columns['status']      = __( 'Status', 'goodbids' );
 						$new_columns['due_date']    = __( 'Due Date', 'goodbids' );
 					}
@@ -521,9 +552,12 @@ class Invoices {
 					}
 
 					printf(
-						'<code title="%1$s" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;display: block;">%1$s</code>',
-						esc_attr( $invoice->get_stripe_invoice_number() )
+						'<code title="%s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">%s</code>',
+						esc_attr( $invoice->get_stripe_invoice_number() ),
+						esc_html( $invoice->get_stripe_invoice_number() )
 					);
+				} elseif ( 'type' === $column ) {
+					echo esc_html( $invoice->get_type() );
 				} elseif ( 'status' === $column ) {
 					echo esc_html( $invoice->get_status() );
 				} elseif ( 'payment' === $column ) {
@@ -637,18 +671,108 @@ class Invoices {
 	 */
 	private function alert_when_delinquent(): void {
 		add_action(
-			'admin_notices',
+			'admin_init',
 			function (): void {
 				if ( ! $this->has_overdue_invoices() ) {
 					return;
 				}
 
-				?>
-				<div class="notice notice-error">
-					<p><?php esc_html_e( 'There are currently delinquent invoices on this account. Please take action to restore full site functionality.', 'goodbids' ); ?></p>
-				</div>
-				<?php
+				goodbids()->utilities->display_admin_error( __( 'There are currently delinquent invoices on this account. Please take action to restore full site functionality.', 'goodbids' ), false );
 			}
 		);
+	}
+
+	/**
+	 * Generate an Invoice for tax on Rewards if applicable.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_generate_reward_tax_invoice(): void {
+		add_action(
+			'goodbids_reward_redeemed',
+			function ( int $auction_id, int $order_id ) {
+				if ( ! goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) {
+					return;
+				}
+
+				if ( ! goodbids()->woocommerce->orders->has_tax( $order_id ) ) {
+					return;
+				}
+
+				$this->generate_tax( $auction_id, $order_id );
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Generate the Tax Invoice.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 * @param int $order_id
+	 *
+	 * @return void
+	 */
+	public function generate_tax( int $auction_id, int $order_id ): void {
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			Log::warning( 'Auction not published yet.', compact( 'auction_id' ) );
+			return;
+		}
+
+		$auction = goodbids()->auctions->get( $auction_id );
+
+		// Bail early if invoice already exists.
+		if ( $auction->get_tax_invoice_id() ) {
+			Log::warning( 'Tax Invoice already exists for Auction.', compact( 'auction_id' ) );
+			return;
+		}
+
+		if ( ! goodbids()->woocommerce->orders->get_tax_amount( $order_id ) ) {
+			Log::info( 'This Reward Order has no tax.', compact( 'auction_id', 'order_id' ) );
+			return;
+		}
+
+		// Generate the Invoice.
+		$invoice_id = wp_insert_post(
+			[
+				'post_title'  => sprintf(
+					// translators: %s is the Auction Title.
+					__( 'Tax Invoice for %s', 'goodbids' ),
+					get_the_title( $auction_id )
+				),
+				'post_type'   => $this->get_post_type(),
+				'post_status' => 'private',
+				'post_author' => 1,
+			]
+		);
+
+		if ( is_wp_error( $invoice_id ) ) {
+			Log::error( 'Error generating tax invoice: ' . $invoice_id->get_error_message(), compact( 'auction_id', 'order_id' ) );
+			return;
+		}
+
+		if ( ! $invoice_id ) {
+			Log::error( 'Unknown error generating tax invoice.', compact( 'auction_id', 'order_id' ) );
+			return;
+		}
+
+		// This initializes the invoice.
+		$invoice = $this->get_tax_invoice( $invoice_id, $auction_id, $order_id );
+
+		if ( ! $invoice ) {
+			Log::error( 'Could not initialize tax invoice.', compact( 'invoice_id', 'auction_id', 'order_id' ) );
+			return;
+		}
+
+		$this->stripe->create_invoice( $invoice );
+
+		if ( ! $invoice->get_stripe_invoice_id() ) {
+			Log::error( 'There was a problem creating the Stripe Tax Invoice.', compact( 'invoice', 'auction_id', 'order_id' ) );
+		}
 	}
 }

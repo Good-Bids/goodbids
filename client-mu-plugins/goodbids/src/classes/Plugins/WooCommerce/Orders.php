@@ -164,4 +164,32 @@ class Orders {
 
 		return true;
 	}
+
+	/**
+	 * Get the tax for an order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return float
+	 */
+	public function get_tax_amount( int $order_id ): float {
+		$order = wc_get_order( $order_id );
+		return $order->get_total_tax( 'edit' );
+	}
+
+	/**
+	 * Check if an order has any tax
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function has_tax( int $order_id ): bool {
+		$tax = $this->get_tax_amount( $order_id );
+		return $tax > 0;
+	}
 }

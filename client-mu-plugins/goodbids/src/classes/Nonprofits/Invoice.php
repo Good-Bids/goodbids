@@ -27,6 +27,12 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const TYPE = 'Auction';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const AUCTION_ID_META_KEY = '_auction_id';
 
 	/**
@@ -111,25 +117,25 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var ?WP_Post
 	 */
-	private ?WP_Post $post;
+	protected ?WP_Post $post;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $invoice_id = null;
+	protected ?int $invoice_id = null;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id = null;
+	protected ?int $auction_id = null;
 
 	/**
 	 * @since 1.0.0
 	 * @var ?float
 	 */
-	private ?float $amount = null;
+	protected ?float $amount = null;
 
 	/**
 	 * @since 1.0.0
@@ -179,6 +185,9 @@ class Invoice {
 	 * The Auction ID will be connected to the Invoice during initialization.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param int  $post_id
+	 * @param ?int $auction_id
 	 *
 	 * @return ?self
 	 */
@@ -232,7 +241,7 @@ class Invoice {
 	 *
 	 * @return bool
 	 */
-	public function init( int $auction_id ): bool {
+	private function init( int $auction_id ): bool {
 		if ( get_post_type( $auction_id ) !== goodbids()->auctions->get_post_type() ) {
 			_doing_it_wrong( __METHOD__, 'The post ID provided is not an Auction post type.', '1.0.0' );
 			return false;
@@ -244,6 +253,9 @@ class Invoice {
 		// Add Invoice ID to Auction.
 		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
 
+		// Set the invoice type.
+		$this->set_type();
+
 		// Set the invoice amount.
 		$this->set_amount();
 
@@ -251,6 +263,34 @@ class Invoice {
 		$this->set_due_date();
 
 		return true;
+	}
+
+	/**
+	 * Set the Invoice Type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	protected function set_type(): void {
+		update_post_meta( $this->get_id(), Invoices::TYPE_META_KEY, self::TYPE );
+	}
+
+	/**
+	 * Get the Invoice Type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type(): string {
+		$type = get_post_meta( $this->get_id(), Invoices::TYPE_META_KEY, true );
+
+		if ( ! $type ) {
+			return '';
+		}
+
+		return $type;
 	}
 
 	/**
@@ -299,7 +339,7 @@ class Invoice {
 	 *
 	 * @return bool|int
 	 */
-	private function set_auction_id( int $auction_id ): bool|int {
+	protected function set_auction_id( int $auction_id ): bool|int {
 		$this->auction_id = $auction_id;
 
 		// Set the invoice auction ID.
@@ -338,7 +378,7 @@ class Invoice {
 	 *
 	 * @return bool|int
 	 */
-	private function set_amount( ?int $amount = null ): bool|int {
+	protected function set_amount( ?int $amount = null ): bool|int {
 		if ( is_null( $amount ) ) {
 			$auction      = $this->get_auction();
 			$total_raised = $auction->get_total_raised();
@@ -380,7 +420,7 @@ class Invoice {
 	 *
 	 * @return bool|int
 	 */
-	private function set_due_date( ?int $due_date = null ): bool|int {
+	protected function set_due_date( ?int $due_date = null ): bool|int {
 		if ( is_null( $due_date ) ) {
 			$payment_terms = intval( goodbids()->get_config( 'invoices.payment-terms-days' ) );
 
@@ -415,7 +455,7 @@ class Invoice {
 		}
 
 		$due_date = $this->get_due_date();
-		$now      = current_datetime()
+		$now_eod  = current_datetime()
 			->setTimezone( new DateTimeZone( 'GMT' ) )
 			->format( 'Y-m-d 23:59:59' );
 

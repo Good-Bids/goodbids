@@ -311,6 +311,17 @@ class Core {
 	}
 
 	/**
+	 * Checks if current environment is local.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_local_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
+	}
+
+	/**
 	 * Checks if current environment is development.
 	 *
 	 * @since 1.0.0
@@ -318,7 +329,7 @@ class Core {
 	 * @return bool
 	 */
 	public static function is_dev_env(): bool {
-		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'develop' === VIP_GO_APP_ENVIRONMENT;
 	}
 
 	/**
@@ -362,7 +373,7 @@ class Core {
 		}
 
 		foreach ( $plugins as $plugin ) {
-			if ( $this->is_dev_env() ) {
+			if ( self::is_local_env() ) {
 				$plugin_slug = str_contains( $plugin, '/' ) ? $plugin : $plugin . '/' . $plugin . '.php';
 				$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_slug;
 				if ( ! file_exists( $plugin_path ) ) {
