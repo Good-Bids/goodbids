@@ -17,7 +17,7 @@ export function FinishScreen() {
 			<div className="max-w-xl">
 				<p className="text-admin-content">
 					{__(
-						'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+						'Now that you have configured your Product and Auction details, continue editing your Auction page to really make it shine! Consider adding additional content to your Auction page to get potential bidders interested. Once you have completed your edits, publish your Auction!',
 						'goodbids',
 					)}
 				</p>

@@ -47,7 +47,7 @@ export function AuctionScreen() {
 				<Tips>
 					<p>
 						{__(
-							'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+							'Consider setting your Auction Start to align with marketing efforts. If you want to start the Auction with a particular starting bid, ensure that you set that here, otherwise the first bid will be your bid increment. To keep an Auction going when late bids are received, consider adding a bid extension window.',
 							'goodbids',
 						)}
 					</p>

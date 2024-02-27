@@ -35,7 +35,7 @@ export function AuctionWizardStart({ loading }: AuctionWizardStartProps) {
 			<div className="max-w-xl">
 				<p className="text-admin-content">
 					{__(
-						'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+						'This Auction setup will guide you through the required steps for creating and configuring your new Auction. You will be required to create and configure a Product and Auction details. It is recommended to have your product details, descriptions, images, and metadata at hand before starting. You will also be required to set your Auction start and end times, bidding details, and fundraising goals.',
 						'goodbids',
 					)}
 				</p>
