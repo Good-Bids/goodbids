@@ -1,5 +1,6 @@
 import * as Primitive from '@radix-ui/react-radio-group';
 import React from 'react';
+import { Tooltip } from './tooltip';
 
 type RadioItemProps = Primitive.RadioGroupItemProps & {
 	children: React.ReactNode;
@@ -26,16 +27,20 @@ export function RadioItem(props: RadioItemProps) {
 
 type RadioInputProps = Primitive.RadioGroupProps & {
 	label: string;
+	tooltip?: string;
 };
 
 export function RadioInput(props: RadioInputProps) {
-	const { label, ...rest } = props;
+	const { label, tooltip, ...rest } = props;
 
 	return (
 		<div className="flex flex-col gap-2">
-			<span className="text-admin-large text-admin-main font-bold">
-				{label}
-			</span>
+			<div className="flex gap-2">
+				<span className="text-admin-large text-admin-main font-bold">
+					{label}
+				</span>
+				{tooltip && <Tooltip>{tooltip}</Tooltip>}
+			</div>
 			<Primitive.Root {...rest} className="flex flex-col gap-2" />
 		</div>
 	);

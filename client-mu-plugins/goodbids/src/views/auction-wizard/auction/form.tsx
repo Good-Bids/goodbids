@@ -109,7 +109,7 @@ export function Form() {
 					</span>
 					<Tooltip>
 						{__(
-							'The bid extension window increases the time remaining on the auction after a user places a bid.',
+							'The auction will end at its scheduled time unless a user places a bid within the bid extension window before the auction closes, which increases the time remaining on the auction.',
 							'goodbids',
 						)}
 					</Tooltip>
@@ -155,7 +155,7 @@ export function Form() {
 					</h2>
 					<Tooltip>
 						{__(
-							'These values are displayed alongside your auction to motivate bidders.',
+							'These optional values are displayed on the auction page to encourage donations.',
 							'goodbids',
 						)}
 					</Tooltip>
