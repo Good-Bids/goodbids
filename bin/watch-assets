@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# bin/watch-assets: Start local webpack server to watch and compile assets
+#
+# When to use:
+#  - After running `bin/start` to start the webpack server
+#  - When you want to watch and compile assets locally
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+cd client-mu-plugins/goodbids && npm run dev
