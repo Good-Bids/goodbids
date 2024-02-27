@@ -244,7 +244,7 @@ class Wizard {
 
 				if ( $node ) {
 					$node->href = $this->get_url();
-					$wp_admin_bar->add_node((array) $node );
+					$wp_admin_bar->add_node( (array) $node );
 				}
 			},
 			30
