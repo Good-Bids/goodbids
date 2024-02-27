@@ -457,15 +457,16 @@ class Sites {
 			function (): void {
 				$page = wpcom_vip_get_page_by_path( 'sample-page' );
 
-				if ( get_option( 'page_on_front' ) == $page->ID ) {
+				if ( ! $page ) {
 					return;
 				}
 
-				$deleted = wp_delete_post( $page->ID );
-
-				if ( ! $deleted ) {
-					Log::error( 'There was a problem deleting the Sample Page' );
+				if ( intval( get_option( 'page_on_front' ) ) === $page->ID ) {
 					return;
+				}
+
+				if ( ! wp_delete_post( $page->ID ) ) {
+					Log::error( 'There was a problem deleting the Sample Page' );
 				}
 			}
 		);
