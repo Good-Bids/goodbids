@@ -547,12 +547,12 @@ class Verification {
 					return;
 				}
 
-				// Disable for GoodBids Main Site.
+				// Disable this feature for GoodBids Main Site.
 				if ( is_main_site() ) {
 					return;
 				}
 
-				if ( ! $this->is_verified( get_current_blog_id() ) ) {
+				if ( ! $this->is_verified( get_current_blog_id() ) && ! is_super_admin() ) {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
 				}
 			}
