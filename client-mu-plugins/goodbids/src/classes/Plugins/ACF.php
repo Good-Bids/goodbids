@@ -9,6 +9,7 @@
 namespace GoodBids\Plugins;
 
 use Exception;
+use GoodBids\Core;
 use GoodBids\Plugins\ACF\Blocks;
 
 /**
@@ -95,7 +96,7 @@ class ACF {
 	 * @return void
 	 */
 	private function disable_admin() : void {
-		if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT ) {
+		if ( Core::is_local_env() ) {
 			return;
 		}
 
@@ -114,7 +115,7 @@ class ACF {
 		add_filter(
 			'acf/settings/save_json',
 			function ( $path ) {
-				if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT ) {
+				if ( Core::is_local_env() ) {
 					return GOODBIDS_PLUGIN_PATH . 'acf-json';
 				}
 

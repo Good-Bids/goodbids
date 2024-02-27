@@ -19,6 +19,7 @@
  */
 defined( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_LOCAL' ) || define( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_LOCAL', 'http://localhost:3000' );
 defined( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_DEVELOP' ) || define( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_DEVELOP', 'https://goodbids-node-develop.go-vip.net' );
+defined( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_STAGING' ) || define( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_STAGING', 'https://goodbids-node-staging.go-vip.net' );
 defined( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_PRODUCTION' ) || define( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_PRODUCTION', 'https://goodbids-node.go-vip.net' );
 
 /**

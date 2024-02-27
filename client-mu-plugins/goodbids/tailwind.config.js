@@ -54,6 +54,10 @@ module.exports = {
 					main: '#0a3624',
 					accent: '#70ff8f',
 				},
+				'admin-blue': {
+					300: '#2271b1',
+					600: '#135e96',
+				},
 			},
 			fontSize: {
 				xs: 'var(--wp--preset--font-size--x-small)',

@@ -71,4 +71,93 @@ class Utilities {
 
 		return $number . $ordinal;
 	}
+
+	/**
+	 * Displays an Admin Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 * @param bool   $is_dismissible
+	 * @param string $type
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_notice( string $message, bool $is_dismissible = true, string $type = 'info', bool $network = false ): void {
+		$hook = $network ? 'network_admin_notices' : 'admin_notices';
+		add_action(
+			$hook,
+			function() use ( $message, $is_dismissible, $type ) {
+				printf(
+					'<div class="notice notice-%s%s">
+							<p>%s</p>
+						</div>',
+					esc_attr( $type ),
+					$is_dismissible ? ' is-dismissible' : '',
+					esc_html( $message )
+				);
+			}
+		);
+	}
+
+	/**
+	 * Displays an Admin Error Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 * @param bool   $is_dismissible
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_error( string $message, bool $is_dismissible = true, bool $network = false ): void {
+		$this->display_admin_notice( $message, $is_dismissible, 'error', $network );
+	}
+
+	/**
+	 * Displays an Admin Success Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 * @param bool   $is_dismissible
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_success( string $message, bool $is_dismissible = true, bool $network = false ): void {
+		$this->display_admin_notice( $message, $is_dismissible, 'success', $network );
+	}
+
+	/**
+	 * Displays an Admin Warning Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 * @param bool   $is_dismissible
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_warning( string $message, bool $is_dismissible = true, bool $network = false ): void {
+		$this->display_admin_notice( $message, $is_dismissible, 'warning', $network );
+	}
+
+	/**
+	 * Displays an Admin Info Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 * @param bool   $is_dismissible
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_info( string $message, bool $is_dismissible = true, bool $network = false ): void {
+		$this->display_admin_notice( $message, $is_dismissible, $network );
+	}
 }

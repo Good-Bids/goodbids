@@ -44,7 +44,7 @@ class Watchers {
 	 */
 	public function __construct() {
 		// Disable Watchers on Main Site.
-		if ( is_main_site() && ! Core::is_dev_env() ) {
+		if ( is_main_site() && ! Core::is_local_env() ) {
 			return;
 		}
 

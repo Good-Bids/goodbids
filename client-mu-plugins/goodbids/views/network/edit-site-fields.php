@@ -2,23 +2,23 @@
 /**
  * Edit Site Form Fields
  *
- * @global array  $data
- * @global array  $fields
- * @global string $prefix
+ * @global bool $verified
  *
  * @since 1.0.0
  * @package GoodBids
  */
 
 ?>
-<h3><?php esc_html_e( 'GoodBids Nonprofit Settings', 'goodbids' ); ?></h3>
+<h3><?php esc_html_e( 'GoodBids Nonprofit Verification', 'goodbids' ); ?></h3>
 
-<?php wp_nonce_field( 'edit-np-site', '_wpnonce_edit-np-site' ); ?>
-
-<table class="form-table" role="presentation">
-	<?php
-	foreach ( $fields as $key => $field ) :
-		goodbids()->admin->render_field( $key, $field, $prefix, $data );
-	endforeach;
-	?>
-</table>
+<?php if ( $verified ) : ?>
+	<p>
+		<span class="dashicons dashicons-yes-alt"></span>
+		<?php esc_html_e( 'This site has been verified.', 'goodbids' ); ?>
+	</p>
+<?php else : ?>
+	<p>
+		<span class="dashicons dashicons-no-alt"></span>
+		<?php esc_html_e( 'This site is still pending verification.', 'goodbids' ); ?>
+	</p>
+<?php endif; ?>

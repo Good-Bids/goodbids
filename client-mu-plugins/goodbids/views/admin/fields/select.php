@@ -40,6 +40,7 @@
 		<select
 			name="<?php echo esc_attr( $prefix ); ?>[<?php echo esc_attr( $key ); ?>]"
 			id="<?php echo esc_attr( $field_id ); ?>"
+			<?php disabled( ! empty( $field['disabled'] ) ) ?>
 			<?php echo $required ? 'required' : ''; ?>
 		>
 			<?php if ( ! $required || ! $value ) : ?>
@@ -60,7 +61,11 @@
 		if ( ! empty( $field['after'] ) ) :
 			echo wp_kses_post( $field['after'] );
 		endif;
-		?>
+
+		if ( ! empty( $field['description'] ) ) :
+			?>
+			<p class="description"><?php echo wp_kses_post( $field['description'] ); ?></p>
+		<?php endif; ?>
 
 <?php if ( $wrap ) : ?>
 		</td>
