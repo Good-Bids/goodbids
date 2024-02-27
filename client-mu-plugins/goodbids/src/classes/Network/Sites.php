@@ -40,15 +40,19 @@ class Sites {
 		// Show Verification Status on Edit Site page.
 		$this->edit_site_form_fields();
 
-		// New Site Actions
+		// New Site Defaults
 		$this->activate_child_theme_on_new_site();
 		$this->default_child_theme_logo();
 		$this->set_default_posts_per_page();
-		$this->disable_blocks_for_nonprofits();
+
+		// TODO: Need valid hook for these actions.
 		$this->create_about_page();
 		$this->create_all_auctions_page();
 		$this->delete_sample_page();
+
+		// Lock down the block editor.
 		$this->lock_block_editor();
+		$this->disable_blocks_for_nonprofits();
 
 		// Sites Custom Columns
 		$this->customize_sites_columns();
