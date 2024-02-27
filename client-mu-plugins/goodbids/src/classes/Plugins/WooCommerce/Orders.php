@@ -172,9 +172,9 @@ class Orders {
 	 *
 	 * @param int $order_id
 	 *
-	 * @return bool
+	 * @return float
 	 */
-	public function get_tax_amount( int $order_id ): bool {
+	public function get_tax_amount( int $order_id ): float {
 		$order = wc_get_order( $order_id );
 		return $order->get_total_tax( 'edit' );
 	}
