@@ -8,6 +8,7 @@ import { useAuctionWizardState } from '../store';
 import { Auction } from './auction';
 import { ReviewWrapper } from './review-wrapper';
 import { RewardProduct } from './reward-product';
+import { __ } from '@wordpress/i18n';
 
 type CreateScreenProps = {
 	shippingClasses: ShippingClasses;
@@ -35,7 +36,10 @@ export function CreateScreen({
 		onError: () => {
 			setStep('product');
 			setProductError(
-				'Error creating product. Check your product details.',
+				__(
+					'Error creating product. Check your product details.',
+					'goodbids',
+				),
 			);
 		},
 	});
@@ -49,7 +53,10 @@ export function CreateScreen({
 		onError: () => {
 			setStep('auction');
 			setAuctionError(
-				'Error creating auction. Check your auction details.',
+				__(
+					'Error creating auction. Check your auction details.',
+					'goodbids',
+				),
 			);
 		},
 	});
@@ -61,7 +68,10 @@ export function CreateScreen({
 		onError: () => {
 			setStep('auction');
 			setAuctionError(
-				'Error creating auction. Check your auction details.',
+				__(
+					'Error creating auction. Check your auction details.',
+					'goodbids',
+				),
 			);
 		},
 	});
@@ -70,10 +80,6 @@ export function CreateScreen({
 		const category = productCategories?.find(
 			(category) => category.slug === 'rewards',
 		);
-
-		if (!category) {
-			throw new Error('No rewards category found');
-		}
 
 		const images = product.productImage
 			? [{ src: product.productImage.value.src }].concat(
@@ -100,7 +106,7 @@ export function CreateScreen({
 			name: product.name.value,
 			regular_price: product.regularPrice.value,
 			images: process.env.NODE_ENV === 'development' ? [] : images,
-			categories: [{ id: category.id }],
+			categories: [{ id: category!.id }],
 		};
 
 		if (product.productType.value === 'physical') {
@@ -157,18 +163,21 @@ export function CreateScreen({
 	return (
 		<div className="w-full flex flex-col items-center py-10 gap-2">
 			<h1 className="text-6xl font-bold text-admin-main m-0">
-				Almost there!
+				{__('Almost there!', 'goodbids')}
 			</h1>
 
 			<div className="max-w-xl">
 				<p className="text-admin-content">
-					Take a moment to review your reward product and auction!
+					{__(
+						'Take a moment to review your reward product and auction!',
+						'goodbids',
+					)}
 				</p>
 			</div>
 
 			{createProduct.status === 'error' && (
 				<span className="text-error-bg text-admin-content">
-					Error creating product
+					{__('Error creating product', 'goodbids')}
 				</span>
 			)}
 
@@ -189,7 +198,7 @@ export function CreateScreen({
 
 			<div className="pt-4">
 				<Button variant="solid" onClick={handleSubmitStart}>
-					Save and Complete
+					{__('Save and Complete', 'goodbids')}
 				</Button>
 			</div>
 		</div>

@@ -5,6 +5,7 @@ import { DatePickers } from './date-pickers';
 import { validateDecimal, validateInteger } from '../../../utils/number';
 import { MoneyIcon } from '../../../components/money-icon';
 import { Tooltip } from '../../../components/tooltip';
+import { __ } from '@wordpress/i18n';
 
 export function Form() {
 	const {
@@ -41,21 +42,24 @@ export function Form() {
 	return (
 		<div className="flex flex-col gap-8">
 			<h1 className="text-4xl text-admin-main m-0">
-				Add Auction Details
+				{__('Add Auction Details', 'goodbids')}
 			</h1>
 
 			<DatePickers />
 
 			<div className="flex flex-col gap-4">
 				<h2 className="text-admin-large text-admin-main m-0">
-					Auction Bidding
+					{__('Auction Bidding', 'goodbids')}
 				</h2>
 
 				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
 					<TextInput
-						label="Bid Increment"
+						label={__('Bid Increment', 'goodbids')}
 						id="bid-increment"
-						tooltip="How much the next bid increases by after a bid is placed."
+						tooltip={__(
+							'How much the next bid increases by after a bid is placed.',
+							'goodbids',
+						)}
 						inputMode="decimal"
 						startIcon={<MoneyIcon width={16} />}
 						required
@@ -72,9 +76,9 @@ export function Form() {
 
 					<div>
 						<TextInput
-							label="Starting Bid"
+							label={__('Starting Bid', 'goodbids')}
 							id="starting-bid"
-							tooltip="Minimum starting bid."
+							tooltip={__('Minimum starting bid.', 'goodbids')}
 							inputMode="decimal"
 							startIcon={<MoneyIcon width={16} />}
 							defaultValue={startingBid.value}
@@ -88,25 +92,32 @@ export function Form() {
 							}
 						/>
 						<span className="italic px-1">
-							Leave blank to default the starting bid to the bid
-							increment.
+							{__(
+								'Leave blank to default the starting bid to the bid increment.',
+								'goodbids',
+							)}
 						</span>
 					</div>
 				</div>
 
 				<div className="flex items-center gap-4">
 					<span className="text-admin-content text-admin-main">
-						How long is the bid extension window?
+						{__(
+							'How long is the bid extension window?',
+							'goodbids',
+						)}
 					</span>
 					<Tooltip>
-						The bid extension window increases the time remaining on
-						the auction after a user places a bid.
+						{__(
+							'The bid extension window increases the time remaining on the auction after a user places a bid.',
+							'goodbids',
+						)}
 					</Tooltip>
 				</div>
 
 				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
 					<TextInput
-						label="Minutes"
+						label={__('Minutes', 'goodbids')}
 						id="bid-extension-minutes"
 						defaultValue={bidExtensionMinutes.value}
 						error={bidExtensionMinutes.error}
@@ -121,7 +132,7 @@ export function Form() {
 					/>
 
 					<TextInput
-						label="Seconds"
+						label={__('Seconds', 'goodbids')}
 						id="bid-extension-seconds"
 						defaultValue={bidExtensionSeconds.value}
 						error={bidExtensionSeconds.error}
@@ -140,17 +151,19 @@ export function Form() {
 			<div className="flex flex-col gap-4">
 				<div className="flex items-center gap-4">
 					<h2 className="text-admin-large text-admin-main m-0">
-						Auction Fundraising
+						{__('Auction Fundraising', 'goodbids')}
 					</h2>
 					<Tooltip>
-						These values are displayed alongside your auction to
-						motivate bidders.
+						{__(
+							'These values are displayed alongside your auction to motivate bidders.',
+							'goodbids',
+						)}
 					</Tooltip>
 				</div>
 
 				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
 					<TextInput
-						label="Auction Goal"
+						label={__('Auction Goal', 'goodbids')}
 						id="auction-goal"
 						inputMode="decimal"
 						startIcon={<MoneyIcon width={16} />}
@@ -166,7 +179,7 @@ export function Form() {
 					/>
 
 					<TextInput
-						label="Expected High Bid"
+						label={__('Expected High Bid', 'goodbids')}
 						id="expected-high-bid"
 						inputMode="decimal"
 						startIcon={<MoneyIcon width={16} />}
@@ -182,7 +195,7 @@ export function Form() {
 					/>
 
 					<TextInput
-						label="Estimated Retail Value"
+						label={__('Estimated Retail Value', 'goodbids')}
 						id="estimated-retail-value"
 						inputMode="decimal"
 						startIcon={<MoneyIcon width={16} />}

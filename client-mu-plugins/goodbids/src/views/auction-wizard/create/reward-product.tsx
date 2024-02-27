@@ -3,6 +3,7 @@ import { CheckIcon } from '../../../components/check-icon';
 import { ProgressIcon } from '../../../components/progress-icon';
 import { ShippingClasses } from '../api/shipping-classes';
 import { useAuctionWizardState } from '../store';
+import { __ } from '@wordpress/i18n';
 
 type RewardProductProps = {
 	shippingClasses: ShippingClasses;
@@ -37,55 +38,61 @@ export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
 	return (
 		<>
 			<h2 className="text-admin-large text-admin-main m-0">
-				Your Reward Product
+				{__('Your Reward Product', 'goodbids')}
 			</h2>
 			<ul>
 				<li className="text-admin-content">
-					<b>Title.</b> {product.name.value}
+					<b>{__('Title.', 'goodbids')}</b> {product.name.value}
 				</li>
 				<li className="text-admin-content">
-					<b>Fair Market Value.</b> {product.regularPrice.value}
+					<b>{__('Fair Market Value.', 'goodbids')}</b>{' '}
+					{product.regularPrice.value}
 				</li>
 				<li className="text-admin-content">
-					<b>Product Category.</b>{' '}
+					<b>{__('Product Category.', 'goodbids')}</b>{' '}
 					{product.productType.value === 'physical'
-						? 'Physical'
-						: 'Digital or Experience'}
+						? __('Physical', 'goodbids')
+						: __('Digital or Experience', 'goodbids')}
 				</li>
 
 				{product.productType.value === 'physical' ? (
 					<>
 						<li className="text-admin-content">
-							<b>Weight.</b> {product.weight.value} lbs.
+							<b>{__('Weight.', 'goodbids')}</b>{' '}
+							{product.weight.value} lbs.
 						</li>
 						<li className="text-admin-content">
-							<b>Length.</b> {product.length.value} in.
+							<b>{__('Length.', 'goodbids')}</b>{' '}
+							{product.length.value} in.
 						</li>
 						<li className="text-admin-content">
-							<b>Width.</b> {product.width.value} in.
+							<b>{__('Width.', 'goodbids')}</b>{' '}
+							{product.width.value} in.
 						</li>
 						<li className="text-admin-content">
-							<b>Height.</b> {product.height.value} in.
+							<b>{__('Height.', 'goodbids')}</b>{' '}
+							{product.height.value} in.
 						</li>
 						<li className="text-admin-content">
-							<b>Shipping Class.</b>{' '}
+							<b>{__('Shipping Class.', 'goodbids')}</b>{' '}
 							{shippingClasses.find(
 								(shippingClass) =>
 									shippingClass.slug ===
 									product.shippingClass.value,
-							)?.name || 'None'}
+							)?.name || __('None', 'goodbids')}
 						</li>
 					</>
 				) : (
 					<li className="text-admin-content">
-						<b>Redemption Details.</b> {product.purchaseNote.value}
+						<b>{__('Redemption Details.', 'goodbids')}</b>{' '}
+						{product.purchaseNote.value}
 					</li>
 				)}
 			</ul>
 
 			<div className="flex flex-col gap-2">
 				<span className="text-admin-content">
-					<b>Product Image</b>
+					<b>{__('Product Image', 'goodbids')}</b>
 				</span>
 
 				{product.productImage ? (
@@ -94,13 +101,13 @@ export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
 						className="max-w-44 max-h-32"
 					/>
 				) : (
-					<span>No image selected</span>
+					<span>{__('No image selected', 'goodbids')}</span>
 				)}
 			</div>
 
 			<div className="flex flex-col gap-2">
 				<span className="text-admin-content">
-					<b>Product Gallery</b>
+					<b>{__('Product Gallery', 'goodbids')}</b>
 				</span>
 
 				{product.productGallery.length > 0 ? (
@@ -115,12 +122,12 @@ export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
 						))}
 					</ul>
 				) : (
-					<span>No images selected</span>
+					<span>{__('No images selected', 'goodbids')}</span>
 				)}
 			</div>
 
 			<Button onClick={() => setStep('product')}>
-				Edit Reward Product
+				{__('Edit Reward Product', 'goodbids')}
 			</Button>
 		</>
 	);

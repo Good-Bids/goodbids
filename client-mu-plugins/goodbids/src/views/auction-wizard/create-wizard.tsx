@@ -31,7 +31,7 @@ export function CreateWizard() {
 		shippingClasses.status === 'error' ||
 		productCategories.status === 'error';
 
-	if (error) {
+	if (error || !shippingClasses.data || !productCategories.data) {
 		return <ErrorWrapper>Something went wrong</ErrorWrapper>;
 	}
 

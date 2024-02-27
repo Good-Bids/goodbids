@@ -2,6 +2,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { TextInput } from '../../../components/text-input';
 import { AuctionState, useAuctionWizardState } from '../store';
 import { validateDateTime } from '../../../utils/datetime';
+import { __ } from '@wordpress/i18n';
 
 export function DatePickers() {
 	const {
@@ -20,14 +21,14 @@ export function DatePickers() {
 		const now = new Date();
 
 		if (startDateValue < now) {
-			return 'Start date must be in the future';
+			return __('Start date must be in the future', 'goodbids');
 		}
 
 		if (endDate.value) {
 			const endDateValue = new Date(endDate.value);
 
 			if (startDateValue >= endDateValue) {
-				return 'Start date must be before end date';
+				return __('Start date must be before end date', 'goodbids');
 			}
 		}
 	};
@@ -43,14 +44,14 @@ export function DatePickers() {
 		const now = new Date();
 
 		if (endDateValue < now) {
-			return 'End date must be in the future';
+			return __('End date must be in the future', 'goodbids');
 		}
 
 		if (startDate.value) {
 			const startDateValue = new Date(startDate.value);
 
 			if (endDateValue <= startDateValue) {
-				return 'End date must be after start date';
+				return __('End date must be after start date', 'goodbids');
 			}
 		}
 	};
@@ -76,7 +77,7 @@ export function DatePickers() {
 	return (
 		<div className="flex flex-col gap-4">
 			<h2 className="text-admin-large text-admin-main m-0">
-				Auction Schedule
+				{__('Auction Schedule', 'goodbids')}
 			</h2>
 
 			<span className="text-admin-content text-admin-main">
@@ -85,7 +86,7 @@ export function DatePickers() {
 
 			<div className="grid gap-4 grid-cols-2 max-w-120">
 				<TextInput
-					label="Auction Start"
+					label={__('Auction Start', 'goodbids')}
 					type="datetime-local"
 					id="auction-start"
 					required
@@ -101,7 +102,7 @@ export function DatePickers() {
 				/>
 
 				<TextInput
-					label="Auction End"
+					label={__('Auction End', 'goodbids')}
 					type="datetime-local"
 					id="auction-end"
 					required

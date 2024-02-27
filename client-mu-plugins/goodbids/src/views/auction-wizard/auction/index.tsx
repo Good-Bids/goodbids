@@ -3,6 +3,7 @@ import { ErrorWrapper } from '../../../components/error';
 import { Tips } from '../../../components/tips';
 import { useAuctionWizardState } from '../store';
 import { Form } from './form';
+import { __ } from '@wordpress/i18n';
 
 export function AuctionScreen() {
 	const {
@@ -45,22 +46,17 @@ export function AuctionScreen() {
 
 				<Tips>
 					<p>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-						sed do eiusmod tempor incididunt ut labore et dolore
-						magna aliqua. Ut enim ad minim veniam, quis nostrud
-						exercitation ullamco laboris nisi ut aliquip ex ea
-						commodo consequat. Duis aute irure dolor in
-						reprehenderit in voluptate velit esse cillum dolore eu
-						fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-						non proident, sunt in culpa qui officia deserunt mollit
-						anim id est laborum.
+						{__(
+							'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+							'goodbids',
+						)}
 					</p>
 				</Tips>
 			</div>
 
 			<div className="w-full flex justify-center">
 				<Button variant="solid" onClick={handleNextPage}>
-					Save and continue
+					{__('Save and continue', 'goodbids')}
 				</Button>
 			</div>
 		</>

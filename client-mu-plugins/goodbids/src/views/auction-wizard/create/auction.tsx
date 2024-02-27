@@ -2,6 +2,7 @@ import { Button } from '../../../components/button';
 import { CheckIcon } from '../../../components/check-icon';
 import { ProgressIcon } from '../../../components/progress-icon';
 import { useAuctionWizardState } from '../store';
+import { __ } from '@wordpress/i18n';
 
 function formatBidExtension(minutes: string, seconds: string) {
 	if (minutes.length && seconds.length) {
@@ -32,7 +33,7 @@ export function Auction({ createStatus, updateStatus }: AuctionProps) {
 			<div className="flex flex-col gap-2 items-center">
 				<ProgressIcon spin width={48} />
 				<h2 className="text-admin-large text-admin-main m-0">
-					Saving Auction
+					{__('Saving Auction', 'goodbids')}
 				</h2>
 			</div>
 		);
@@ -43,7 +44,7 @@ export function Auction({ createStatus, updateStatus }: AuctionProps) {
 			<div className="flex flex-col gap-2 items-center text-admin-main">
 				<CheckIcon width={48} />
 				<h2 className="text-admin-large text-admin-main m-0">
-					Auction saved!
+					{__('Auction saved!', 'goodbids')}
 				</h2>
 			</div>
 		);
@@ -56,50 +57,53 @@ export function Auction({ createStatus, updateStatus }: AuctionProps) {
 			</h2>
 			<ul>
 				<li className="text-admin-content">
-					<b>Auction Start.</b>{' '}
+					<b>{__('Auction Start.', 'goodbids')}</b>{' '}
 					{new Date(auction.startDate.value).toLocaleString()}
 				</li>
 				<li className="text-admin-content">
-					<b>Auction End.</b>{' '}
+					<b>{__('Auction End.', 'goodbids')}</b>{' '}
 					{new Date(auction.endDate.value).toLocaleString()}
 				</li>
 				<li className="text-admin-content">
-					<b>Bid Increment.</b> ${auction.bidIncrement.value}
+					<b>{__('Bid Increment.', 'goodbids')}</b> $
+					{auction.bidIncrement.value}
 				</li>
 				<li className="text-admin-content">
-					<b>Starting Bid.</b>{' '}
+					<b>{__('Starting Bid.', 'goodbids')}</b>{' '}
 					{auction.startingBid.value
 						? `$${auction.startingBid.value}`
-						: 'None'}
+						: __('None', 'goodbids')}
 				</li>
 				<li className="text-admin-content">
-					<b>Bid Extension.</b>{' '}
+					<b>{__('Bid Extension.', 'goodbids')}</b>{' '}
 					{formatBidExtension(
 						auction.bidExtensionMinutes.value,
 						auction.bidExtensionSeconds.value,
 					)}
 				</li>
 				<li className="text-admin-content">
-					<b>Auction Goal.</b>{' '}
+					<b>{__('Auction Goal.')}</b>{' '}
 					{auction.auctionGoal.value
 						? `$${auction.auctionGoal.value}`
-						: 'None'}
+						: __('None', 'goodbids')}
 				</li>
 				<li className="text-admin-content">
 					<b>Expected High Bid.</b>{' '}
 					{auction.expectedHighBid.value
 						? `$${auction.expectedHighBid.value}`
-						: 'None'}
+						: __('None', 'goodbids')}
 				</li>
 				<li className="text-admin-content">
 					<b>Estimated Retail Value.</b>{' '}
 					{auction.estimatedRetailValue.value
 						? `$${auction.estimatedRetailValue.value}`
-						: 'None'}
+						: __('None', 'goodbids')}
 				</li>
 			</ul>
 
-			<Button onClick={() => setStep('auction')}>Edit Auction</Button>
+			<Button onClick={() => setStep('auction')}>
+				{__('Edit Auction', 'goodbids')}
+			</Button>
 		</>
 	);
 }
