@@ -120,6 +120,9 @@ class Auctions {
 		// Register Post Type.
 		$this->register_post_type();
 
+		// Set Admin Capabilities.
+		$this->set_admin_capabilities();
+
 		// Register REST API Endpoints.
 		$this->setup_api_endpoints();
 
@@ -253,6 +256,53 @@ class Auctions {
 				register_post_type( $this->get_post_type(), $args );
 			}
 		);
+	}
+
+	/**
+	 * Set Administrator Capabilities
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_admin_capabilities(): void {
+		add_action(
+			'init',
+			function () {
+				$role = get_role( 'administrator' );
+
+				$types = [
+					self::POST_TYPE,
+					'auction'
+				];
+
+				$actions = [
+					'read',
+					'edit',
+					'delete',
+					'publish',
+				];
+
+				$modifiers = [
+					'others',
+					'private',
+					'published',
+				];
+
+				foreach ( $actions as $action ) {
+					foreach ( $types as $type ) {
+						$role->add_cap( $action . '_' . $type );
+						$role->add_cap( $action . '_' . $type . 's' );
+
+						foreach ( $modifiers as $modifier ) {
+							$role->add_cap( $action . '_' . $modifier . '_' . $type );
+							$role->add_cap( $action . '_' . $modifier . '_' . $type . 's' );
+						}
+					}
+				}
+			}
+		);
+
 	}
 
 	/**
