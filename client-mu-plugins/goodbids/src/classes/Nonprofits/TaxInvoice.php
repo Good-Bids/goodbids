@@ -89,7 +89,7 @@ class TaxInvoice extends Invoice {
 		$this->set_order_id( $order_id );
 
 		// Add Invoice ID to Auction.
-		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
+		update_post_meta( $this->auction_id, Invoices::TAX_INVOICE_ID_META_KEY, $this->get_id() );
 
 		// Set the invoice type.
 		$this->set_type();

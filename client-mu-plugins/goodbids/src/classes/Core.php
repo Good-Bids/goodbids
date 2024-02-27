@@ -24,6 +24,7 @@ use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
 use GoodBids\Nonprofits\Invoices;
+use GoodBids\Nonprofits\Verification;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\OneTrust;
@@ -139,6 +140,12 @@ class Core {
 	 * @var Invoices
 	 */
 	public Invoices $invoices;
+
+	/**
+	 * @since 1.0.0
+	 * @var Verification
+	 */
+	public Verification $verification;
 
 	/**
 	 * @since 1.0.0
@@ -322,6 +329,17 @@ class Core {
 	}
 
 	/**
+	 * Checks if current environment is local.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_local_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
+	}
+
+	/**
 	 * Checks if current environment is development.
 	 *
 	 * @since 1.0.0
@@ -417,23 +435,24 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->utilities   = new Utilities();
-				$this->acf         = new ACF();
-				$this->admin       = new Admin();
-				$this->auctioneer  = new Auctioneer();
-				$this->auctions    = new Auctions();
-				$this->products    = new Products();
-				$this->bids        = new Bids();
-				$this->rewards     = new Rewards();
-				$this->invoices    = new Invoices();
-				$this->settings    = new Settings();
-				$this->network     = new Network();
-				$this->sites       = new Sites();
-				$this->woocommerce = new WooCommerce();
-				$this->notices     = new Notices();
-				$this->users       = new Users();
-				$this->watchers    = new Watchers();
-				$this->referrals   = new Referrals();
+				$this->utilities    = new Utilities();
+				$this->acf          = new ACF();
+				$this->admin        = new Admin();
+				$this->auctioneer   = new Auctioneer();
+				$this->auctions     = new Auctions();
+				$this->products     = new Products();
+				$this->bids         = new Bids();
+				$this->rewards      = new Rewards();
+				$this->invoices     = new Invoices();
+				$this->verification = new Verification();
+				$this->settings     = new Settings();
+				$this->network      = new Network();
+				$this->sites        = new Sites();
+				$this->woocommerce  = new WooCommerce();
+				$this->notices      = new Notices();
+				$this->users        = new Users();
+				$this->watchers     = new Watchers();
+				$this->referrals    = new Referrals();
 
 				// Init Modules not part of the API.
 				new Patterns();
