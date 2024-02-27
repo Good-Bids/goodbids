@@ -215,6 +215,12 @@ class Sites {
 		add_action(
 			'admin_init',
 			function () {
+				global $pagenow;
+
+				if ( 'site-new.php' !== $pagenow ) {
+					return;
+				}
+
 				if ( empty( $_REQUEST['action'] ) || 'add-site' !== $_REQUEST['action'] ) {
 					return;
 				}
@@ -320,6 +326,12 @@ class Sites {
 			 * @param WP_Site $new_site New site object.
 			 */
 			function ( WP_Site $new_site ) {
+				global $pagenow;
+
+				if ( 'site-new.php' !== $pagenow ) {
+					return;
+				}
+
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) { // phpcs:ignore
 					Log::error( 'Missing required Nonprofit data.', compact( 'new_site' ) );
 					return;
@@ -360,12 +372,20 @@ class Sites {
 					return;
 				}
 
+				global $pagenow;
+
+				if ( 'site-info.php' !== $pagenow || empty( $_GET['action'] ) || 'update-site' !== sanitize_text_field( wp_unslash( $_GET['action'] ) ) ) { // phpcs:ignore
+					return;
+				}
+
 				if ( empty( $_POST[ self::OPTION_SLUG ] ) ) {
 					Log::error( 'Missing required Nonprofit data.', compact( 'new_site' ) );
 					return;
 				}
 
 				check_admin_referer( 'edit-np-site', '_wpnonce_edit-np-site' );
+
+				Log::debug( 'Updating Site.' );
 
 				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 

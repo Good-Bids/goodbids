@@ -15,6 +15,7 @@ use WC_Product;
 use WC_Product_Attribute;
 use WC_Product_Variable;
 use WC_Product_Variation;
+use WP_Query;
 
 /**
  * Class for Bids
@@ -93,6 +94,9 @@ class Bids {
 
 		// Perform redirect after a bid checkout.
 		$this->redirect_after_bid_checkout();
+
+		// Hide Bid Products from WP Admin > Products.
+		$this->filter_bid_products();
 	}
 
 	/**
@@ -106,13 +110,8 @@ class Bids {
 		add_action(
 			'wp_after_insert_post',
 			function ( $post_id ): void {
-				// Bail if this is a revision.
-				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) ) {
-					return;
-				}
-
-				// Bail if not an Auction.
-				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
+				// Bail if this is a revision or not an Auction.
+				if ( wp_is_post_revision( $post_id ) || 'publish' !== get_post_status( $post_id ) || goodbids()->auctions->get_post_type() !== get_post_type( $post_id ) ) {
 					return;
 				}
 
@@ -573,6 +572,39 @@ class Bids {
 
 				wp_safe_redirect( $redirect );
 				exit;
+			}
+		);
+	}
+
+	/**
+	 * Hide Bid Products from Non-Super Admins
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function filter_bid_products(): void {
+		add_action(
+			'pre_get_posts',
+			function ( WP_Query $query ) {
+				if ( ! is_admin() || is_super_admin() || ! $query->is_main_query() || ! $query->is_post_type_archive( 'product' ) ) {
+					return;
+				}
+
+				// Hide products in the Bids category.
+				$tax_query = $query->get( 'tax_query' );
+				if ( ! is_array( $tax_query ) ) {
+					$tax_query = [];
+				}
+
+				$tax_query[] = [
+					'taxonomy' => 'product_cat',
+					'field'    => 'slug',
+					'terms'    => self::ITEM_TYPE,
+					'operator' => 'NOT IN',
+				];
+
+				$query->set( 'tax_query', $tax_query );
 			}
 		);
 	}

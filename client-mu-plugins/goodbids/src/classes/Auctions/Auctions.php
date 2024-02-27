@@ -267,6 +267,7 @@ class Auctions {
 			'rest_api_init',
 			function () {
 				( new API\Details() )->register_routes();
+				( new API\End() )->register_routes();
 				( new API\User() )->register_routes();
 			}
 		);
@@ -975,10 +976,7 @@ class Auctions {
 
 				foreach ( $auctions->posts as $auction_id ) {
 					$auction = goodbids()->auctions->get( $auction_id );
-					if ( $auction->trigger_close() ) {
-						// Update the Auction meta to indicate it has closed.
-						update_post_meta( $auction_id, self::AUCTION_CLOSED_META_KEY, 1 );
-					}
+					$auction->trigger_close();
 				}
 			}
 		);
@@ -1059,18 +1057,12 @@ class Auctions {
 
 				// TODO: Move to background process.
 
-				if ( $auction->has_started() && ! $auction->start_triggered() ) {
+				if ( $auction->has_started() ) {
 					$auction->trigger_start();
 				}
 
 				if ( $auction->has_ended() ) {
-					if ( ! $auction->end_triggered() ) {
-						$auction->trigger_close();
-					}
-
-					if ( ! $auction->get_invoice_id() ) {
-						goodbids()->invoices->generate( $auction->get_id() );
-					}
+					$auction->trigger_close();
 				}
 			}
 		);
