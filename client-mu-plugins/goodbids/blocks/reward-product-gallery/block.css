@@ -1,6 +1,6 @@
 @layer components {
 	.woocommerce div.product div.images {
-		@apply w-full;
+		@apply !w-full;
 	}
 
 	.woocommerce .flex-viewport {
