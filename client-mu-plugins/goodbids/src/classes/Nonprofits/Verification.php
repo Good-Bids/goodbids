@@ -51,6 +51,9 @@ class Verification {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Adjust custom Nonprofit fields.
+		$this->manipulate_custom_fields();
+
 		// Add Details/Verification Site Tab
 		$this->add_custom_site_tab();
 
@@ -238,7 +241,41 @@ class Verification {
 			return true;
 		}
 
-		return false;
+		return boolval( $this->get_nonprofit_data( $site_id, 'verification' ) );
+	}
+
+	/**
+	 * Disable fields and add Super Admin Fields
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function manipulate_custom_fields(): void {
+		add_filter(
+			'goodbids_nonprofit_custom_fields',
+			function ( $fields ): array {
+				if ( is_super_admin() ) {
+					$fields['verification'] = [
+						'label'       => __( 'Verified', 'goodbids' ),
+						'type'        => 'toggle',
+						'default'     => '',
+						'placeholder' => '',
+						'description' => __( 'Only visible to Super Admins', 'goodbids' ),
+					];
+				}
+
+				$disabled = $this->form_is_disabled( $this->get_site_id() );
+
+				if ( $disabled ) {
+					foreach ( $fields as $key => $field ) {
+						$fields[ $key ]['disabled'] = true;
+					}
+				}
+
+				return $fields;
+			}
+		);
 	}
 
 	/**
@@ -258,7 +295,6 @@ class Verification {
 					'default'     => '',
 					'placeholder' => '',
 					'required'    => true,
-					'context'     => 'both',
 				],
 				'ein'        => [
 					'label'       => __( 'Nonprofit EIN', 'goodbids' ),
@@ -266,7 +302,6 @@ class Verification {
 					'default'     => '',
 					'placeholder' => 'XX-XXXXXXX',
 					'required'    => true,
-					'context'     => 'both',
 				],
 				'website'    => [
 					'label'       => __( 'Nonprofit Website', 'goodbids' ),
@@ -274,7 +309,6 @@ class Verification {
 					'default'     => '',
 					'placeholder' => 'https://',
 					'required'    => true,
-					'context'     => 'both',
 				],
 				'status'     => [
 					'label'       => __( 'Site Status', 'goodbids' ),
@@ -282,7 +316,7 @@ class Verification {
 					'default'     => 'pending',
 					'placeholder' => '',
 					'required'    => true,
-					'context'     => 'edit',
+					'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
 					'options'     => [
 						[
 							'label' => __( 'Pending', 'goodbids' ),
@@ -456,6 +490,11 @@ class Verification {
 
 					$meta_key   = self::OPTION_SLUG . '-' . $key;
 					$meta_value = sanitize_text_field( $data[ $key ] );
+
+					if ( 'verification' === $key ) {
+						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
+					}
+
 					update_site_meta( $site_id, $meta_key, $meta_value );
 				}
 

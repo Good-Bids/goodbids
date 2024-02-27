@@ -57,6 +57,7 @@ export default {
 				red: {
 					500: '#c70808',
 				},
+				'toggle-disabled': '#45536a',
 				'admin-blue': {
 					300: '#2271b1',
 					600: '#135e96',

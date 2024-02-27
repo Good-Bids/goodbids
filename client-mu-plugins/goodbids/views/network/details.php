@@ -43,10 +43,6 @@ $page_title = sprintf( __( 'Edit Site: %s' ), $site_name );
 		<table class="form-table" role="presentation">
 			<?php
 			foreach ( $fields as $key => $field ) :
-				if ( $disabled ) {
-					$field['disabled'] = true;
-				}
-
 				goodbids()->admin->render_field( $key, $field, $prefix, $data );
 			endforeach;
 			?>
