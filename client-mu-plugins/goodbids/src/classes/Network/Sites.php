@@ -159,22 +159,6 @@ class Sites {
 	}
 
 	/**
-	 * Initialize new site default pages.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return void
-	 */
-	private function init_site_default_pages( int $site_id ): void {
-		$this->swap(
-			fn() => do_action( 'goodbids_init_default_pages', $site_id ),
-			$site_id
-		);
-	}
-
-	/**
 	 * Set the GoodBids logo on the child theme.
 	 *
 	 * @since 1.0.0
@@ -393,7 +377,8 @@ class Sites {
 	private function create_about_page(): void {
 		add_action(
 			'goodbids_nonprofit_verified',
-			function (): void {
+			function ( int $site_id ): void {
+				// TODO: Swap to site.
 				// TODO: Check if the page already exists.
 
 				ob_start();
@@ -428,7 +413,8 @@ class Sites {
 	private function create_all_auctions_page(): void {
 		add_action(
 			'goodbids_nonprofit_verified',
-			function (): void {
+			function ( int $site_id ): void {
+				// TODO: Swap to site.
 				// TODO: Check if the page already exists.
 
 				ob_start();
@@ -462,8 +448,9 @@ class Sites {
 	 */
 	private function delete_sample_page(): void {
 		add_action(
-			'goodbids_init_default_pages',
-			function (): void {
+			'goodbids_nonprofit_verified',
+			function ( int $site_id ): void {
+				// TODO: Swap to site.
 				$page = wpcom_vip_get_page_by_path( 'sample-page' );
 
 				if ( ! $page ) {
