@@ -25,6 +25,7 @@ use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Nonprofits\Verification;
+use GoodBids\Nonprofits\Setup;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\OneTrust;
@@ -147,6 +148,11 @@ class Core {
 	 * @var Verification
 	 */
 	public Verification $verification;
+
+	/**
+	 * @var Setup
+	 */
+	public Setup $setup;
 
 	/**
 	 * @since 1.0.0
@@ -443,6 +449,7 @@ class Core {
 				$this->users        = new Users();
 				$this->watchers     = new Watchers();
 				$this->referrals    = new Referrals();
+				$this->setup        = new Setup();
 
 				// Init Modules not part of the API.
 				new Permissions();
@@ -547,7 +554,7 @@ class Core {
 	 *
 	 * @return void
 	 */
-	 private function disable_css_concatenation() {
+	private function disable_css_concatenation() {
 		add_filter( 'css_do_concat', '__return_false' );
-	 }
+	}
 }
