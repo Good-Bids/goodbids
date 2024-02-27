@@ -329,17 +329,6 @@ class Core {
 	}
 
 	/**
-	 * Checks if current environment is local.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool
-	 */
-	public static function is_local_env(): bool {
-		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
-	}
-
-	/**
 	 * Checks if current environment is development.
 	 *
 	 * @since 1.0.0
