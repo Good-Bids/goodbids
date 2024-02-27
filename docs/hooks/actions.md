@@ -13,6 +13,19 @@ add_action(
 );
 ```
 
+### goodbids_init_default_pages
+
+Action performed to set up a new site default pages. `swap()` has already been called to change to the new site.
+
+```php
+add_action(
+	'goodbids_init_default_pages',
+	function ( int $site_id ): void {
+
+	}
+);
+```
+
 ### goodbids_order_payment_complete
 
 Action performed after an Auction-related order has a successful payment.

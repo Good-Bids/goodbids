@@ -154,6 +154,22 @@ class Sites {
 	}
 
 	/**
+	 * Initialize new site default pages.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $site_id
+	 *
+	 * @return void
+	 */
+	private function init_site_default_pages( int $site_id ): void {
+		$this->swap(
+			fn() => do_action( 'goodbids_init_default_pages', $site_id ),
+			$site_id
+		);
+	}
+
+	/**
 	 * Set the GoodBids logo on the child theme.
 	 *
 	 * @since 1.0.0
@@ -371,7 +387,7 @@ class Sites {
 	 */
 	private function create_about_page(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_init_default_pages',
 			function (): void {
 				ob_start();
 
@@ -404,7 +420,7 @@ class Sites {
 	 */
 	private function create_all_auctions_page(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_init_default_pages',
 			function (): void {
 				ob_start();
 
@@ -415,7 +431,7 @@ class Sites {
 						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
 						'post_content' => ob_get_clean(),
 						'post_type'    => 'page',
-						'post_status'  => 'draft',
+						'post_status'  => 'publish',
 						'post_author'  => 1,
 						'post_name'    => 'explore-auctions',
 					]
@@ -437,17 +453,19 @@ class Sites {
 	 */
 	private function delete_sample_page(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_init_default_pages',
 			function (): void {
-				$page    = wpcom_vip_get_page_by_path( 'sample-page' );
-				$deleted = wp_delete_post( $page->ID );
+				$page = wpcom_vip_get_page_by_path( 'sample-page' );
 
-				if ( $page->ID == get_option( 'page_on_front' ) ) {
+				if ( get_option( 'page_on_front' ) == $page->ID ) {
 					return;
 				}
 
+				$deleted = wp_delete_post( $page->ID );
+
 				if ( ! $deleted ) {
 					Log::error( 'There was a problem deleting the Sample Page' );
+					return;
 				}
 			}
 		);
