@@ -9,11 +9,9 @@
 namespace GoodBids\Network;
 
 use GoodBids\Auctions\Auction;
-use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Nonprofits\Verification;
-use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
 use WP_Block_Type_Registry;
 use WP_Post;
