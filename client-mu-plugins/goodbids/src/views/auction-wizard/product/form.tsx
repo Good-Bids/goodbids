@@ -63,7 +63,10 @@ export function Form({ shippingClasses }: FormProps) {
 					<TextInput
 						autoFocus
 						label={__('Title', 'goodbids')}
-						tooltip={__('Product title.', 'goodbids')}
+						tooltip={__(
+							'The name of the product or experience you’re auctioning.',
+							'goodbids',
+						)}
 						onChange={(e) => handleDebounce('name', e.target.value)}
 						defaultValue={name.value}
 						error={name.error}
@@ -77,7 +80,7 @@ export function Form({ shippingClasses }: FormProps) {
 						id="regular-price"
 						label={__('Fair Market Value', 'goodbids')}
 						tooltip={__(
-							'The fair market value of your reward',
+							'The fair market value of your reward, not shown to bidders.',
 							'goodbids',
 						)}
 						startIcon={<MoneyIcon width={16} />}
@@ -102,6 +105,10 @@ export function Form({ shippingClasses }: FormProps) {
 			<RadioInput
 				id="product-type"
 				label={__('What type of product is it?', 'goodbids')}
+				tooltip={__(
+					'Physical products are shipped to the winner or available for local pickup based on the shipping zones you’ve configured for your Nonprofit site. ',
+					'goodbids',
+				)}
 				defaultValue={productType.value}
 				onValueChange={(value) => setProductValue('productType', value)}
 			>
@@ -203,7 +210,7 @@ export function Form({ shippingClasses }: FormProps) {
 							'goodbids',
 						)}
 						tooltip={__(
-							'Instructions for the auction winner to redeem their reward',
+							'This note will be shared with the high bidder after they claim the auction reward.',
 							'goodbids',
 						)}
 						defaultValue={purchaseNote.value}
@@ -221,7 +228,7 @@ export function Form({ shippingClasses }: FormProps) {
 						id="shipping-class"
 						label={__('Shipping Class', 'goodbids')}
 						tooltip={__(
-							'Determines base shipping cost',
+							'Used to override base shipping cost for heavy items, etc. ',
 							'goodbids',
 						)}
 						value={shippingClass.value}

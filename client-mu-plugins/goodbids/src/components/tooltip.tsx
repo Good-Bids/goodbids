@@ -23,8 +23,8 @@ export function Tooltip({ children }: TooltipProps) {
 			</Primitive.Trigger>
 			<Primitive.Portal>
 				<Primitive.Content
-					side="bottom"
-					className="text-admin-content max-w-60 bg-gray-300 shadow-md p-2 rounded-md"
+					side="right"
+					className="text-admin-content max-w-60 bg-gray-300 shadow-md p-2 rounded-md z-[1000]"
 				>
 					{children}
 					<Primitive.Arrow className="fill-gray-300" />
