@@ -41,10 +41,10 @@ type CreateAuctionBody = {
 			seconds: number;
 		};
 		auction_product: number;
-		estimated_value: string;
+		estimated_value: number | null;
 		bid_increment: number;
 		starting_bid: number;
-		auction_goal: string;
-		expected_high_bid: string;
+		auction_goal: number | null;
+		expected_high_bid: number | null;
 	};
 };

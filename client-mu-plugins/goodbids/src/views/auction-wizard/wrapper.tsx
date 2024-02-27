@@ -33,7 +33,7 @@ export function Wrapper({ children, progress }: WrapperProps) {
 			<ProgressBar progress={progress} />
 			<div className="flex justify-between items-center">
 				<Logo />
-				{step !== 'start' && (
+				{step !== 'start' && step !== 'finish' && (
 					<div className="flex items-center gap-4">
 						<Button onClick={handleBack}>Back</Button>
 						<Button

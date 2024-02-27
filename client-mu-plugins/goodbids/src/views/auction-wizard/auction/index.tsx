@@ -39,7 +39,7 @@ export function AuctionScreen() {
 
 	return (
 		<>
-			<ErrorWrapper>{error}</ErrorWrapper>
+			{error && <ErrorWrapper>{error}</ErrorWrapper>}
 
 			<div className="flex gap-4 justify-between">
 				<Form />

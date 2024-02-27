@@ -67,7 +67,7 @@ export function AuctionWizardStart({ loading }: AuctionWizardStartProps) {
 							</h2>
 
 							<Button autoFocus onClick={setProductStep}>
-								{__('Continue creating', 'goodbids')}
+								{__('Continue creating', 'goodbids')}{' '}
 								{name.value}
 							</Button>
 

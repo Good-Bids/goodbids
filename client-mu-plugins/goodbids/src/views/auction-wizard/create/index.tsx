@@ -141,11 +141,13 @@ export function CreateScreen({
 					seconds: parseInt(auction.bidExtensionSeconds.value, 10),
 				},
 				auction_product: id,
-				estimated_value: auction.estimatedRetailValue.value,
+				estimated_value:
+					parseInt(auction.estimatedRetailValue.value, 10) || null,
 				bid_increment: parseInt(auction.bidIncrement.value, 10),
 				starting_bid: parseInt(auction.startingBid.value, 10),
-				auction_goal: auction.auctionGoal.value,
-				expected_high_bid: auction.expectedHighBid.value,
+				auction_goal: parseInt(auction.auctionGoal.value, 10) || null,
+				expected_high_bid:
+					parseInt(auction.expectedHighBid.value, 10) || null,
 			},
 		});
 	};
