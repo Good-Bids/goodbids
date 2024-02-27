@@ -12,6 +12,10 @@ export function Wrapper({ children, progress }: WrapperProps) {
 
 	const handleBack = () => {
 		if (step === 'finish') {
+			return setStep('create');
+		}
+
+		if (step === 'create') {
 			return setStep('auction');
 		}
 

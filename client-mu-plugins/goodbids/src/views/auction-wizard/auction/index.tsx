@@ -32,7 +32,7 @@ export function AuctionScreen() {
 			return;
 		}
 
-		setStep('finish');
+		setStep('create');
 	};
 
 	return (

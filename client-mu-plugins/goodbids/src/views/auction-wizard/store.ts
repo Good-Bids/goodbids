@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createTrackedSelector } from 'react-tracked';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
-export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'edit';
+export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'create';
 
 type ValueType<T> = {
 	value: T;
@@ -69,12 +69,14 @@ const defaultAuctionState: AuctionState = {
 
 export type AuctionWizardStoreState = {
 	step: StepType;
+	auctionId: number | null;
 	product: AuctionWizardProductState;
 	auction: AuctionState;
 };
 
 type AuctionWizardStoreActions = {
 	setStep: (step: StepType) => void;
+	setAuctionId: (id: number) => void;
 	setProductImage: (image: ImageType) => void;
 	clearProductImage: () => void;
 	addToProductGallery: (image: ImageType) => void;
@@ -98,9 +100,11 @@ const useAuctionWizardStore = create<
 	persist(
 		(set) => ({
 			step: 'start',
+			auctionId: null,
 			product: defaultProductState,
 			auction: defaultAuctionState,
 			setStep: (step) => set({ step }),
+			setAuctionId: (id) => set({ auctionId: id }),
 			setProductImage: (image) =>
 				set((state) => ({
 					product: {
@@ -160,11 +164,6 @@ const useAuctionWizardStore = create<
 			partialize: (state) => ({
 				product: state.product,
 				auction: state.auction,
-				step:
-					// Maintain step during dev for easier navigation
-					process.env.NODE_ENV === 'development'
-						? state.step
-						: undefined,
 			}),
 		},
 	),

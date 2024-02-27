@@ -5,14 +5,15 @@ import { AuctionWizardProduct } from './product';
 import { useGetShippingClasses } from './api/shipping-classes';
 import { useGetProductCategories } from './api/product-categories';
 import { AuctionScreen } from './auction';
+import { CreateScreen } from './create';
 import { FinishScreen } from './finish';
 
 const stepProgress: Record<StepType, number> = {
 	start: 5,
 	product: 33,
 	auction: 67,
-	finish: 90,
-	edit: 50,
+	create: 90,
+	finish: 100,
 };
 
 export function CreateWizard() {
@@ -43,13 +44,17 @@ export function CreateWizard() {
 					shippingClasses={shippingClasses.data || []}
 				/>
 			)}
+
 			{step === 'auction' && !loading && <AuctionScreen />}
-			{step === 'finish' && !loading && (
-				<FinishScreen
+
+			{step === 'create' && !loading && (
+				<CreateScreen
 					shippingClasses={shippingClasses.data || []}
 					productCategories={productCategories.data || []}
 				/>
 			)}
+
+			{step === 'finish' && !loading && <FinishScreen />}
 		</Wrapper>
 	);
 }
