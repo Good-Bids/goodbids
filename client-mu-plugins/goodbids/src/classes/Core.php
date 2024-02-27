@@ -16,9 +16,9 @@ use GoodBids\Auctions\Products;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Auctions\Watchers;
 use GoodBids\Frontend\Blocks;
+use GoodBids\Frontend\Assets;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
-use GoodBids\Frontend\Vite;
 use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
@@ -68,6 +68,12 @@ class Core {
 	 * @var ACF
 	 */
 	public ACF $acf;
+
+	/**
+	 * @since 1.0.0
+	 * @var Dashboard
+	 */
+	public Dashboard $dashboard;
 
 	/**
 	 * @since 1.0.0
@@ -221,6 +227,7 @@ class Core {
 		$this->load_modules();
 		$this->init_modules();
 		$this->restrict_rest_api_access();
+		$this->disable_css_concatenation();
 
 		$this->initialized = true;
 	}
@@ -306,8 +313,19 @@ class Core {
 	private function load_dependencies(): void {
 		require_once GOODBIDS_PLUGIN_PATH . '/src/helpers.php';
 
-		// Init vite.
-		new Vite();
+		// Init Assets.
+		new Assets();
+	}
+
+	/**
+	 * Checks if current environment is local.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public static function is_local_env(): bool {
+		return defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'local' === VIP_GO_APP_ENVIRONMENT;
 	}
 
 	/**
@@ -530,4 +548,15 @@ class Core {
 			}
 		);
 	}
+
+	/**
+	 * Disable CSS concatenation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	 private function disable_css_concatenation() {
+		add_filter( 'css_do_concat', '__return_false' );
+	 }
 }

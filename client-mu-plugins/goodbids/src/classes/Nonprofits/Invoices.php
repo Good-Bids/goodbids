@@ -37,6 +37,12 @@ class Invoices {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const TAX_INVOICE_ID_META_KEY = '_tax_invoice_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const TYPE_META_KEY = '_invoice_type';
 
 	/**

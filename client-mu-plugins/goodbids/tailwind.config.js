@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
 	corePlugins: {
 		preflight: false,
 	},
@@ -9,14 +9,6 @@ export default {
 		'./views/**/*.{php,html}',
 	],
 	theme: {
-		fontSize: {
-			xs: 'var(--wp--preset--font-size--x-small)',
-			sm: 'var(--wp--preset--font-size--small)',
-			md: 'var(--wp--preset--font-size--medium)',
-			lg: 'var(--wp--preset--font-size--large)',
-			xl: 'var(--wp--preset--font-size--x-large)',
-			xxl: 'var(--wp--preset--font-size--xx-large)',
-		},
 		extend: {
 			animation: {
 				'spin-left': 'spin-left 1.5s linear infinite',
@@ -25,6 +17,7 @@ export default {
 				xs: '0.5rem',
 				sm: '1rem',
 				DEFAULT: '2rem',
+				'admin-sm': '0.375rem',
 			},
 			borderWidth: {
 				DEFAULT: '1px',
@@ -57,10 +50,25 @@ export default {
 				red: {
 					500: '#c70808',
 				},
+				admin: {
+					main: '#0a3624',
+					accent: '#70ff8f',
+				},
 				'admin-blue': {
 					300: '#2271b1',
 					600: '#135e96',
 				},
+			},
+			fontSize: {
+				xs: 'var(--wp--preset--font-size--x-small)',
+				sm: 'var(--wp--preset--font-size--small)',
+				md: 'var(--wp--preset--font-size--medium)',
+				lg: 'var(--wp--preset--font-size--large)',
+				xl: 'var(--wp--preset--font-size--x-large)',
+				xxl: 'var(--wp--preset--font-size--xx-large)',
+				'admin-label': '0.875rem',
+				'admin-content': '1rem',
+				'admin-large': '1.25rem',
 			},
 			keyframes: {
 				'spin-left': {
@@ -71,6 +79,13 @@ export default {
 						transform: 'rotate(-360deg)',
 					},
 				},
+			},
+			maxWidth: {
+				100: '25rem',
+				120: '30rem',
+			},
+			minWidth: {
+				88: '22rem',
 			},
 		},
 	},

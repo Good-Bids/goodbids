@@ -97,6 +97,9 @@ class Auctions {
 			return;
 		}
 
+		// Init Auction Wizard.
+		new Wizard();
+
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
 			'interval' => MINUTE_IN_SECONDS,

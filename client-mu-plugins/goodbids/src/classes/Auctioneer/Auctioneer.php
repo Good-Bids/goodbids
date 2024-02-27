@@ -93,7 +93,8 @@ class Auctioneer {
 	 * @return bool
 	 */
 	private function configure_url(): bool {
-		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
+		$this->environment = goodbids()->get_config( 'auctioneer.environment' );
+		$environments      = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
 		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
 			goodbids()->utilities->display_admin_error( __( 'Missing Auctioneer URL constants config.', 'goodbids' ) );
@@ -437,6 +438,9 @@ class Auctioneer {
 	 * @return string
 	 */
 	public function get_url(): string {
+		if ( ! $this->url ) {
+			$this->configure_url();
+		}
 		return $this->url;
 	}
 
