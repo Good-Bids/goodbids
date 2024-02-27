@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 
 export function FinishScreen() {
 	const { auctionId } = useAuctionWizardState();
+	const baseUrl = window.location.href.replace(/\/wp-admin\/.*/g, '');
 
 	return (
 		<div className="w-full flex flex-col items-center py-10 gap-2">
@@ -24,7 +25,7 @@ export function FinishScreen() {
 			</div>
 
 			<ButtonLink
-				href={`/wp-admin/post.php?post=${auctionId}&action=edit`}
+				href={`${baseUrl}/wp-admin/post.php?post=${auctionId}&action=edit`}
 				autoFocus
 			>
 				{__('Customize Auction page', 'goodbids')}

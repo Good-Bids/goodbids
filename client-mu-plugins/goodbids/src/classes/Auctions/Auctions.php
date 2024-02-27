@@ -248,7 +248,6 @@ class Auctions {
 					'show_in_rest'        => true,
 					'rest_base'           => self::SINGULAR_SLUG,
 					'template'            => $this->get_block_template(),
-					'show_in_rest'        => true,
 				];
 
 				register_post_type( $this->get_post_type(), $args );
