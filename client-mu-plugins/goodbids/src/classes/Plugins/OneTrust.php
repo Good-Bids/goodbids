@@ -46,7 +46,6 @@ class OneTrust {
 			$domain_script = goodbids()->get_config( 'onetrust.staging.domain-script' );
 		}
 
-
 		add_action(
 			'wp_head',
 			function () use ( $script_url, $domain_script ) {
