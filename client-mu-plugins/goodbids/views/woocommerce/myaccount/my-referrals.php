@@ -13,11 +13,10 @@ use GoodBids\Users\Referrals\Referral;
 <div class="goodbids-account-referrals">
 	<h1><?php esc_html_e( 'Referrals', 'goodbids' ); ?></h1>
 
-	<p class="mb-0 font-bold"><?php esc_html_e( 'Share with Friends to earn Free Bids!', 'goodbids' ); ?></p>
-	<?php echo do_shortcode( '[goodbids-referral return="copy-link"]' ); ?>
+	<?php goodbids()->load_view( 'woocommerce/myaccount/my-referral-box.php' ); ?>
 
 	<?php if ( ! $referrals ) : ?>
-		<p><?php esc_html_e( 'You have not made any referrals yet.', 'goodbids' ); ?></p>
+		<?php wc_print_notice( esc_html__( 'You have not made any referrals yet.', 'goodbids' ), 'notice' ); ?>
 	<?php else : ?>
 		<div class="mt-10 overflow-hidden border border-solid rounded-sm border-black-100">
 			<table class="!mb-0 !border-0 bg-base-2 woocommerce-MyAccount-referrals shop_table shop_table_responsive my_account_referrals account-referrals-table">
@@ -55,8 +54,8 @@ use GoodBids\Users\Referrals\Referral;
 						);
 					endforeach;
 					?>
-				</tbody>
-			</table>
-		</div>
+			</tbody>
+		</table>
+	</div>
 	<?php endif; ?>
 </div>

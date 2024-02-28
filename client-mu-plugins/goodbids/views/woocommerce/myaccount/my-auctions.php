@@ -13,7 +13,7 @@
 	<h1><?php esc_html_e( 'Auctions', 'goodbids' ); ?></h1>
 
 	<?php if ( ! count( $auctions ) ) : ?>
-		<p><?php esc_html_e( 'You have not bid on any auctions yet.', 'goodbids' ); ?></p>
+		<?php wc_print_notice( esc_html__( 'You have not bid on any auctions yet.', 'goodbids' ), 'notice' ); ?>
 	<?php else : ?>
 		<?php goodbids()->load_view( 'woocommerce/myaccount/my-auctions-header.php' ); ?>
 
