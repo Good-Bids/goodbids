@@ -30,9 +30,9 @@ class Auctioneer {
 	 * Defines the environment to use.
 	 *
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $environment = null;
+	private string $environment = '';
 
 	/**
 	 * @since 1.0.0
@@ -191,6 +191,7 @@ class Auctioneer {
 				Log::error( 'Auctioneer Environment not configured.' );
 			}
 		}
+
 		return $this->environment;
 	}
 
