@@ -13,7 +13,7 @@ if ( ! count( $auctions ) ) {
 }
 
 printf(
-	'<h2 class="mt-10 font-normal text-md>%s</h2>',
+	'<h2 class="mt-10 font-normal text-md">%s</h2>',
 	esc_html__( 'Get back into the action!', 'goodbids' )
 );
 
