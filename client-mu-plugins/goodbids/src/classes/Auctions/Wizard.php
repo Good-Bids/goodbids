@@ -119,7 +119,7 @@ class Wizard {
 					self::BASE_URL . goodbids()->auctions->get_post_type(),
 					esc_html__( 'Add New', 'goodbids' ),
 					esc_html__( 'Add New', 'goodbids' ),
-					'publish_auctions',
+					'publish_posts',
 					self::PAGE_SLUG,
 					[ $this, 'wizard_admin_page' ],
 					2
