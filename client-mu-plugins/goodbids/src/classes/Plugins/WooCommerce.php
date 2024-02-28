@@ -625,7 +625,7 @@ class WooCommerce {
 
 		// Block access to pages
 		add_action(
-			'admin_head',
+			'get_current_screen',
 			function () use ( $pages ) {
 				if ( is_super_admin() ) {
 					return;
@@ -633,7 +633,11 @@ class WooCommerce {
 
 				$current_screen = get_current_screen();
 
-				if ( $current_screen->base === 'post' && $current_screen->post_type === 'page' && isset( $_GET['post'] ) && in_array( $_GET['post'], $pages, true ) ) {
+				if ( 'post' === $current_screen->base &&
+					'page' === $current_screen->post_type &&
+					isset( $_GET['post'] ) &&
+					in_array( $_GET['post'], $pages, true )
+					) {
 					wp_safe_redirect( admin_url() );
 					exit;
 				}
@@ -642,16 +646,16 @@ class WooCommerce {
 
 		// Remove pages from admin view
 		add_filter(
-			'parse_query',
+			'pre_get_posts',
 			function ( $query ) use ( $pages ) {
-				if ( ! is_admin() ) {
+				if ( ! is_admin() || ! is_super_admin() ) {
 					return $query;
 				}
 
 				global $pagenow, $post_type;
 
-				if ( ! is_super_admin() && $pagenow == 'edit.php' && $post_type == 'page' ) {
-					$query->query_vars['post__not_in'] = $pages;
+				if ( $pagenow == 'edit.php' && $post_type == 'page' ) {
+					$query->set( 'post__not_in', $pages );
 				}
 
 				return $query;

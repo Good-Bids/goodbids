@@ -378,27 +378,33 @@ class Sites {
 		add_action(
 			'goodbids_nonprofit_verified',
 			function ( int $site_id ): void {
-				// TODO: Swap to site.
-				// TODO: Check if the page already exists.
+				$this->swap(
+					function (): void {
+						if ( wpcom_vip_get_page_by_path( 'about' ) ) {
+							return;
+						}
 
-				ob_start();
+						ob_start();
 
-				goodbids()->load_view( 'patterns/template-about-page.php' );
+						goodbids()->load_view( 'patterns/template-about-page.php' );
 
-				$about_id = wp_insert_post(
-					[
-						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
-						'post_content' => ob_get_clean(),
-						'post_type'    => 'page',
-						'post_status'  => 'publish',
-						'post_author'  => 1,
-						'post_name'    => 'about',
-					]
+						$about_id = wp_insert_post(
+							[
+								'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+								'post_content' => ob_get_clean(),
+								'post_type'    => 'page',
+								'post_status'  => 'publish',
+								'post_author'  => 1,
+								'post_name'    => 'about',
+							]
+						);
+
+						if ( is_wp_error( $about_id ) ) {
+							Log::error( $about_id->get_error_message() );
+						}
+					},
+					$site_id
 				);
-
-				if ( is_wp_error( $about_id ) ) {
-					Log::error( $about_id->get_error_message() );
-				}
 			}
 		);
 	}
@@ -414,27 +420,32 @@ class Sites {
 		add_action(
 			'goodbids_nonprofit_verified',
 			function ( int $site_id ): void {
-				// TODO: Swap to site.
-				// TODO: Check if the page already exists.
+				$this->swap(
+					function (): void {
+						if ( wpcom_vip_get_page_by_path( 'explore-auctions' ) ) {
+							return;
+						}
+						ob_start();
 
-				ob_start();
+						goodbids()->load_view( 'patterns/template-archive-auction.php' );
 
-				goodbids()->load_view( 'patterns/template-archive-auction.php' );
+						$auctions_id = wp_insert_post(
+							[
+								'post_title'   => __( 'Explore Auctions', 'goodbids' ),
+								'post_content' => ob_get_clean(),
+								'post_type'    => 'page',
+								'post_status'  => 'publish',
+								'post_author'  => 1,
+								'post_name'    => 'explore-auctions',
+							]
+						);
 
-				$auctions_id = wp_insert_post(
-					[
-						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
-						'post_content' => ob_get_clean(),
-						'post_type'    => 'page',
-						'post_status'  => 'publish',
-						'post_author'  => 1,
-						'post_name'    => 'explore-auctions',
-					]
+						if ( is_wp_error( $auctions_id ) ) {
+							Log::error( $auctions_id->get_error_message() );
+						}
+					},
+					$site_id
 				);
-
-				if ( is_wp_error( $auctions_id ) ) {
-					Log::error( $auctions_id->get_error_message() );
-				}
 			}
 		);
 	}
@@ -450,20 +461,24 @@ class Sites {
 		add_action(
 			'goodbids_nonprofit_verified',
 			function ( int $site_id ): void {
-				// TODO: Swap to site.
-				$page = wpcom_vip_get_page_by_path( 'sample-page' );
+				$this->swap(
+					function (): void {
+						$page = wpcom_vip_get_page_by_path( 'sample-page' );
 
-				if ( ! $page ) {
-					return;
-				}
+						if ( ! $page ) {
+							return;
+						}
 
-				if ( intval( get_option( 'page_on_front' ) ) === $page->ID ) {
-					return;
-				}
+						if ( intval( get_option( 'page_on_front' ) ) === $page->ID ) {
+							return;
+						}
 
-				if ( ! wp_delete_post( $page->ID ) ) {
-					Log::error( 'There was a problem deleting the Sample Page' );
-				}
+						if ( ! wp_delete_post( $page->ID ) ) {
+							Log::warning( 'There was a problem deleting the Sample Page' );
+						}
+					},
+					$site_id
+				);
 			}
 		);
 	}
