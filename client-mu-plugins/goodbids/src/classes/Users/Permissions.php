@@ -30,7 +30,7 @@ class Permissions {
 	 *
 	 * @var int $version
 	 */
-	private int $version = 2;
+	private int $version = 1;
 
 	/**
 	 * Constructor
