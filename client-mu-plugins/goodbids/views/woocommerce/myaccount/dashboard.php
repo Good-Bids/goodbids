@@ -13,12 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-$allowed_html = [
-	'a' => [
-		'href' => [],
-	],
-];
-
 printf(
 	'<h1 class="mt-0">%s</h1>',
 	esc_html__( 'Dashboard', 'goodbids' )
