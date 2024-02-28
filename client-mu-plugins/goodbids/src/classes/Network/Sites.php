@@ -106,7 +106,7 @@ class Sites {
 
 				if ( ! headers_sent() ) {
 					$redirect_url = network_admin_url( 'sites.php' );
-					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG_UNVERIFIED, $redirect_url );
+					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
 					$redirect_url = add_query_arg( 'site_id', $new_site->blog_id, $redirect_url );
 					wp_safe_redirect( $redirect_url );
 					exit;

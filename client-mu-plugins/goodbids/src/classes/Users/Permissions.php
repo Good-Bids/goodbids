@@ -8,6 +8,7 @@
 
 namespace GoodBids\Users;
 
+use GoodBids\Utilities\Log;
 use WP_Role;
 
 /**
@@ -52,6 +53,7 @@ class Permissions {
 	 * @return void
 	 */
 	private function update_version(): void {
+		Log::debug( 'Updating Permissions Version.' );
 		update_option( self::VERSION_OPTION, $this->version );
 	}
 
@@ -69,6 +71,8 @@ class Permissions {
 				if ( $this->version <= get_option( self::VERSION_OPTION ) ) {
 					return;
 				}
+
+				Log::debug( 'Creating BDP Admin Role.' );
 
 				// Role ID and Name.
 				$role_id   = 'bdp_administrator';
@@ -132,20 +136,6 @@ class Permissions {
 	}
 
 	/**
-	 * Update Role Capabilities
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param WP_Role $role
-	 * @param array   $capabilities
-	 *
-	 * @return void
-	 */
-	private function update_role( WP_Role $role, array $capabilities ): void {
-		$role->capabilities = $capabilities;
-	}
-
-	/**
 	 * Set Administrator Capabilities for Auctions
 	 *
 	 * @since 1.0.0
@@ -162,9 +152,11 @@ class Permissions {
 
 				$role = get_role( 'administrator' );
 
-				if ( ! $this->has_added_capabilities( $role ) ) {
+				if ( ! $role->has_cap( 'publish_auctions' ) ) {
 					return;
 				}
+
+				Log::debug( 'Setting Admin Auction Capabilities.' );
 
 				$types = [
 					goodbids()->auctions->get_post_type(),
@@ -202,28 +194,11 @@ class Permissions {
 					}
 				}
 
-				$this->add_capabilities( $role, $capabilities );
+				$this->update_role( $role, $capabilities );
 
 				$this->update_version();
 			}
 		);
-	}
-
-	/**
-	 * Check if capabilities have already been added.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param WP_Role $role
-	 *
-	 * @return bool
-	 */
-	private function has_added_capabilities( WP_Role $role ): bool {
-		if ( ! $role->has_cap( 'publish_auction' ) ) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -236,9 +211,11 @@ class Permissions {
 	 *
 	 * @return void
 	 */
-	private function add_capabilities( WP_Role $role, array $capabilities ): void {
+	private function update_role( WP_Role $role, array $capabilities ): void {
+		$role->capabilities = $capabilities;
+
 		if ( function_exists( 'wpcom_vip_add_role_caps' ) ) {
-			wpcom_vip_add_role_caps($role->name, $capabilities );
+			wpcom_vip_add_role_caps( $role->name, $capabilities );
 		} else {
 			foreach ( $capabilities as $capability ) {
 				$role->add_cap( $capability );

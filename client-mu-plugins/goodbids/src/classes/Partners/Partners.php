@@ -40,11 +40,13 @@ class Partners {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-
-		// Register Post Type only on network level.
-		if ( is_main_site() ) {
-			$this->register_post_type();
+		// Only run on the main site.
+		if ( ! is_main_site() ) {
+			return;
 		}
+
+		// Register the Partners post type.
+		$this->register_post_type();
 	}
 
 	/**
