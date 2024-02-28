@@ -93,7 +93,6 @@ class Sites {
 	private function redirect_on_save_new_site(): void {
 		add_action(
 			'wp_initialize_site',
-
 			/**
 			 * @param WP_Site $new_site New site object.
 			 */
@@ -553,7 +552,7 @@ class Sites {
 					return;
 				}
 
-				delete_transient( self::ALL_AUCTIONS_TRANSIENT );
+				$this->clear_all_site_transients();
 			},
 			10,
 			3
@@ -566,8 +565,21 @@ class Sites {
 					return;
 				}
 
-				delete_transient( self::ALL_AUCTIONS_TRANSIENT );
+				$this->clear_all_site_transients();
 			}
+		);
+	}
+
+	/**
+	 * Clear the transients for all sites
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function clear_all_site_transients(): void {
+		$this->loop(
+			fn() => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
 		);
 	}
 
