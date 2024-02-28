@@ -46,9 +46,8 @@ class OneTrust {
 			$domain_script = goodbids()->get_config( 'onetrust.staging.domain-script' );
 		}
 
-
 		add_action(
-			'wp_footer',
+			'wp_head',
 			function () use ( $script_url, $domain_script ) {
 				printf(
 					'<script src="%s" type="text/javascript" charset="UTF-8" data-domain-script="%s"></script><script type="text/javascript">function OptanonWrapper() { }</script>',
