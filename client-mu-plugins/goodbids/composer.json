@@ -53,13 +53,13 @@
 		"monolog/monolog": "^3.5",
 		"oomphinc/composer-installers-extender": "^2.0",
 		"vlucas/phpdotenv": "^5.5",
-		"wpackagist-plugin/accessibility-checker": "^1.8",
+		"wpackagist-plugin/accessibility-checker": "^1.9",
 		"wpackagist-plugin/svg-support": "^2.5",
 		"wpackagist-plugin/user-switching": "^1.7",
 		"wpackagist-plugin/woocommerce": "^8.6",
 		"wpackagist-plugin/woocommerce-gateway-stripe": "^7.9",
 		"wpackagist-plugin/woocommerce-services": "^2.4",
-		"wpengine/advanced-custom-fields-pro": "*"
+		"wpengine/advanced-custom-fields-pro": "^6.2"
 	},
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
