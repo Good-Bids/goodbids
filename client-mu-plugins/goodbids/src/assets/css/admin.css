@@ -28,6 +28,13 @@
 }
 
 /**
+ * Plugins Page
+ */
+.plugins .inline {
+	@apply !block;
+}
+
+/**
  * Network Dashboard Log Files
  */
 .gb-log-files li {
