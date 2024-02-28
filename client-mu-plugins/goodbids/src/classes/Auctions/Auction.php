@@ -13,7 +13,6 @@ use DateTimeImmutable;
 use Exception;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
-use Goodbids\Network\Sites;
 use WC_Order;
 use WP_User;
 
@@ -796,7 +795,7 @@ class Auction {
 		do_action( 'goodbids_auction_start', $this->get_id() );
 
 		// Reset the Auction transients.
-		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
+		goodbids()->sites->clear_all_site_transients();
 	}
 
 	/**
@@ -833,7 +832,7 @@ class Auction {
 		do_action( 'goodbids_auction_end', $this->get_id() );
 
 		// Reset the Auction transients.
-		delete_transient( Sites::ALL_AUCTIONS_TRANSIENT );
+		goodbids()->sites->clear_all_site_transients();
 	}
 
 	/**
