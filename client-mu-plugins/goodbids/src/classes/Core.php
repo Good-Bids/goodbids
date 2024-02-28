@@ -29,6 +29,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\Permissions;
 use GoodBids\Users\Referrals;
 use GoodBids\Users\Users;
 use GoodBids\Utilities\Log;
@@ -444,6 +445,7 @@ class Core {
 				$this->referrals    = new Referrals();
 
 				// Init Modules not part of the API.
+				new Permissions();
 				new Patterns();
 				new Partners();
 				new Dashboard();

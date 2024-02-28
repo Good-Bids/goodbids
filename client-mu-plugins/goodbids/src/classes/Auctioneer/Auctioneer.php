@@ -441,6 +441,7 @@ class Auctioneer {
 		if ( ! $this->url ) {
 			$this->configure_url();
 		}
+
 		return $this->url;
 	}
 
