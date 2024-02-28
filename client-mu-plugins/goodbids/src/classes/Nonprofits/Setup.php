@@ -68,7 +68,7 @@ class Setup {
 	}
 
 	/**
-	 * Check if the current page is the wizard page.
+	 * Check if the current page is the nonprofit setup page.
 	 *
 	 * @since 1.0.0
 	 *
@@ -119,7 +119,7 @@ class Setup {
 					];
 				}
 
-				// Register the auction wizard script.
+				// Register the auction nonprofit setup script.
 				wp_register_script(
 					self::PAGE_SLUG,
 					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-setup.js',
