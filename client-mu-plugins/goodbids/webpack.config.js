@@ -57,6 +57,14 @@ module.exports = {
 			),
 			filename: 'views/auction-wizard.js',
 		},
+		nonprofitSetup: {
+			import: path.resolve(
+				process.cwd(),
+				'src/views/nonprofit-setup',
+				'index.tsx',
+			),
+			filename: 'views/nonprofit-setup.js',
+		},
 	},
 	output: {
 		filename: '[name].js',

@@ -2,15 +2,14 @@
 /**
  * Site Setup View
  *
+ * @var string $nonprofit_set_up_id
+ *
  * @since 1.0.0
  * @package GoodBids
  */
 
-global $title;
 ?>
 
 <div class="wrap">
-	<h1><?php echo esc_html( $title ); ?></h1>
-
-	<!-- Add your content here -->
+	<div id="<?php echo esc_attr( $nonprofit_set_up_id ); ?>"></div>
 </div>
