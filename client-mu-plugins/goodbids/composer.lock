@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fd51b52a7816f8656c1feadc0e14e2a8",
+    "content-hash": "ed970fb4bdf77f1917032c190b83d439",
     "packages": [
         {
             "name": "composer/installers",
@@ -1240,15 +1240,15 @@
         },
         {
             "name": "wpackagist-plugin/accessibility-checker",
-            "version": "1.8.1",
+            "version": "1.9.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/accessibility-checker/",
-                "reference": "tags/1.8.1"
+                "reference": "tags/1.9.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.8.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.9.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1348,10 +1348,10 @@
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",
-            "version": "6.2.6.1",
+            "version": "6.2.7",
             "dist": {
                 "type": "zip",
-                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.6.1"
+                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.7"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
