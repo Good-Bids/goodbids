@@ -606,14 +606,12 @@ class WooCommerce {
 		);
 	}
 
-
-
 	/**
-	 *  Limit access and hide pages from admin
-	 *
-	 * @return void
+	 * Limit access and hide pages from admin
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return void
 	 */
 	private function limit_access_to_pages(): void {
 		$pages = [
