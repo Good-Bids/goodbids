@@ -75,13 +75,6 @@ class Setup {
 	 * @return bool
 	 */
 	private function is_setup_page(): bool {
-		if ( $this->page_id && function_exists( 'get_current_screen' ) ) {
-			$screen = get_current_screen();
-			if ( $screen ) {
-				return $this->page_id === $screen->id;
-			}
-		}
-
 		global $pagenow;
 
 		if ( 'admin.php' !== $pagenow || empty( $_GET['page'] ) ) { // phpcs:ignore
