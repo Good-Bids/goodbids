@@ -18,6 +18,7 @@ use WC_Product_Variation;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
+use WP_Role;
 
 /**
  * Class for Auctions
@@ -267,9 +268,13 @@ class Auctions {
 	 */
 	private function set_admin_capabilities(): void {
 		add_action(
-			'init',
+			'admin_init',
 			function () {
 				$role = get_role( 'administrator' );
+
+				if ( ! $this->has_added_capabilities( $role ) ) {
+					return;
+				}
 
 				$types = [
 					self::POST_TYPE,
@@ -295,6 +300,10 @@ class Auctions {
 						$role->add_cap( $action . '_' . $type . 's' );
 
 						foreach ( $modifiers as $modifier ) {
+							if ( str_contains( $modifier, $action ) ) {
+								continue;
+							}
+
 							$role->add_cap( $action . '_' . $modifier . '_' . $type );
 							$role->add_cap( $action . '_' . $modifier . '_' . $type . 's' );
 						}
@@ -302,7 +311,23 @@ class Auctions {
 				}
 			}
 		);
+	}
 
+	/**
+	 * Check if capabilities have already been added.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_Role $role
+	 *
+	 * @return bool
+	 */
+	private function has_added_capabilities( WP_Role $role ): bool {
+		if ( ! $role->has_cap( 'publish_auction' ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
