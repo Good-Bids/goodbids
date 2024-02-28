@@ -27,7 +27,7 @@ goodbids()->load_view( 'woocommerce/myaccount/dashboard-header.php' );
 $auctions = goodbids()->sites->get_user_participating_auctions( null, 3 );
 
 if ( count( $auctions ) ) :
-	printf( '<h2 class="mt-10 font-normal text-md>%s</h2>', esc_html__( 'Latest Activity', 'goodbids' ) );
+	printf( '<h2 class="mt-10 font-normal text-md">%s</h2>', esc_html__( 'Latest Activity', 'goodbids' ) );
 	goodbids()->load_view( 'woocommerce/myaccount/auctions-table.php', compact( 'auctions' ) );
 endif;
 
