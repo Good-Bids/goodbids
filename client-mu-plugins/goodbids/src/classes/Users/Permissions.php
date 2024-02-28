@@ -212,7 +212,7 @@ class Permissions {
 	 * @return void
 	 */
 	private function update_role( WP_Role $role, array $capabilities ): void {
-		$role->capabilities = $capabilities;
+		$role->capabilities = array_merge( $role->capabilities, $capabilities );
 
 		if ( function_exists( 'wpcom_vip_add_role_caps' ) ) {
 			wpcom_vip_add_role_caps( $role->name, $capabilities );
