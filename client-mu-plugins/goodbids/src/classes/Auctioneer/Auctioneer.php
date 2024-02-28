@@ -30,9 +30,9 @@ class Auctioneer {
 	 * Defines the environment to use.
 	 *
 	 * @since 1.0.0
-	 * @var string
+	 * @var ?string
 	 */
-	private string $environment = 'develop';
+	private ?string $environment = null;
 
 	/**
 	 * @since 1.0.0
@@ -92,12 +92,12 @@ class Auctioneer {
 		// Environment is set on init. See set_environment().
 		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
-		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
+		if ( ! $environments || empty( $environments[ $this->get_environment() ] ) ) {
 			goodbids()->utilities->display_admin_error( __( 'Missing Auctioneer URL constants config.', 'goodbids' ) );
 			return false;
 		}
 
-		$this->url = vip_get_env_var( $environments[ $this->environment ], null );
+		$this->url = vip_get_env_var( $environments[ $this->get_environment() ], null );
 
 		// Abort if missing environment variable.
 		if ( ! $this->url ) {
@@ -173,17 +173,43 @@ class Auctioneer {
 	private function set_environment(): void {
 		add_action(
 			'init',
-			function () {
-				$environment = goodbids()->get_config( 'auctioneer.environment' );
-
-				// Validate Setting.
-				if ( ! in_array( $environment, [ 'local', 'develop', 'staging', 'production' ], true ) ) {
-					return;
-				}
-
-				$this->environment = $environment;
-			}
+			fn () => $this->configure_environment()
 		);
+	}
+
+	/**
+	 * Get the environment to use.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_environment(): string {
+		if ( ! $this->environment ) {
+			$this->configure_environment();
+			if ( ! $this->environment ) {
+				Log::error( 'Auctioneer Environment not configured.' );
+			}
+		}
+		return $this->environment;
+	}
+
+	/**
+	 * Configure the Environment
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function configure_environment(): void {
+		$environment = goodbids()->get_config( 'auctioneer.environment' );
+
+		// Validate Setting.
+		if ( ! in_array( $environment, [ 'local', 'develop', 'staging', 'production' ], true ) ) {
+			return;
+		}
+
+		$this->environment = $environment;
 	}
 
 	/**
@@ -198,11 +224,11 @@ class Auctioneer {
 	 * @return ?array
 	 */
 	public function request( string $endpoint, array $params = [], string $method = 'GET' ): ?array {
-		if ( ! $this->initialized ) {
+		if ( ! $this->initialized || ! $this->get_url() ) {
 			return null;
 		}
 
-		$url      = trailingslashit( $this->url ) . $endpoint;
+		$url      = trailingslashit( $this->get_url() ) . $endpoint;
 		$response = wp_remote_request(
 			$url,
 			[
@@ -435,7 +461,9 @@ class Auctioneer {
 	 */
 	public function get_url(): string {
 		if ( ! $this->url ) {
-			$this->configure_url();
+			if ( ! $this->configure_url() ) {
+				Log::error( 'Auctioneer URL not configured.' );
+			}
 		}
 
 		return $this->url;
