@@ -30,15 +30,15 @@ class Auctioneer {
 	 * Defines the environment to use.
 	 *
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $environment = null;
+	private string $environment = '';
 
 	/**
 	 * @since 1.0.0
-	 * @var ?string
+	 * @var string
 	 */
-	private ?string $url = null;
+	private string $url = '';
 
 	/**
 	 * @since 1.0.0
@@ -97,7 +97,7 @@ class Auctioneer {
 			return false;
 		}
 
-		$this->url = vip_get_env_var( $environments[ $this->get_environment() ], null );
+		$this->url = vip_get_env_var( $environments[ $this->get_environment() ], '' );
 
 		// Abort if missing environment variable.
 		if ( ! $this->url ) {
@@ -191,6 +191,7 @@ class Auctioneer {
 				Log::error( 'Auctioneer Environment not configured.' );
 			}
 		}
+
 		return $this->environment;
 	}
 
