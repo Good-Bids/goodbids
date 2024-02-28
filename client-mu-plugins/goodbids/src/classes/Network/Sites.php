@@ -591,14 +591,12 @@ class Sites {
 	 * @param ?int   $user_id
 	 * @param array  $status
 	 * @param string $type
+	 * @param ?int   $limit
 	 *
 	 * @return array
 	 */
 	public function get_user_orders( ?int $user_id = null, array $status = [], string $type = Bids::ITEM_TYPE, ?int $limit = null ): array {
-		if ( $limit ) {
-			$limit = ++$limit;
-		}
-		return collect(
+		$bids = collect(
 			$this->loop(
 				function ( $site_id ) use ( $type, $user_id, $status ) {
 					if ( Bids::ITEM_TYPE === $type ) {
@@ -630,9 +628,13 @@ class Sites {
 					$rewards_order['site_id']
 				);
 			}
-		)
-		->slice( 0, $limit )
-		->all();
+		);
+
+		if ( $limit ) {
+			$bids->slice( 0, $limit + 1 );
+		}
+
+		return $bids->all();
 	}
 
 	/**
@@ -642,6 +644,7 @@ class Sites {
 	 *
 	 * @param ?int  $user_id
 	 * @param array $status
+	 * @param ?int  $limit
 	 *
 	 * @return array
 	 */
@@ -705,11 +708,12 @@ class Sites {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $user_id
+	 * @param ?int $limit
 	 *
 	 * @return array
 	 */
 	public function get_user_participating_auctions( ?int $user_id = null, ?int $limit = null ): array {
-		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ], $limit ) )
+		$participating = collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
 			->map(
 				function ( array $item ) {
 					return $this->swap(
@@ -728,8 +732,13 @@ class Sites {
 					'auction_id' => $group->first()['auction_id'],
 					'count'      => $group->count(),
 				]
-			)
-			->all();
+			);
+
+		if ( $limit ) {
+			$participating->slice( 0, $limit + 1 );
+		}
+
+		return $participating->all();
 	}
 
 	/**

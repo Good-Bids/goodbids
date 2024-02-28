@@ -8,9 +8,10 @@
  * @package GoodBids
  */
 
+if ( ! count( $auctions ) ) :
+	return;
+endif;
 ?>
-
-<?php if ( count( $auctions ) ) : ?>
 <div class="overflow-hidden border border-solid rounded-sm border-black-100">
 	<table class="!mb-0 !border-0 bg-base-2 goodbids-auctions-table woocommerce-MyAccount-auctions shop_table shop_table_responsive my_account_auctions account-auctions-table">
 		<thead>
@@ -43,16 +44,16 @@
 						?>
 						<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-auctions-table__row goodbids-auctions-table__row--status-<?php echo esc_attr( sanitize_title( $status ) ); ?> auction">
 							<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-auction-title" data-title="<?php esc_attr_e( 'Auction', 'goodbids' ); ?>">
-								<span><?php echo esc_html( get_the_title( $auction_id ) ); ?></span>
+								<span><?php echo esc_html( $auction->get_title() ); ?></span>
 							</td>
 							<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-nonprofit" data-title="<?php esc_attr_e( 'Nonprofit', 'goodbids' ); ?>">
-								<span><?php echo esc_html( get_bloginfo( 'title' ) ); ?></span>
+								<span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
 							</td>
 							<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
 								<span><?php echo esc_html( $status ); ?></span>
 							</td>
 							<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-bids" data-title="<?php esc_attr_e( 'Bids', 'goodbids' ); ?>">
-								<span><?php echo esc_html( $bid_count ); ?></span>
+								<span><?php echo esc_html( number_format( $bid_count, 0 ) ); ?></span>
 							</td>
 							<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-donated" data-title="<?php esc_attr_e( 'Donated', 'goodbids' ); ?>">
 								<span><?php echo wp_kses_post( wc_price( $total_donated ) ); ?></span>
@@ -73,4 +74,3 @@
 		</tbody>
 	</table>
 </div>
-<?php endif; ?>
