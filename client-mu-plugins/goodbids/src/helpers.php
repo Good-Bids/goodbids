@@ -57,6 +57,16 @@ if ( ! function_exists( 'dd' ) ) {
 			$dump = var_export( $data, true ); // phpcs:ignore
 		}
 
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			echo $dump; // phpcs:ignore
+
+			if ( ! $die ) {
+				return;
+			}
+
+			die();
+		}
+
 		$output = highlight_string( "<?php\n\n" . $dump, true ); // phpcs:ignore
 		echo "<div style=\"background-color: #1C1E21; padding: 1rem\">{$output}</div>"; // phpcs:ignore
 

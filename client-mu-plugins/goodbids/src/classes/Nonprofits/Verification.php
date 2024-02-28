@@ -155,6 +155,12 @@ class Verification {
 		$prefix    = self::OPTION_SLUG;
 		$page_slug = self::PAGE_SLUG;
 
+		if ( $disabled ) {
+			foreach ( $fields as $key => $field ) {
+				$fields[ $key ]['disabled'] = true;
+			}
+		}
+
 		$vars = compact(
 			'data',
 			'fields',
@@ -255,23 +261,17 @@ class Verification {
 		add_filter(
 			'goodbids_nonprofit_custom_fields',
 			function ( $fields ): array {
-				if ( is_super_admin() ) {
-					$fields['verification'] = [
-						'label'       => __( 'Verified', 'goodbids' ),
-						'type'        => 'toggle',
-						'default'     => '',
-						'placeholder' => '',
-						'description' => __( 'Only visible to Super Admins', 'goodbids' ),
-					];
+				if ( ! is_super_admin() ) {
+					return $fields;
 				}
 
-				$disabled = $this->form_is_disabled( $this->get_site_id() );
-
-				if ( $disabled ) {
-					foreach ( $fields as $key => $field ) {
-						$fields[ $key ]['disabled'] = true;
-					}
-				}
+				$fields['verification'] = [
+					'label'       => __( 'Verified', 'goodbids' ),
+					'type'        => 'toggle',
+					'default'     => '',
+					'placeholder' => '',
+					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
+				];
 
 				return $fields;
 			}
@@ -286,54 +286,51 @@ class Verification {
 	 * @return void
 	 */
 	private function init_custom_fields(): void {
-		$this->custom_fields = apply_filters(
-			'goodbids_nonprofit_custom_fields',
-			[
-				'legal-name' => [
-					'label'       => __( 'Nonprofit Legal Name', 'goodbids' ),
-					'type'        => 'text',
-					'default'     => '',
-					'placeholder' => '',
-					'required'    => true,
-				],
-				'ein'        => [
-					'label'       => __( 'Nonprofit EIN', 'goodbids' ),
-					'type'        => 'text',
-					'default'     => '',
-					'placeholder' => 'XX-XXXXXXX',
-					'required'    => true,
-				],
-				'website'    => [
-					'label'       => __( 'Nonprofit Website', 'goodbids' ),
-					'type'        => 'url',
-					'default'     => '',
-					'placeholder' => 'https://',
-					'required'    => true,
-				],
-				'status'     => [
-					'label'       => __( 'Site Status', 'goodbids' ),
-					'type'        => 'select',
-					'default'     => 'pending',
-					'placeholder' => '',
-					'required'    => true,
-					'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
-					'options'     => [
-						[
-							'label' => __( 'Pending', 'goodbids' ),
-							'value' => 'pending',
-						],
-						[
-							'label' => __( 'Published', 'goodbids' ),
-							'value' => 'published',
-						],
-						[
-							'label' => __( 'Disabled', 'goodbids' ),
-							'value' => 'disabled',
-						],
+		$this->custom_fields = [
+			'legal-name' => [
+				'label'       => __( 'Nonprofit Legal Name', 'goodbids' ),
+				'type'        => 'text',
+				'default'     => '',
+				'placeholder' => '',
+				'required'    => true,
+			],
+			'ein'        => [
+				'label'       => __( 'Nonprofit EIN', 'goodbids' ),
+				'type'        => 'text',
+				'default'     => '',
+				'placeholder' => 'XX-XXXXXXX',
+				'required'    => true,
+			],
+			'website'    => [
+				'label'       => __( 'Nonprofit Website', 'goodbids' ),
+				'type'        => 'url',
+				'default'     => '',
+				'placeholder' => 'https://',
+				'required'    => true,
+			],
+			'status'     => [
+				'label'       => __( 'Site Status', 'goodbids' ),
+				'type'        => 'select',
+				'default'     => 'pending',
+				'placeholder' => '',
+				'required'    => true,
+				'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
+				'options'     => [
+					[
+						'label' => __( 'Pending', 'goodbids' ),
+						'value' => 'pending',
+					],
+					[
+						'label' => __( 'Published', 'goodbids' ),
+						'value' => 'published',
+					],
+					[
+						'label' => __( 'Disabled', 'goodbids' ),
+						'value' => 'disabled',
 					],
 				],
-			]
-		);
+			],
+		];
 	}
 
 	/**
@@ -348,7 +345,7 @@ class Verification {
 			$this->init_custom_fields();
 		}
 
-		return $this->custom_fields;
+		return apply_filters( 'goodbids_nonprofit_custom_fields', $this->custom_fields );
 	}
 
 	/**
@@ -552,7 +549,8 @@ class Verification {
 					return;
 				}
 
-				if ( ! $this->is_verified( get_current_blog_id() ) && ! is_super_admin() ) {
+
+				if ( ! is_super_admin() && ! $this->is_verified( get_current_blog_id() ) ) {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
 				}
 			}

@@ -74,10 +74,6 @@ class Auctioneer {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! $this->configure_url() ) {
-			return;
-		}
-
 		if ( ! $this->configure_api_key() ) {
 			return;
 		}
@@ -93,8 +89,8 @@ class Auctioneer {
 	 * @return bool
 	 */
 	private function configure_url(): bool {
-		$this->environment = goodbids()->get_config( 'auctioneer.environment' );
-		$environments      = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
+		// Environment is set on init. See set_environment().
+		$environments = goodbids()->get_config( 'vip-constants.auctioneer.urls' );
 
 		if ( ! $environments || empty( $environments[ $this->environment ] ) ) {
 			goodbids()->utilities->display_admin_error( __( 'Missing Auctioneer URL constants config.', 'goodbids' ) );
@@ -181,7 +177,7 @@ class Auctioneer {
 				$environment = goodbids()->get_config( 'auctioneer.environment' );
 
 				// Validate Setting.
-				if ( ! in_array( $environment, [ 'develop', 'staging', 'production' ], true ) ) {
+				if ( ! in_array( $environment, [ 'local', 'develop', 'staging', 'production' ], true ) ) {
 					return;
 				}
 
@@ -441,6 +437,7 @@ class Auctioneer {
 		if ( ! $this->url ) {
 			$this->configure_url();
 		}
+
 		return $this->url;
 	}
 

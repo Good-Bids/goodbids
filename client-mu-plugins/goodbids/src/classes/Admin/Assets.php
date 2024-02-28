@@ -22,17 +22,17 @@ class Assets {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->enqueue_admin_assets();
+		$this->init_assets();
 	}
 
 	/**
-	 * Enqueue Admin Assets
+	 * Initialize Admin Assets
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function enqueue_admin_assets(): void {
+	private function init_assets(): void {
 		add_action(
 			'admin_enqueue_scripts',
 			function () {

@@ -29,6 +29,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\Permissions;
 use GoodBids\Users\Referrals;
 use GoodBids\Users\Users;
 use GoodBids\Utilities\Log;
@@ -427,16 +428,16 @@ class Core {
 				$this->utilities    = new Utilities();
 				$this->acf          = new ACF();
 				$this->admin        = new Admin();
-				$this->auctioneer   = new Auctioneer();
 				$this->auctions     = new Auctions();
+				$this->auctioneer   = new Auctioneer();
 				$this->products     = new Products();
 				$this->bids         = new Bids();
 				$this->rewards      = new Rewards();
+				$this->network      = new Network();
+				$this->sites        = new Sites();
 				$this->invoices     = new Invoices();
 				$this->verification = new Verification();
 				$this->settings     = new Settings();
-				$this->network      = new Network();
-				$this->sites        = new Sites();
 				$this->woocommerce  = new WooCommerce();
 				$this->notices      = new Notices();
 				$this->users        = new Users();
@@ -444,6 +445,7 @@ class Core {
 				$this->referrals    = new Referrals();
 
 				// Init Modules not part of the API.
+				new Permissions();
 				new Patterns();
 				new Partners();
 				new Dashboard();
