@@ -242,7 +242,7 @@ class WooCommerce {
 	 */
 	private function configure_new_site(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_nonprofit_verified',
 			function (): void {
 				// Disable Guest Checkout.
 				update_option( 'woocommerce_enable_guest_checkout', 'no' );
@@ -622,6 +622,7 @@ class WooCommerce {
 			get_option( 'woocommerce_view_order_page_id' ),
 			get_option( 'woocommerce_authentication_page_id' ),
 		];
+		$pages = array_filter( $pages );
 
 		// Block access to pages
 		add_action(
@@ -638,28 +639,56 @@ class WooCommerce {
 					isset( $_GET['post'] ) &&
 					in_array( $_GET['post'], $pages, true )
 					) {
+						dd( 'test' );
 					wp_safe_redirect( admin_url() );
 					exit;
 				}
 			}
 		);
 
-		// Remove pages from admin view
-		add_filter(
-			'pre_get_posts',
-			function ( $query ) use ( $pages ) {
-				if ( ! is_admin() || ! is_super_admin() ) {
-					return $query;
-				}
-
-				global $pagenow, $post_type;
-
-				if ( $pagenow == 'edit.php' && $post_type == 'page' ) {
-					$query->set( 'post__not_in', $pages );
-				}
-
-				return $query;
+		$prevent_delete = function ( mixed $delete, WP_Post $post ): mixed {
+			if ( 'page' !== get_post_type( $post ) ) {
+				return $delete;
 			}
+
+			goodbids()->utilities->display_admin_error( __( 'Page cannot be deleted.', 'goodbids' ), true );
+
+			return false;
+		};
+
+		add_action(
+			'admin_init',
+			function () use ( $prevent_delete ): void {
+				if ( is_super_admin() ) {
+					return;
+				}
+
+				add_filter( 'pre_delete_post', $prevent_delete, 10, 2 );
+				add_filter( 'pre_trash_post', $prevent_delete, 10, 2 );
+			}
+		);
+
+		add_filter(
+			'post_row_actions',
+			function ( array $actions, $post ) {
+				if ( 'page' !== get_post_type( $post ) ) {
+					return $actions;
+				}
+
+				if ( is_super_admin() ) {
+					return $actions;
+				}
+
+				unset( $actions['inline hide-if-no-js'] );
+				unset( $actions['inline'] );
+				unset( $actions['edit'] );
+				unset( $actions['trash'] );
+				unset( $actions['clone'] );
+
+				return $actions;
+			},
+			10,
+			2
 		);
 	}
 }

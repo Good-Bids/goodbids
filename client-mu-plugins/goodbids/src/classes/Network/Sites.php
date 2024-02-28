@@ -47,9 +47,8 @@ class Sites {
 		$this->set_default_posts_per_page();
 
 		// Initialize Page Management
-		$this->create_about_page();
-		$this->create_all_auctions_page();
-		$this->delete_sample_page();
+
+		$this->init_site_defaults();
 
 		// Lock down the block editor.
 		$this->lock_block_editor();
@@ -130,7 +129,7 @@ class Sites {
 	 */
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_nonprofit_verified',
 			function () {
 				$stylesheet = 'goodbids-nonprofit';
 
@@ -147,32 +146,26 @@ class Sites {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $site_id
-	 *
 	 * @return void
 	 */
-	private function init_site_defaults( int $site_id ): void {
-		$this->swap(
-			fn() => do_action( 'goodbids_init_site', $site_id ),
-			$site_id
+	private function init_site_defaults(): void {
+		add_action(
+			'goodbids_nonprofit_verified',
+			function ( int $site_id ): void {
+				$this->swap(
+					function (): void {
+						$this->create_about_page();
+						$this->create_all_auctions_page();
+						$this->delete_sample_page();
+						$this->set_default_posts_per_page();
+					},
+					$site_id
+				);
+			}
 		);
 	}
 
-	/**
-	 * Initialize new nonprofit defaults.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return void
-	 */
-	private function init_nonprofit_defaults( int $site_id ): void {
-		$this->swap(
-			fn() => do_action( 'goodbids_nonprofit_verified', $site_id ),
-			$site_id
-		);
-	}
+
 
 	/**
 	 * Set the GoodBids logo on the child theme.
@@ -210,14 +203,9 @@ class Sites {
 	 * @return void
 	 */
 	private function set_default_posts_per_page(): void {
-		add_action(
-			'goodbids_init_site',
-			function (): void {
-				update_option(
-					'posts_per_page',
-					goodbids()->get_config( 'sites.default-posts-per-page' )
-				);
-			}
+		update_option(
+			'posts_per_page',
+			goodbids()->get_config( 'sites.default-posts-per-page' )
 		);
 	}
 
@@ -394,7 +382,8 @@ class Sites {
 		add_action(
 			'goodbids_nonprofit_verified',
 			function ( int $site_id ): void {
-				if ( wpcom_vip_get_page_by_path( 'about' ) ) {
+				$about_slug = 'about';
+				if ( wpcom_vip_get_page_by_path( $about_slug ) ) {
 					return;
 				}
 
@@ -409,7 +398,7 @@ class Sites {
 						'post_type'    => 'page',
 						'post_status'  => 'publish',
 						'post_author'  => 1,
-						'post_name'    => 'about',
+						'post_name'    => $about_slug,
 					]
 				);
 
@@ -419,6 +408,13 @@ class Sites {
 			}
 		);
 	}
+
+	// TODO
+	// if ( function_exists( 'wpcom_vip_add_role_caps' ) ) {
+	// wpcom_vip_add_role_caps( $role->name, $capabilities );
+	// } else {
+
+	// }
 
 	/**
 	 * Create the Explore Auctions page and sets the pattern template
@@ -431,7 +427,8 @@ class Sites {
 		add_action(
 			'goodbids_nonprofit_verified',
 			function ( int $site_id ): void {
-				if ( wpcom_vip_get_page_by_path( 'explore-auctions' ) ) {
+				$auctions_slug = 'explore-auctions';
+				if ( wpcom_vip_get_page_by_path( $auctions_slug ) ) {
 					return;
 				}
 				ob_start();
@@ -445,7 +442,7 @@ class Sites {
 						'post_type'    => 'page',
 						'post_status'  => 'publish',
 						'post_author'  => 1,
-						'post_name'    => 'explore-auctions',
+						'post_name'    => $auctions_slug,
 					]
 				);
 

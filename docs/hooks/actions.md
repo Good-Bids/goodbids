@@ -1,27 +1,14 @@
 ## Action Hooks
 
-### goodbids_init_site
+### goodbids_nonprofit_verified
 
-Action performed when a new site is created. `swap()` has already been called to change to the new site.
+Action performed when a site has been verified.
 
 ```php
 add_action(
-	'goodbids_init_site',
+	'goodbids_nonprofit_verified',
 	function ( int $site_id ): void {
 		update_option( 'my_option_name', 'my_value' );
-	}
-);
-```
-
-### goodbids_init_default_pages
-
-Action performed to set up a new site default pages. `swap()` has already been called to change to the new site.
-
-```php
-add_action(
-	'goodbids_init_default_pages',
-	function ( int $site_id ): void {
-
 	}
 );
 ```
