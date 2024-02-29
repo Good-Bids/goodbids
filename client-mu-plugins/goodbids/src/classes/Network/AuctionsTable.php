@@ -45,7 +45,7 @@ class AuctionsTable extends WP_List_Table {
 	}
 
 	/**
-	 * Output Row Actions with Site Name
+	 * Output Row Actions with Username
 	 *
 	 * @since 1.0.0
 	 *
@@ -215,7 +215,7 @@ class AuctionsTable extends WP_List_Table {
 	}
 
 	/**
-	 * Add Filters.
+	 * Display Navigation
 	 *
 	 * @since 1.0.0
 	 *

@@ -467,7 +467,7 @@ class Sites {
 		$auctions = empty( $query_args ) ? get_transient( self::ALL_AUCTIONS_TRANSIENT ) : false;
 
 		if ( $auctions ) {
-//			return $auctions;
+			return $auctions;
 		}
 
 		$auctions = $this->loop(
@@ -486,6 +486,34 @@ class Sites {
 		}
 
 		return $auctions;
+	}
+
+	/**
+	 * Get Users that have placed bids.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int[]
+	 */
+	public function get_bidding_users(): array {
+		$users = [];
+
+		$this->loop(
+			function () use ( &$users ) {
+				$orders = goodbids()->woocommerce->orders->get_all_bid_order_id();
+
+				foreach ( $orders as $order_id ) {
+					$order   = wc_get_order( $order_id );
+					$user_id = $order->get_user_id();
+
+					if ( $user_id && ! in_array( $user_id, $users, true ) ) {
+						$users[] = $user_id;
+					}
+				}
+			}
+		);
+
+		return array_unique( $users );
 	}
 
 	/**

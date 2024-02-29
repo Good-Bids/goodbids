@@ -40,6 +40,14 @@ class Network {
 	public ?Auctions $auctions = null;
 
 	/**
+	 * Invoices
+	 *
+	 * @since 1.0.0
+	 * @var ?Bidders
+	 */
+	public ?Bidders $bidders = null;
+
+	/**
 	 * Logs
 	 *
 	 * @since 1.0.0
@@ -55,6 +63,8 @@ class Network {
 		$this->nonprofits = new Nonprofits();
 		$this->invoices   = new Invoices();
 		$this->auctions   = new Auctions();
+		$this->bidders    = new Bidders();
+
 		$this->logs       = new Logs();
 	}
 }

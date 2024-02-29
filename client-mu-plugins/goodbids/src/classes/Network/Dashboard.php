@@ -89,6 +89,16 @@ class Dashboard {
 					[ $this, 'auctions_page' ]
 				);
 
+				// Bidders Page
+				add_submenu_page(
+					'goodbids',
+					esc_html__( 'Bidders', 'goodbids' ),
+					esc_html__( 'Bidders', 'goodbids' ),
+					'manage_network',
+					Bidders::PAGE_SLUG,
+					[ $this, 'bidders_page' ]
+				);
+
 				goodbids()->admin->add_menu_separator( self::PAGE_SLUG );
 
 				// Settings Page
@@ -158,6 +168,17 @@ class Dashboard {
 	 */
 	public function auctions_page(): void {
 		require GOODBIDS_PLUGIN_PATH . 'views/network/auctions.php';
+	}
+
+	/**
+	 * Network Admin Bidders Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function bidders_page(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/network/bidders.php';
 	}
 
 	/**

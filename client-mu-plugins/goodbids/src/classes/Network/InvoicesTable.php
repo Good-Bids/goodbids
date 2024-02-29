@@ -177,7 +177,7 @@ class InvoicesTable extends WP_List_Table {
 	}
 
 	/**
-	 * Add Status Filters.
+	 * Display Navigation
 	 *
 	 * @since 1.0.0
 	 *

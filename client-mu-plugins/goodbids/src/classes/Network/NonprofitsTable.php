@@ -209,7 +209,7 @@ class NonprofitsTable extends WP_List_Table {
 	}
 
 	/**
-	 * Add Filters.
+	 * Display Navigation
 	 *
 	 * @since 1.0.0
 	 *
