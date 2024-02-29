@@ -27,11 +27,11 @@ endif;
 	// Goal.
 	if ( $goal ) :
 		?>
-		<div class="rounded bg-contrast-5 px-4 py-2">
-			<span class="font-bold text-sm block"><?php esc_html_e( 'Goal', 'goodbids' ); ?></span>
+		<div class="px-4 py-2 rounded-sm bg-contrast-5">
+			<span class="block text-sm font-bold"><?php esc_html_e( 'Goal', 'goodbids' ); ?></span>
 			<?php
 				printf(
-					'<span class="text-sm block">%s</span>',
+					'<span class="block text-sm">%s</span>',
 					wp_kses_post( wc_price( $goal ) )
 				);
 			?>
@@ -42,11 +42,11 @@ endif;
 	// Expected High Bid.
 	if ( $expected_high_bid ) :
 		?>
-		<div class="rounded bg-contrast-5 px-4 py-2">
-			<span class="font-bold text-sm block"><?php esc_html_e( 'High Bid Goal', 'goodbids' ); ?></span>
+		<div class="px-4 py-2 rounded-sm bg-contrast-5">
+			<span class="block text-sm font-bold"><?php esc_html_e( 'High Bid Goal', 'goodbids' ); ?></span>
 			<?php
 				printf(
-					'<span class="text-sm block">%s</span>',
+					'<span class="block text-sm">%s</span>',
 					wp_kses_post( wc_price( $expected_high_bid ) )
 				);
 			?>
@@ -57,11 +57,11 @@ endif;
 	// Estimated Value.
 	if ( $estimated_value ) :
 		?>
-		<div class="rounded bg-contrast-5 px-4 py-2">
-			<span class="font-bold text-sm block"><?php esc_html_e( 'Est. Value', 'goodbids' ); ?></span>
+		<div class="px-4 py-2 rounded-sm bg-contrast-5">
+			<span class="block text-sm font-bold"><?php esc_html_e( 'Est. Value', 'goodbids' ); ?></span>
 			<?php
 				printf(
-					'<span class="text-sm block">%s</span>',
+					'<span class="block text-sm">%s</span>',
 					wp_kses_post( wc_price( $estimated_value ) )
 				);
 			?>

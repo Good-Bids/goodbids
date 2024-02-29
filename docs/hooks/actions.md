@@ -1,12 +1,25 @@
 ## Action Hooks
 
-### goodbids_init_site
+### goodbids_initialize_site
 
-Action performed when a new site is created. `switch_to_blog()` has already been called to change to the new site.
+Action performed when a new site is initialized. `swap()` has already been called.
 
 ```php
 add_action(
-	'goodbids_init_site',
+	'goodbids_initialize_site',
+	function ( int $site_id ): void {
+		update_option( 'my_option_name', 'my_value' );
+	}
+);
+```
+
+### goodbids_nonprofit_verified
+
+Action performed when a site has been verified. `swap()` has already been called.
+
+```php
+add_action(
+	'goodbids_nonprofit_verified',
 	function ( int $site_id ): void {
 		update_option( 'my_option_name', 'my_value' );
 	}
@@ -28,6 +41,7 @@ add_action(
 	2
 );
 ```
+
 ### goodbids_auction_start_event
 
 Cron event, fired every minute.

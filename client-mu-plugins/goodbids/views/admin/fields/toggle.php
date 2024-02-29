@@ -2,14 +2,14 @@
 /**
  * Admin Field: Toggle
  *
- * @global bool   $required
- * @global array  $field
- * @global string $prefix
- * @global string $key
- * @global string $placeholder
- * @global string $field_id
- * @global mixed  $value
- * @global bool   $wrap
+ * @var bool   $required
+ * @var array  $field
+ * @var string $prefix
+ * @var string $key
+ * @var string $placeholder
+ * @var string $field_id
+ * @var mixed  $value
+ * @var bool   $wrap
  *
  * @since 1.0.0
  * @package GoodBids
@@ -18,13 +18,13 @@
 $toggle_class = ! empty( $field['disabled'] ) ? 'cursor-default' : 'cursor-pointer';
 ?>
 <?php if ( $wrap ) : ?>
-<tr class="form-field<?php echo $required ? ' form-required' : ''; ?>">
+<tr class="<?php echo $required ? ' form-required' : ''; ?>">
 	<th scope="row">
 		<label for="<?php echo esc_attr( $field_id ); ?>">
 			<?php
 			echo esc_html( $field['label'] );
 			if ( $required ) :
-				echo ' ' . wp_required_field_indicator(); // phpcs:ignore
+				echo '&nbsp;' . wp_required_field_indicator(); // phpcs:ignore
 			endif;
 			?>
 		</label>

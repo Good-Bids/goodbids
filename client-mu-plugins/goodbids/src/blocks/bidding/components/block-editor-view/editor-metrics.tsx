@@ -15,9 +15,9 @@ type EditorMetricsBlockProps = {
 
 export function EditorMetricBlock({ type, value }: EditorMetricsBlockProps) {
 	return (
-		<div className="rounded bg-contrast-5 px-4 py-2">
-			<span className="font-bold text-sm block">{type}</span>
-			<span className="text-sm block">{value}</span>
+		<div className="px-4 py-2 rounded-sm bg-contrast-5">
+			<span className="block text-sm font-bold">{type}</span>
+			<span className="block text-sm">{value}</span>
 		</div>
 	);
 }

@@ -4,10 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.form-field #gbnp-legal-name,
-.form-field #gbnp-ein,
-.form-field #gbnp-website {
-	max-width: 25em;
+tr.separator td {
+	@apply p-0;
 }
 
 .warning-message {
@@ -30,7 +28,7 @@
 /**
  * Plugins Page
  */
-.plugins .inline {
+#wpbody-content .inline {
 	@apply !block;
 }
 
