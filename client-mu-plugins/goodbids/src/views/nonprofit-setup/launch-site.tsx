@@ -9,7 +9,7 @@ export function LaunchSite() {
 			<CardHeading
 				title={__('Go Live on GOODBIDS', 'goodbids')}
 				content={__(
-					'You are ready to launch your site! Clicking the button below will update your site’s status to Live and allow non-Admin visitors to view your pages.',
+					'You are ready to launch your site! Clicking the Launch Site button will update your site’s status to Live and allow non-Admin visitors to view your pages.',
 					'goodbids',
 				)}
 			>

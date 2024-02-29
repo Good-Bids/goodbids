@@ -5,7 +5,10 @@ declare module '*.jpg';
 
 type PHPVariables = Record<string, string>;
 
+// These are only defined for the auction wizard page
 declare const gbAuctionWizard: PHPVariables;
+
+// These are only defined for the nonprofit setup page
 declare const gbNonprofitSetup: {
 	appID: string;
 	ajaxUrl: string;
