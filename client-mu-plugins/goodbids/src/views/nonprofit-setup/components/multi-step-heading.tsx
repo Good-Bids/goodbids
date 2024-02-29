@@ -2,7 +2,7 @@ import { H2, P } from '../../../components/typography';
 
 type MultiStepHeadingProps = {
 	title: string;
-	content: string;
+	content: React.ReactNode;
 	children?: React.ReactNode;
 };
 

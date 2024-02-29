@@ -5,7 +5,7 @@ import { MultiStep } from '../components/multi-step';
 import { CardHeading } from '../components/card-heading';
 import { UpdateStyle } from './update-style';
 import { UploadSiteLogo } from './upload-site-logo';
-import { ReviewHomepage } from './review-homepage';
+import { CustomizeHomepage } from './customize-homepage';
 import { Advanced } from './advanced';
 
 export function CustomizeDesignAndContent() {
@@ -14,7 +14,7 @@ export function CustomizeDesignAndContent() {
 			<CardHeading
 				title={__('Customize Design and Content', 'goodbids')}
 				content={__(
-					"Before you can launch your GOODBIDS site, you'll need to complete the steps below.",
+					"Card Description: Update your site's visual aesthetic and content to match your brand.",
 					'goodbids',
 				)}
 			/>
@@ -23,16 +23,16 @@ export function CustomizeDesignAndContent() {
 				defaultStep="update-style"
 				steps={{
 					'update-style': {
-						label: __('1 Update Style', 'goodbids'),
+						label: __('Update Site Style', 'goodbids'),
 						component: <UpdateStyle />,
 					},
 					'upload-site-logo': {
-						label: __('2 Upload Site Logo', 'goodbids'),
+						label: __('Upload Logo', 'goodbids'),
 						component: <UploadSiteLogo />,
 					},
 					'review-homepage': {
-						label: __('3 Review Homepage', 'goodbids'),
-						component: <ReviewHomepage />,
+						label: __('Customize Homepage Content', 'goodbids'),
+						component: <CustomizeHomepage />,
 					},
 					advanced: {
 						label: __('Advanced', 'goodbids'),

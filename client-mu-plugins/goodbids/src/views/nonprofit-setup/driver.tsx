@@ -4,6 +4,7 @@ import { CustomizeDesignAndContent } from './customize-design-and-content';
 import { InviteAdmins } from './invite-admins';
 import { LaunchSite } from './launch-site';
 import { PlanAnAuction } from './plan-an-auction';
+import { PrepareForLaunch } from './prepare-for-launch';
 
 export function Driver() {
 	return (
@@ -14,6 +15,7 @@ export function Driver() {
 				<CustomizeDesignAndContent />
 				<PlanAnAuction />
 				<InviteAdmins />
+				<PrepareForLaunch />
 				<LaunchSite />
 			</div>
 		</main>

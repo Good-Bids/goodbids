@@ -1,32 +1,23 @@
 import { __ } from '@wordpress/i18n';
-import { ButtonLink } from '../../components/button-link';
 import { Card } from './components/card';
-import { getBaseAdminUrl } from '../../utils/get-base-url';
 import { CardHeading } from './components/card-heading';
-
-// TODO: Replace with the actual URL or action
-const LAUNCH_SITE_URL = '/#';
+import { Button } from '../../components/button';
 
 export function LaunchSite() {
-	const baseUrl = getBaseAdminUrl();
-
 	return (
 		<Card>
 			<CardHeading
-				title={__('Launch Site', 'goodbids')}
+				title={__('Go Live on GOODBIDS', 'goodbids')}
 				content={__(
-					'Launch your GOODBIDS site to the world!',
+					'You are ready to launch your site! Clicking the button below will update your site’s status to Live and allow non-Admin visitors to view your pages.',
 					'goodbids',
 				)}
 			>
-				<div className="w-full max-w-40">
-					<ButtonLink
-						target="_blank"
-						variant="solid"
-						href={`${baseUrl}${LAUNCH_SITE_URL}`}
-					>
-						{__('Go Live', 'goodbids')}
-					</ButtonLink>
+				<div className="w-full max-w-60">
+					{/* TODO: Hook up action once available */}
+					<Button variant="solid" disabled>
+						{__('Launch Site', 'goodbids')}
+					</Button>
 				</div>
 			</CardHeading>
 		</Card>

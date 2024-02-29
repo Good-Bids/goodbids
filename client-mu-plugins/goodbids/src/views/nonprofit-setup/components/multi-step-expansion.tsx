@@ -2,7 +2,7 @@ import { H3, P } from '../../../components/typography';
 
 type MultiStepExpansionItemType = {
 	title: string;
-	content: string;
+	content: React.ReactNode;
 	component: React.ReactNode;
 };
 
@@ -20,7 +20,9 @@ export function MultiStepExpansion({ items }: MultiStepExpansionProps) {
 				>
 					<H3>{title}</H3>
 					<P>{content}</P>
-					{component}
+					<div className="w-full flex justify-center">
+						{component}
+					</div>
 				</div>
 			))}
 		</div>
