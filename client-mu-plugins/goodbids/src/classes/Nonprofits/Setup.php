@@ -48,9 +48,9 @@ class Setup {
 					__( 'Site Setup', 'goodbids' ),
 					'manage_options',
 					self::PAGE_SLUG,
-					[ $this, 'nonprofit_setup_page'],
+					[ $this, 'nonprofit_setup_page' ],
 					'dashicons-admin-site-alt3',
-					'1.1'
+					1.1
 				);
 			}
 		);
@@ -119,7 +119,7 @@ class Setup {
 					];
 				}
 
-				// Register the auction nonprofit setup script.
+				// Register the New Site Setup script.
 				wp_register_script(
 					self::PAGE_SLUG,
 					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-setup.js',
