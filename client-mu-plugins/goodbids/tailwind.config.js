@@ -39,6 +39,7 @@ module.exports = {
 				'accent-3': 'var(--wp--preset--color--accent-3)',
 				'accent-4': 'var(--wp--preset--color--accent-4)',
 				transparent: 'transparent',
+				'black-100': 'rgba(0, 0, 0, 0.1)',
 				warning: {
 					text: '#000',
 					bg: '#fcda82',

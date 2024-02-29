@@ -31,82 +31,86 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 <h1><?php esc_html_e( 'Rewards', 'goodbids' ); ?></h1>
 
 <?php if ( $has_orders ) : ?>
-	<?php goodbids()->load_view( 'woocommerce/myaccount/rewards-header.php' ); ?>
+	<?php goodbids()->load_view( 'woocommerce/myaccount/my-rewards-header.php' ); ?>
 
-	<table class="bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
-		<thead>
-			<tr class="bg-base-3">
-				<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Reward', 'goodbids' ); ?></span></th>
-				<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Nonprofit', 'goodbids' ); ?></span></th>
-				<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Status', 'goodbids' ); ?></span></th>
-				<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Date', 'goodbids' ); ?></span></th>
-				<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="sr-only"><?php esc_html_e( 'Action', 'goodbids' ); ?></span></th>
-			</tr>
-		</thead>
+	<h2 class="mt-12 font-normal text-md"><?php esc_html_e( 'Claimed Rewards', 'goodbids' ); ?></h2>
 
-		<tbody>
-			<?php
-			foreach ( $reward_orders as $reward_order ) {
-				goodbids()->sites->swap(
-					function () use ( $reward_order, $disabled_columns ) {
-						$order = wc_get_order( $reward_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-						?>
-						<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
-							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-reward" data-title="<?php esc_attr_e( 'Reward', 'goodbids' ); ?>">
-								<?php
-								foreach ( $order->get_items() as $item ) :
-									$product = $item->get_product();
-									if ( $product ) :
-										?>
-										<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
-											<?php echo esc_html( $item['name'] ); ?>
-										</a>
-										<?php
-									endif;
-								endforeach;
-								?>
-							</td>
-							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-nonprofit" data-title="<?php esc_attr_e( 'Nonprofit', 'goodbids' ); ?>">
-								<a href="<?php echo esc_url( get_blog_details( $reward_order['site_id'] )->siteurl ); ?>">
-									<?php echo esc_html( get_blog_details( $reward_order['site_id'] )->blogname ); ?>
-								</a>
-							</td>
+	<div class="overflow-hidden border border-solid rounded-sm border-black-100">
+		<table class="!mb-0 !border-0 bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
+			<thead>
+				<tr class="bg-base-3">
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Reward', 'goodbids' ); ?></span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Nonprofit', 'goodbids' ); ?></span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Status', 'goodbids' ); ?></span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="nobr"><?php esc_html_e( 'Date', 'goodbids' ); ?></span></th>
+					<th class="goodbids-auctions-table__header goodbids-auctions-table__header-nonprofit"><span class="sr-only"><?php esc_html_e( 'Action', 'goodbids' ); ?></span></th>
+				</tr>
+			</thead>
 
-							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
-								<?php echo esc_html( wc_get_order_status_name( $order->get_status() ) ); ?>
-							</td>
+			<tbody>
+				<?php
+				foreach ( $reward_orders as $reward_order ) {
+					goodbids()->sites->swap(
+						function () use ( $reward_order, $disabled_columns ) {
+							$order = wc_get_order( $reward_order['order_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+							?>
+							<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
+								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-reward" data-title="<?php esc_attr_e( 'Reward', 'goodbids' ); ?>">
+									<?php
+									foreach ( $order->get_items() as $item ) :
+										$product = $item->get_product();
+										if ( $product ) :
+											?>
+											<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
+												<?php echo esc_html( $item['name'] ); ?>
+											</a>
+											<?php
+										endif;
+									endforeach;
+									?>
+								</td>
+								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-nonprofit" data-title="<?php esc_attr_e( 'Nonprofit', 'goodbids' ); ?>">
+									<a href="<?php echo esc_url( get_blog_details( $reward_order['site_id'] )->siteurl ); ?>">
+										<?php echo esc_html( get_blog_details( $reward_order['site_id'] )->blogname ); ?>
+									</a>
+								</td>
 
-							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-date" data-title="<?php esc_attr_e( 'Date', 'goodbids' ); ?>">
-								<time datetime="<?php echo esc_attr( $order->get_date_created()->date( 'c' ) ); ?>">
-									<?php echo esc_html( $order->get_date_created()->date( 'm/d/y' ) ); ?>
-								</time>
-							</td>
+								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
+									<?php echo esc_html( wc_get_order_status_name( $order->get_status() ) ); ?>
+								</td>
 
-							<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-action" data-title="<?php esc_attr_e( 'Action', 'goodbids' ); ?>">
-								<?php
-										$actions = wc_get_account_orders_actions( $order );
+								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-date" data-title="<?php esc_attr_e( 'Date', 'goodbids' ); ?>">
+									<time datetime="<?php echo esc_attr( $order->get_date_created()->date( 'c' ) ); ?>">
+										<?php echo esc_html( $order->get_date_created()->date( 'm/d/y' ) ); ?>
+									</time>
+								</td>
 
-								if ( ! empty( $actions ) ) {
-									foreach ( $actions as $key => $action ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-										printf(
-											'<a href="%s" class="btn-fill-sm %s">%s</a>',
-											esc_url( $action['url'] ),
-											sanitize_html_class( $key ),
-											esc_html( $action['name'] )
-										);
+								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-action" data-title="<?php esc_attr_e( 'Action', 'goodbids' ); ?>">
+									<?php
+											$actions = wc_get_account_orders_actions( $order );
+
+									if ( ! empty( $actions ) ) {
+										foreach ( $actions as $key => $action ) { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+											printf(
+												'<a href="%s" class="btn-fill-sm %s">%s</a>',
+												esc_url( $action['url'] ),
+												sanitize_html_class( $key ),
+												esc_html( $action['name'] )
+											);
+										}
 									}
-								}
-								?>
-							</td>
-						</tr>
-						<?php
-					},
-					$reward_order['site_id']
-				);
-			}
-			?>
-		</tbody>
-	</table>
+									?>
+								</td>
+							</tr>
+							<?php
+						},
+						$reward_order['site_id']
+					);
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
 
 	<?php do_action( 'woocommerce_before_account_orders_pagination' ); ?>
 
