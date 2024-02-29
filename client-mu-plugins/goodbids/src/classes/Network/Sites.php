@@ -12,6 +12,7 @@ use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Nonprofits\Verification;
+use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
 use WP_Block_Type_Registry;
 use WP_Post;
@@ -40,13 +41,19 @@ class Sites {
 		// Show Verification Status on Edit Site page.
 		$this->edit_site_form_fields();
 
-		// New Site Actions
-		$this->activate_child_theme_on_new_site();
+		// Default child theme logo to Main Site logo.
 		$this->default_child_theme_logo();
-		$this->set_default_posts_per_page();
-		$this->disable_blocks_for_nonprofits();
+
+		// New Site Initialization
+		$this->activate_child_theme_on_new_site();
 		$this->create_about_page();
+		$this->create_all_auctions_page();
+		$this->delete_sample_page();
+		$this->set_default_posts_per_page();
+
+		// Lock down the block editor.
 		$this->lock_block_editor();
+		$this->disable_blocks_for_nonprofits();
 
 		// Sites Custom Columns
 		$this->customize_sites_columns();
@@ -103,6 +110,11 @@ class Sites {
 					return;
 				}
 
+				$this->swap(
+					fn () => do_action( 'goodbids_initialize_site', $new_site->blog_id ),
+					$new_site->blog_id
+				);
+
 				if ( ! headers_sent() ) {
 					$redirect_url = network_admin_url( Verification::PARENT_PAGE );
 					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
@@ -123,8 +135,8 @@ class Sites {
 	 */
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
-			'goodbids_init_site',
-			function () {
+			'goodbids_initialize_site',
+			function (): void {
 				$stylesheet = 'goodbids-nonprofit';
 
 				// Check if the Goodbids child theme exists first.
@@ -132,22 +144,6 @@ class Sites {
 					switch_theme( $stylesheet );
 				}
 			}
-		);
-	}
-
-	/**
-	 * Initialize new site defaults.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return void
-	 */
-	private function init_site_defaults( int $site_id ): void {
-		$this->swap(
-			fn() => do_action( 'goodbids_init_site', $site_id ),
-			$site_id
 		);
 	}
 
@@ -188,7 +184,7 @@ class Sites {
 	 */
 	private function set_default_posts_per_page(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_initialize_site',
 			function (): void {
 				update_option(
 					'posts_per_page',
@@ -361,7 +357,7 @@ class Sites {
 	}
 
 	/**
-	 * Sets a pattern template for the page post type
+	 * Create the GOODBIDS About page and sets the pattern template
 	 *
 	 * @since 1.0.0
 	 *
@@ -369,28 +365,102 @@ class Sites {
 	 */
 	private function create_about_page(): void {
 		add_action(
-			'goodbids_init_site',
+			'goodbids_initialize_site',
 			function (): void {
+				$about_slug = 'about';
+
+				// Make sure it doesn't already exist.
+				if ( $this->get_page_path( $about_slug ) ) {
+					return;
+				}
+
 				ob_start();
 
 				goodbids()->load_view( 'patterns/template-about-page.php' );
 
-				$about = [
-					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
-					'post_content' => ob_get_clean(),
-					'post_type'    => 'page',
-					'post_status'  => [ 'publish' ],
-					'post_author'  => 1,
-					'post_name'    => 'about',
-				];
+				$about_id = wp_insert_post(
+					[
+						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+						'post_content' => ob_get_clean(),
+						'post_type'    => 'page',
+						'post_status'  => 'publish',
+						'post_author'  => 1,
+						'post_name'    => $about_slug,
+					]
+				);
 
-				$about_id = wp_insert_post( $about );
-
-				if ( is_numeric( $about_id ) ) { // This function can return a WP_Error object.
-					// TODO: Use the $site_id to update post meta to track which $about_id is the About page.
+				if ( is_wp_error( $about_id ) ) {
+					Log::error( $about_id->get_error_message() );
 				}
-			},
-			20
+			}
+		);
+	}
+
+	/**
+	 * Create the Explore Auctions page and sets the pattern template
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function create_all_auctions_page(): void {
+		add_action(
+			'goodbids_initialize_site',
+			function (): void {
+				$auctions_slug = 'explore-auctions';
+
+				// Make sure it doesn't already exist.
+				if ( $this->get_page_path( $auctions_slug ) ) {
+					return;
+				}
+
+				ob_start();
+
+				goodbids()->load_view( 'patterns/template-archive-auction.php' );
+
+				$auctions_id = wp_insert_post(
+					[
+						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
+						'post_content' => ob_get_clean(),
+						'post_type'    => 'page',
+						'post_status'  => 'publish',
+						'post_author'  => 1,
+						'post_name'    => $auctions_slug,
+					]
+				);
+
+				if ( is_wp_error( $auctions_id ) ) {
+					Log::error( $auctions_id->get_error_message() );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Delete the sample page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function delete_sample_page(): void {
+		add_action(
+			'goodbids_initialize_site',
+			function (): void {
+				$page = $this->get_page_path( 'sample-page' );
+
+				if ( ! $page ) {
+					return;
+				}
+
+				if ( intval( get_option( 'page_on_front' ) ) === $page->ID ) {
+					return;
+				}
+
+				if ( ! wp_delete_post( $page->ID ) ) {
+					Log::warning( 'There was a problem deleting the Sample Page' );
+				}
+			}
 		);
 	}
 
@@ -801,7 +871,6 @@ class Sites {
 		return $this->get_user_orders( $user_id, $status, Rewards::ITEM_TYPE );
 	}
 
-
 	/**
 	 * Get all watched and bid auctions from all sites for a User ID
 	 *
@@ -951,5 +1020,22 @@ class Sites {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Get Page Path
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $path
+	 *
+	 * @return ?WP_Post
+	 */
+	private function get_page_path( string $path ): ?WP_Post {
+		if ( function_exists( 'wpcom_vip_get_page_by_path' ) ) {
+			return wpcom_vip_get_page_by_path( $path );
+		}
+
+		return get_page_by_path( $path ); // phpcs:ignore
 	}
 }

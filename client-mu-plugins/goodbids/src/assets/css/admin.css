@@ -30,7 +30,7 @@
 /**
  * Plugins Page
  */
-.plugins .inline {
+#wpbody-content .inline {
 	@apply !block;
 }
 

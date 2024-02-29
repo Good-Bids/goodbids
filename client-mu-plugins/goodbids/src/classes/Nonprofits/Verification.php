@@ -478,7 +478,8 @@ class Verification {
 
 				Log::debug( 'Updating Nonprofit Data.' );
 
-				$data = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
+				$data     = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
+				$verified = false;
 
 				foreach ( $this->get_custom_fields() as $key => $field ) {
 					if ( ! isset( $data[ $key ] ) ) {
@@ -490,9 +491,17 @@ class Verification {
 
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
+						$verified   = true;
 					}
 
 					update_site_meta( $site_id, $meta_key, $meta_value );
+				}
+
+				if ( $verified ) {
+					goodbids()->sites->swap(
+						fn () => do_action( 'goodbids_nonprofit_verified', $site_id ),
+						$site_id
+					);
 				}
 
 				goodbids()->utilities->display_admin_success( __( 'Nonprofit data has been updated.', 'goodbids' ), true, true );
