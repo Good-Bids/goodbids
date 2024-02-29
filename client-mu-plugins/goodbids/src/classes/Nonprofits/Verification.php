@@ -265,15 +265,24 @@ class Verification {
 					return $fields;
 				}
 
-				$fields['verification'] = [
-					'label'       => __( 'Verified', 'goodbids' ),
-					'type'        => 'toggle',
-					'default'     => '',
-					'placeholder' => '',
-					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
-				];
+				$new_fields = [];
 
-				return $fields;
+				foreach ( $fields as $key => $field ) {
+					$new_fields[ $key ] = $field;
+
+					// Insert after Status.
+					if ( 'status' === $key ) {
+						$new_fields['verification'] = [
+							'label'       => __( 'Verified', 'goodbids' ),
+							'type'        => 'toggle',
+							'default'     => '',
+							'placeholder' => '',
+							'description' => __( 'Only visible to Super Admins', 'goodbids' ),
+						];
+					}
+				}
+
+				return $new_fields;
 			}
 		);
 	}
@@ -287,28 +296,28 @@ class Verification {
 	 */
 	private function init_custom_fields(): void {
 		$this->custom_fields = [
-			'legal-name' => [
+			'legal-name'          => [
 				'label'       => __( 'Nonprofit Legal Name', 'goodbids' ),
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
 				'required'    => true,
 			],
-			'ein'        => [
+			'ein'                 => [
 				'label'       => __( 'Nonprofit EIN', 'goodbids' ),
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => 'XX-XXXXXXX',
 				'required'    => true,
 			],
-			'website'    => [
+			'website'              => [
 				'label'       => __( 'Nonprofit Website', 'goodbids' ),
 				'type'        => 'url',
 				'default'     => '',
 				'placeholder' => 'https://',
 				'required'    => true,
 			],
-			'status'     => [
+			'status'               => [
 				'label'       => __( 'Site Status', 'goodbids' ),
 				'type'        => 'select',
 				'default'     => 'pending',
@@ -329,6 +338,79 @@ class Verification {
 						'value' => 'disabled',
 					],
 				],
+			],
+			'sep1'                  => [
+				'type' => 'separator',
+			],
+			'primary_contact_name'  => [
+				'label'       => __( 'Primary Contact Legal Name', 'goodbids' ),
+				'type'        => 'text',
+				'default'     => '',
+				'placeholder' => '',
+				'required'    => true,
+			],
+			'primary_contact_email' => [
+				'label'       => __( 'Primary Contact Email Address', 'goodbids' ),
+				'type'        => 'email',
+				'default'     => '',
+				'placeholder' => 'email@domain.com',
+				'required'    => true,
+			],
+			'primary_contact_title' => [
+				'label'       => __( 'Primary Contact Job Title', 'goodbids' ),
+				'type'        => 'text',
+				'default'     => '',
+				'placeholder' => '',
+				'required'    => true,
+			],
+			'impact_vertical'       => [
+				'label'       => __( 'Impact Vertical', 'goodbids' ),
+				'type'        => 'select',
+				'default'     => '',
+				'placeholder' => '',
+				'required'    => true,
+				'options'     => [
+					'Animals',
+					'Arts & Culture',
+					'Civic & Community',
+					'Disaster & Emergency Services',
+					'Diversity, Equity & Inclusion',
+					'Education/School',
+					'Environment & Sustainability',
+					'Faith-based & Religious',
+					'Food Insecurity',
+					'Health and Wellness',
+					'Housing & Homelessness',
+					'Humanities/International Affairs',
+					'Justice & Legal Services',
+					'Reproductive Rights',
+					'Research',
+					'Sports and Recreation',
+					'Technology',
+					'Veterans Services',
+					'Other',
+				],
+			],
+			'finance_contact_name'  => [
+				'label'       => __( 'Finance Contact Legal Name', 'goodbids' ),
+				'type'        => 'text',
+				'default'     => '',
+				'placeholder' => '',
+				'required'    => true,
+			],
+			'finance_contact_email' => [
+				'label'       => __( 'Finance Contact Email Address', 'goodbids' ),
+				'type'        => 'email',
+				'default'     => '',
+				'placeholder' => 'email@domain.com',
+				'required'    => true,
+			],
+			'finance_contact_title' => [
+				'label'       => __( 'Finance Contact Job Title', 'goodbids' ),
+				'type'        => 'text',
+				'default'     => '',
+				'placeholder' => '',
+				'required'    => true,
 			],
 		];
 	}
