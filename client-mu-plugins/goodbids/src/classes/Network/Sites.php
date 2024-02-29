@@ -47,7 +47,6 @@ class Sites {
 		$this->set_default_posts_per_page();
 
 		// Initialize Page Management
-
 		$this->init_site_defaults();
 
 		// Lock down the block editor.
@@ -110,7 +109,7 @@ class Sites {
 				}
 
 				if ( ! headers_sent() ) {
-					$redirect_url = network_admin_url( Verification::PARENT_PAGE );
+					$redirect_url = network_admin_url( 'site-settings.php' );
 					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
 					$redirect_url = add_query_arg( 'id', $new_site->blog_id, $redirect_url );
 					wp_safe_redirect( $redirect_url );
@@ -129,7 +128,7 @@ class Sites {
 	 */
 	private function activate_child_theme_on_new_site(): void {
 		add_action(
-			'goodbids_nonprofit_verified',
+			'wp_initialize_site',
 			function () {
 				$stylesheet = 'goodbids-nonprofit';
 
