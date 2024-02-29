@@ -14,7 +14,7 @@ export function CustomizeDesignAndContent() {
 			<CardHeading
 				title={__('Customize Design and Content', 'goodbids')}
 				content={__(
-					"Card Description: Update your site's visual aesthetic and content to match your brand.",
+					"Update your site's visual aesthetic and content to match your brand.",
 					'goodbids',
 				)}
 			/>
