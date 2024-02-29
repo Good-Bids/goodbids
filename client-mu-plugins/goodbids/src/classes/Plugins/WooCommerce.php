@@ -25,7 +25,6 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Orders;
 use WC_Product;
 use WP_Error;
-use WP_Post;
 
 /**
  * Class for WooCommerce
