@@ -242,7 +242,7 @@ class WooCommerce {
 	 */
 	private function configure_new_site(): void {
 		add_action(
-			'goodbids_nonprofit_verified',
+			'goodbids_initialize_site',
 			function (): void {
 				// Disable Guest Checkout.
 				update_option( 'woocommerce_enable_guest_checkout', 'no' );

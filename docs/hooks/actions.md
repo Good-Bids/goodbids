@@ -1,8 +1,21 @@
 ## Action Hooks
 
+### goodbids_initialize_site
+
+Action performed when a new site is initialized. `swap()` has already been called.
+
+```php
+add_action(
+	'goodbids_initialize_site',
+	function ( int $site_id ): void {
+		update_option( 'my_option_name', 'my_value' );
+	}
+);
+```
+
 ### goodbids_nonprofit_verified
 
-Action performed when a site has been verified.
+Action performed when a site has been verified. `swap()` has already been called.
 
 ```php
 add_action(

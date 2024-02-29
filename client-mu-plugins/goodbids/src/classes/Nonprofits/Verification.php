@@ -498,7 +498,10 @@ class Verification {
 				}
 
 				if ( $verified ) {
-					do_action( 'goodbids_nonprofit_verified', $site_id );
+					goodbids()->sites->swap(
+						fn () => do_action( 'goodbids_nonprofit_verified', $site_id ),
+						$site_id
+					);
 				}
 
 				goodbids()->utilities->display_admin_success( __( 'Nonprofit data has been updated.', 'goodbids' ), true, true );
