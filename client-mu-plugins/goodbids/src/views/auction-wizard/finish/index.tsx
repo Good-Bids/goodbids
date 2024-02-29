@@ -24,12 +24,14 @@ export function FinishScreen() {
 				</p>
 			</div>
 
-			<ButtonLink
-				href={`${baseUrl}/wp-admin/post.php?post=${auctionId}&action=edit`}
-				autoFocus
-			>
-				{__('Customize Auction page', 'goodbids')}
-			</ButtonLink>
+			<div className="w-fit">
+				<ButtonLink
+					href={`${baseUrl}/wp-admin/post.php?post=${auctionId}&action=edit`}
+					autoFocus
+				>
+					{__('Customize Auction page', 'goodbids')}
+				</ButtonLink>
+			</div>
 		</div>
 	);
 }

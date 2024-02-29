@@ -25,6 +25,10 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Remove any admin notices for this page.
+		$this->disable_admin_notices();
+
+		// Add the menu page for the setup dashboard
 		$this->add_menu_dashboard_page();
 
 		// Enqueue Scripts
@@ -154,5 +158,25 @@ class Setup {
 			'appID'   => self::PAGE_SLUG,
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		];
+	}
+
+	/**
+	 * Disable Admin notices for this page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_admin_notices(): void {
+		add_action(
+			'admin_init',
+			function(): void {
+				if ( ! $this->is_setup_page() ) {
+					return;
+				}
+
+				remove_all_actions( 'admin_notices' );
+			}
+		);
 	}
 }
