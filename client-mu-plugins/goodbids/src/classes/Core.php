@@ -449,7 +449,6 @@ class Core {
 				$this->users        = new Users();
 				$this->watchers     = new Watchers();
 				$this->referrals    = new Referrals();
-				$this->setup        = new Setup();
 
 				// Init Modules not part of the API.
 				new Permissions();
@@ -458,6 +457,7 @@ class Core {
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
+				new Setup();
 			}
 		);
 	}
@@ -554,7 +554,7 @@ class Core {
 	 *
 	 * @return void
 	 */
-	private function disable_css_concatenation() {
+	private function disable_css_concatenation(): void {
 		add_filter( 'css_do_concat', '__return_false' );
 	}
 }

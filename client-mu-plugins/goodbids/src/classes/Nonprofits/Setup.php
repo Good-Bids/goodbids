@@ -9,7 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 /**
- * Invoices Class
+ * Setup Class
  *
  * @since 1.0.0
  */
@@ -35,11 +35,11 @@ class Setup {
 			'admin_menu',
 			function () {
 				add_menu_page(
-					__( 'Nonprofit Site Onboarding' ),
-					__( 'Site Setup' ),
+					__( 'Nonprofit Site Onboarding', 'goodbids' ),
+					__( 'Site Setup', 'goodbids' ),
 					'manage_options',
 					'site-setup',
-					$this->setup_content(),
+					[ $this, 'setup_content' ],
 					'dashicons-admin-site-alt3',
 					'1.1'
 				);
@@ -52,11 +52,9 @@ class Setup {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return callable
+	 * @return void
 	 */
-	public function setup_content(): callable {
-		return function () {
-			include GOODBIDS_PLUGIN_PATH . 'views/admin/setup/site-setup.php';
-		};
+	public function setup_content(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/admin/setup/site-setup.php';
 	}
 }
