@@ -20,6 +20,7 @@ export function InviteAdmins() {
 			>
 				<div className="w-full max-w-40">
 					<ButtonLink
+						target="_blank"
 						variant="solid"
 						href={`${baseUrl}${ADD_USER_URL}`}
 					>

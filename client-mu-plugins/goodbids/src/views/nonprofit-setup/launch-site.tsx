@@ -21,6 +21,7 @@ export function LaunchSite() {
 			>
 				<div className="w-full max-w-40">
 					<ButtonLink
+						target="_blank"
 						variant="solid"
 						href={`${baseUrl}${LAUNCH_SITE_URL}`}
 					>

@@ -21,6 +21,7 @@ export function PlanAnAuction() {
 			>
 				<div className="w-full max-w-40">
 					<ButtonLink
+						target="_blank"
 						variant="solid"
 						href={`${baseUrl}${AUCTION_WIZARD_URL}`}
 					>
