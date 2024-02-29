@@ -467,7 +467,7 @@ class Sites {
 		$auctions = empty( $query_args ) ? get_transient( self::ALL_AUCTIONS_TRANSIENT ) : false;
 
 		if ( $auctions ) {
-			return $auctions;
+//			return $auctions;
 		}
 
 		$auctions = $this->loop(
@@ -478,33 +478,6 @@ class Sites {
 						'site_id' => $site_id,
 					]
 				)
-				->filter(
-					fn ( array $auction_data ) => goodbids()->sites->swap(
-						function () use ( $auction_data ) {
-								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-								return ! $auction->has_ended();
-							},
-						$auction_data['site_id']
-					)
-				)
-				->sortByDesc(
-					fn ( array $auction_data ) => [
-						'bid_count'    => $this->swap(
-							function () use ( $auction_data ) {
-								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-								return $auction->get_bid_count();
-							},
-							$auction_data['site_id']
-						),
-						'total_raised' => $this->swap(
-							function () use ( $auction_data ) {
-								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-								return $auction->get_total_raised();
-							},
-							$auction_data['site_id']
-						),
-					]
-				)
 				->all()
 		);
 
@@ -513,6 +486,48 @@ class Sites {
 		}
 
 		return $auctions;
+	}
+
+	/**
+	 * Get all open auctions from all sites.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $query_args
+	 *
+	 * @return array
+	 */
+	public function get_all_open_auctions( array $query_args = [] ): array {
+		return collect( $this->get_all_auctions( $query_args ) )
+			->filter(
+				fn ( array $auction_data ) => goodbids()->sites->swap(
+					function () use ( $auction_data ) {
+						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+						return ! $auction->has_ended();
+					},
+					$auction_data['site_id']
+				)
+			)
+			->sortByDesc(
+				fn ( array $auction_data ) => [
+					'bid_count'    => $this->swap(
+						function () use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+							return $auction->get_bid_count();
+						},
+						$auction_data['site_id']
+					),
+					'total_raised' => $this->swap(
+						function () use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+							return $auction->get_total_raised();
+						},
+						$auction_data['site_id']
+					),
+				]
+			)
+			->all();
+
 	}
 
 	/**

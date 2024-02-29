@@ -79,6 +79,16 @@ class Dashboard {
 					[ $this, 'invoices_page' ]
 				);
 
+				// Auctions Page
+				add_submenu_page(
+					'goodbids',
+					esc_html__( 'Auctions', 'goodbids' ),
+					esc_html__( 'Auctions', 'goodbids' ),
+					'manage_network',
+					Auctions::PAGE_SLUG,
+					[ $this, 'auctions_page' ]
+				);
+
 				goodbids()->admin->add_menu_separator( self::PAGE_SLUG );
 
 				// Settings Page
@@ -137,6 +147,17 @@ class Dashboard {
 	 */
 	public function invoices_page(): void {
 		require GOODBIDS_PLUGIN_PATH . 'views/network/invoices.php';
+	}
+
+	/**
+	 * Network Admin Auctions Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function auctions_page(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/network/auctions.php';
 	}
 
 	/**

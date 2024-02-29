@@ -153,7 +153,8 @@ class NonprofitsTable extends WP_List_Table {
 			],
 			'raised'    => [
 				'raised',
-				false, __( 'Total Raised', 'goodbids' ),
+				false,
+				__( 'Total Raised', 'goodbids' ),
 				__( 'Table ordered by Total Raised.', 'goodbids' ),
 			],
 			'revenue'   => [
@@ -179,7 +180,7 @@ class NonprofitsTable extends WP_List_Table {
 	}
 
 	/**
-	 * Get Available Status Filters and counts.
+	 * Get Available Standings Filters and counts.
 	 *
 	 * @since 1.0.0
 	 *
@@ -187,7 +188,7 @@ class NonprofitsTable extends WP_List_Table {
 	 */
 	public function get_standings_filters(): array {
 		$nonprofits = goodbids()->network->nonprofits->get_all_nonprofits();
-		$filters  = [
+		$filters    = [
 			'all' => 0,
 		];
 
@@ -208,7 +209,7 @@ class NonprofitsTable extends WP_List_Table {
 	}
 
 	/**
-	 * Add Standings Filters.
+	 * Add Filters.
 	 *
 	 * @since 1.0.0
 	 *
@@ -327,7 +328,7 @@ class NonprofitsTable extends WP_List_Table {
 		}
 
 		return collect( $data )
-			->sortBy( [ [ $order_by, $order ] ] )
+			->sortBy(  $order_by, SORT_NATURAL, 'desc' === $order )
 			->all();
 	}
 

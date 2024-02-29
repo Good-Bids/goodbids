@@ -108,7 +108,7 @@ class AllAuctions extends ACFBlock {
 	public function get_all_auctions(): array {
 		// if on the main site, get all auctions from all site
 		if ( is_main_site() ) {
-			return goodbids()->sites->get_all_auctions();
+			return goodbids()->sites->get_all_open_auctions();
 		}
 
 		// default to get all auctions from the current site

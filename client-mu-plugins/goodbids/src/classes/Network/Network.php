@@ -32,6 +32,14 @@ class Network {
 	public ?Invoices $invoices = null;
 
 	/**
+	 * Invoices
+	 *
+	 * @since 1.0.0
+	 * @var ?Auctions
+	 */
+	public ?Auctions $auctions = null;
+
+	/**
 	 * Logs
 	 *
 	 * @since 1.0.0
@@ -46,6 +54,7 @@ class Network {
 		// Init Submodules.
 		$this->nonprofits = new Nonprofits();
 		$this->invoices   = new Invoices();
+		$this->auctions   = new Auctions();
 		$this->logs       = new Logs();
 	}
 }
