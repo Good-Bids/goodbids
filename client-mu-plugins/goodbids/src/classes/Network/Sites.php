@@ -591,11 +591,12 @@ class Sites {
 	 * @param ?int   $user_id
 	 * @param array  $status
 	 * @param string $type
+	 * @param ?int   $limit
 	 *
 	 * @return array
 	 */
-	public function get_user_orders( ?int $user_id = null, array $status = [], string $type = Bids::ITEM_TYPE ): array {
-		return collect(
+	public function get_user_orders( ?int $user_id = null, array $status = [], string $type = Bids::ITEM_TYPE, ?int $limit = null ): array {
+		$bids = collect(
 			$this->loop(
 				function ( $site_id ) use ( $type, $user_id, $status ) {
 					if ( Bids::ITEM_TYPE === $type ) {
@@ -627,8 +628,13 @@ class Sites {
 					$rewards_order['site_id']
 				);
 			}
-		)
-		->all();
+		);
+
+		if ( $limit ) {
+			$bids = $bids->slice( 0, $limit );
+		}
+
+		return $bids->all();
 	}
 
 	/**
@@ -638,11 +644,12 @@ class Sites {
 	 *
 	 * @param ?int  $user_id
 	 * @param array $status
+	 * @param ?int  $limit
 	 *
 	 * @return array
 	 */
-	public function get_user_bid_orders( ?int $user_id = null, array $status = [] ): array {
-		return $this->get_user_orders( $user_id, $status, Bids::ITEM_TYPE );
+	public function get_user_bid_orders( ?int $user_id = null, array $status = [], ?int $limit = null ): array {
+		return $this->get_user_orders( $user_id, $status, Bids::ITEM_TYPE, $limit );
 	}
 
 	/**
@@ -701,11 +708,12 @@ class Sites {
 	 * @since 1.0.0
 	 *
 	 * @param ?int $user_id
+	 * @param ?int $limit
 	 *
 	 * @return array
 	 */
-	public function get_user_participating_auctions( ?int $user_id = null ): array {
-		return collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
+	public function get_user_participating_auctions( ?int $user_id = null, ?int $limit = null ): array {
+		$participating = collect( $this->get_user_bid_orders( $user_id, [ 'processing', 'completed' ] ) )
 			->map(
 				function ( array $item ) {
 					return $this->swap(
@@ -724,8 +732,13 @@ class Sites {
 					'auction_id' => $group->first()['auction_id'],
 					'count'      => $group->count(),
 				]
-			)
-			->all();
+			);
+
+		if ( $limit ) {
+			$participating = $participating->slice( 0, $limit );
+		}
+
+		return $participating->all();
 	}
 
 	/**

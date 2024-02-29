@@ -32,6 +32,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 	<?php goodbids()->load_view( 'woocommerce/myaccount/orders-header.php' ); ?>
 
 	<h2 class="mt-12 font-normal text-md"><?php esc_html_e( 'Donation History', 'goodbids' ); ?></h2>
+
 	<div class="overflow-hidden border border-solid rounded-sm border-black-100">
 		<table class="!mb-0 !border-0 bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 			<thead>
@@ -104,34 +105,34 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 					);
 				}
 				?>
-			</tbody>
-		</table>
-	</div>
+				</tbody>
+			</table>
+		</div>
 
 	<?php do_action( 'woocommerce_before_account_orders_pagination' ); ?>
 
 	<?php if ( 1 < $max_pages ) : ?>
-		<div class="woocommerce-pagination woocommerce-pagination--with-numbers woocommerce-Pagination">
-			<?php
-			echo wp_kses_post(
-				paginate_links(
-					[
-						'base'      => esc_url_raw( wc_get_endpoint_url( 'orders', '%_%' ) ),
-						'format'    => '%#%',
-						'add_args'  => false,
-						'current'   => max( 1, $current_page ),
-						'total'     => $max_pages,
-						'prev_text' => '&larr;',
-						'next_text' => '&rarr;',
-						'type'      => 'list',
-						'end_size'  => 3,
-						'mid_size'  => 3,
-					]
-				)
-			);
-			?>
-		</div>
-	<?php endif; ?>
+	<div class="woocommerce-pagination woocommerce-pagination--with-numbers woocommerce-Pagination">
+		<?php
+		echo wp_kses_post(
+			paginate_links(
+				[
+					'base'      => esc_url_raw( wc_get_endpoint_url( 'orders', '%_%' ) ),
+					'format'    => '%#%',
+					'add_args'  => false,
+					'current'   => max( 1, $current_page ),
+					'total'     => $max_pages,
+					'prev_text' => '&larr;',
+					'next_text' => '&rarr;',
+					'type'      => 'list',
+					'end_size'  => 3,
+					'mid_size'  => 3,
+				]
+			)
+		);
+		?>
+	</div>
+<?php endif; ?>
 
 <?php else : ?>
 

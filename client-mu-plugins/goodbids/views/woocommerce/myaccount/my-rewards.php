@@ -32,9 +32,6 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php if ( $has_orders ) : ?>
 	<?php goodbids()->load_view( 'woocommerce/myaccount/my-rewards-header.php' ); ?>
-
-	<h2 class="mt-12 font-normal text-md"><?php esc_html_e( 'Claimed Rewards', 'goodbids' ); ?></h2>
-
 	<div class="overflow-hidden border border-solid rounded-sm border-black-100">
 		<table class="!mb-0 !border-0 bg-base-2 woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 			<thead>
