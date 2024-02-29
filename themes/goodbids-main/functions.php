@@ -209,3 +209,14 @@ add_action( 'init', 'goodbids_main_pattern_categories' );
  * Disable remote block patterns.
  */
 add_filter( 'should_load_remote_block_patterns', '__return_false' );
+
+
+function register_home_link_block_as_navigation_last_child( $hooked_blocks, $position, $anchor_block, $context ) {
+	if ( $anchor_block === 'core/navigation' && $position === 'last_child' ) {
+		$hooked_blocks[] = 'core/loginout';
+	}
+
+	return $hooked_blocks;
+}
+
+add_filter( 'hooked_block_types', 'register_home_link_block_as_navigation_last_child', 10, 4 );
