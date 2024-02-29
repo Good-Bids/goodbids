@@ -22,7 +22,7 @@ use GoodBids\Users\Referrals\Referral;
 	<?php if ( ! $referrals ) : ?>
 		<p><?php esc_html_e( 'You have not made any referrals yet.', 'goodbids' ); ?></p>
 	<?php else : ?>
-		<div class="overflow-hidden border border-solid rounded-sm border-black-100">
+		<div class="mt-10 overflow-hidden border border-solid rounded-sm border-black-100">
 			<table class="!mb-0 !border-0 bg-base-2 woocommerce-MyAccount-referrals shop_table shop_table_responsive my_account_referrals account-referrals-table">
 				<thead>
 					<tr class="text-xs bg-base-3">
@@ -43,13 +43,13 @@ use GoodBids\Users\Referrals\Referral;
 								?>
 								<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-referrals-table__row goodbids-referrals-table__row--status-<?php echo esc_attr( strtolower( $r_status ) ); ?> referral">
 									<td class="text-xs goodbids-referrals-table__cell goodbids-referrals-table__cell-referral" data-title="<?php esc_attr_e( 'Referral Name', 'goodbids' ); ?>">
-										<span><?php echo esc_html( $display ); ?></span>
+										<?php echo esc_html( $display ); ?>
 									</td>
 									<td class="text-xs goodbids-referrals-table__cell goodbids-referrals-table__cell-created" data-title="<?php esc_attr_e( 'Referral Date', 'goodbids' ); ?>">
-										<span><?php echo esc_html( $referral->get_created_date( 'n/j/Y' ) ); ?></span>
+										<?php echo esc_html( $referral->get_created_date( 'n/j/Y' ) ); ?>
 									</td>
 									<td class="text-xs goodbids-referrals-table__cell goodbids-referrals-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
-										<span><?php echo esc_html( $r_status ); ?></span>
+										<?php echo esc_html( $r_status ); ?>
 									</td>
 								</tr>
 								<?php

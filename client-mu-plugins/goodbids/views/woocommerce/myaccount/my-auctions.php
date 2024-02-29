@@ -49,25 +49,25 @@
 								?>
 								<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-auctions-table__row goodbids-auctions-table__row--status-<?php echo esc_attr( sanitize_title( $status ) ); ?> auction">
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-auction-title" data-title="<?php esc_attr_e( 'Auction', 'goodbids' ); ?>">
-										<span><?php echo esc_html( get_the_title( $auction_id ) ); ?></span>
+										<?php echo esc_html( get_the_title( $auction_id ) ); ?>
 									</td>
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-nonprofit" data-title="<?php esc_attr_e( 'Nonprofit', 'goodbids' ); ?>">
-										<span><?php echo esc_html( get_bloginfo( 'title' ) ); ?></span>
+										<?php echo esc_html( get_bloginfo( 'title' ) ); ?>
 									</td>
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-status" data-title="<?php esc_attr_e( 'Status', 'goodbids' ); ?>">
-										<span><?php echo esc_html( $status ); ?></span>
+										<?php echo esc_html( $status ); ?>
 									</td>
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-bids" data-title="<?php esc_attr_e( 'Bids', 'goodbids' ); ?>">
-										<span><?php echo esc_html( $bid_count ); ?></span>
+										<?php echo esc_html( $bid_count ); ?>
 									</td>
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-donated" data-title="<?php esc_attr_e( 'Donated', 'goodbids' ); ?>">
-										<span><?php echo wp_kses_post( wc_price( $total_donated ) ); ?></span>
+										<?php echo wp_kses_post( wc_price( $total_donated ) ); ?>
 									</td>
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-high-bidder" data-title="<?php esc_attr_e( 'High Bidder', 'goodbids' ); ?>">
-										<span><?php $is_winning ? esc_html_e( 'Yes', 'goodbids' ) : esc_html_e( 'No', 'goodbids' ); ?></span>
+										<?php $is_winning ? esc_html_e( 'Yes', 'goodbids' ) : esc_html_e( 'No', 'goodbids' ); ?>
 									</td>
 									<td class="goodbids-auctions-table__cell goodbids-auctions-table__cell-view" data-title="<?php esc_attr_e( 'View', 'goodbids' ); ?>">
-										<span><a href="<?php echo esc_url( get_permalink( $auction_id ) ); ?>" class="btn-fill-sm"><?php esc_html_e( 'View', 'goodbids' ); ?></a></span>
+										<a href="<?php echo esc_url( get_permalink( $auction_id ) ); ?>" class="btn-fill-sm"><?php esc_html_e( 'View', 'goodbids' ); ?></a>
 									</td>
 								</tr>
 								<?php

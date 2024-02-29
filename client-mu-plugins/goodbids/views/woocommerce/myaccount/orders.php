@@ -53,9 +53,9 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 							?>
 							<tr class="odd:bg-base-2 even:bg-contrast-5 woocommerce-orders-table__row woocommerce-orders-table__row--status-<?php echo esc_attr( $order->get_status() ); ?> order">
 								<td class="text-xs woocommerce-orders-table__cell woocommerce-orders-table__cell-donation" data-title="donation">
-										<?php foreach ( $order->get_items() as $item ) : ?>
-											<?php $product = $item->get_product(); ?>
-											<?php if ( $product ) : ?>
+									<?php foreach ( $order->get_items() as $item ) : ?>
+										<?php $product = $item->get_product(); ?>
+										<?php if ( $product ) : ?>
 											<a href="<?php echo esc_url( get_permalink( $item['product_id'] ) ); ?>">
 												<?php echo esc_html( $item['name'] ); ?>
 											</a>
@@ -88,7 +88,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 									if ( ! empty( $actions ) ) {
 										foreach ( $actions as $key => $wc_action ) {
 											printf(
-												'<a href="%s" class="!inline !mb-0 capitalize btn-fill-sm">%s</a>',
+												'<a href="%s" class="!mb-0 capitalize btn-fill-sm %s">%s</a>',
 												esc_url( $wc_action['url'] ),
 												sanitize_html_class( $key ),
 												esc_html( $wc_action['name'] )
