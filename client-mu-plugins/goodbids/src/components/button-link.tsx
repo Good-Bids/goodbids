@@ -6,9 +6,9 @@ type ButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
 
 export function ButtonLink({ variant = 'outline', ...rest }: ButtonProps) {
 	const classes = clsx(
-		'py-2 px-6 cursor-pointer text-admin-content no-underline',
+		'py-2 px-6 cursor-pointer text-admin-content no-underline text-center block',
 		{
-			'border-none rounded-admin-sm bg-admin-main text-white hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 w-full max-w-80':
+			'border-none rounded-admin-sm bg-admin-main text-white hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50':
 				variant === 'solid',
 			'border border-solid rounded-admin-sm border-admin-main text-admin-main':
 				variant === 'outline',

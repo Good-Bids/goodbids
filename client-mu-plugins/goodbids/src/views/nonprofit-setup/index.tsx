@@ -1,10 +1,11 @@
 import { render } from '@wordpress/element';
+import { Driver } from './driver';
 
 function renderReact() {
 	const root = document.getElementById(gbNonprofitSetup.appID);
 
 	if (root) {
-		render(<div>hi</div>, root);
+		render(<Driver />, root);
 	}
 }
 
