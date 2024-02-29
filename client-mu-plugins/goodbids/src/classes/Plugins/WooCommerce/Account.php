@@ -50,6 +50,9 @@ class Account {
 
 		// Remove "Bid Instance" meta from order view
 		$this->remove_bid_instance_from_order();
+
+		// Remove Download Link
+		$this->remove_download_link();
 	}
 
 	/**
@@ -348,6 +351,22 @@ class Account {
 			function ( array $formatted_meta ): array {
 				unset( $formatted_meta['bid_instance'] );
 				return $formatted_meta;
+			}
+		);
+	}
+
+	/**
+	 * Removes the "Download" Link.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	private function remove_download_link(): void {
+		add_filter(
+			'woocommerce_account_menu_items',
+			function ( $items ) {
+				unset( $items['downloads'] );
+				return $items;
 			}
 		);
 	}

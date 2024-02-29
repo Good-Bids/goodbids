@@ -631,7 +631,7 @@ class Sites {
 		);
 
 		if ( $limit ) {
-			$bids->slice( 0, $limit + 1 );
+			$bids = $bids->slice( 0, $limit );
 		}
 
 		return $bids->all();
@@ -735,7 +735,7 @@ class Sites {
 			);
 
 		if ( $limit ) {
-			$participating->slice( 0, $limit + 1 );
+			$participating = $participating->slice( 0, $limit );
 		}
 
 		return $participating->all();
