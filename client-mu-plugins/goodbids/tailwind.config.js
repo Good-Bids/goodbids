@@ -54,6 +54,7 @@ module.exports = {
 				admin: {
 					main: '#0a3624',
 					accent: '#70ff8f',
+					secondary: '#125E3E',
 				},
 				'admin-blue': {
 					300: '#2271b1',
@@ -69,7 +70,9 @@ module.exports = {
 				xxl: 'var(--wp--preset--font-size--xx-large)',
 				'admin-label': '0.875rem',
 				'admin-content': '1rem',
+				'admin-medium': '1.125rem',
 				'admin-large': '1.25rem',
+				'admin-extra-large': '1.5rem',
 			},
 			keyframes: {
 				'spin-left': {
