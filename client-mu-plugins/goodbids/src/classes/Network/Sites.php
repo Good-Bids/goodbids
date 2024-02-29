@@ -903,13 +903,15 @@ class Sites {
 					return;
 				}
 
+				$nonprofit = new Nonprofit( intval( $site_id ) );
+
 				if ( 'standing' === $column ) {
-					echo esc_html( goodbids()->network->nonprofits->get_standing( intval( $site_id ) ) );
+					echo esc_html( $nonprofit->get_standing() );
 					return;
 				}
 
 				if ( 'verified' === $column ) {
-					if ( goodbids()->verification->is_verified( $site_id ) ) {
+					if ( $nonprofit->is_verified() ) {
 						printf(
 							'<span class="dashicons dashicons-yes-alt" title="%s"><span class="screen-reader-text">%s</span></span>',
 							esc_attr__( 'Yes', 'goodbids' ),

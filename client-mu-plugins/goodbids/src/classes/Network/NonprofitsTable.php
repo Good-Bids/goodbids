@@ -53,21 +53,21 @@ class NonprofitsTable extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_site_name( array $item ): string {
-		$actions = [
+		$nonprofit = new Nonprofit( $item['ID'] );
+		$actions   = [
 			'visit'     => sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				esc_url( get_site_url( $item['ID'] ) ),
+				'<a href="%s" target="_blank" rel="noopener">%s</a>',
+				esc_url( $nonprofit->get_url() ),
 				esc_html__( 'Visit Site', 'goodbids' )
 			),
 			'dashboard' => sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( goodbids()->network->nonprofits->get_admin_url( $item['ID'] ) ),
+				'<a href="%s" rel="noopener">%s</a>',
+				esc_url( $nonprofit->get_admin_url() ),
 				esc_html__( 'Edit Site', 'goodbids' )
 			),
 			'edit'      => sprintf(
-				'<a href="%s?id=%d">%s</a>',
-				esc_url( network_admin_url( 'sites.php' ) ),
-				esc_attr( urlencode( $item['ID'] ) ),
+				'<a href="%s">%s</a>',
+				esc_url( $nonprofit->get_edit_url() ),
 				esc_html__( 'Edit Site', 'goodbids' )
 			),
 		];
@@ -99,6 +99,7 @@ class NonprofitsTable extends WP_List_Table {
 			'raised'    => __( 'Total Raised', 'goodbids' ),
 			'revenue'   => __( 'Total Revenue', 'goodbids' ),
 			'standing'  => __( 'Account Standing', 'goodbids' ),
+			'age'       => __( 'Age', 'goodbids' ),
 		];
 	}
 
@@ -115,7 +116,7 @@ class NonprofitsTable extends WP_List_Table {
 		$this->_column_headers = [ $columns, [], $sortable ];
 		$this->items           = $this->get_data();
 
-		$per_page     = 10;
+		$per_page     = apply_filters( 'goodbids_nonprofits_table_per_page', 10 );
 		$current_page = $this->get_pagenum();
 		$total_items  = count( $this->items );
 
@@ -133,10 +134,48 @@ class NonprofitsTable extends WP_List_Table {
 	 * Get Sortable Columns
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return array[]
 	 */
-	function get_sortable_columns(): array {
-		return [];
+	public function get_sortable_columns(): array {
+		return [
+			'site_name' => [
+				'site_name', // Sort Parameter
+				false, // First Direction: ASC or DESC
+				__( 'Site Name', 'goodbids' ), // Abbreviated Label
+				__( 'Table ordered by Site Name.', 'goodbids' ), // Full Label
+			],
+			'auctions'  => [
+				'auctions',
+				true,
+				__( 'Total Auctions', 'goodbids' ),
+				__( 'Table ordered by Total Auctions.', 'goodbids' ),
+			],
+			'raised'    => [
+				'raised',
+				false, __( 'Total Raised', 'goodbids' ),
+				__( 'Table ordered by Total Raised.', 'goodbids' ),
+			],
+			'revenue'   => [
+				'revenue',
+				false,
+				__( 'Total Revenue', 'goodbids' ),
+				__( 'Table ordered by Total Revenue.', 'goodbids' ),
+			],
+			'standing'  => [
+				'standing',
+				false,
+				__( 'Account Standing', 'goodbids' ),
+				__( 'Table ordered by Account Standing.', 'goodbids' ),
+			],
+			'age'       => [
+				'registered',
+				true,
+				_x( 'Age', 'nonprofit', 'goodbids' ),
+				__( 'Table ordered by Age.', 'goodbids' ),
+				'desc', // Is sorted by default (desc)
+			],
+		];
 	}
 
 	/**
@@ -155,7 +194,8 @@ class NonprofitsTable extends WP_List_Table {
 		foreach ( $nonprofits as $site_id ) :
 			$filters['all'] ++;
 
-			$standing = goodbids()->network->nonprofits->get_standing( $site_id );
+			$nonprofit = new Nonprofit( $site_id );
+			$standing  = $nonprofit->get_standing();
 
 			if ( array_key_exists( $standing, $filters ) ) {
 				$filters[ $standing ] ++;
@@ -176,7 +216,7 @@ class NonprofitsTable extends WP_List_Table {
 	 *
 	 * @return void
 	 */
-	function display_tablenav( $which ): void {
+	public function display_tablenav( $which ): void {
 		if ( 'top' === $which ) {
 			echo '<form method="POST" action="">';
 			wp_nonce_field( 'bulk-' . $this->_args['plural'] );
@@ -248,36 +288,47 @@ class NonprofitsTable extends WP_List_Table {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	function get_data(): array {
+	public function get_data(): array {
 		$filter     = ! empty( $_GET['standing'] ) ? sanitize_text_field( $_GET['standing'] ) : ''; // phpcs:ignore
 		$nonprofits = goodbids()->network->nonprofits->get_all_nonprofits();
 		$data       = [];
 		$columns    = $this->get_columns();
+		$order_by   = ! empty( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : false; // phpcs:ignore
+		$order      = ! empty( $_GET['order'] ) ? sanitize_text_field( $_GET['order'] ) : 'asc'; // phpcs:ignore
 
 		foreach ( $nonprofits as $site_id ) :
-			goodbids()->sites->swap(
-				function( $site_id ) use ( &$data, $columns, $filter ) {
-					$standing = goodbids()->network->nonprofits->get_standing( $site_id );
+			$nonprofit = new Nonprofit( $site_id );
+			$standing  = $nonprofit->get_standing();
 
-					if ( $filter && 'all' !== $filter && $filter !== $standing ) {
-						return;
-					}
-					$row = [
-						'ID' => $site_id,
-					];
+			if ( $filter && 'all' !== $filter && $filter !== $standing ) {
+				continue;
+			}
 
-					foreach ( $columns as $column => $label ) {
-						$row[ $column ] = $this->get_column( $column, $site_id );
-					}
+			// Default row values.
+			$row = [
+				'ID' => $site_id,
+			];
 
-					$data[] = $row;
+			foreach ( $columns as $column => $label ) {
+				$row[ $column ] = $this->get_column( $column, $site_id );
+			}
 
-				},
-				$site_id
-			);
+			$row['registered'] = $this->get_column( 'registered', $site_id );
+
+			$data[] = $row;
 		endforeach;
 
-		return $data;
+		if ( ! $order_by ) {
+			return $data;
+		}
+
+		if ( 'registered' === $order_by ) {
+			$order = 'asc' === $order ? 'desc' : 'asc';
+		}
+
+		return collect( $data )
+			->sortBy( [ [ $order_by, $order ] ] )
+			->all();
 	}
 
 	/**
@@ -295,12 +346,24 @@ class NonprofitsTable extends WP_List_Table {
 			return call_user_func( [ $this, "get_col_$column" ], $site_id );
 		}
 
+		$nonprofit = new Nonprofit( $site_id );
+
 		return match ( $column ) {
-			'site_name' => sprintf( '<strong>%s</strong>', esc_html( goodbids()->network->nonprofits->get_name( $site_id ) ) ),
-			'auctions'  => goodbids()->network->nonprofits->get_total_auctions( $site_id ),
-			'raised'    => wc_price( goodbids()->network->nonprofits->get_total_raised( $site_id ) ),
-			'revenue'   => wc_price( goodbids()->network->nonprofits->get_total_revenue( $site_id ) ),
-			'standing'  => goodbids()->network->nonprofits->get_standing( $site_id ),
+			'site_name'  => sprintf(
+				'<a href="%s" target="_blank" rel="noopener"><strong>%s</strong></a>',
+				esc_html( $nonprofit->get_admin_url() ),
+				esc_html( $nonprofit->get_name() )
+			),
+			'auctions'   => $nonprofit->get_total_auctions(),
+			'raised'     => wc_price( $nonprofit->get_total_raised() ),
+			'revenue'    => wc_price( $nonprofit->get_total_revenue() ),
+			'standing'   => $nonprofit->get_standing(),
+			'age'        => sprintf(
+				'<span title="%s">%s</span>',
+				esc_attr( $nonprofit->get_registered_date() ),
+				esc_html( $nonprofit->get_age() )
+			),
+			'registered' => $nonprofit->get_registered_date( 'Y-m-d H:i:s' ),
 		};
 	}
 

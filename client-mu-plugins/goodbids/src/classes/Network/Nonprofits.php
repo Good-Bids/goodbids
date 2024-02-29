@@ -8,6 +8,8 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Admin\ScreenOptions;
+
 /**
  * Network Admin Nonprofits Class
  *
@@ -25,6 +27,12 @@ class Nonprofits {
 
 	/**
 	 * @since 1.0.0
+	 * @var ?ScreenOptions
+	 */
+	private ?ScreenOptions $screen_options = null;
+
+	/**
+	 * @since 1.0.0
 	 * @var array
 	 */
 	private array $nonprofits = [];
@@ -32,7 +40,54 @@ class Nonprofits {
 	/**
 	 * @since 1.0.0
 	 */
-	public function __construct() {}
+	public function __construct() {
+		// Initialize Screen Options.
+		$this->init_screen_options();
+	}
+
+	/**
+	 * Initialize Screen Options
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function init_screen_options(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$this->screen_options = new ScreenOptions( self::PAGE_SLUG );
+				$this->screen_options->set_options(
+					[
+						'nonprofits_table_limit' => [
+							'label'   => esc_html__( 'Nonprofits Per Page', 'goodbids' ),
+							'type'    => 'number',
+							'class'   => 'small-text',
+							'default' => 20,
+						],
+					]
+				);
+
+				add_filter(
+					'goodbids_nonprofits_table_per_page',
+					fn () => $this->screen_options->get_option( 'nonprofits_table_limit' )
+				);
+			}
+		);
+
+		add_action(
+			'current_screen',
+			function () {
+				$current_screen = get_current_screen();
+
+				if ( ! str_contains( $current_screen->id, self::PAGE_SLUG ) ) {
+					return;
+				}
+
+				$this->screen_options->init( $current_screen->id );
+			}
+		);
+	}
 
 	/**
 	 * Get all Nonprofit Sites
@@ -57,115 +112,5 @@ class Nonprofits {
 		);
 
 		return $this->nonprofits;
-	}
-
-	/**
-	 * Get Nonprofit Site Name
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return string
-	 */
-	public function get_name( int $site_id ): string {
-		return goodbids()->sites->swap(
-			function () {
-				return get_bloginfo( 'name' );
-			},
-			$site_id
-		);
-	}
-
-	/**
-	 * Get Nonprofit Site Standing
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return string
-	 */
-	public function get_standing( int $site_id ): string {
-		return goodbids()->sites->swap(
-			function () {
-				if ( goodbids()->invoices->has_overdue_invoices() ) {
-					return __( 'Delinquent', 'goodbids' );
-				}
-
-				return __( 'Good', 'goodbids' );
-			},
-			$site_id
-		);
-	}
-
-	/**
-	 * Get Nonprofit Total Auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return int
-	 */
-	public function get_total_auctions( int $site_id ): int {
-		return goodbids()->sites->swap(
-			fn () => goodbids()->auctions->get_all()->found_posts,
-			$site_id
-		);
-	}
-
-	/**
-	 * Get Nonprofit Total Raised
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return float
-	 */
-	public function get_total_raised( int $site_id ): float {
-		return goodbids()->sites->swap(
-			function () {
-				return 0;
-			},
-			$site_id
-		);
-	}
-
-	/**
-	 * Get Nonprofit Site Revenue
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return float
-	 */
-	public function get_total_revenue( int $site_id ): float {
-		return goodbids()->sites->swap(
-			function () {
-				return 0;
-			},
-			$site_id
-		);
-	}
-
-	/**
-	 * Get Nonprofit Site Admin URL
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $site_id
-	 *
-	 * @return string
-	 */
-	public function get_admin_url( int $site_id ): string {
-		return goodbids()->sites->swap(
-			function () {
-				return admin_url();
-			},
-			$site_id
-		);
 	}
 }
