@@ -12,6 +12,7 @@ node_modules
 
 # Plugins that are NOT loaded via Composer
 !/plugins/miniorange-oauth-oidc-single-sign-on/
+!/plugins/accessibility-checker-pro/
 
 # Uploads directory
 /uploads/
