@@ -904,17 +904,7 @@ class Sites {
 				}
 
 				if ( 'standing' === $column ) {
-					goodbids()->sites->swap(
-						function () {
-							if ( goodbids()->invoices->has_overdue_invoices() ) {
-								esc_html_e( 'Delinquent', 'goodbids' );
-								return;
-							}
-
-							esc_html_e( 'Good', 'goodbids' );
-						},
-						intval( $site_id )
-					);
+					echo esc_html( goodbids()->network->nonprofits->get_standing( intval( $site_id ) ) );
 					return;
 				}
 

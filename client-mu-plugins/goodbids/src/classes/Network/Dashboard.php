@@ -59,14 +59,14 @@ class Dashboard {
 					return;
 				}
 
-				// Settings Page
+				// Nonprofits Page
 				add_submenu_page(
 					'goodbids',
-					esc_html__( 'Settings', 'goodbids' ),
-					esc_html__( 'Settings', 'goodbids' ),
-					'manage_network',
-					Settings::PAGE_SLUG,
-					[ $this, 'settings_page' ]
+					esc_html__( 'Nonprofits', 'goodbids' ),
+					esc_html__( 'Nonprofits', 'goodbids' ),
+					'manage_sites',
+					Nonprofits::PAGE_SLUG,
+					[ $this, 'nonprofits_page' ]
 				);
 
 				// Invoices Page
@@ -77,6 +77,18 @@ class Dashboard {
 					'manage_network',
 					Invoices::PAGE_SLUG,
 					[ $this, 'invoices_page' ]
+				);
+
+				goodbids()->admin->add_menu_separator( self::PAGE_SLUG );
+
+				// Settings Page
+				add_submenu_page(
+					'goodbids',
+					esc_html__( 'Settings', 'goodbids' ),
+					esc_html__( 'Settings', 'goodbids' ),
+					'manage_network',
+					Settings::PAGE_SLUG,
+					[ $this, 'settings_page' ]
 				);
 
 				if ( goodbids()->get_config( 'advanced.logging' ) ) {
@@ -106,14 +118,14 @@ class Dashboard {
 	}
 
 	/**
-	 * Network Admin Settings Page
+	 * Network Admin Nonprofits Page
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function settings_page(): void {
-		require GOODBIDS_PLUGIN_PATH . 'views/network/settings.php';
+	public function nonprofits_page(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/network/nonprofits.php';
 	}
 
 	/**
@@ -125,6 +137,17 @@ class Dashboard {
 	 */
 	public function invoices_page(): void {
 		require GOODBIDS_PLUGIN_PATH . 'views/network/invoices.php';
+	}
+
+	/**
+	 * Network Admin Settings Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function settings_page(): void {
+		require GOODBIDS_PLUGIN_PATH . 'views/network/settings.php';
 	}
 
 	/**

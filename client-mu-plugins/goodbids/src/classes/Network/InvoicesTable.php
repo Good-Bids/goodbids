@@ -20,7 +20,7 @@ class InvoicesTable extends WP_List_Table {
 	/**
 	 * @since 1.0.0
 	 */
-	function __construct() {
+	public function __construct() {
 		parent::__construct(
 			[
 				'singular' => __( 'Invoice', 'goodbids' ),
@@ -40,7 +40,7 @@ class InvoicesTable extends WP_List_Table {
 	 *
 	 * @return string
 	 */
-	function column_default( $item, $column_name ): string {
+	public function column_default( $item, $column_name ): string {
 		return $item[ $column_name ];
 	}
 
@@ -53,7 +53,7 @@ class InvoicesTable extends WP_List_Table {
 	 *
 	 * @return string
 	 */
-	function column_site_name( array $item ): string {
+	public function column_site_name( array $item ): string {
 		$page    = ! empty( $_REQUEST['page'] ) ? sanitize_text_field( $_REQUEST['page'] ) : '';
 		$actions = [
 			'integrity_check' => sprintf(
@@ -86,7 +86,7 @@ class InvoicesTable extends WP_List_Table {
 	 * @since 1.0.0
 	 * @return string[]
 	 */
-	function get_columns(): array {
+	public function get_columns(): array {
 		$check_all = sprintf(
 			'<label class="screen-reader-text" for="cb-select-all-1">%s</label>
 			<input id="cb-select-all-1" type="checkbox">',
@@ -112,7 +112,7 @@ class InvoicesTable extends WP_List_Table {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	function prepare_items(): void {
+	public function prepare_items(): void {
 		$columns  = $this->get_columns();
 		$sortable = $this->get_sortable_columns();
 
@@ -139,7 +139,7 @@ class InvoicesTable extends WP_List_Table {
 	 * @since 1.0.0
 	 * @return array[]
 	 */
-	function get_sortable_columns(): array {
+	public function get_sortable_columns(): array {
 		return [];
 	}
 
@@ -185,7 +185,7 @@ class InvoicesTable extends WP_List_Table {
 	 *
 	 * @return void
 	 */
-	function display_tablenav( $which ): void {
+	public function display_tablenav( $which ): void {
 		if ( 'top' === $which ) {
 			echo '<form method="POST" action="">';
 			wp_nonce_field( 'bulk-' . $this->_args['plural'] );
@@ -268,7 +268,7 @@ class InvoicesTable extends WP_List_Table {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	function get_data(): array {
+	public function get_data(): array {
 		$filter   = ! empty( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : ''; // phpcs:ignore
 		$invoices = goodbids()->network->invoices->get_all_invoices();
 		$data     = [];
