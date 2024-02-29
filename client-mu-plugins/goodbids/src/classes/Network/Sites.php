@@ -42,9 +42,7 @@ class Sites {
 		$this->edit_site_form_fields();
 
 		// New Site Defaults
-		$this->activate_child_theme_on_new_site();
 		$this->default_child_theme_logo();
-		$this->set_default_posts_per_page();
 
 		// Initialize Page Management
 		$this->init_site_defaults();
@@ -109,7 +107,7 @@ class Sites {
 				}
 
 				if ( ! headers_sent() ) {
-					$redirect_url = network_admin_url( 'site-settings.php' );
+					$redirect_url = network_admin_url( Verification::PARENT_PAGE );
 					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
 					$redirect_url = add_query_arg( 'id', $new_site->blog_id, $redirect_url );
 					wp_safe_redirect( $redirect_url );
@@ -127,17 +125,12 @@ class Sites {
 	 * @return void
 	 */
 	private function activate_child_theme_on_new_site(): void {
-		add_action(
-			'wp_initialize_site',
-			function () {
-				$stylesheet = 'goodbids-nonprofit';
+		$stylesheet = 'goodbids-nonprofit';
 
-				// Check if the Goodbids child theme exists first.
-				if ( wp_get_theme( $stylesheet )->exists() ) {
-					switch_theme( $stylesheet );
-				}
-			}
-		);
+		// Check if the Goodbids child theme exists first.
+		if ( wp_get_theme( $stylesheet )->exists() ) {
+			switch_theme( $stylesheet );
+		}
 	}
 
 	/**
@@ -157,6 +150,7 @@ class Sites {
 						$this->create_all_auctions_page();
 						$this->delete_sample_page();
 						$this->set_default_posts_per_page();
+						$this->activate_child_theme_on_new_site();
 					},
 					$site_id
 				);
