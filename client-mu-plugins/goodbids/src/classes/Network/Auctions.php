@@ -33,12 +33,6 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var array
-	 */
-	private array $auctions = [];
-
-	/**
-	 * @since 1.0.0
 	 */
 	public function __construct() {
 		// Initialize Screen Options.
@@ -87,20 +81,5 @@ class Auctions {
 				$this->screen_options->init( $current_screen->id );
 			}
 		);
-	}
-
-	/**
-	 * Get all Auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_all_auctions(): array {
-		if ( ! empty( $this->auctions ) ) {
-			return $this->auctions;
-		}
-
-		return $this->auctions;
 	}
 }
