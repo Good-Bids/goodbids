@@ -91,7 +91,9 @@ module.exports = {
 		},
 	},
 	plugins: [
-		({ addComponents }) => {
+		({ addComponents, addVariant }) => {
+			addVariant('tooltip-visible', '.tooltip-visible &');
+
 			//set up btn classes
 			const buttonBase = {
 				'@apply rounded py-2 px-6 border border-solid border-transparent leading-normal no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2 hover:cursor-pointer':

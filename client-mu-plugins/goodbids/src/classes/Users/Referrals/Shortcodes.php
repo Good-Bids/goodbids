@@ -109,6 +109,10 @@ class Shortcodes {
 			return $this->get_view( 'copy-link-box', compact( 'referrer' ) );
 		}
 
+		if ( 'copy-link-btn' === $return ) {
+			return $this->get_view( 'copy-link-btn', compact( 'referrer' ) );
+		}
+
 		return '';
 	}
 
