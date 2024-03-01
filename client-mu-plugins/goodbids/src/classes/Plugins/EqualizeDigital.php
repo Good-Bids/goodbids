@@ -19,13 +19,7 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	private string $slug = 'accessibility-checker';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private string $slug_pro = 'accessibility-checker-pro';
+	private string $slug = 'accessibility-checker-pro';
 
 	/**
 	 * Initialize the class.
@@ -33,12 +27,15 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! goodbids()->is_plugin_active( $this->slug ) && ! goodbids()->is_plugin_active( $this->slug_pro ) ) {
+		if ( ! goodbids()->is_plugin_active( $this->slug ) ) {
 			return;
 		}
 
-		$this->set_default_settings();
+		// Set License key.
 		$this->set_license_key();
+
+		// Adjust Post Types
+		$this->set_default_settings();
 	}
 
 	/**
@@ -49,14 +46,16 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 */
 	private function set_default_settings(): void {
-		add_action(
-			'init',
-			function (): void {
-				update_option( 'edac_post_types', [ 'post', 'page', 'gb-auction' ] );
+		add_filter(
+			'edac_filter_post_types',
+			function ( array $post_types ): array {
+				if ( ! in_array( goodbids()->auctions->get_post_type(), $post_types, true ) ) {
+					$post_types[] = goodbids()->auctions->get_post_type();
+				}
+				return $post_types;
 			}
 		);
 	}
-
 
 	/**
 	 * Set the Equalize Digital license key
@@ -66,18 +65,20 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 */
 	private function set_license_key(): void {
-		add_action(
-			'goodbids_nonprofit_verified',
-			function (): void {
-				apply_filters(
-					'option_edacp_license_key',
-					function ( string $value ): string {
-						if ( ! $value ) {
-							$license_key = vip_get_env_var( 'GOODBIDS_EDACP_LICENSE_KEY' );
-							return $license_key;
-						}
-					}
-				);
+		add_filter(
+			'option_edacp_license_key',
+			function ( string $value ): string {
+				if ( $value ) {
+					return $value;
+				}
+
+				$license_key = vip_get_env_var( 'GOODBIDS_EDACP_LICENSE_KEY' );
+
+				if ( ! $license_key ) {
+					return $value;
+				}
+
+				return $license_key;
 			}
 		);
 	}
