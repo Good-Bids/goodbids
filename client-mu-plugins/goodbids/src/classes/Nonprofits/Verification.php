@@ -515,15 +515,19 @@ class Verification {
 			$field_key   = self::OPTION_SLUG . '-' . $key;
 			$field_value = get_site_meta( $site_id, $field_key, true );
 
-			if ( ! $field_value && ! empty( $field['default'] ) ) {
+			if ( ! $field_value && isset( $field['default'] ) ) {
 				$field_value = $field['default'];
 			}
 
-			if ( $key === $field_id ) {
-				return $field_value;
+			$data[ $key ] = $field_value;
+		}
+
+		if ( ! empty( $field_id ) ) {
+			if ( isset( $data[ $field_id ] ) ) {
+				return $data[ $field_id ];
 			}
 
-			$data[ $key ] = $field_value;
+			return null;
 		}
 
 		return $data;
