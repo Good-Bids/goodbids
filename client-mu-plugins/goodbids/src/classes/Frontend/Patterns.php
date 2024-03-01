@@ -108,17 +108,6 @@ class Patterns {
 					'inserter'    => true,
 				];
 
-				$nonprofit_navigation = [
-					'name'        => 'nonprofit-navigation',
-					'path'        => goodbids()->get_view_path( 'patterns/nonprofit-navigation.php' ),
-					'title'       => __( 'Nonprofit Navigation', 'goodbids' ),
-					'description' => _x( 'Default Nonprofit Navigation', 'Block pattern description', 'goodbids' ),
-					'categories'  => [ 'goodbids' ],
-					'keywords'    => [ 'navigation' ],
-					'source'      => 'plugin',
-					'inserter'    => true,
-				];
-
 				$section_sidebar_chapters = [
 					'name'        => 'section-sidebar-chapters',
 					'path'        => goodbids()->get_view_path( 'patterns/section-sidebar-chapters.php' ),
@@ -178,7 +167,6 @@ class Patterns {
 						$hero_banner,
 						$logo_grid,
 						$nonprofit_interest_form,
-						$nonprofit_navigation,
 						$section_sidebar_chapters,
 						$template_about,
 						$template_auction,
