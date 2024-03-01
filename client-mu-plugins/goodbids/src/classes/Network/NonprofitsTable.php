@@ -63,7 +63,7 @@ class NonprofitsTable extends WP_List_Table {
 			'dashboard' => sprintf(
 				'<a href="%s" rel="noopener">%s</a>',
 				esc_url( $nonprofit->get_admin_url() ),
-				esc_html__( 'Edit Site', 'goodbids' )
+				esc_html__( 'Dashboard', 'goodbids' )
 			),
 			'edit'      => sprintf(
 				'<a href="%s">%s</a>',
