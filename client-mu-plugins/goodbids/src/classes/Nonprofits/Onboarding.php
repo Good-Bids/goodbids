@@ -1,6 +1,6 @@
 <?php
 /**
- * GoodBids Nonprofit Setup Dashboard
+ * GoodBids Nonprofit Onboarding
  *
  * @since 1.0.0
  * @package GoodBids
@@ -15,13 +15,13 @@ use GoodBids\Auctions\Wizard;
  *
  * @since 1.0.0
  */
-class Setup {
+class Onboarding {
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const PAGE_SLUG = 'gb-nonprofit-setup';
+	const PAGE_SLUG = 'gb-onboarding';
 
 	/**
 	 * @since 1.0.0
@@ -31,7 +31,7 @@ class Setup {
 			return;
 		}
 
-		// Redirect to Setup page if not set up.
+		// Redirect to Onboarding page if not yet onboarded.
 		$this->force_setup();
 
 		// Remove any admin notices for this page.
@@ -55,7 +55,7 @@ class Setup {
 		add_action(
 			'current_screen',
 			function () {
-				if ( $this->setup_completed() || $this->is_setup_page() || is_super_admin() ) {
+				if ( $this->onboarded() || $this->is_setup_page() || is_super_admin() ) {
 					return;
 				}
 
@@ -88,7 +88,7 @@ class Setup {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( $this->setup_completed() || is_super_admin() ) {
+				if ( $this->onboarded() || is_super_admin() ) {
 					return;
 				}
 
@@ -117,7 +117,7 @@ class Setup {
 	 */
 	private function add_menu_dashboard_page(): void {
 		// Disable for the main site.n
-		if ( is_main_site() || $this->setup_completed() ) {
+		if ( is_main_site() || $this->onboarded() ) {
 			return;
 		}
 
@@ -126,10 +126,10 @@ class Setup {
 			function () {
 				add_menu_page(
 					__( 'Nonprofit Site Onboarding', 'goodbids' ),
-					__( 'Site Setup', 'goodbids' ),
+					__( 'Onboarding', 'goodbids' ),
 					'manage_options',
 					self::PAGE_SLUG,
-					[ $this, 'nonprofit_setup_page' ],
+					[ $this, 'nonprofit_onboarding_page' ],
 					'dashicons-admin-site-alt3',
 					1.1
 				);
@@ -138,14 +138,14 @@ class Setup {
 	}
 
 	/**
-	 * Nonprofit Setup Page
+	 * Nonprofit Onboarding Page
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function nonprofit_setup_page(): void {
-		goodbids()->load_view( 'admin/setup/site-setup.php', [ 'nonprofit_set_up_id' => self::PAGE_SLUG ] );
+	public function nonprofit_onboarding_page(): void {
+		goodbids()->load_view( 'admin/onboarding.php', [ 'nonprofit_onboarding_id' => self::PAGE_SLUG ] );
 	}
 
 	/**
@@ -279,13 +279,13 @@ class Setup {
 	}
 
 	/**
-	 * Check if the setup is completed.
+	 * Check if onboarding is completed.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
-	private function setup_completed(): bool {
-		return boolval( get_option( 'goodbids_nonprofit_setup_completed' ) );
+	private function onboarded(): bool {
+		return boolval( get_option( 'goodbids_onboarded' ) );
 	}
 }
