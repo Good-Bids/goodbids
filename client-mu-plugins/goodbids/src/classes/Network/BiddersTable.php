@@ -217,7 +217,7 @@ class BiddersTable extends WP_List_Table {
 		$order_by = ! empty( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : 'bids'; // phpcs:ignore
 		$order    = ! empty( $_GET['order'] ) ? sanitize_text_field( $_GET['order'] ) : 'desc'; // phpcs:ignore
 
-		foreach ( $users as $user_id ) :
+		foreach ( $users as $user_id ) {
 			// Default row values.
 			$row = [
 				'ID' => $user_id,
@@ -231,7 +231,7 @@ class BiddersTable extends WP_List_Table {
 			$row['registered_date'] = $this->get_column( 'registered_date', $user_id );
 
 			$data[] = $row;
-		endforeach;
+		}
 
 		if ( ! $order_by ) {
 			return $data;

@@ -9,6 +9,7 @@
 namespace GoodBids\Users;
 
 use GoodBids\Users\Referrals\Referrer;
+use GoodBids\Utilities\Log;
 use WP_User;
 
 /**
@@ -42,9 +43,12 @@ class Bidder {
 
 		$user = get_user_by( 'ID', $this->get_id() );
 
-		if ( $user instanceof WP_User ) {
-			$this->user = $user;
+		if ( ! $user instanceof WP_User ) {
+			Log::error( 'Bidder user not found', [ 'user_id' => $this->get_id() ] );
+			return;
 		}
+
+		$this->user = $user;
 	}
 
 	/**

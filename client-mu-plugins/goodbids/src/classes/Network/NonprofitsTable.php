@@ -192,7 +192,7 @@ class NonprofitsTable extends WP_List_Table {
 			'all' => 0,
 		];
 
-		foreach ( $nonprofits as $site_id ) :
+		foreach ( $nonprofits as $site_id ) {
 			$filters['all'] ++;
 
 			$nonprofit = new Nonprofit( $site_id );
@@ -203,7 +203,7 @@ class NonprofitsTable extends WP_List_Table {
 			} else {
 				$filters[ $standing ] = 1;
 			}
-		endforeach;
+		}
 
 		return $filters;
 	}
@@ -297,7 +297,7 @@ class NonprofitsTable extends WP_List_Table {
 		$order_by   = ! empty( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : false; // phpcs:ignore
 		$order      = ! empty( $_GET['order'] ) ? sanitize_text_field( $_GET['order'] ) : 'asc'; // phpcs:ignore
 
-		foreach ( $nonprofits as $site_id ) :
+		foreach ( $nonprofits as $site_id ) {
 			$nonprofit = new Nonprofit( $site_id );
 			$standing  = $nonprofit->get_standing();
 
@@ -317,7 +317,7 @@ class NonprofitsTable extends WP_List_Table {
 			$row['registered'] = $this->get_column( 'registered', $site_id );
 
 			$data[] = $row;
-		endforeach;
+		}
 
 		if ( ! $order_by ) {
 			return $data;

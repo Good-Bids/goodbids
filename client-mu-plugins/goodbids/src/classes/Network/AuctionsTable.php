@@ -193,7 +193,7 @@ class AuctionsTable extends WP_List_Table {
 			'all' => 0,
 		];
 
-		foreach ( $auctions as $array ) :
+		foreach ( $auctions as $array ) {
 			$filters['all'] ++;
 
 			$status = goodbids()->sites->swap(
@@ -209,7 +209,7 @@ class AuctionsTable extends WP_List_Table {
 			} else {
 				$filters[ $status ] = 1;
 			}
-		endforeach;
+		}
 
 		return $filters;
 	}
@@ -303,7 +303,7 @@ class AuctionsTable extends WP_List_Table {
 		$order_by = ! empty( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : 'raised_value'; // phpcs:ignore
 		$order    = ! empty( $_GET['order'] ) ? sanitize_text_field( $_GET['order'] ) : 'desc'; // phpcs:ignore
 
-		foreach ( $auctions as $array ) :
+		foreach ( $auctions as $array ) {
 			$status = goodbids()->sites->swap(
 				function () use ( $array ) {
 					$auction = new Auction( $array['post_id'] );
@@ -330,7 +330,7 @@ class AuctionsTable extends WP_List_Table {
 			$row['high_bid_value'] = $this->get_column( 'high_bid_value', $array );
 
 			$data[] = $row;
-		endforeach;
+		}
 
 		if ( ! $order_by ) {
 			return $data;
