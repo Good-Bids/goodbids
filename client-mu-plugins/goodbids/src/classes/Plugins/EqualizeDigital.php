@@ -46,30 +46,34 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 */
 	private function set_default_settings(): void {
-		$add_auction_cpt = function ( array|bool $post_types ): array {
+		$add_posts_cpt = function ( array|bool $post_types ): array {
 			if ( ! is_array( $post_types ) ) {
 				$post_types = [];
+			}
+
+			if ( ! in_array( 'post', $post_types, true ) ) {
+				$post_types[] = 'post';
+			}
+
+			if ( ! in_array( 'page', $post_types, true ) ) {
+				$post_types[] = 'page';
 			}
 
 			if ( ! in_array( goodbids()->auctions->get_post_type(), $post_types, true ) ) {
 				$post_types[] = goodbids()->auctions->get_post_type();
 			}
+
 			return $post_types;
 		};
 
 		add_filter(
-			'edac_filter_post_types',
-			$add_auction_cpt
-		);
-
-		add_filter(
 			'option_edac_post_types',
-			$add_auction_cpt
+			$add_posts_cpt
 		);
 
 		add_filter(
 			'default_option_edac_post_types',
-			$add_auction_cpt
+			$add_posts_cpt
 		);
 	}
 
