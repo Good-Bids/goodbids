@@ -184,6 +184,28 @@ class FreeBid {
 	}
 
 	/**
+	 * Returns the type of the Free Bid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type(): string {
+		return $this->type;
+	}
+
+	/**
+	 * Displays the type of the Free Bid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function display_type(): void {
+		echo esc_html( ucwords( $this->get_type() ) );
+	}
+
+	/**
 	 * Sets the Details for the Free Earned Bid.
 	 *
 	 * @since 1.0.0
