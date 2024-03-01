@@ -22,12 +22,18 @@ class EqualizeDigital {
 	private string $slug = 'accessibility-checker';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private string $slug_pro = 'accessibility-checker-pro';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! goodbids()->is_plugin_active( $this->slug ) ) {
+		if ( ! goodbids()->is_plugin_active( $this->slug ) && ! goodbids()->is_plugin_active( $this->slug_pro ) ) {
 			return;
 		}
 
@@ -63,12 +69,15 @@ class EqualizeDigital {
 		add_action(
 			'goodbids_nonprofit_verified',
 			function (): void {
-				$license_key = vip_get_env_var( 'GOODBIDS_EDACP_LICENSE_KEY' );
-				if ( ! $license_key ) {
-					return;
-				}
-
-				update_option( 'edacp_license_key', $license_key );
+				apply_filters(
+					'option_edacp_license_key',
+					function ( string $value ): string {
+						if ( ! $value ) {
+							$license_key = vip_get_env_var( 'GOODBIDS_EDACP_LICENSE_KEY' );
+							return $license_key;
+						}
+					}
+				);
 			}
 		);
 	}
