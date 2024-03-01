@@ -26,6 +26,40 @@ class Admin {
 	}
 
 	/**
+	 * Add an Admin Menu Separator
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $position
+	 *
+	 * @return void
+	 */
+	public function add_menu_separator( mixed $position ): void {
+		$separator = '<span class="wp-menu-separator">&mdash;</span>';
+
+		if ( is_string( $position ) ) {
+			add_submenu_page(
+				$position,
+				__( 'Separator', 'goodbids' ),
+				$separator,
+				'read',
+				'',
+				'__return_empty_string',
+			);
+		} elseif ( is_numeric( $position ) ) {
+			add_menu_page(
+				__( 'Separator', 'goodbids' ),
+				$separator,
+				'read',
+				'',
+				'__return_empty_string',
+				'',
+				$position
+			);
+		}
+	}
+
+	/**
 	 * Render an Admin Setting Field
 	 *
 	 * @since 1.0.0

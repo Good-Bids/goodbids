@@ -192,4 +192,32 @@ class Orders {
 		$tax = $this->get_tax_amount( $order_id );
 		return $tax > 0;
 	}
+
+	/**
+	 * Get all Bid Order IDs
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $limit
+	 *
+	 * @return array
+	 */
+	public function get_all_bid_order_id( int $limit = -1 ): array {
+		$args = [
+			'limit'      => $limit,
+			'status'     => [ 'processing', 'completed' ],
+			'return'     => 'ids',
+			'orderby'    => 'date',
+			'order'      => 'DESC',
+			'meta_query' => [
+				[
+					'key'     => WooCommerce::TYPE_META_KEY,
+					'compare' => '=',
+					'value'   => Bids::ITEM_TYPE,
+				],
+			],
+		];
+
+		return wc_get_orders( $args );
+	}
 }

@@ -19,9 +19,33 @@ class Network {
 	 * Invoices
 	 *
 	 * @since 1.0.0
+	 * @var ?Nonprofits
+	 */
+	public ?Nonprofits $nonprofits = null;
+
+	/**
+	 * Invoices
+	 *
+	 * @since 1.0.0
 	 * @var ?Invoices
 	 */
 	public ?Invoices $invoices = null;
+
+	/**
+	 * Invoices
+	 *
+	 * @since 1.0.0
+	 * @var ?Auctions
+	 */
+	public ?Auctions $auctions = null;
+
+	/**
+	 * Invoices
+	 *
+	 * @since 1.0.0
+	 * @var ?Bidders
+	 */
+	public ?Bidders $bidders = null;
 
 	/**
 	 * Logs
@@ -36,7 +60,11 @@ class Network {
 	 */
 	public function __construct() {
 		// Init Submodules.
-		$this->invoices = new Invoices();
-		$this->logs     = new Logs();
+		$this->nonprofits = new Nonprofits();
+		$this->invoices   = new Invoices();
+		$this->auctions   = new Auctions();
+		$this->bidders    = new Bidders();
+
+		$this->logs       = new Logs();
 	}
 }

@@ -548,33 +548,6 @@ class Sites {
 						'site_id' => $site_id,
 					]
 				)
-				->filter(
-					fn ( array $auction_data ) => goodbids()->sites->swap(
-						function () use ( $auction_data ) {
-								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-								return ! $auction->has_ended();
-							},
-						$auction_data['site_id']
-					)
-				)
-				->sortByDesc(
-					fn ( array $auction_data ) => [
-						'bid_count'    => $this->swap(
-							function () use ( $auction_data ) {
-								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-								return $auction->get_bid_count();
-							},
-							$auction_data['site_id']
-						),
-						'total_raised' => $this->swap(
-							function () use ( $auction_data ) {
-								$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-								return $auction->get_total_raised();
-							},
-							$auction_data['site_id']
-						),
-					]
-				)
 				->all()
 		);
 
@@ -583,6 +556,76 @@ class Sites {
 		}
 
 		return $auctions;
+	}
+
+	/**
+	 * Get Users that have placed bids.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int[]
+	 */
+	public function get_bidding_users(): array {
+		$users = [];
+
+		$this->loop(
+			function () use ( &$users ) {
+				$orders = goodbids()->woocommerce->orders->get_all_bid_order_id();
+
+				foreach ( $orders as $order_id ) {
+					$order   = wc_get_order( $order_id );
+					$user_id = $order->get_user_id();
+
+					if ( $user_id && ! in_array( $user_id, $users, true ) ) {
+						$users[] = $user_id;
+					}
+				}
+			}
+		);
+
+		return array_unique( $users );
+	}
+
+	/**
+	 * Get all open auctions from all sites.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $query_args
+	 *
+	 * @return array
+	 */
+	public function get_all_open_auctions( array $query_args = [] ): array {
+		return collect( $this->get_all_auctions( $query_args ) )
+			->filter(
+				fn ( array $auction_data ) => goodbids()->sites->swap(
+					function () use ( $auction_data ) {
+						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+						return ! $auction->has_ended();
+					},
+					$auction_data['site_id']
+				)
+			)
+			->sortByDesc(
+				fn ( array $auction_data ) => [
+					'bid_count'    => $this->swap(
+						function () use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+							return $auction->get_bid_count();
+						},
+						$auction_data['site_id']
+					),
+					'total_raised' => $this->swap(
+						function () use ( $auction_data ) {
+							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+							return $auction->get_total_raised();
+						},
+						$auction_data['site_id']
+					),
+				]
+			)
+			->all();
+
 	}
 
 	/**
@@ -985,23 +1028,15 @@ class Sites {
 					return;
 				}
 
-				if ( 'standing' === $column ) {
-					goodbids()->sites->swap(
-						function () {
-							if ( goodbids()->invoices->has_overdue_invoices() ) {
-								esc_html_e( 'Delinquent', 'goodbids' );
-								return;
-							}
+				$nonprofit = new Nonprofit( intval( $site_id ) );
 
-							esc_html_e( 'Good', 'goodbids' );
-						},
-						intval( $site_id )
-					);
+				if ( 'standing' === $column ) {
+					echo esc_html( $nonprofit->get_standing() );
 					return;
 				}
 
 				if ( 'verified' === $column ) {
-					if ( goodbids()->verification->is_verified( $site_id ) ) {
+					if ( $nonprofit->is_verified() ) {
 						printf(
 							'<span class="dashicons dashicons-yes-alt" title="%s"><span class="screen-reader-text">%s</span></span>',
 							esc_attr__( 'Yes', 'goodbids' ),

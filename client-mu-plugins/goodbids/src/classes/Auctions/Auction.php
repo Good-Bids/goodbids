@@ -130,6 +130,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the Edit URL for the Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_edit_url(): string {
+		return get_edit_post_link( $this->get_id() );
+	}
+
+	/**
 	 * Get the Auction Title
 	 *
 	 * @since 1.0.0
@@ -663,6 +674,17 @@ class Auction {
 		set_transient( $transient, $total, HOUR_IN_SECONDS );
 
 		return $total;
+	}
+
+	/**
+	 * Alias get_bid_count method.
+	 *
+	 * @alias get_bid_count
+	 * @since 1.0.0
+	 * @return int
+	 */
+	public function get_total_bids(): int {
+		return $this->get_bid_count();
 	}
 
 	/**

@@ -120,3 +120,14 @@ tr.separator td {
 		@apply flex items-center gap-2;
 	}
 }
+
+#adminmenu .wp-submenu a:has(> .wp-menu-separator) {
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	cursor: default;
+	font-size: 0;
+	margin-bottom: 8px;
+	margin-top: 8px;
+	padding: 0;
+	pointer-events: none;
+}
