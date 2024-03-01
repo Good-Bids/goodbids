@@ -10,10 +10,6 @@ node_modules
 # Plugins Loaded via Composer
 /plugins/*
 
-# Plugins that are NOT loaded via Composer
-!/plugins/miniorange-oauth-oidc-single-sign-on/
-!/plugins/accessibility-checker-pro/
-
 # Uploads directory
 /uploads/
 
@@ -58,3 +54,10 @@ build
 
 # Local config file
 client-mu-plugins/goodbids/config.local.json
+
+
+# Plugins that are NOT loaded via Composer
+!/plugins/miniorange-oauth-oidc-single-sign-on/
+!/plugins/accessibility-checker-pro/
+!/plugins/accessibility-checker-pro/vendor/
+!/plugins/accessibility-checker-pro/build/
