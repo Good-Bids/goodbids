@@ -1,19 +1,13 @@
 import { __ } from '@wordpress/i18n';
 import { ButtonLink } from '../../../components/button-link';
-import { getBaseAdminUrl } from '../../../utils/get-base-url';
 import { MultiStepHeading } from '../components/multi-step-heading';
 
-// TODO: Update this URL
-const LOGO_URL = '#';
-
 export function UploadSiteLogo() {
-	const baseUrl = getBaseAdminUrl();
-
 	return (
 		<MultiStepHeading
-			title={__('Upload Site Logo', 'goodbids')}
+			title={__('Upload Logo', 'goodbids')}
 			content={__(
-				'Upload a logo for your site. You can revisit this post-launch on the Appearance > Customize page in the WordPress Admin.',
+				'Upload a logo with square dimensions no less than 48x48px by navigating to Design > Patterns > Template Parts > Header in the Appearance Editor. Once there, click on the Header to start editing the template. Then click the Logo area to access the component. Select the "Add a Site Logo" upload button to the left of the site title to open the Media Library. Once you have successfully added your logo, click Save to update the template.',
 				'goodbids',
 			)}
 		>
@@ -21,9 +15,9 @@ export function UploadSiteLogo() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={`${baseUrl}${LOGO_URL}`}
+					href={gbNonprofitSetup.updateLogoURL}
 				>
-					{__('Upload Site Logo', 'goodbids')}
+					{__('Modify Site Header', 'goodbids')}
 				</ButtonLink>
 			</div>
 		</MultiStepHeading>

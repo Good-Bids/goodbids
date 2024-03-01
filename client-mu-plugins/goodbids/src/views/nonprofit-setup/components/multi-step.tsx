@@ -64,7 +64,7 @@ type ContainerProps = {
 
 function Container({ children }: ContainerProps) {
 	return (
-		<div className="w-full border-8 border-admin-main border-solid p-4 flex flex-col items-center">
+		<div className="w-full border-t-8 border-l-8 border-r-6 border-b-6 border-admin-main border-solid p-4 flex flex-col items-center">
 			{children}
 		</div>
 	);

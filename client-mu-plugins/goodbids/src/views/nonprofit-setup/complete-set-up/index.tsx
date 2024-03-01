@@ -3,9 +3,9 @@ import { Card } from '../components/card';
 import { FinalizeDetails } from './finalize-details';
 import { SetUpPayments } from './set-up-payments';
 import { MultiStep } from '../components/multi-step';
-import { UpdateShipping } from './update-shipping';
+import { ConfigureShipping } from './configure-shipping';
 import { ActivateExtensions } from './activate-extensions';
-import { Advanced } from './advanced';
+import { CreateWooCommerceStore } from './create-woocommerce-store';
 import { CardHeading } from '../components/card-heading';
 
 export function CompleteSetUp() {
@@ -14,7 +14,7 @@ export function CompleteSetUp() {
 			<CardHeading
 				title={__('Complete Setup', 'goodbids')}
 				content={__(
-					"Before you can launch your GOODBIDS site, you'll need to complete the steps below.",
+					"Before you can launch your site on the GOODBIDS network, you'll need to complete the steps below.",
 					'goodbids',
 				)}
 			/>
@@ -23,25 +23,24 @@ export function CompleteSetUp() {
 				defaultStep="finalize-details"
 				steps={{
 					'finalize-details': {
-						label: __('1 Finalize Details', 'goodbids'),
+						label: __('Finalize Details', 'goodbids'),
 						component: <FinalizeDetails />,
 					},
+					'create-woocommerce-store': {
+						label: __('Create WooCommerce Store', 'goodbids'),
+						component: <CreateWooCommerceStore />,
+					},
 					'set-up-payments': {
-						label: __('2 Set Up Payments', 'goodbids'),
+						label: __('Set Up Payments', 'goodbids'),
 						component: <SetUpPayments />,
 					},
 					'update-shipping': {
-						label: __('3 Update Shipping', 'goodbids'),
-						component: <UpdateShipping />,
+						label: __('Configure Shipping', 'goodbids'),
+						component: <ConfigureShipping />,
 					},
 					'activate-extensions': {
-						label: __('4 Activate Extensions', 'goodbids'),
+						label: __('Activate Extensions', 'goodbids'),
 						component: <ActivateExtensions />,
-					},
-					advanced: {
-						label: __('Advanced', 'goodbids'),
-						component: <Advanced />,
-						fade: true,
 					},
 				}}
 			/>

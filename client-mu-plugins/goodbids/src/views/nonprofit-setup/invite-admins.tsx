@@ -1,30 +1,25 @@
 import { __ } from '@wordpress/i18n';
 import { ButtonLink } from '../../components/button-link';
 import { Card } from './components/card';
-import { getBaseAdminUrl } from '../../utils/get-base-url';
 import { CardHeading } from './components/card-heading';
 
-const ADD_USER_URL = '/wp-admin/user-new.php';
-
 export function InviteAdmins() {
-	const baseUrl = getBaseAdminUrl();
-
 	return (
 		<Card>
 			<CardHeading
 				title={__('Invite Administrators', 'goodbids')}
 				content={__(
-					"Invite other users to be administrators of your GOODBIDS account. Administrators can create and manage auctions, view reports, and more. You can invite as many administrators as you'd like.",
+					'Grant site access to additional users so they can help edit the site and build auctions. Users can be created with a Site Admin or Junior Site Admin role. New users will receive an account activation email, and will need to update their temporary password and enable two-factor authentication to access your site. ',
 					'goodbids',
 				)}
 			>
-				<div className="w-full max-w-40">
+				<div className="w-full max-w-60">
 					<ButtonLink
 						target="_blank"
 						variant="solid"
-						href={`${baseUrl}${ADD_USER_URL}`}
+						href={gbNonprofitSetup.addUsersURL}
 					>
-						{__('Add Users', 'goodbids')}
+						{__('Add New Users', 'goodbids')}
 					</ButtonLink>
 				</div>
 			</CardHeading>
