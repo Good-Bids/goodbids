@@ -17,12 +17,14 @@ class FreeBid {
 
 	/**
 	 * Paid Bid type of Free Bid.
+	 *
 	 * @since 1.0.0
 	 */
 	const TYPE_PAID_BID = 'paid_bid';
 
 	/**
 	 * Referral type of Free Bid.
+	 *
 	 * @since 1.0.0
 	 */
 	const TYPE_REFERRAL = 'referral';
@@ -191,6 +193,9 @@ class FreeBid {
 	 * @return string
 	 */
 	public function get_type(): string {
+		if ( ! $this->type ) {
+			return self::TYPE_PAID_BID;
+		}
 		return $this->type;
 	}
 
@@ -274,7 +279,7 @@ class FreeBid {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $auction_id
+	 * @param ?int    $auction_id
 	 * @param ?string $title
 	 *
 	 * @return void
