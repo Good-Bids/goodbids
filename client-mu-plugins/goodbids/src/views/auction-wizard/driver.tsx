@@ -17,7 +17,10 @@ const stepProgress: Record<StepType, number> = {
 	finish: 100,
 };
 
-export function CreateWizard() {
+export function Driver() {
+	const rewardId = new URLSearchParams(document.location.search).get(
+		gbAuctionWizard.editRewardParam,
+	);
 	const { step } = useAuctionWizardState();
 
 	const shippingClasses = useGetShippingClasses();
@@ -33,6 +36,10 @@ export function CreateWizard() {
 
 	if (error) {
 		return <ErrorWrapper>Something went wrong</ErrorWrapper>;
+	}
+
+	if (rewardId) {
+		return <div>{rewardId}</div>;
 	}
 
 	return (

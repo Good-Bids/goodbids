@@ -1,5 +1,5 @@
 import { render } from '@wordpress/element';
-import { CreateWizard } from './create-wizard';
+import { Driver } from './driver';
 import { Providers } from './providers';
 
 function renderReact() {
@@ -8,7 +8,7 @@ function renderReact() {
 	if (root) {
 		render(
 			<Providers>
-				<CreateWizard />
+				<Driver />
 			</Providers>,
 			root,
 		);

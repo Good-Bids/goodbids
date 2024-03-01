@@ -16,6 +16,7 @@ $auction      = goodbids()->auctions->get( $auction_id );
 $start_time   = $auction->get_start_date_time();
 $current_time = strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) );
 $extra        = '';
+$reward_product = goodbids()->rewards->get_product( $auction_id );
 
 // Customize the Status Display.
 if ( $start_time && ! $auction->has_started() ) {
@@ -41,6 +42,16 @@ printf(
 	esc_html( $auction->get_status() ),
 	esc_html( $extra )
 );
+
+if ( $reward_product ) {
+	printf(
+		'<p><strong>%s</strong><br>%s<b> <a href="%s">%s</a></p>',
+		esc_html__( 'Reward Product', 'goodbids' ),
+		esc_html( $reward_product->get_name() ),
+		esc_html( goodbids()->auctions->wizard->get_wizard_url( $reward_product->get_id() ) ),
+		esc_html__( '(Edit)', 'goodbids' ),
+	);
+}
 
 if ( 'publish' === get_post_status( $auction_id ) ) {
 	printf(
