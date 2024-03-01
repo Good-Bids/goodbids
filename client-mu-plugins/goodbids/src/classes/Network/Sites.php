@@ -1110,26 +1110,34 @@ class Sites {
 	 * @since 1.0.0
 	 */
 	public function set_nonprofit_navigation(): void {
+		// TODO: Figure out why it does not fire on setup
 		add_action(
 			'goodbids_nonprofit_verified',
 			function ( int $site_id ): void {
-				$about_id      = get_option( self::ABOUT_OPTION );
-				$auctions_id   = get_option( self::AUCTIONS_OPTION );
+				$about_id    = get_option( self::ABOUT_OPTION );
+				$auctions_id = get_option( self::AUCTIONS_OPTION );
+
+				if ( ! $about_id || ! $auctions_id ) {
+					return;
+				}
+
 				$wp_navigation = new WP_Query(
 					[
 						'post_type'   => 'wp_navigation',
 						'post_status' => [ 'publish' ],
 					]
 				);
-				$nav_links     = [
+
+				$nav_links = [
 					get_post( $about_id ),
 					get_post( $auctions_id ),
 				];
 
-
+				// Set the navigation content
 				ob_start();
 				goodbids()->load_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) );
 
+				// TODO: figure out how to get ID - it is always the first one
 				$navigation_content = [
 					'ID'           => $wp_navigation->posts[0]->ID,
 					'post_content' => ob_get_clean(),
