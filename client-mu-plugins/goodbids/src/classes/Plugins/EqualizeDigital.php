@@ -46,15 +46,15 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 */
 	private function set_default_settings(): void {
-		add_filter(
-			'edac_filter_post_types',
-			function ( array $post_types ): array {
-				if ( ! in_array( goodbids()->auctions->get_post_type(), $post_types, true ) ) {
-					$post_types[] = goodbids()->auctions->get_post_type();
-				}
-				return $post_types;
-			}
-		);
+//		add_filter(
+//			'edac_filter_post_types',
+//			function ( array $post_types ): array {
+//				if ( ! in_array( goodbids()->auctions->get_post_type(), $post_types, true ) ) {
+//					$post_types[] = goodbids()->auctions->get_post_type();
+//				}
+//				return $post_types;
+//			}
+//		);
 	}
 
 	/**
@@ -66,13 +66,13 @@ class EqualizeDigital {
 	 */
 	private function set_license_key(): void {
 		add_filter(
-			'option_edacp_license_key',
+			'default_option_edacp_license_key',
 			function ( string $value ): string {
-				if ( $value ) {
+				if ( $value || $this->is_license_page() ) {
 					return $value;
 				}
 
-				$license_key = vip_get_env_var( 'GOODBIDS_EDACP_LICENSE_KEY' );
+				$license_key = $this->get_license_key();
 
 				if ( ! $license_key ) {
 					return $value;
@@ -81,5 +81,82 @@ class EqualizeDigital {
 				return $license_key;
 			}
 		);
+
+		add_filter(
+			'option_edacp_license_key',
+			function ( string $value ): string {
+				$license_key = $this->get_license_key();
+
+				if ( ! $this->is_license_page() ) {
+					if ( $value ) {
+						return $value;
+					}
+
+					return $license_key;
+				}
+
+				if ( $value === $license_key ) {
+					return '';
+				}
+
+				return $value;
+			}
+		);
+
+		add_action(
+			'admin_init',
+			function (): void {
+				if ( $this->is_license_page() ) {
+					return;
+				}
+
+				if ( empty( $_POST['edd_license_activate'] ) || empty( $_POST['edd_license_deactivate'] ) ) { // phpcs:ignore
+					return;
+				}
+
+				$_POST['edacp_license_key'] = $this->get_license_key();
+			},
+			2
+		);
+	}
+
+	/**
+	 * Get the license key
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_license_key(): string {
+		$key = vip_get_env_var( 'GOODBIDS_EDACP_LICENSE_KEY' );
+		if ( ! $key ) {
+			return '';
+		}
+
+		return $key;
+	}
+
+	/**
+	 * Check if we're on the license page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_license_page(): bool {
+		global $pagenow;
+
+		if ( 'admin.php' !== $pagenow || empty( $_GET['page'] ) ) { // phpcs:ignore
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore
+		$tab  = ! empty( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : ''; // phpcs:ignore
+
+		if ( 'accessibility_checker_settings' !== $page || 'license' !== $tab ) {
+			return false;
+		}
+
+		return true;
 	}
 }
