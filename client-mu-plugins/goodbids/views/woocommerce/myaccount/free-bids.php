@@ -34,7 +34,7 @@ use GoodBids\Auctions\FreeBid;
 
 			<tbody>
 				<?php foreach ( $free_bids as $index => $free_bid ) : ?>
-					<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-free-bids-table__row goodbids-free-bids-table__row--status-<?php echo esc_attr( $free_bid->get_status() ); ?> free-bid">
+					<tr class="text-xs odd:bg-base-2 even:bg-contrast-5 goodbids-free-bids-table__row goodbids-free-bids-table__row--status-<?php echo esc_attr( $free_bid->get_status() ); ?> goodbids-free-bids-table__row--type-<?php echo esc_attr( $free_bid->get_type() ); ?> free-bid">
 						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-id" data-title="<?php esc_attr_e( 'Free Bid #', 'goodbids' ); ?>">
 							<span><?php echo esc_html( $index + 1 ); ?></span>
 						</td>
