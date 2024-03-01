@@ -1081,4 +1081,27 @@ class Sites {
 
 		return get_page_by_path( $path ); // phpcs:ignore
 	}
+
+
+	/**
+	 * Return the nonprofit navigation
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_nonprofit_navigation(): array {
+		return [
+			[
+				'label' => 'Explore Auctions',
+				'ID'    => 4,
+				'url'   => '/explore-auctions',
+			],
+			[
+				'label' => 'About GOODBIDS',
+				'ID'    => 3,
+				'url'   => '/about',
+			],
+		];
+	}
 }
