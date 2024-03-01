@@ -181,6 +181,7 @@ class Bids {
 		// Stock Management, Somewhat locked down.
 		$bid_product->set_sold_individually( true );
 		$bid_product->set_virtual( true );
+		$bid_product->set_tax_status( 'none' );
 
 		// Instance Attribute.
 		$instance_attr = new WC_Product_Attribute();
