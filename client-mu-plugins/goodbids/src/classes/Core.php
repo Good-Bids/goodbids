@@ -24,8 +24,8 @@ use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
 use GoodBids\Nonprofits\Invoices;
+use GoodBids\Nonprofits\Onboarding;
 use GoodBids\Nonprofits\Verification;
-use GoodBids\Nonprofits\Setup;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\EqualizeDigital;
@@ -149,11 +149,6 @@ class Core {
 	 * @var Verification
 	 */
 	public Verification $verification;
-
-	/**
-	 * @var Setup
-	 */
-	public Setup $setup;
 
 	/**
 	 * @since 1.0.0
@@ -460,6 +455,7 @@ class Core {
 				new OneTrust();
 				new Setup();
 				new EqualizeDigital();
+				new Onboarding();
 			}
 		);
 	}
