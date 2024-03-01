@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
 use WP_Block_Type_Registry;
 use WP_Post;
 use WP_Site;
+use WP_Query;
 
 /**
  * Network Sites Class
@@ -30,6 +31,18 @@ class Sites {
 	 * @var string
 	 */
 	const ALL_AUCTIONS_TRANSIENT = '_goodbids_all_auctions';
+
+	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	const ABOUT_OPTION = 'gb_about_page';
+
+	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	const AUCTIONS_OPTION = 'gb_auctions_page';
 
 	/**
 	 * @since 1.0.0
@@ -63,6 +76,8 @@ class Sites {
 
 		// Refresh transients when Auctions change status.
 		$this->maybe_clear_transients();
+
+		$this->set_nonprofit_navigation();
 	}
 
 	/**
@@ -393,6 +408,8 @@ class Sites {
 				if ( is_wp_error( $about_id ) ) {
 					Log::error( $about_id->get_error_message() );
 				}
+
+				update_option( self::ABOUT_OPTION, $about_id );
 			}
 		);
 	}
@@ -433,6 +450,8 @@ class Sites {
 				if ( is_wp_error( $auctions_id ) ) {
 					Log::error( $auctions_id->get_error_message() );
 				}
+
+				update_option( self::AUCTIONS_OPTION, $auctions_id );
 			}
 		);
 	}
@@ -1084,24 +1103,45 @@ class Sites {
 
 
 	/**
-	 * Return the nonprofit navigation
+	 * Set the nonprofit navigation
 	 *
-	 * @return array
+	 * @return void
 	 *
 	 * @since 1.0.0
 	 */
-	public function get_nonprofit_navigation(): array {
-		return [
-			[
-				'label' => 'Explore Auctions',
-				'ID'    => 4,
-				'url'   => '/explore-auctions',
-			],
-			[
-				'label' => 'About GOODBIDS',
-				'ID'    => 3,
-				'url'   => '/about',
-			],
-		];
+	public function set_nonprofit_navigation(): void {
+		add_action(
+			'goodbids_nonprofit_verified',
+			function ( int $site_id ): void {
+				$about_id      = get_option( self::ABOUT_OPTION );
+				$auctions_id   = get_option( self::AUCTIONS_OPTION );
+				$wp_navigation = new WP_Query(
+					[
+						'post_type'   => 'wp_navigation',
+						'post_status' => [ 'publish' ],
+					]
+				);
+				$nav_links     = [
+					get_post( $about_id ),
+					get_post( $auctions_id ),
+				];
+
+
+				ob_start();
+				goodbids()->load_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) );
+
+				$navigation_content = [
+					'ID'           => $wp_navigation->posts[0]->ID,
+					'post_content' => ob_get_clean(),
+				];
+
+				// Update the navigation into the database
+				wp_update_post( $navigation_content );
+
+				if ( is_wp_error( $navigation_content ) ) {
+					Log::error( $navigation_content->get_error_message() );
+				}
+			}
+		);
 	}
 }
