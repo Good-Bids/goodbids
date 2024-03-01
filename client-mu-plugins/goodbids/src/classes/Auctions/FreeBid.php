@@ -202,7 +202,7 @@ class FreeBid {
 	 * @return void
 	 */
 	public function display_type(): void {
-		echo esc_html( ucwords( $this->get_type() ) );
+		echo esc_html( ucwords( str_replace( '_', ' ', $this->get_type() ) ) );
 	}
 
 	/**
