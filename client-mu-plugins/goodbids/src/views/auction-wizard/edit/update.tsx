@@ -20,11 +20,13 @@ export function UpdateStep({
 	shippingClasses,
 	productCategories,
 }: UpdateStepProps) {
-	const { product, setProductValue, setStep } = useAuctionWizardState();
+	const { product, setProductValue, setStep, clearStore } =
+		useAuctionWizardState();
 
 	const updateProduct = useUpdateProduct({
 		onSuccess: () => {
 			setStep('finish');
+			clearStore();
 		},
 	});
 
