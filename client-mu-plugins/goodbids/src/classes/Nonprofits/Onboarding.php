@@ -74,7 +74,7 @@ class Onboarding {
 					'toplevel_page_jetpack',
 					'jetpack_page_akismet-key-config',
 					'toplevel_page_accessibility_checker',
-					Wizard::BASE_URL . goodbids()->invoices->get_post_type() . '&page=' . Wizard::PAGE_SLUG,
+					goodbids()->auctions->get_post_type() . '_page_' . Wizard::PAGE_SLUG,
 					'edit-' . goodbids()->auctions->get_post_type(),
 					'edit-' . goodbids()->invoices->get_post_type(),
 				];
@@ -119,7 +119,7 @@ class Onboarding {
 	 * @return void
 	 */
 	private function add_menu_dashboard_page(): void {
-		// Disable for the main site.n
+		// Disable for the main site.
 		if ( is_main_site() || $this->onboarded() ) {
 			return;
 		}
@@ -128,7 +128,7 @@ class Onboarding {
 			'admin_menu',
 			function () {
 				add_menu_page(
-					__( 'Nonprofit Site Onboarding', 'goodbids' ),
+					__( 'GoodBids Onboarding', 'goodbids' ),
 					__( 'Onboarding', 'goodbids' ),
 					'manage_options',
 					self::PAGE_SLUG,
@@ -249,11 +249,11 @@ class Onboarding {
 			'customizeHomepageURL'    => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
 			'pagesURL'                => admin_url( 'edit.php?post_type=page' ),
 			'patternsURL'             => admin_url( 'site-editor.php?path=/patterns' ),
-			'auctionWizardURL'        => admin_url( Wizard::BASE_URL . goodbids()->invoices->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),
+			'auctionWizardURL'        => admin_url( Wizard::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),
 			'addUsersURL'             => admin_url( 'user-new.php' ),
 			'accessibilityCheckerURL' => admin_url( 'admin.php?page=accessibility_checker' ),
 			'homeURL'                 => home_url(),
-			'auctionsURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
+			'auctionsURL'             => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
 			'orderMetricsURL'         => admin_url( 'admin.php?page=wc-admin&path=/analytics/categories' ),
 			'revenueMetricsURL'       => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 			'invoicesURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
