@@ -51,7 +51,6 @@ export type AuctionState = {
 	bidIncrement: ValueType<string>;
 	startingBid: ValueType<string>;
 	bidExtensionMinutes: ValueType<string>;
-	bidExtensionSeconds: ValueType<string>;
 	auctionGoal: ValueType<string>;
 	expectedHighBid: ValueType<string>;
 	estimatedRetailValue: ValueType<string>;
@@ -63,8 +62,7 @@ const defaultAuctionState: AuctionState = {
 	endDate: { value: '' },
 	bidIncrement: { value: '' },
 	startingBid: { value: '' },
-	bidExtensionMinutes: { value: '' },
-	bidExtensionSeconds: { value: '' },
+	bidExtensionMinutes: { value: '60' },
 	auctionGoal: { value: '' },
 	expectedHighBid: { value: '' },
 	estimatedRetailValue: { value: '' },

@@ -8,7 +8,13 @@ export function AuctionStep() {
 	const {
 		setAuctionValue,
 		setStep,
-		auction: { startDate, endDate, bidIncrement, error },
+		auction: {
+			startDate,
+			endDate,
+			bidIncrement,
+			bidExtensionMinutes,
+			error,
+		},
 	} = useAuctionWizardState();
 
 	const handleNextPage = () => {
@@ -26,6 +32,15 @@ export function AuctionStep() {
 
 		if (!bidIncrement.value) {
 			setAuctionValue('bidIncrement', '', 'Bid increment is required');
+			anyInvalid = true;
+		}
+
+		if (!bidExtensionMinutes.value) {
+			setAuctionValue(
+				'bidExtensionMinutes',
+				'',
+				'Bid extension is required',
+			);
 			anyInvalid = true;
 		}
 

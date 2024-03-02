@@ -137,7 +137,7 @@ export function ReviewStep({
 				auction_end: auction.endDate.value,
 				bid_extension: {
 					minutes: parseInt(auction.bidExtensionMinutes.value, 10),
-					seconds: parseInt(auction.bidExtensionSeconds.value, 10),
+					seconds: 0,
 				},
 				auction_product: id,
 				estimated_value:

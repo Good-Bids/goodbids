@@ -13,7 +13,6 @@ export function Form() {
 			bidIncrement,
 			startingBid,
 			bidExtensionMinutes,
-			bidExtensionSeconds,
 			auctionGoal,
 			expectedHighBid,
 			estimatedRetailValue,
@@ -115,31 +114,17 @@ export function Form() {
 					</Tooltip>
 				</div>
 
-				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
+				<div className="w-full max-w-60">
 					<TextInput
 						label={__('Minutes', 'goodbids')}
 						id="bid-extension-minutes"
 						defaultValue={bidExtensionMinutes.value}
 						error={bidExtensionMinutes.error}
 						inputMode="numeric"
+						required
 						onChange={(e) =>
 							handleDebounce(
 								'bidExtensionMinutes',
-								e.target.value,
-								validateInteger,
-							)
-						}
-					/>
-
-					<TextInput
-						label={__('Seconds', 'goodbids')}
-						id="bid-extension-seconds"
-						defaultValue={bidExtensionSeconds.value}
-						error={bidExtensionSeconds.error}
-						inputMode="numeric"
-						onChange={(e) =>
-							handleDebounce(
-								'bidExtensionSeconds',
 								e.target.value,
 								validateInteger,
 							)
