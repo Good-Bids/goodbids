@@ -1,7 +1,7 @@
-import { useAuctionWizardState } from './store';
-import { Button } from '../../components/button';
-import { Logo } from '../../components/logo';
-import { ProgressBar, ProgressBarProps } from '../../components/progress-bar';
+import { useAuctionWizardState } from '../store';
+import { Button } from '~/components/button';
+import { Logo } from '~/components/logo';
+import { ProgressBar, ProgressBarProps } from '~/components/progress-bar';
 
 type WrapperProps = ProgressBarProps & {
 	children: React.ReactNode;
@@ -12,10 +12,10 @@ export function Wrapper({ children, progress }: WrapperProps) {
 
 	const handleBack = () => {
 		if (step === 'finish') {
-			return setStep('create');
+			return setStep('review');
 		}
 
-		if (step === 'create') {
+		if (step === 'review') {
 			return setStep('auction');
 		}
 

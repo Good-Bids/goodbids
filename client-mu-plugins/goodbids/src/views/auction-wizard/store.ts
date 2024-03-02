@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createTrackedSelector } from 'react-tracked';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
-export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'create';
+export type StepType = 'start' | 'product' | 'auction' | 'review' | 'finish';
 
 type ValueType<T> = {
 	value: T;
@@ -97,6 +97,7 @@ type AuctionWizardStoreActions = {
 		error?: string,
 	) => void;
 	setAuctionError: (error: string) => void;
+	setProduct: (product: Omit<AuctionWizardProductState, 'error'>) => void;
 	clearStore: () => void;
 };
 
@@ -162,6 +163,8 @@ const useAuctionWizardStore = create<
 				})),
 			setAuctionError: (error) =>
 				set((state) => ({ auction: { ...state.auction, error } })),
+			setProduct: (product) =>
+				set((state) => ({ product: { ...state.product, ...product } })),
 			clearStore: () =>
 				set({
 					product: defaultProductState,

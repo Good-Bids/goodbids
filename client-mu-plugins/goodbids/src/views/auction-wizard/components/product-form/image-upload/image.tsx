@@ -1,4 +1,4 @@
-import { CloseIcon } from '../../../../components/close-icon';
+import { CloseIcon } from '~/components/close-icon';
 
 type ImageProps = {
 	src: string;

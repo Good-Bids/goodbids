@@ -1,7 +1,7 @@
+import { Tooltip } from '~/components/tooltip';
 import { Image } from './image';
-import { Tooltip } from '../../../../components/tooltip';
-import { useAuctionWizardState } from '../../store';
 import { __ } from '@wordpress/i18n';
+import { useAuctionWizardState } from '~/views/auction-wizard/store';
 
 export function ProductImage() {
 	const {

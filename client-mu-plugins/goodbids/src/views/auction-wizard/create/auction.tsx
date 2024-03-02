@@ -1,109 +1,52 @@
-import { Button } from '../../../components/button';
-import { CheckIcon } from '../../../components/check-icon';
-import { ProgressIcon } from '../../../components/progress-icon';
+import { Button } from '~/components/button';
+import { ErrorWrapper } from '~/components/error';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
+import { AuctionForm } from '../components/auction-form';
 
-function formatBidExtension(minutes: string, seconds: string) {
-	if (minutes.length && seconds.length) {
-		return `${minutes} minutes, ${seconds} seconds`;
-	}
+export function AuctionStep() {
+	const {
+		setAuctionValue,
+		setStep,
+		auction: { startDate, endDate, bidIncrement, error },
+	} = useAuctionWizardState();
 
-	if (minutes.length) {
-		return `${minutes} minutes`;
-	}
+	const handleNextPage = () => {
+		let anyInvalid = false;
 
-	if (seconds.length) {
-		return `${seconds} seconds`;
-	}
+		if (!startDate.value) {
+			setAuctionValue('startDate', '', 'Start date is required');
+			anyInvalid = true;
+		}
 
-	return 'None';
-}
+		if (!endDate.value) {
+			setAuctionValue('endDate', '', 'End date is required');
+			anyInvalid = true;
+		}
 
-type AuctionProps = {
-	createStatus: string;
-	updateStatus: string;
-};
+		if (!bidIncrement.value) {
+			setAuctionValue('bidIncrement', '', 'Bid increment is required');
+			anyInvalid = true;
+		}
 
-export function Auction({ createStatus, updateStatus }: AuctionProps) {
-	const { auction, setStep } = useAuctionWizardState();
+		if (anyInvalid) {
+			return;
+		}
 
-	if (createStatus === 'pending' || updateStatus === 'pending') {
-		return (
-			<div className="flex flex-col gap-2 items-center">
-				<ProgressIcon spin width={48} />
-				<h2 className="text-admin-large text-admin-main m-0">
-					{__('Saving Auction', 'goodbids')}
-				</h2>
-			</div>
-		);
-	}
-
-	if (createStatus === 'success' && updateStatus === 'success') {
-		return (
-			<div className="flex flex-col gap-2 items-center text-admin-main">
-				<CheckIcon width={48} />
-				<h2 className="text-admin-large text-admin-main m-0">
-					{__('Auction saved!', 'goodbids')}
-				</h2>
-			</div>
-		);
-	}
+		setStep('review');
+	};
 
 	return (
 		<>
-			<h2 className="text-admin-large text-admin-main m-0">
-				Your Auction
-			</h2>
-			<ul>
-				<li className="text-admin-content">
-					<b>{__('Auction Start.', 'goodbids')}</b>{' '}
-					{new Date(auction.startDate.value).toLocaleString()}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Auction End.', 'goodbids')}</b>{' '}
-					{new Date(auction.endDate.value).toLocaleString()}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Bid Increment.', 'goodbids')}</b> $
-					{auction.bidIncrement.value}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Starting Bid.', 'goodbids')}</b>{' '}
-					{auction.startingBid.value
-						? `$${auction.startingBid.value}`
-						: __('None', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Bid Extension.', 'goodbids')}</b>{' '}
-					{formatBidExtension(
-						auction.bidExtensionMinutes.value,
-						auction.bidExtensionSeconds.value,
-					)}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Auction Goal.')}</b>{' '}
-					{auction.auctionGoal.value
-						? `$${auction.auctionGoal.value}`
-						: __('None', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>Expected High Bid.</b>{' '}
-					{auction.expectedHighBid.value
-						? `$${auction.expectedHighBid.value}`
-						: __('None', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>Estimated Retail Value.</b>{' '}
-					{auction.estimatedRetailValue.value
-						? `$${auction.estimatedRetailValue.value}`
-						: __('None', 'goodbids')}
-				</li>
-			</ul>
+			{error && <ErrorWrapper>{error}</ErrorWrapper>}
 
-			<Button onClick={() => setStep('auction')}>
-				{__('Edit Auction', 'goodbids')}
-			</Button>
+			<AuctionForm />
+
+			<div className="w-full flex justify-center">
+				<Button variant="solid" onClick={handleNextPage}>
+					{__('Save and continue', 'goodbids')}
+				</Button>
+			</div>
 		</>
 	);
 }

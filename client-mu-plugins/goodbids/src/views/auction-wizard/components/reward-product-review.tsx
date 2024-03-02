@@ -1,16 +1,17 @@
-import { Button } from '../../../components/button';
-import { CheckIcon } from '../../../components/check-icon';
-import { ProgressIcon } from '../../../components/progress-icon';
-import { ShippingClasses } from '../api/shipping-classes';
+import { ProgressIcon } from '~/components/progress-icon';
 import { useAuctionWizardState } from '../store';
+import { ShippingClasses } from '../api/get-shipping-classes';
+import { CheckIcon } from '~/components/check-icon';
 import { __ } from '@wordpress/i18n';
+import { Button } from '~/components/button';
+import { ReviewWrapper } from './review-wrapper';
 
-type RewardProductProps = {
+type ReviewProductProps = {
 	shippingClasses: ShippingClasses;
 	status: 'pending' | 'error' | 'success' | 'idle';
 };
 
-export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
+export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 	const { product, setStep } = useAuctionWizardState();
 
 	if (status === 'pending') {
@@ -36,7 +37,7 @@ export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
 	}
 
 	return (
-		<>
+		<ReviewWrapper>
 			<h2 className="text-admin-large text-admin-main m-0">
 				{__('Your Reward Product', 'goodbids')}
 			</h2>
@@ -129,6 +130,6 @@ export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
 			<Button onClick={() => setStep('product')}>
 				{__('Edit Reward Product', 'goodbids')}
 			</Button>
-		</>
+		</ReviewWrapper>
 	);
 }

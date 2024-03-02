@@ -1,7 +1,7 @@
 import { useDebouncedCallback } from 'use-debounce';
-import { TextInput } from '../../../components/text-input';
-import { AuctionState, useAuctionWizardState } from '../store';
-import { validateDateTime } from '../../../utils/datetime';
+import { TextInput } from '~/components/text-input';
+import { AuctionState, useAuctionWizardState } from '../../store';
+import { validateDateTime } from '~/utils/datetime';
 import { __ } from '@wordpress/i18n';
 
 export function DatePickers() {

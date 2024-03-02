@@ -1,11 +1,11 @@
 import { useDebouncedCallback } from 'use-debounce';
-import { TextInput } from '../../../components/text-input';
-import { AuctionState, useAuctionWizardState } from '../store';
+import { TextInput } from '~/components/text-input';
 import { DatePickers } from './date-pickers';
-import { validateDecimal, validateInteger } from '../../../utils/number';
-import { MoneyIcon } from '../../../components/money-icon';
-import { Tooltip } from '../../../components/tooltip';
+import { validateDecimal, validateInteger } from '~/utils/number';
+import { MoneyIcon } from '~/components/money-icon';
+import { Tooltip } from '~/components/tooltip';
 import { __ } from '@wordpress/i18n';
+import { AuctionState, useAuctionWizardState } from '../../store';
 
 export function Form() {
 	const {

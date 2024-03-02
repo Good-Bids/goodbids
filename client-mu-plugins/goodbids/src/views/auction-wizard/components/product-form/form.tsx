@@ -1,15 +1,18 @@
-import { MoneyIcon } from '../../../components/money-icon';
-import { RadioInput, RadioItem } from '../../../components/radio-input';
-import { TextInput } from '../../../components/text-input';
-import { ShippingClasses } from '../api/shipping-classes';
-import { TextArea } from '../../../components/text-area';
-import { Select, SelectItem } from '../../../components/select';
-import { validateDecimal } from '../../../utils/number';
+import { MoneyIcon } from '~/components/money-icon';
+import { RadioInput, RadioItem } from '~/components/radio-input';
+import { TextInput } from '~/components/text-input';
+import { ShippingClasses } from '~/views/auction-wizard/api/get-shipping-classes';
+import { TextArea } from '~/components/text-area';
+import { Select, SelectItem } from '~/components/select';
+import { validateDecimal } from '~/utils/number';
 import { ProductImage } from './image-upload/product-image';
 import { ProductGallery } from './image-upload/product-gallery';
-import { AuctionWizardProductState, useAuctionWizardState } from '../store';
 import { useDebouncedCallback } from 'use-debounce';
 import { __ } from '@wordpress/i18n';
+import {
+	AuctionWizardProductState,
+	useAuctionWizardState,
+} from '~/views/auction-wizard/store';
 
 export type FormProps = {
 	shippingClasses: ShippingClasses;
