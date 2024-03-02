@@ -233,6 +233,7 @@ class Wizard {
 			'baseURL' => $this->get_wizard_url(),
 			'appID'   => self::PAGE_SLUG,
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'adminURL' => admin_url( ),
 			'editRewardParam' => self::REWARD_EDIT_PARAM,
 
 			// WP/WC Variables.
