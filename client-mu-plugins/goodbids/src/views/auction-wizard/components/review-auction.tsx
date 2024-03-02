@@ -3,7 +3,6 @@ import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 import { CheckIcon } from '~/components/check-icon';
 import { Button } from '~/components/button';
-import { ReviewWrapper } from './review-wrapper';
 
 type ReviewAuctionProps = {
 	createStatus: string;
@@ -39,7 +38,7 @@ export function ReviewAuction({
 	}
 
 	return (
-		<ReviewWrapper>
+		<>
 			<h2 className="text-admin-large text-admin-main m-0">
 				Your Auction
 			</h2>
@@ -64,10 +63,8 @@ export function ReviewAuction({
 				</li>
 				<li className="text-admin-content">
 					<b>{__('Bid Extension.', 'goodbids')}</b>{' '}
-					{formatBidExtension(
-						auction.bidExtensionMinutes.value,
-						auction.bidExtensionSeconds.value,
-					)}
+					{auction.bidExtensionMinutes.value}{' '}
+					{__('minutes', 'goodbids')}
 				</li>
 				<li className="text-admin-content">
 					<b>{__('Auction Goal.')}</b>{' '}
@@ -92,22 +89,6 @@ export function ReviewAuction({
 			<Button onClick={() => setStep('auction')}>
 				{__('Edit Auction', 'goodbids')}
 			</Button>
-		</ReviewWrapper>
+		</>
 	);
-}
-
-function formatBidExtension(minutes: string, seconds: string) {
-	if (minutes.length && seconds.length) {
-		return `${minutes} minutes, ${seconds} seconds`;
-	}
-
-	if (minutes.length) {
-		return `${minutes} minutes`;
-	}
-
-	if (seconds.length) {
-		return `${seconds} seconds`;
-	}
-
-	return 'None';
 }

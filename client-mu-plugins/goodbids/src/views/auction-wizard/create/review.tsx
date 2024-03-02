@@ -8,6 +8,7 @@ import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 import { ReviewAuction } from '../components/review-auction';
 import { ReviewProduct } from '../components/reward-product-review';
+import { ReviewWrapper } from '../components/review-wrapper';
 
 type ReviewStepProps = {
 	shippingClasses: ShippingClasses;
@@ -143,7 +144,9 @@ export function ReviewStep({
 				estimated_value:
 					parseInt(auction.estimatedRetailValue.value, 10) || null,
 				bid_increment: parseInt(auction.bidIncrement.value, 10),
-				starting_bid: parseInt(auction.startingBid.value, 10),
+				starting_bid: auction.startingBid.value
+					? parseInt(auction.startingBid.value, 10)
+					: parseInt(auction.bidIncrement.value, 10),
 				auction_goal: parseInt(auction.auctionGoal.value, 10) || null,
 				expected_high_bid:
 					parseInt(auction.expectedHighBid.value, 10) || null,
@@ -183,14 +186,18 @@ export function ReviewStep({
 			)}
 
 			<div className="flex gap-4 items-start w-full justify-center">
-				<ReviewProduct
-					shippingClasses={shippingClasses}
-					status={createProduct.status}
-				/>
-				<ReviewAuction
-					createStatus={createAuction.status}
-					updateStatus={updateAuctionContent.status}
-				/>
+				<ReviewWrapper>
+					<ReviewProduct
+						shippingClasses={shippingClasses}
+						status={createProduct.status}
+					/>
+				</ReviewWrapper>
+				<ReviewWrapper>
+					<ReviewAuction
+						createStatus={createAuction.status}
+						updateStatus={updateAuctionContent.status}
+					/>
+				</ReviewWrapper>
 			</div>
 
 			<div className="pt-4">

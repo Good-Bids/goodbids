@@ -4,7 +4,6 @@ import { ShippingClasses } from '../api/get-shipping-classes';
 import { CheckIcon } from '~/components/check-icon';
 import { __ } from '@wordpress/i18n';
 import { Button } from '~/components/button';
-import { ReviewWrapper } from './review-wrapper';
 
 type ReviewProductProps = {
 	shippingClasses: ShippingClasses;
@@ -37,7 +36,7 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 	}
 
 	return (
-		<ReviewWrapper>
+		<>
 			<h2 className="text-admin-large text-admin-main m-0">
 				{__('Your Reward Product', 'goodbids')}
 			</h2>
@@ -130,6 +129,6 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 			<Button onClick={() => setStep('product')}>
 				{__('Edit Reward Product', 'goodbids')}
 			</Button>
-		</ReviewWrapper>
+		</>
 	);
 }
