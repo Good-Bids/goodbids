@@ -132,7 +132,8 @@ export function ReviewStep({
 
 	const handleAuctionSubmit = (id: number) => {
 		createAuction.mutate({
-			title: product.name.value,
+			title: auction.title.value || product.name.value,
+			excerpt: auction.excerpt.value,
 			acf: {
 				auction_start: auction.startDate.value,
 				auction_end: auction.endDate.value,
@@ -202,7 +203,7 @@ export function ReviewStep({
 
 			<div className="pt-4">
 				<Button variant="solid" onClick={handleSubmitStart}>
-					{__('Save and Complete', 'goodbids')}
+					{__('Looks Good!', 'goodbids')}
 				</Button>
 			</div>
 		</div>

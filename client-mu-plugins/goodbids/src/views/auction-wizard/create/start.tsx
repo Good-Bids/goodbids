@@ -13,6 +13,7 @@ export function StartStep({ loading }: StartStepProps) {
 		setStep,
 		clearStore,
 		product: { name },
+		auction: { title },
 	} = useAuctionWizardState();
 
 	const setProductStep = () => {
@@ -68,7 +69,7 @@ export function StartStep({ loading }: StartStepProps) {
 
 							<Button autoFocus onClick={setProductStep}>
 								{__('Continue creating', 'goodbids')}{' '}
-								{name.value}
+								{title.value || name.value}
 							</Button>
 
 							<Button onClick={clearAndSetProductStep}>

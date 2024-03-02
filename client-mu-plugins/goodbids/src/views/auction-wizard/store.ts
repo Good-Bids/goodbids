@@ -46,6 +46,8 @@ const defaultProductState: AuctionWizardProductState = {
 };
 
 export type AuctionState = {
+	title: ValueType<string>;
+	excerpt: ValueType<string>;
 	startDate: ValueType<string>;
 	endDate: ValueType<string>;
 	bidIncrement: ValueType<string>;
@@ -58,6 +60,8 @@ export type AuctionState = {
 };
 
 const defaultAuctionState: AuctionState = {
+	title: { value: '' },
+	excerpt: { value: '' },
 	startDate: { value: '' },
 	endDate: { value: '' },
 	bidIncrement: { value: '10' },

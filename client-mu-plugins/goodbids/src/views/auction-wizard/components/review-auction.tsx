@@ -42,6 +42,21 @@ export function ReviewAuction({
 			<h2 className="text-admin-large text-admin-main m-0">
 				Your Auction
 			</h2>
+
+			{auction.title.value && (
+				<span className="text-admin-content">
+					<b>{__('Auction Title.', 'goodbids')}</b>{' '}
+					{auction.title.value}
+				</span>
+			)}
+
+			{auction.excerpt.value && (
+				<span className="text-admin-content">
+					<b>{__('Auction Excerpt.', 'goodbids')}</b>{' '}
+					{auction.excerpt.value}
+				</span>
+			)}
+
 			<ul>
 				<li className="text-admin-content">
 					<b>{__('Auction Start.', 'goodbids')}</b>{' '}
