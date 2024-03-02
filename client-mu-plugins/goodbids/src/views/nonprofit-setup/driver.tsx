@@ -10,7 +10,7 @@ import { PrepareForLaunch } from './prepare-for-launch';
 export function Driver() {
 	return (
 		<main className="flex flex-col gap-4 p-2">
-			<H1>{__('Site Setup', 'goodbids')}</H1>
+			<H1>{__('GoodBids Onboarding', 'goodbids')}</H1>
 			<div className="w-full max-w-4xl flex flex-col items-center gap-4">
 				<CompleteSetUp />
 				<CustomizeDesignAndContent />
