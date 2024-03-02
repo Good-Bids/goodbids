@@ -45,11 +45,11 @@ printf(
 
 if ( $reward_product ) {
 	printf(
-		'<p><strong>%s</strong><br>%s<b> <a href="%s">%s</a></p>',
+		'<p><strong>%s</strong><br>%s<b> (<a href="%s">%s</a>)</p>',
 		esc_html__( 'Reward Product', 'goodbids' ),
 		esc_html( $reward_product->get_name() ),
-		esc_html( goodbids()->auctions->wizard->get_wizard_url( $reward_product->get_id() ) ),
-		esc_html__( '(Edit)', 'goodbids' ),
+		esc_html( goodbids()->auctions->wizard->get_wizard_url( $auction_id, $reward_product->get_id() ) ),
+		esc_html__( 'Edit', 'goodbids' ),
 	);
 }
 

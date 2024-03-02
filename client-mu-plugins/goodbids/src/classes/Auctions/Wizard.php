@@ -33,6 +33,12 @@ class Wizard {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const AUCTION_ID_PARAM = 'auction_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const REWARD_EDIT_PARAM = 'reward_id';
 
 	/**
@@ -158,11 +164,11 @@ class Wizard {
 	 *
 	 * @return string
 	 */
-	public function get_wizard_url( ?int $reward_id = null): string {
+	public function get_wizard_url( ?int $auction_id = null, ?int $reward_id = null ): string {
 		$wizard_url = admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . self::PAGE_SLUG );
 
-		if ( $reward_id ) {
-			$wizard_url .= '&' . self::REWARD_EDIT_PARAM . '=' . $reward_id;
+		if ( $auction_id && $reward_id ) {
+			$wizard_url .= '&' . self::AUCTION_ID_PARAM . '=' . $auction_id . '&' . self::REWARD_EDIT_PARAM . '=' . $reward_id;
 		}
 
 		return $wizard_url;
@@ -234,6 +240,7 @@ class Wizard {
 			'appID'   => self::PAGE_SLUG,
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 			'adminURL' => admin_url( ),
+			'auctionIdParam' => self::AUCTION_ID_PARAM,
 			'editRewardParam' => self::REWARD_EDIT_PARAM,
 
 			// WP/WC Variables.

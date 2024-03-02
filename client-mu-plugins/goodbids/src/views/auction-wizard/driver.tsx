@@ -5,12 +5,21 @@ import { TooltipProvider } from '~/components/tooltip';
 import { useState } from 'react';
 
 function Wizard() {
+	const auctionId = new URLSearchParams(document.location.search).get(
+		gbAuctionWizard.auctionIdParam,
+	);
+
 	const rewardId = new URLSearchParams(document.location.search).get(
 		gbAuctionWizard.editRewardParam,
 	);
 
-	if (rewardId) {
-		return <EditFlow rewardId={parseInt(rewardId, 10)} />;
+	if (auctionId && rewardId) {
+		return (
+			<EditFlow
+				auctionId={parseInt(auctionId, 10)}
+				rewardId={parseInt(rewardId, 10)}
+			/>
+		);
 	}
 
 	return <Create />;
