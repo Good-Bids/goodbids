@@ -112,7 +112,7 @@ export function Form({ shippingClasses }: FormProps) {
 					'Physical products are shipped to the winner or available for local pickup based on the shipping zones you’ve configured for your Nonprofit site. ',
 					'goodbids',
 				)}
-				defaultValue={productType.value}
+				value={productType.value}
 				onValueChange={(value) => setProductValue('productType', value)}
 			>
 				<RadioItem value="physical" id="physical">
