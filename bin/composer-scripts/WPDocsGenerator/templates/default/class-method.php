@@ -1,6 +1,6 @@
 <?php
 /**
- * Function Object Template
+ * Class Method Object Template
  *
  * phpcs:disable
  *
@@ -17,10 +17,16 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
 	source: <?php echo $object->path . ':' . $object->lineNumber; ?>
 
+	class: <?php echo $object->class; ?>
+
 <?php if ( $object->namespace ) : ?>
 	namespace: <?php echo $object->namespace; ?>
 
 <?php endif; ?>
+	access: <?php echo $object->access; ?>
+
+	static: <?php echo $object->isStatic ? 'true' : 'false'; ?>
+
 	nullable: <?php echo $object->isNullable ? 'true' : 'false'; ?>
 
 	parameters:

@@ -1,6 +1,6 @@
 <?php
 /**
- * Function Object Template
+ * Class Object Template
  *
  * phpcs:disable
  *
@@ -21,10 +21,8 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 	namespace: <?php echo $object->namespace; ?>
 
 <?php endif; ?>
-	nullable: <?php echo $object->isNullable ? 'true' : 'false'; ?>
-
-	parameters:
-		<?php $this->prettyPrint( $object->parameters, 2 ); ?>
-	returns:
-		<?php $this->prettyPrint( $object->returnTypes, 2 ); ?>
+	constants:
+		<?php $this->prettyPrint( $object->constants, 2 ); ?>
+	properties:
+		<?php $this->prettyPrint( $object->properties, 2 ); ?>
 
