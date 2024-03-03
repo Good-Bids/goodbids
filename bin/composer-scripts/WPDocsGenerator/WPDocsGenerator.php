@@ -7,6 +7,8 @@
 
 namespace Viget\ComposerScripts\WPDocsGenerator;
 
+use Viget\ComposerScripts\WPDocsGenerator\Builders\Builder;
+use Viget\ComposerScripts\WPDocsGenerator\Builders\MarkdownBuilder;
 use Viget\ComposerScripts\WPDocsGeneratorScript;
 
 /**
@@ -75,16 +77,24 @@ class WPDocsGenerator {
 	{
 		$dir = $this->config['source'];
 
-		$this->traverse( $dir );
+		// Parse the PHP files into objects.
+		$this->parse( $dir );
 
-		// TODO: Generate the docs.
+		// Group objects together.
+//		$this->collect();
+
+		// Generate the docs.
+		$this->build();
+
+		// Report the results
+		$this->finish();
 	}
 
 	/**
 	 * @param string $path
 	 * @return void
 	 */
-	private function traverse( string $path ): void
+	private function parse( string $path ): void
 	{
 		$path    = str_replace( '//', '/', $path );
 		$dirname = basename( $path );
@@ -104,7 +114,8 @@ class WPDocsGenerator {
 
 		if ( ! empty( $files ) ) {
 			foreach ( $files as $file ) {
-				$objects = $this->parser->parse( $file );
+				$relative = str_replace( $this->config['source'], basename( $this->config['source'] ) . '/', $file );
+				$objects = $this->parser->parse( $file, $relative );
 
 				if ( is_null( $objects ) ) {
 					$this->script::writeError( $this->parser->error );
@@ -122,7 +133,51 @@ class WPDocsGenerator {
 		$subdirectories = glob( $path . '*/', GLOB_ONLYDIR );
 
 		foreach ( $subdirectories as $subdirectory ) {
-			$this->traverse( $subdirectory );
+			$this->parse( $subdirectory );
 		}
+	}
+
+	/**
+	 * @return void
+	 */
+	private function collect(): void
+	{
+		// TODO: Add grouping logic.
+	}
+
+	/**
+	 * Get builder and build
+	 * @return void
+	 */
+	private function build(): void
+	{
+		$builder = $this->getBuilder();
+		$builder->build();
+	}
+
+	/**
+	 * Get the Builder
+	 * @return Builder|MarkdownBuilder
+	 */
+	private function getBuilder(): Builder|MarkdownBuilder
+	{
+		if ( 'markdown' === $this->config['format'] ) {
+			return new MarkdownBuilder( $this->objects, $this->config );
+		}
+
+		if ( 'html' === $this->config['format'] ) {
+			// TODO: Add HTML Builder.
+		}
+
+		return new Builder( $this->objects, $this->config );
+	}
+
+	/**
+	 * Wrap up.
+	 * @return void
+	 */
+	private function finish(): void
+	{
+		$this->script::writeInfo( 'Documentation generated successfully.' );
 	}
 }

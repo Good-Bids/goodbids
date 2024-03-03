@@ -205,7 +205,7 @@ class Core {
 	}
 
 	/**
-	 * Get the plugin version
+	 * Returns the current version of the GoodBids plugin.
 	 *
 	 * @since 1.0.0
 	 *
@@ -278,7 +278,7 @@ class Core {
 	}
 
 	/**
-	 * Get a config value. You can use dot notation to get nested values.
+	 * Returns the config value for the given setting. You can use dot notation to access nested values.
 	 *
 	 * @param string $config_key    Config Key.
 	 * @param bool   $apply_filters Whether to apply_filters to the value.

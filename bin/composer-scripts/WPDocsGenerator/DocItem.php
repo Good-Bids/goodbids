@@ -25,6 +25,16 @@ class DocItem {
 	/**
 	 * @var ?string
 	 */
+	public ?string $path = null;
+
+	/**
+	 * @var int
+	 */
+	public int $lineNumber;
+
+	/**
+	 * @var ?string
+	 */
 	public ?string $namespace = null;
 
 	/**
@@ -86,9 +96,11 @@ class DocItem {
 	 * DocItem constructor.
 	 *
 	 * @param string $name
+	 * @param int $lineNumber
 	 */
-	public function __construct( string $name ) {
+	public function __construct( string $name, int $lineNumber ) {
 		$this->name = $name;
+		$this->lineNumber = $lineNumber;
 	}
 
 	/**

@@ -32,6 +32,19 @@ class CodeCollection extends NodeVisitorAbstract
 	private ?DocItem $currentClass = null;
 
 	/**
+	 * @var string
+	 */
+	public string $path = '';
+
+	/**
+	 * @param string $path
+	 */
+	public function __construct( string $path )
+	{
+		$this->path = $path;
+	}
+
+	/**
 	 * @param Node $node
 	 * @return void
 	 */
@@ -91,7 +104,7 @@ class CodeCollection extends NodeVisitorAbstract
 					$type = $stmt->type ? get_class($stmt->type) : $property->getType();
 
 					// Create a new DocItem for each property
-					$propertyDocItem = new DocItem($propertyName);
+					$propertyDocItem = new DocItem($propertyName, $node->getStartLine());
 					$propertyDocItem->type = $type;
 					$propertyDocItem->namespace = $this->currentNamespace;
 					$propertyDocItem->description = $this->getDescription($stmt);
@@ -125,7 +138,7 @@ class CodeCollection extends NodeVisitorAbstract
 	{
 		$constName = $node->consts[0]->name->toString();
 
-		$docItem = new DocItem($constName);
+		$docItem = new DocItem($constName, $node->getStartLine());
 		$docItem->type = get_class($node);
 		$docItem->description = $this->getDescription($node);
 		$docItem->isStatic = true;
@@ -144,13 +157,13 @@ class CodeCollection extends NodeVisitorAbstract
 	}
 
 	/**
-	 * @param array $parameters
+	 * @param Node\Param[] $parameters
 	 * @return array
 	 */
 	private function collectParameters(array $parameters, DocItem $docItem): void
 	{
 		foreach ($parameters as $param) {
-			$parameterDocItem = new DocItem($param->var->name);
+			$parameterDocItem = new DocItem($param->var->name, $param->getStartLine());
 			$parameterDocItem->type = $this->getTypeString($param->type);
 			$parameterDocItem->isNullable = $this->isNullable($param->type);
 			$parameterDocItem->description = $this->getDescription($param);
@@ -200,7 +213,7 @@ class CodeCollection extends NodeVisitorAbstract
 				)
 			);
 		} elseif ($type instanceof Node\NullableType) {
-			return 'null';
+			return 'null|' . $this->getTypeString($type->type);
 		} elseif ($type !== null) {
 			return $type->toString();
 		} else {
@@ -221,8 +234,12 @@ class CodeCollection extends NodeVisitorAbstract
 				},
 				$type->types
 			);
-		} else {
+		} elseif ($type instanceof Node\NullableType) {
+			return explode('|', $this->getTypeString($type));
+		} elseif ($type !== null) {
 			return [$this->getTypeString($type)];
+		} else {
+			return ['mixed'];
 		}
 	}
 
@@ -252,7 +269,8 @@ class CodeCollection extends NodeVisitorAbstract
 		$name = is_string( $node->name ) ? $node->name : $node->name->toString();
 		$description = $this->getDescription($node);
 
-		$docItem = new DocItem($name);
+		$docItem = new DocItem($name, $node->getStartLine());
+		$docItem->path = $this->path;
 		$docItem->type = get_class($node);
 		$docItem->namespace = $this->currentNamespace;
 		$docItem->description = $description;
