@@ -44,7 +44,9 @@ class WPDocsGeneratorScript extends ComposerScript {
 
 		$defaults = [
 			'source' => null,
-			'ignore' => [ 'vendor', 'node_modules', 'build', 'dist' ],
+			'ignore' => [ 'vendor', 'node_modules', 'build', 'dist', 'assets', 'acf-json' ],
+			'output' => 'docs',
+			'format' => 'markdown', // maybe also support HTML.
 		];
 
 		$generator = WPDocsGenerator::getInstance();

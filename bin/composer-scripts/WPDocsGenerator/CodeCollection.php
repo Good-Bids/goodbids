@@ -88,8 +88,11 @@ class CodeCollection extends NodeVisitorAbstract
 				foreach ($stmt->props as $property) {
 					$propertyName = $property->name->toString();
 
+					$type = $stmt->type ? get_class($stmt->type) : $property->getType();
+
 					// Create a new DocItem for each property
 					$propertyDocItem = new DocItem($propertyName);
+					$propertyDocItem->type = $type;
 					$propertyDocItem->namespace = $this->currentNamespace;
 					$propertyDocItem->description = $this->getDescription($stmt);
 					$propertyDocItem->isNullable = $this->isNullable($stmt->type);
@@ -123,6 +126,7 @@ class CodeCollection extends NodeVisitorAbstract
 		$constName = $node->consts[0]->name->toString();
 
 		$docItem = new DocItem($constName);
+		$docItem->type = get_class($node);
 		$docItem->description = $this->getDescription($node);
 		$docItem->isStatic = true;
 		$docItem->class = $this->currentClass?->name;
@@ -296,8 +300,30 @@ class CodeCollection extends NodeVisitorAbstract
 		$description = '';
 
 		if (!empty($comments)) {
-			$comment = $comments[0];
-			$description = $comment->getText();
+			$comment = $comments[0]->getText();
+
+			// Remove opening comment tokens (/** and /*)
+			$comment = preg_replace('/^\/\*\*|\s*\*\/$/', '', $comment);
+
+			// Remove * tokens at the start of each line and lines starting with "@"
+			$comment = preg_replace('/^\s*\*\s*|\s*\*\s*@.*$/m', '', $comment);
+
+			// Remove closing comment tokens (*/)
+			$comment = preg_replace('/\/\*\*|\*\//', '', $comment);
+
+			// Remove blank lines
+			$comment = preg_replace('/^\s*$/m', '', $comment);
+
+			// Trim any remaining whitespace around the text
+			$description = trim($comment);
+
+			// Remove lines starting with "@"
+			$lines = explode("\n", $description);
+			$filteredLines = array_filter($lines, function ($line) {
+				return strpos($line, '@') !== 0;
+			});
+
+			$description = implode("\n", $filteredLines);
 		}
 
 		return $description;
