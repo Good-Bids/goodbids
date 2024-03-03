@@ -4,16 +4,26 @@
 	"homepage": "https://github.com/automattic/vip-go-skeleton",
 	"license": "GPL-2.0-or-later",
 	"require": {
-		"php": ">=8.1",
-		"ext-newrelic": "*"
+		"php": ">=8.1"
 	},
 	"require-dev": {
 		"automattic/vipwpcs": "^3",
-		"phpcompatibility/phpcompatibility-wp": "^2"
+		"phpcompatibility/phpcompatibility-wp": "^2",
+		"symfony/console": "^7.0",
+		"composer/composer": "^2.7",
+		"nikic/php-parser": "^5.0"
 	},
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
+	},
+	"autoload": {
+		"psr-4": {
+			"Viget\\ComposerScripts\\": "bin/composer-scripts/"
+		}
+	},
+	"scripts": {
+		"generate-docs": "Viget\\ComposerScripts\\WPDocsGeneratorScript::make"
 	}
 }
