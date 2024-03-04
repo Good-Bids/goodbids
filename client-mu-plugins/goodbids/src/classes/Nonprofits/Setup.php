@@ -183,6 +183,7 @@ class Setup {
 			'invoicesURL' => admin_url( 'edit.php?post_type=gb-invoice' ),
 			'commentsURL' => admin_url( 'edit-comments.php' ),
 			'siteStatus' => $this->nonprofit->get_status(),
+			'siteStatusOptions' => $this->nonprofit->get_site_status_options()
 		];
 	}
 

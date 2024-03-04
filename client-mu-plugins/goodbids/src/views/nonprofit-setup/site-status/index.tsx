@@ -4,9 +4,16 @@ import { Pending } from './pending';
 import { useState } from 'react';
 import { Live } from './live';
 import { Inactive } from './inactive';
+import { z } from 'zod';
+
+const siteStatusSchema = z
+	.enum(gbNonprofitSetup.siteStatusOptions)
+	.catch('pending');
 
 export function SiteStatus() {
-	const [status, setStatus] = useState(gbNonprofitSetup.siteStatus);
+	const [status, setStatus] = useState(
+		siteStatusSchema.parse(gbNonprofitSetup.siteStatus),
+	);
 
 	const manuallySetToLive = () => {
 		return setStatus('live');

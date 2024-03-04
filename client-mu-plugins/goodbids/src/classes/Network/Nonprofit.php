@@ -251,4 +251,19 @@ class Nonprofit {
 	public function is_verified(): bool {
 		return goodbids()->verification->is_verified( $this->get_id() );
 	}
+
+	/**
+	 * Returns Site Status options
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function get_site_status_options(): array {
+		return [
+			self::STATUS_PENDING,
+			self::STATUS_LIVE,
+			self::STATUS_INACTIVE,
+		];
+	}
 }
