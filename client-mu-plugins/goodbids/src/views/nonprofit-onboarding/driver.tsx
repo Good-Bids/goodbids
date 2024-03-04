@@ -5,19 +5,19 @@ import { OnboardingCompleteStep } from './steps/onboarding-complete';
 import { z } from 'zod';
 
 const stepSchema = z
-	.enum(gbNonprofitOnboarding.steps)
-	.catch(gbNonprofitOnboarding.steps[0]);
+	.enum(gbNonprofitOnboarding.stepOptions)
+	.catch('create-store');
 
 const stepToProgress = {
-	[gbNonprofitOnboarding.steps[0]]: 15,
-	[gbNonprofitOnboarding.steps[1]]: 65,
-	[gbNonprofitOnboarding.steps[2]]: 100,
+	'create-store': 15,
+	'set-up-payments': 65,
+	'onboarding-complete': 100,
 };
 
 const stepToComponent = {
-	[gbNonprofitOnboarding.steps[0]]: <CreateStoreStep />,
-	[gbNonprofitOnboarding.steps[1]]: <SetUpPaymentsStep />,
-	[gbNonprofitOnboarding.steps[2]]: <OnboardingCompleteStep />,
+	'create-store': <CreateStoreStep />,
+	'set-up-payments': <SetUpPaymentsStep />,
+	'onboarding-complete': <OnboardingCompleteStep />,
 };
 
 export function Driver() {

@@ -256,7 +256,7 @@ class Onboarding {
 		return [
 			'appID'                 => self::PAGE_SLUG,
 			'stepParam'             => self::STEP_PARAM,
-			'steps'                 => [ self::STEP_CREATE_STORE, self::STEP_SET_UP_PAYMENTS, self::STEP_ONBOARDING_COMPLETE ],
+			'stepOptions'                 => [ self::STEP_CREATE_STORE, self::STEP_SET_UP_PAYMENTS, self::STEP_ONBOARDING_COMPLETE ],
 			'createStoreUrl'        => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
 			'setUpPaymentsUrl'      => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ),
 			'onboardingCompleteUrl' => admin_url(),

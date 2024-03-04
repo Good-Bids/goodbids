@@ -6,7 +6,7 @@ import { H1, P } from '../../../components/typography';
 export function SetUpPaymentsStep() {
 	return (
 		<div className="w-full flex flex-col items-center py-10 gap-4">
-			<img src={AuctionStartImage} />
+			<img src={AuctionStartImage} alt="" />
 
 			<H1>{__('Set Up Payments', 'goodbids')}</H1>
 
