@@ -152,6 +152,9 @@ class WooCommerce {
 
 		// Limit access to pages
 		$this->limit_access_to_pages();
+
+		// Disable New Order Emails
+		$this->disable_new_order_emails();
 	}
 
 	/**
@@ -231,7 +234,6 @@ class WooCommerce {
 	private function price_trim_zeros(): void {
 		add_filter( 'woocommerce_price_trim_zeros', '__return_true' );
 	}
-
 
 	/**
 	 * Configure WooCommerce settings for new sites.
@@ -682,6 +684,32 @@ class WooCommerce {
 			},
 			10,
 			3
+		);
+	}
+
+	/**
+	 * Disable New Order Emails
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_new_order_emails(): void {
+		add_filter( 'woocommerce_email_enabled_new_order', '__return_false' );
+
+		add_filter(
+			'woocommerce_email_get_option' ,
+			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+				if ( 'new_order' !== $email->id || 'enabled' !== $key ) {
+					return $value;
+				}
+
+				$email->form_fields['enabled']['default'] = 'no';
+
+				return 'no';
+			},
+			10,
+			4
 		);
 	}
 }
