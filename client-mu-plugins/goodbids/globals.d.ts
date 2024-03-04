@@ -37,6 +37,11 @@ declare const gbNonprofitSetupGuide: {
 
 declare const gbNonprofitOnboarding: {
 	appID: string;
+	stepParam: string;
+	steps: ['create-store', 'set-up-payments', 'onboarding-complete'];
+	createStoreUrl: string;
+	setUpPaymentsUrl: string;
+	onboardingCompleteUrl: string;
 };
 
 // TODO: Type this properly
