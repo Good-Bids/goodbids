@@ -155,6 +155,9 @@ class WooCommerce {
 
 		// Disable New Order Emails
 		$this->disable_new_order_emails();
+
+		// Disable Processing Order Emails
+		$this->disable_processing_order_emails();
 	}
 
 	/**
@@ -698,9 +701,35 @@ class WooCommerce {
 		add_filter( 'woocommerce_email_enabled_new_order', '__return_false' );
 
 		add_filter(
-			'woocommerce_email_get_option' ,
+			'woocommerce_email_get_option',
 			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
 				if ( 'new_order' !== $email->id || 'enabled' !== $key ) {
+					return $value;
+				}
+
+				$email->form_fields['enabled']['default'] = 'no';
+
+				return 'no';
+			},
+			10,
+			4
+		);
+	}
+
+	/**
+	 * Disable Processing Order Emails
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_processing_order_emails(): void {
+		add_filter( 'woocommerce_enabled_customer_processing_order', '__return_false' );
+
+		add_filter(
+			'woocommerce_email_get_option',
+			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+				if ( 'customer_processing_order' !== $email->id || 'enabled' !== $key ) {
 					return $value;
 				}
 
