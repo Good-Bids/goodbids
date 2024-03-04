@@ -74,5 +74,10 @@
       "domain-script": "018db277-8821-7adb-9a46-541376bb3a13",
       "script-url": "https://cookie-cdn.cookiepro.com/consent/018db277-8821-7adb-9a46-541376bb3a13/OtAutoBlock.js"
     }
+  },
+  "taxes": {
+    "ny": {
+      "latest": "woo-ny-tax-rates-jan-2024.csv"
+    }
   }
 }

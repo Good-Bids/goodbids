@@ -160,4 +160,24 @@ class Utilities {
 	public function display_admin_info( string $message, bool $is_dismissible = true, bool $network = false ): void {
 		$this->display_admin_notice( $message, $is_dismissible, $network );
 	}
+
+	/**
+	 * Displays a custom Admin Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_custom( string $notice, bool $network = false ): void {
+		$hook = $network ? 'network_admin_notices' : 'admin_notices';
+		add_action(
+			$hook,
+			function() use ( $notice ) {
+				echo wp_kses_post( $notice );
+			}
+		);
+	}
 }
