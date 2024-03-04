@@ -24,27 +24,40 @@ class Taxes {
 	const TAXES_IMPORTED_OPTION = 'goodbids_taxes_imported_';
 
 	/**
+	 * Use NY as the default state for tax rates.
+	 * This allows the code to be easily updated to support more states.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TAX_RATE_STATE = 'ny';
+
+	/**
 	 * Initialize Taxes
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Import the NY Tax Rates CSV file.
-		$this->import_ny_tax_rates();
+		// Import the State Tax Rates CSV file.
+		$this->import_state_tax_rates_csv();
 	}
 
 	/**
-	 * Import Latest NY Tax Rates
+	 * Import Latest State Tax Rates
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function import_ny_tax_rates(): void {
+	private function import_state_tax_rates_csv(): void {
 		add_action(
 			'admin_init',
 			function () {
-				$state = 'ny';
+				if ( is_main_site() ) {
+					return;
+				}
+
+				$state = self::TAX_RATE_STATE;
 
 				if ( ! $this->load_wc_tax() ) {
 					Log::error( 'Could not locate WC Tax class.' );
@@ -74,7 +87,7 @@ class Taxes {
 				$ny_taxes_path = GOODBIDS_PLUGIN_PATH . 'data/taxes/' . $filename;
 
 				if ( ! file_exists( $ny_taxes_path ) ) {
-					Log::error( 'The NY Tax Rates file is missing.' );
+					Log::error( 'Could not locate the ' . strtoupper( $state ) . ' Tax Rates file.' );
 					return;
 				}
 
