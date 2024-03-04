@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { ButtonLink } from '../../../components/button-link';
 import { MultiStepHeading } from '../components/multi-step-heading';
+import { ButtonLink } from '../../../components/button-link';
 
-export function ConfigureShipping() {
+export function ManageShipping() {
 	return (
 		<MultiStepHeading
-			title={__('Update Shipping', 'goodbids')}
+			title={__('Manage Shipping', 'goodbids')}
 			content={
 				<>
 					{__(

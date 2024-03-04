@@ -3,7 +3,7 @@ import { H1, P } from '../../../components/typography';
 
 type CardHeadingProps = {
 	title: string;
-	content: string;
+	content?: string;
 	children?: React.ReactNode;
 };
 
@@ -21,7 +21,7 @@ export function CardHeading({ title, content, children }: CardHeadingProps) {
 		<div className={containerClasses}>
 			<div className={headingClasses}>
 				<H1>{title}</H1>
-				<P>{content}</P>
+				{content && <P>{content}</P>}
 			</div>
 
 			{children}
