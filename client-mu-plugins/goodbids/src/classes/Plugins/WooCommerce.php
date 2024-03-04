@@ -244,26 +244,47 @@ class WooCommerce {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				// Disable Guest Checkout.
+				// Registration Settings
 				update_option( 'woocommerce_enable_guest_checkout', 'no' );
-
-				// Enable Log in during Checkout.
 				update_option( 'woocommerce_enable_checkout_login_reminder', 'yes' );
-
-				// Enable Account Creation during Checkout.
 				update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'yes' );
-
-				// Enable Account Creation from My Account Page.
 				update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+				update_option( 'woocommerce_registration_generate_username', 'no' );
+				update_option( 'woocommerce_registration_generate_password', 'no' );
 
 				// Allow for personal data removal.
 				update_option( 'woocommerce_erasure_request_removes_order_data', 'yes' );
 				update_option( 'woocommerce_allow_bulk_remove_personal_data', 'yes' );
 
+				// Shipping and Taxes
+				update_option( 'woocommerce_calc_taxes', 'yes' );
+				update_option( 'woocommerce_weight_unit', 'lb' );
+				update_option( 'woocommerce_dimension_unit', 'in' );
+				update_option( 'woocommerce_tax_total_display', 'single' );
+
+				// Disable Reviews
+				update_option( 'woocommerce_enable_reviews', 'no' );
+
+				// Inventory Management
+				update_option( 'woocommerce_notify_low_stock', 'no' );
+				update_option( 'woocommerce_notify_no_stock', 'no' );
+
+				// Disable Marketplace
+				update_option( 'woocommerce_show_marketplace_suggestions', 'no' );
+
+				/**
+				 * Email Settings
+				 */
+
+				// From Email
+				$from_email = sprintf( 'no-reply@%s', wp_parse_url( home_url(), PHP_URL_HOST ) );
+				update_option( 'woocommerce_email_from_name', get_bloginfo( 'name' ) );
+				update_option( 'woocommerce_email_from_address', $from_email );
+
 				// Update email base color.
 				update_option( 'woocommerce_email_base_color', '#0A3624' );
 
-				// Update email footer text.
+				// Update email footer text. TODO: Should we set up tokens for these?
 				$email_footer_text = sprintf(
 					'%s <p>GoodBids for <a href="{site_url}">{site_title}</a>  —  %s | %s</p>',
 					get_custom_logo( get_main_site_id() ),
