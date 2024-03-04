@@ -145,6 +145,7 @@ class DocItem {
 	}
 
 	/**
+	 * @param bool $unique
 	 * @return string
 	 */
 	public function getReference( bool $unique = false ): string
