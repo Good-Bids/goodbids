@@ -764,6 +764,6 @@ class WooCommerce {
 		};
 
 		add_filter( 'woocommerce_admin_experimental_onboarding_tasklists', $hide_setup_steps );
-		add_filter( 'woocommerce_admin__onboarding_tasklists', $hide_setup_steps ); // Just in case.
+		add_filter( 'woocommerce_admin_onboarding_tasklists', $hide_setup_steps ); // Just in case.
 	}
 }
