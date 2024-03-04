@@ -1108,7 +1108,7 @@ class Sites {
 				$about_id    = get_option( self::ABOUT_OPTION );
 				$auctions_id = get_option( self::AUCTIONS_OPTION );
 
-				if ( ! $about_id || ! $auctions_id ) {
+				if ( ! $about_id && ! $auctions_id ) {
 					return;
 				}
 
@@ -1128,9 +1128,8 @@ class Sites {
 				ob_start();
 				goodbids()->load_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) );
 
-				// TODO: figure out how to get ID - it is always the first one
 				$navigation_content = [
-					'ID'           => $wp_navigation->posts[0]->ID,
+					'ID'           => $wp_navigation->post->ID,
 					'post_content' => ob_get_clean(),
 				];
 
