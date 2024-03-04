@@ -26,11 +26,11 @@
 
 			<!-- wp:post-title /-->
 
-			<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<!-- wp:group {"lock":{"move":true,"remove":true},"layout":{"type":"flex","flexWrap":"wrap"}} -->
 			<div class="wp-block-group">
 				<!-- wp:acf/watch-auction {"name":"acf/watch-auction","mode":"preview"} /-->
 
-				<!-- wp:acf/auction-share {"name":"acf/auction-share","data":{},"mode":"preview"} /-->
+				<!-- wp:acf/auction-share {"name":"acf/auction-share","mode":"preview"} /-->
 			</div>
 			<!-- /wp:group -->
 
