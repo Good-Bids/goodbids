@@ -23,6 +23,7 @@ use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
+use GoodBids\Nonprofits\Guide;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Nonprofits\Onboarding;
 use GoodBids\Nonprofits\Verification;
@@ -453,6 +454,7 @@ class Core {
 				new Blocks();
 				new OneTrust();
 				new Onboarding();
+				new Guide();
 			}
 		);
 	}
