@@ -1,6 +1,6 @@
 <?php
 /**
- * GoodBids Nonprofit Onboarding
+ * GoodBids Nonprofit Setup Guide
  *
  * @since 1.0.0
  * @package GoodBids
@@ -8,7 +8,6 @@
 
 namespace GoodBids\Nonprofits;
 
-use GoodBids\Network\Nonprofit;
 use GoodBids\Auctions\Wizard;
 
 /**
@@ -16,13 +15,13 @@ use GoodBids\Auctions\Wizard;
  *
  * @since 1.0.0
  */
-class Onboarding {
+class Guide {
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const PAGE_SLUG = 'gb-onboarding';
+	const PAGE_SLUG = 'gb-setup-guide';
 
 	/**
 	 * @since 1.0.0
@@ -32,73 +31,14 @@ class Onboarding {
 			return;
 		}
 
-		$this->nonprofit = new Nonprofit( get_current_blog_id() );
-
-		// Redirect to Onboarding page if not yet onboarded.
-		$this->force_setup();
-
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
 
-		// Add the menu page for the setup dashboard
+		// Add the menu page for the site guide
 		$this->add_menu_dashboard_page();
 
 		// Enqueue Scripts
 		$this->enqueue_scripts();
-	}
-
-	/**
-	 * Require Setup
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function force_setup(): void {
-		add_action(
-			'current_screen',
-			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() || $this->is_onboarding_page() || is_super_admin() ) {
-					return;
-				}
-
-				$screen      = get_current_screen();
-				$setup_pages = [
-					'options-general',
-					'woocommerce_page_wc-admin',
-					'woocommerce_page_wc-settings',
-				];
-
-				if ( in_array( $screen->id, $setup_pages, true ) ) {
-					return;
-				}
-
-				wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
-				exit;
-			}
-		);
-
-		add_action(
-			'admin_menu',
-			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() || is_super_admin() ) {
-					return;
-				}
-
-				global $menu;
-
-				foreach ( $menu as &$item ) {
-					if ( self::PAGE_SLUG !== $item[2] ) {
-						if ( isset( $item[4] ) ) {
-							$item[4] .= ' hidden';
-						} else {
-							$item[4] = 'hidden';
-						}
-					}
-				}
-			},
-			99999
-		);
 	}
 
 	/**
@@ -110,7 +50,7 @@ class Onboarding {
 	 */
 	private function add_menu_dashboard_page(): void {
 		// Disable for the main site.
-		if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
+		if ( is_main_site() || ! goodbids()->network->nonprofits->is_onboarded() ) {
 			return;
 		}
 
@@ -118,12 +58,12 @@ class Onboarding {
 			'admin_menu',
 			function () {
 				add_menu_page(
-					__( 'GoodBids Onboarding', 'goodbids' ),
-					__( 'Onboarding', 'goodbids' ),
+					__( 'Nonprofit Setup Guide', 'goodbids' ),
+					__( 'Setup Guide', 'goodbids' ),
 					'manage_options',
 					self::PAGE_SLUG,
-					[ $this, 'nonprofit_onboarding_page' ],
-					'dashicons-admin-site-alt3',
+					[ $this, 'nonprofit_guide_page' ],
+					'dashicons-welcome-learn-more',
 					1.1
 				);
 			}
@@ -131,24 +71,24 @@ class Onboarding {
 	}
 
 	/**
-	 * Nonprofit Onboarding Page
+	 * Nonprofit Setup Guide Page
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function nonprofit_onboarding_page(): void {
-		goodbids()->load_view( 'admin/setup/onboarding.php', [ 'nonprofit_onboarding_id' => self::PAGE_SLUG ] );
+	public function nonprofit_guide_page(): void {
+		goodbids()->load_view( 'admin/setup/guide.php', [ 'nonprofit_guide_id' => self::PAGE_SLUG ] );
 	}
 
 	/**
-	 * Check if the current page is the nonprofit onboarding page.
+	 * Check if the current page is the nonprofit setup page.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
-	private function is_onboarding_page(): bool {
+	private function is_guide_page(): bool {
 		global $pagenow;
 
 		if ( 'admin.php' !== $pagenow || empty( $_GET['page'] ) ) { // phpcs:ignore
@@ -175,7 +115,7 @@ class Onboarding {
 		add_filter(
 			'goodbids_admin_script_dependencies',
 			function( array $dependencies ): array {
-				if ( ! $this->is_onboarding_page() ) {
+				if ( ! $this->is_guide_page() ) {
 					return $dependencies;
 				}
 
@@ -248,8 +188,6 @@ class Onboarding {
 			'revenueMetricsURL'       => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 			'invoicesURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 			'commentsURL'             => admin_url( 'edit-comments.php' ),
-			'siteStatus' 			  => $this->nonprofit->get_status(),
-			'siteStatusOptions'       => $this->nonprofit->get_site_status_options()
 		];
 	}
 
@@ -264,7 +202,7 @@ class Onboarding {
 		add_action(
 			'admin_init',
 			function(): void {
-				if ( ! $this->is_onboarding_page() ) {
+				if ( ! $this->is_guide_page() ) {
 					return;
 				}
 
