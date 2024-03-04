@@ -212,7 +212,7 @@ class Patterns {
 
 		if ( empty( $pattern['slug'] ) ) {
 			list( $namespace, $slug ) = explode( '/', $name );
-			$pattern['slug'] = $slug;
+			$pattern['slug']          = $slug;
 		}
 
 		if ( empty( $pattern['categories'] ) ) {
