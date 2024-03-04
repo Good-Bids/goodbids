@@ -3,6 +3,9 @@ declare module '*.svg';
 declare module '*.jpeg';
 declare module '*.jpg';
 
+// Defined in classes/Network/Nonprofit.php
+type SiteStatusType = 'pending' | 'live' | 'inactive';
+
 type PHPVariables = Record<string, string>;
 
 // These are only defined for the auction wizard page
@@ -11,6 +14,7 @@ declare const gbAuctionWizard: PHPVariables;
 // These are only defined for the nonprofit setup page
 declare const gbNonprofitSetup: {
 	appID: string;
+	siteStatus: SiteStatusType;
 	ajaxUrl: string;
 	optionsGeneralURL: string;
 	createWooCommerceURL: string;

@@ -8,6 +8,8 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
+
 /**
  * Setup Class
  *
@@ -25,6 +27,8 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		$this->nonprofit = new Nonprofit( get_current_blog_id() );
+
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
 
@@ -178,6 +182,7 @@ class Setup {
 			'revenueMetricsURL' => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 			'invoicesURL' => admin_url( 'edit.php?post_type=gb-invoice' ),
 			'commentsURL' => admin_url( 'edit-comments.php' ),
+			'siteStatus' => $this->nonprofit->get_status(),
 		];
 	}
 
