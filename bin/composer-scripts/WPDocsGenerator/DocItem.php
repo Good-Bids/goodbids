@@ -147,7 +147,7 @@ class DocItem {
 	/**
 	 * @return string
 	 */
-	public function getReference(): string
+	public function getReference( bool $unique = false ): string
 	{
 		$reference = $this->name;
 
@@ -155,8 +155,12 @@ class DocItem {
 			return $reference;
 		}
 
-		if ( 'parameter' === $this->node ) {
-			return '$' . $reference;
+		if ( in_array( $this->node, [ 'parameter', 'property' ], true ) ) {
+			$reference = '$' . $reference;
+
+			if ( ! $unique ) {
+				return $reference;
+			}
 		}
 
 		if ( $this->class ) {

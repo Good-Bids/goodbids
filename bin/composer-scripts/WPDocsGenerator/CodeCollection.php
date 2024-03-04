@@ -386,7 +386,7 @@ class CodeCollection extends NodeVisitorAbstract
 		$this->objects[$docItem->getReference()] = $docItem;
 
 		if ( $addToTree ) {
-			$this->tree[$docItem->getReference()] = $docItem;
+			$this->tree[$docItem->getReference( true )] = $docItem;
 		}
 	}
 
