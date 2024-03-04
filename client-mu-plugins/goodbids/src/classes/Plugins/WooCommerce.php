@@ -258,7 +258,7 @@ class WooCommerce {
 
 				// Shipping and Taxes
 				update_option( 'woocommerce_calc_taxes', 'yes' );
-				update_option( 'woocommerce_weight_unit', 'lb' );
+				update_option( 'woocommerce_weight_unit', 'lbs' );
 				update_option( 'woocommerce_dimension_unit', 'in' );
 				update_option( 'woocommerce_tax_total_display', 'single' );
 
