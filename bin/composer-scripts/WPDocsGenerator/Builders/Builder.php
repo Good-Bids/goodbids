@@ -15,6 +15,11 @@ class Builder
 	/**
 	 * @var DocItem[]
 	 */
+	private array $tree;
+
+	/**
+	 * @var DocItem[]
+	 */
 	private array $objects;
 
 	/**
@@ -23,11 +28,13 @@ class Builder
 	private array $config;
 
 	/**
+	 * @param DocItem[] $tree
 	 * @param DocItem[] $objects
 	 * @param array $config
 	 */
-	public function __construct( array $objects, array $config )
+	public function __construct( array $tree, array $objects, array $config )
 	{
+		$this->tree = $tree;
 		$this->objects = $objects;
 		$this->config = $config;
 	}
@@ -47,7 +54,7 @@ class Builder
 		$filename = $path . '/' . $file;
 
 		ob_start();
-		var_dump( $this->objects ); // phpcs:ignore
+		var_dump( $this->tree ); // phpcs:ignore
 		$contents = ob_get_clean();
 
 		$this->writeToFile( $filename, $contents );
@@ -55,20 +62,20 @@ class Builder
 
 	/**
 	 * Get the output path.
-	 * @param DocItem $object
+	 * @param ?DocItem $object
 	 * @return string
 	 */
-	public function getOutputPath( DocItem $object ): string
+	public function getOutputPath( ?DocItem $object = null ): string
 	{
 		return $this->config['output'];
 	}
 
 	/**
 	 * Get the filename for the given object.
-	 * @param DocItem $object
+	 * @param ?DocItem $object
 	 * @return string
 	 */
-	public function getObjectFile( DocItem $object ): string
+	public function getObjectFile( ?DocItem $object = null ): string
 	{
 		return 'index.txt';
 	}

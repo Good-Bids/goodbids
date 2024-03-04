@@ -23,6 +23,11 @@ class CodeCollection extends NodeVisitorAbstract
 	public array $objects = [];
 
 	/**
+	 * @var DocItem[]
+	 */
+	public array $tree = [];
+
+	/**
 	 * @var string
 	 */
 	private string $currentNamespace = '';
@@ -81,7 +86,7 @@ class CodeCollection extends NodeVisitorAbstract
 	private function collectFunction(Function_ $node): void
 	{
 		$functionDocItem = $this->createDocItem($node);
-		$this->updateObject($functionDocItem);
+		$this->addObject($functionDocItem);
 	}
 
 	/**
@@ -96,7 +101,7 @@ class CodeCollection extends NodeVisitorAbstract
 		$this->collectClassConstants($node);
 		$this->collectClassMethods($node);
 
-		$this->updateObject($classDocItem);
+		$this->addObject($classDocItem);
 	}
 
 	/**
@@ -118,6 +123,7 @@ class CodeCollection extends NodeVisitorAbstract
 					$propertyDocItem->defaultValue = $this->getPropertyDefaultValue($property);
 
 					$this->currentClass->addProperty($propertyDocItem);
+					$this->addObject($propertyDocItem, false);
 				}
 			}
 		}
@@ -139,6 +145,7 @@ class CodeCollection extends NodeVisitorAbstract
 					$constDocItem->isStatic = true;
 
 					$this->currentClass->addConstant($constDocItem);
+					$this->addObject($constDocItem, false);
 				}
 			}
 		}
@@ -154,6 +161,7 @@ class CodeCollection extends NodeVisitorAbstract
 			if ($stmt instanceof Node\Stmt\ClassMethod) {
 				$methodDocItem = $this->createDocItem($stmt);
 				$this->currentClass->addMethod($methodDocItem);
+				$this->addObject($methodDocItem, false);
 			}
 		}
 	}
@@ -166,15 +174,9 @@ class CodeCollection extends NodeVisitorAbstract
 	private function collectConst(Node\Stmt\Const_ $node): void
 	{
 		foreach ($node->consts as $const) {
-			// Create a new DocItem for each constant
-			$constName = $const->name->toString();
-			$constDocItem = new DocItem($constName, $node->getStartLine());
-			$constDocItem->path = $this->path;
-			$constDocItem->node = 'constant';
-			$constDocItem->description = $this->getDescription($node);
+			$constDocItem = $this->createDocItem( $const );
 			$constDocItem->isStatic = true; // Constants are always static
-
-			$this->updateObject($constDocItem);
+			$this->addObject($constDocItem);
 		}
 	}
 
@@ -185,10 +187,9 @@ class CodeCollection extends NodeVisitorAbstract
 	private function collectParameters(array $parameters): void
 	{
 		foreach ($parameters as $param) {
-			$paramName = $param->var->name;
-			$parameterDocItem = $this->createDocItem($param, $paramName);
-
+			$parameterDocItem = $this->createDocItem($param, $param->var->name);
 			$this->currentFunction->addParameter($parameterDocItem);
+			$this->addObject($parameterDocItem, false);
 		}
 	}
 
@@ -315,14 +316,19 @@ class CodeCollection extends NodeVisitorAbstract
 		$docItem = new DocItem($name, $startLine);
 		$docItem->path = $this->path;
 		$docItem->node = $this->getNodeType($node);
-		$docItem->namespace = $this->currentNamespace;
 		$docItem->description = $this->getDescription($node);
 
-		if ($this->currentClass) {
-			$docItem->class = $this->currentClass->name;
-		}
-		if ($this->currentFunction) {
-			$docItem->function = $this->currentFunction->name;
+		// Constants are in the Global Namespace.
+		if ( ! $node instanceof Node\Stmt\Const_ ) {
+			$docItem->namespace = $this->currentNamespace;
+
+			if ($this->currentClass) {
+				$docItem->class = $this->currentClass->name;
+			}
+
+			if ($this->currentFunction) {
+				$docItem->function = $this->currentFunction->name;
+			}
 		}
 
 		if( $node instanceof Function_ || $node instanceof ClassMethod ) {
@@ -359,6 +365,7 @@ class CodeCollection extends NodeVisitorAbstract
 
 		return match( $class ) {
 			Node\Stmt\Namespace_::class => 'namespace',
+			Node\Stmt\Const_::class => 'constant',
 			Node\Stmt\Class_::class => 'class',
 			Function_::class => 'function',
 			ClassMethod::class => 'method',
@@ -371,11 +378,16 @@ class CodeCollection extends NodeVisitorAbstract
 
 	/**
 	 * @param DocItem $docItem
+	 * @param bool $addToTree
 	 * @return void
 	 */
-	private function updateObject(DocItem $docItem): void
+	private function addObject(DocItem $docItem, bool $addToTree = true): void
 	{
 		$this->objects[$docItem->getReference()] = $docItem;
+
+		if ( $addToTree ) {
+			$this->tree[$docItem->getReference()] = $docItem;
+		}
 	}
 
 	/**

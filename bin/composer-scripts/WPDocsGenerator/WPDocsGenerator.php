@@ -8,6 +8,7 @@
 namespace Viget\ComposerScripts\WPDocsGenerator;
 
 use Viget\ComposerScripts\WPDocsGenerator\Builders\Builder;
+use Viget\ComposerScripts\WPDocsGenerator\Builders\HtmlBuilder;
 use Viget\ComposerScripts\WPDocsGenerator\Builders\MarkdownBuilder;
 use Viget\ComposerScripts\WPDocsGeneratorScript;
 
@@ -35,6 +36,11 @@ class WPDocsGenerator {
 	 * @var DocItem[]
 	 */
 	private array $objects = [];
+
+	/**
+	 * @var DocItem[]
+	 */
+	private array $tree = [];
 
 	/**
 	 * @var array
@@ -115,18 +121,19 @@ class WPDocsGenerator {
 		if ( ! empty( $files ) ) {
 			foreach ( $files as $file ) {
 				$relative = str_replace( $this->config['source'], basename( $this->config['source'] ) . '/', $file );
-				$objects = $this->parser->parse( $file, $relative );
+				$collection = $this->parser->parse( $file, $relative );
 
-				if ( is_null( $objects ) ) {
+				if ( is_null( $collection ) ) {
 					$this->script::writeError( $this->parser->error );
 					continue;
 				}
 
-				if ( empty( $objects ) ) {
+				if ( empty( $collection->objects ) ) {
 					continue;
 				}
 
-				$this->objects = array_merge( $this->objects, $objects );
+				$this->objects = array_merge( $this->objects, $collection->objects );
+				$this->tree    = array_merge( $this->tree, $collection->tree );
 			}
 		}
 
@@ -157,19 +164,19 @@ class WPDocsGenerator {
 
 	/**
 	 * Get the Builder
-	 * @return Builder|MarkdownBuilder
+	 * @return Builder|MarkdownBuilder|HtmlBuilder
 	 */
-	private function getBuilder(): Builder|MarkdownBuilder
+	private function getBuilder(): Builder|MarkdownBuilder|HtmlBuilder
 	{
 		if ( 'markdown' === $this->config['format'] ) {
-			return new MarkdownBuilder( $this->objects, $this->config );
+			return new MarkdownBuilder( $this->tree, $this->objects, $this->config );
 		}
 
 		if ( 'html' === $this->config['format'] ) {
-			// TODO: Add HTML Builder.
+			return new HtmlBuilder( $this->tree, $this->objects, $this->config );
 		}
 
-		return new Builder( $this->objects, $this->config );
+		return new Builder( $this->tree, $this->objects, $this->config );
 	}
 
 	/**

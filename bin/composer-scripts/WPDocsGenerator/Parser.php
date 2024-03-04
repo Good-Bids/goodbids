@@ -35,9 +35,9 @@ class Parser {
 	/**
 	 * @param string $path
 	 * @param string $relative_path
-	 * @return ?CodeCollection[]
+	 * @return ?CodeCollection
 	 */
-	public function parse( string $path, string $relative_path ): ?array
+	public function parse( string $path, string $relative_path ): ?CodeCollection
 	{
 		if ( ! file_exists( $path ) ) {
 			throw new \InvalidArgumentException( 'File does not exist' );
@@ -58,6 +58,6 @@ class Parser {
 
 		$traverser->traverse( $parsed );
 
-		return $collection->objects;
+		return $collection;
 	}
 }

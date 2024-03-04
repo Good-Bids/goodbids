@@ -16,10 +16,10 @@ class MarkdownBuilder extends Builder
 {
 	/**
 	 * Get the file for the given object.
-	 * @param DocItem $object
+	 * @param ?DocItem $object
 	 * @return string
 	 */
-	public function getObjectFile( DocItem $object ): string
+	public function getObjectFile( ?DocItem $object = null ): string
 	{
 		return 'index.md';
 	}
