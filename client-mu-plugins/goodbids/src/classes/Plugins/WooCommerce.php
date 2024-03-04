@@ -158,6 +158,9 @@ class WooCommerce {
 
 		// Disable Processing Order Emails
 		$this->disable_processing_order_emails();
+
+		// Skip some of the Setup Tasks
+		$this->skip_setup_tasks();
 	}
 
 	/**
@@ -740,5 +743,27 @@ class WooCommerce {
 			10,
 			4
 		);
+	}
+
+	/**
+	 * Skip setup tasks
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function skip_setup_tasks(): void {
+		$hide_setup_steps = function( array $lists ) {
+			// Hide Initial Steps
+			$lists['setup']->visible = false;
+
+			// Hide Things to do next.
+			$lists['extended']->visible = false;
+
+			return $lists;
+		};
+
+		add_filter( 'woocommerce_admin_experimental_onboarding_tasklists', $hide_setup_steps );
+		add_filter( 'woocommerce_admin__onboarding_tasklists', $hide_setup_steps ); // Just in case.
 	}
 }
