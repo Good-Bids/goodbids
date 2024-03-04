@@ -55,18 +55,20 @@ class Builder
 
 	/**
 	 * Get the output path.
+	 * @param DocItem $object
 	 * @return string
 	 */
-	public function getOutputPath(): string
+	public function getOutputPath( DocItem $object ): string
 	{
 		return $this->config['output'];
 	}
 
 	/**
 	 * Get the filename for the given object.
+	 * @param DocItem $object
 	 * @return string
 	 */
-	public function getObjectFile(): string
+	public function getObjectFile( DocItem $object ): string
 	{
 		return 'index.txt';
 	}
