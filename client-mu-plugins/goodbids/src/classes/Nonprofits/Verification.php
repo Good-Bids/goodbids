@@ -210,12 +210,12 @@ class Verification {
 				// Remove Spam action.
 				unset( $actions['spam'] );
 
-				if ( ! $this->is_verified( $blog_id ) ) {
-					$page = self::PAGE_SLUG;
+				$page = self::PAGE_SLUG;
+				$url  = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
+				$url  = add_query_arg( 'id', $blog_id, $url );
 
+				if ( ! $this->is_verified( $blog_id ) ) {
 					// Adjust Edit Link.
-					$url = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
-					$url = add_query_arg( 'id', $blog_id, $url );
 					$actions['edit'] = sprintf(
 						'<a href="%s">%s</a>',
 						esc_url( $url ),
@@ -225,7 +225,15 @@ class Verification {
 					// Remove other actions until verified.
 					unset( $actions['visit'] );
 					unset( $actions['backend'] );
+
+					return $actions;
 				}
+
+				$actions['details'] = sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( $url ),
+					__( 'Details', 'goodbids' )
+				);
 
 				return $actions;
 			},
