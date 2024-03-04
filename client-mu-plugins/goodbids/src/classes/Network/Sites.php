@@ -625,7 +625,6 @@ class Sites {
 				]
 			)
 			->all();
-
 	}
 
 	/**
@@ -639,7 +638,7 @@ class Sites {
 	 * @return array
 	 */
 	public function get_featured_auctions( array $query_args = [] ): array {
-		return collect( $this->get_all_auctions( $query_args ) )
+		return collect( $this->get_all_open_auctions( $query_args ) )
 			->slice( 0, 3 )
 			->values()
 			->all();
