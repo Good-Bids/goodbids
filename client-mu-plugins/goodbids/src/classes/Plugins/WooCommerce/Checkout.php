@@ -37,6 +37,8 @@ class Checkout {
 
 		// Automatically mark processing orders as Complete.
 		$this->automatically_complete_orders();
+
+		$this->show_terms_conditions();
 	}
 
 	/**
@@ -187,6 +189,29 @@ class Checkout {
 
 				$order->update_status( 'completed' );
 			}
+		);
+	}
+
+	/**
+	 * Add terms and conditions and privacy policy to checkout
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function show_terms_conditions(): void {
+		add_action(
+			'woocommerce_checkout_terms_and_conditions',
+			function () {
+				printf(
+					'<p>%s %s %s %s.<p>',
+					esc_html__( 'By registering an account, you agree to GOODBIDS\'', 'goodbids' ),
+					wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+					esc_html__( 'and', 'goodbids' ),
+					wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
+				);
+			},
+			60
 		);
 	}
 }
