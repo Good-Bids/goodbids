@@ -2,6 +2,7 @@
 /**
  * Pattern: Auction Template
  *
+ * DUPE: this content is also on update-auction-content.ts for the React Auction wizard.
  * Auto loaded as the default template for the gb-auction custom post type
  *
  * @since 1.0.0
