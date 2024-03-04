@@ -25,7 +25,7 @@ export function Advanced() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.pagesURL}
+									href={gbNonprofitSetupGuide.pagesURL}
 								>
 									{__('Go to Pages', 'goodbids')}
 								</ButtonLink>
@@ -43,7 +43,7 @@ export function Advanced() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.patternsURL}
+									href={gbNonprofitSetupGuide.patternsURL}
 								>
 									{__('Go to Patterns', 'goodbids')}
 								</ButtonLink>

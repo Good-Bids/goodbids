@@ -34,7 +34,7 @@ export function SetUpPayments() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.setUpPaymentURL}
+					href={gbNonprofitSetupGuide.setUpPaymentURL}
 				>
 					{__('Connect Stripe', 'goodbids')}
 				</ButtonLink>

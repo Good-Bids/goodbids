@@ -15,7 +15,7 @@ export function PreviewSite() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.homeURL}
+					href={gbNonprofitSetupGuide.homeURL}
 				>
 					{__('Visit Site', 'goodbids')}
 				</ButtonLink>

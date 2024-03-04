@@ -15,7 +15,7 @@ export function UpdateStyle() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.styleURL}
+					href={gbNonprofitSetupGuide.styleURL}
 				>
 					{__('Choose a Style', 'goodbids')}
 				</ButtonLink>

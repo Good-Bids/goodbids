@@ -15,7 +15,7 @@ export function ConfirmSiteAccessibility() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.accessibilityCheckerURL}
+					href={gbNonprofitSetupGuide.accessibilityCheckerURL}
 				>
 					{__('Run Accessibility Checker', 'goodbids')}
 				</ButtonLink>

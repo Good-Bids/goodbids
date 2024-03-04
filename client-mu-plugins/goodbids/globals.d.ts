@@ -9,7 +9,7 @@ type PHPVariables = Record<string, string>;
 declare const gbAuctionWizard: PHPVariables;
 
 // These are only defined for the nonprofit setup page
-declare const gbNonprofitSetup: {
+declare const gbNonprofitSetupGuide: {
 	appID: string;
 	ajaxUrl: string;
 	optionsGeneralURL: string;
@@ -33,6 +33,10 @@ declare const gbNonprofitSetup: {
 	revenueMetricsURL: string;
 	invoicesURL: string;
 	commentsURL: string;
+};
+
+declare const gbNonprofitOnboarding: {
+	appID: string;
 };
 
 // TODO: Type this properly

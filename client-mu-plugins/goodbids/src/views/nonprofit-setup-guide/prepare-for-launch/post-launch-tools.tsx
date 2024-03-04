@@ -27,7 +27,7 @@ export function PostLaunchTools() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.auctionsURL}
+									href={gbNonprofitSetupGuide.auctionsURL}
 								>
 									{__('See Auction Metrics', 'goodbids')}
 								</ButtonLink>
@@ -45,7 +45,7 @@ export function PostLaunchTools() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.orderMetricsURL}
+									href={gbNonprofitSetupGuide.orderMetricsURL}
 								>
 									{__('See Order Metrics', 'goodbids')}
 								</ButtonLink>
@@ -63,7 +63,9 @@ export function PostLaunchTools() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.revenueMetricsURL}
+									href={
+										gbNonprofitSetupGuide.revenueMetricsURL
+									}
 								>
 									{__('See Revenue Metrics', 'goodbids')}
 								</ButtonLink>
@@ -81,7 +83,7 @@ export function PostLaunchTools() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.invoicesURL}
+									href={gbNonprofitSetupGuide.invoicesURL}
 								>
 									{__('See Invoices', 'goodbids')}
 								</ButtonLink>
@@ -99,7 +101,7 @@ export function PostLaunchTools() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.commentsURL}
+									href={gbNonprofitSetupGuide.commentsURL}
 								>
 									{__('See Comments', 'goodbids')}
 								</ButtonLink>

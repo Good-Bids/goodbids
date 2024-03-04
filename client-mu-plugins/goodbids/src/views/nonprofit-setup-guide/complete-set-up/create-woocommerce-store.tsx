@@ -15,7 +15,7 @@ export function CreateWooCommerceStore() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.createWooCommerceURL}
+					href={gbNonprofitSetupGuide.createWooCommerceURL}
 				>
 					{__('Select My Region', 'goodbids')}
 				</ButtonLink>

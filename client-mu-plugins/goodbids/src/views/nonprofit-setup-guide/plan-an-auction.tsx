@@ -17,7 +17,7 @@ export function PlanAnAuction() {
 					<ButtonLink
 						target="_blank"
 						variant="solid"
-						href={gbNonprofitSetup.auctionWizardURL}
+						href={gbNonprofitSetupGuide.auctionWizardURL}
 					>
 						{__('Get Started', 'goodbids')}
 					</ButtonLink>

@@ -49,7 +49,7 @@ export function ActivateExtensions() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.jetpackURL}
+									href={gbNonprofitSetupGuide.jetpackURL}
 								>
 									{__('Activate Jetpack', 'goodbids')}
 								</ButtonLink>
@@ -67,7 +67,7 @@ export function ActivateExtensions() {
 								<ButtonLink
 									target="_blank"
 									variant="solid"
-									href={gbNonprofitSetup.akismetURL}
+									href={gbNonprofitSetupGuide.akismetURL}
 								>
 									{__('Set Up Akisment Account', 'goodbids')}
 								</ButtonLink>
@@ -94,7 +94,7 @@ export function ActivateExtensions() {
 									target="_blank"
 									variant="solid"
 									href={
-										gbNonprofitSetup.woocommerceSettingsURL
+										gbNonprofitSetupGuide.woocommerceSettingsURL
 									}
 								>
 									{__('Connect to WooCommerce', 'goodbids')}
