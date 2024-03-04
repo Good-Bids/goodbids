@@ -92,7 +92,7 @@ class Taxes {
 				}
 
 				// Clear all the current rates for the state.
-				if ( ! $this->delete_tax_rates( $state ) ) {
+				if ( $current_rates && ! $this->delete_tax_rates( $state ) ) {
 					Log::error( 'Could not delete existing tax rates for ' . strtoupper( $state ) . '.' );
 					return;
 				}
