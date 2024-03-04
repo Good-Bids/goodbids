@@ -330,12 +330,12 @@ class Verification {
 						'value' => 'pending',
 					],
 					[
-						'label' => __( 'Published', 'goodbids' ),
-						'value' => 'published',
+						'label' => __( 'Live', 'goodbids' ),
+						'value' => 'live',
 					],
 					[
-						'label' => __( 'Disabled', 'goodbids' ),
-						'value' => 'disabled',
+						'label' => __( 'Inactive', 'goodbids' ),
+						'value' => 'inactive',
 					],
 				],
 			],

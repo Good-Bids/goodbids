@@ -90,6 +90,17 @@ class Nonprofit {
 	}
 
 	/**
+	 * Get the Nonprofit Site status
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_status(): string {
+		return goodbids()->verification->get_nonprofit_data( $this->get_id(), 'status' );
+	}
+
+	/**
 	 * Get Nonprofit Site Standing
 	 *
 	 * @since 1.0.0
