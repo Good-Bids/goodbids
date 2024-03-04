@@ -41,58 +41,34 @@ class Builder
 		$outputDir = $this->config['output'];
 		$this->emptyDirectory($outputDir);
 
-		foreach ( $this->objects as $object ) {
-			$this->buildObject( $object );
-		}
-	}
-
-	/**
-	 * Build the object
-	 * @param DocItem $object
-	 * @return void
-	 */
-	public function buildObject( DocItem $object ): void
-	{
-		$path = $this->getOutputPath( $object );
-		$file = $this->getObjectFile( $object );
+		$path = $this->getOutputPath();
+		$file = $this->getObjectFile();
 
 		$filename = $path . '/' . $file;
-		$contents = $this->buildObjectContents( $object );
+
+		ob_start();
+		var_dump( $this->objects ); // phpcs:ignore
+		$contents = ob_get_clean();
+
 		$this->writeToFile( $filename, $contents );
 	}
 
 	/**
 	 * Get the output path.
-	 * @param DocItem $object
 	 * @return string
 	 */
-	public function getOutputPath( DocItem $object ): string
+	public function getOutputPath(): string
 	{
 		return $this->config['output'];
 	}
 
 	/**
 	 * Get the filename for the given object.
-	 * @param DocItem $object
 	 * @return string
 	 */
-	public function getObjectFile( DocItem $object ): string
+	public function getObjectFile(): string
 	{
 		return 'index.txt';
-	}
-
-	/**
-	 * Build the contents of the object
-	 * @param DocItem $object
-	 * @return string
-	 */
-	public function buildObjectContents( DocItem $object ): string
-	{
-		$template = $this->getTemplate( $object );
-
-		ob_start();
-		include $template;
-		return ob_get_clean();
 	}
 
 	/**
@@ -109,18 +85,15 @@ class Builder
 			$this->config['format']
 		);
 
-		$templates = [
-			'PhpParser\Node\Stmt\Function_'   => 'function.php',
-			'PhpParser\Node\Stmt\Class_'      => 'class.php',
-			'PhpParser\Node\Stmt\ClassConst'  => 'class-const.php',
-			'PhpParser\Node\Stmt\ClassMethod' => 'class-method.php',
-		];
-
-		if ( array_key_exists( $object->type, $templates ) ) {
-			if ( file_exists( $directory . $templates[ $object->type ] ) ) {
-				$template = $templates[ $object->type ];
-			}
-		}
+		$template = match ( $object->node ) {
+			'constant' => 'constant.php',
+			'class' => 'class.php',
+			'class-constant' => 'class-constant.php',
+			'method' => 'method.php',
+			'function' => 'function.php',
+			'parameter' => 'parameter.php',
+			default => 'default.php',
+		};
 
 		return $directory . $template;
 	}
@@ -137,14 +110,14 @@ class Builder
 		// Ensure the directory exists
 		$directory = pathinfo($path, PATHINFO_DIRNAME);
 		if (!is_dir($directory)) {
-			mkdir($directory, 0755, true);
+			mkdir($directory, 0755, true); // phpcs:ignore
 		}
 
 		// Open the file in append mode or create it if it doesn't exist
-		$file = fopen($path, 'a+');
+		$file = fopen($path, 'a+'); // phpcs:ignore
 
 		// Write the contents to the file
-		fwrite($file, $contents);
+		fwrite($file, $contents); // phpcs:ignore
 
 		// Close the file
 		fclose($file);
@@ -176,10 +149,10 @@ class Builder
 					// Recursively empty subdirectories
 					$this->emptyDirectory($itemPath);
 					// Remove the empty directory
-					rmdir($itemPath);
+					rmdir($itemPath); // phpcs:ignore
 				} else {
 					// Remove the file
-					unlink($itemPath);
+					unlink($itemPath); // phpcs:ignore
 				}
 			}
 		}
@@ -192,31 +165,10 @@ class Builder
 	 * Pretty print a variable
 	 *
 	 * @param mixed $var
-	 * @param int $offset
 	 * @return void
 	 */
-	public function prettyPrint( mixed $var, int $offset = 0 ): void
+	public function prettyPrint( mixed $var ): void
 	{
-		$string = json_encode( $var, JSON_PRETTY_PRINT ); // phpcs:ignore
-
-		if ( ! $offset ) {
-			echo $string; // phpcs:ignore
-			return;
-		}
-
-		$lines = explode( PHP_EOL, $string );
-
-		foreach ( $lines as $no => $line ) {
-			$line = str_replace( '    ', "\t", $line );
-			$line = str_replace( '\\\\', '\\', $line );
-
-			if ( $no === 0 ) {
-				echo $line . PHP_EOL; // phpcs:ignore
-				continue;
-			}
-
-			echo str_repeat( "\t", $offset ) . $line . PHP_EOL; // phpcs:ignore
-		}
+		echo json_encode( $var, JSON_PRETTY_PRINT ); // phpcs:ignore
 	}
-
 }

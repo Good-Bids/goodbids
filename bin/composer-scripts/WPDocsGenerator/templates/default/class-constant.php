@@ -1,6 +1,6 @@
 <?php
 /**
- * Default Object Template
+ * Class Constant Template
  *
  * phpcs:disable
  *
@@ -16,14 +16,16 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 ?>
 <?php echo $object->getReference(); ?>
 
-	node: <?php echo $object->node; ?>
-
 	description: <?php echo $object->description; ?>
 
 	source: <?php echo $object->path . ':' . $object->lineNumber; ?>
 
+<?php if ( $object->namespace ) : ?>
 	namespace: <?php echo $object->namespace; ?>
 
-	object:
-		<?php $this->prettyPrint( $object, 2 ); ?>
+<?php endif; ?>
+	class: <?php echo $object->class; ?>
+
+	value: <?php echo $object->defaultValue; ?>
+
 

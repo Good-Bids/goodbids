@@ -9,6 +9,7 @@ namespace Viget\ComposerScripts\WPDocsGenerator;
 
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeVisitorAbstract;
 
 /**
@@ -32,6 +33,11 @@ class CodeCollection extends NodeVisitorAbstract
 	private ?DocItem $currentClass = null;
 
 	/**
+	 * @var ?DocItem
+	 */
+	private ?DocItem $currentFunction = null;
+
+	/**
 	 * @var string
 	 */
 	public string $path = '';
@@ -50,19 +56,21 @@ class CodeCollection extends NodeVisitorAbstract
 	 */
 	public function enterNode(Node $node): void
 	{
-		if ($node instanceof Node\Stmt\Function_) {
+		if ($node instanceof Node\Stmt\Namespace_) {
 			$this->resetCurrentClass();
-			$this->collectFunction($node);
+			$this->resetCurrentFunction();
+			$this->currentNamespace = $node->name->toString();
 		} elseif ($node instanceof Node\Stmt\Class_) {
 			$this->resetCurrentClass();
+			$this->resetCurrentFunction();
 			$this->collectClass($node);
-		} elseif ($node instanceof Node\Stmt\ClassConst) {
-			$this->collectClassConst($node);
-		} elseif ($node instanceof Node\Stmt\Namespace_) {
+		} elseif ($node instanceof Function_) {
 			$this->resetCurrentClass();
-			$this->currentNamespace = $node->name->toString();
-		} elseif ($node instanceof Node\Stmt\ClassMethod) {
-			$this->collectMethod($node);
+			$this->resetCurrentFunction();
+			$this->collectFunction($node);
+		} elseif ($node instanceof Node\Stmt\Const_) {
+			$this->resetCurrentFunction();
+			$this->collectConst($node);
 		}
 	}
 
@@ -70,10 +78,10 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Function_ $node
 	 * @return void
 	 */
-	private function collectFunction(Node\Stmt\Function_ $node): void
+	private function collectFunction(Function_ $node): void
 	{
-		$docItem = $this->createDocItem($node);
-		$this->updateObject($docItem);
+		$functionDocItem = $this->createDocItem($node);
+		$this->updateObject($functionDocItem);
 	}
 
 	/**
@@ -82,99 +90,111 @@ class CodeCollection extends NodeVisitorAbstract
 	 */
 	private function collectClass(Node\Stmt\Class_ $node): void
 	{
-		$docItem = $this->createDocItem($node);
-		$this->collectProperties($node, $docItem);
+		$classDocItem = $this->createDocItem($node);
+		$this->currentClass = $classDocItem;
+		$this->collectProperties($node);
+		$this->collectClassConstants($node);
+		$this->collectClassMethods($node);
 
-		$this->updateObject($docItem);
-		$this->currentClass = $docItem;
+		$this->updateObject($classDocItem);
 	}
 
 	/**
 	 * @param Node\Stmt\Class_ $node
-	 * @param DocItem $docItem
 	 * @return void
 	 */
-	private function collectProperties(Node\Stmt\Class_ $node, DocItem $docItem): void
+	private function collectProperties(Node\Stmt\Class_ $node): void
 	{
 		foreach ($node->stmts as $stmt) {
 			if ($stmt instanceof Node\Stmt\Property) {
 				foreach ($stmt->props as $property) {
 					$propertyName = $property->name->toString();
 
-					$type = $stmt->type ? get_class($stmt->type) : $property->getType();
-
-					// Create a new DocItem for each property
-					$propertyDocItem = new DocItem($propertyName, $node->getStartLine());
-					$propertyDocItem->type = $type;
-					$propertyDocItem->namespace = $this->currentNamespace;
-					$propertyDocItem->description = $this->getDescription($stmt);
+					$propertyDocItem = $this->createDocItem($stmt, $propertyName, $property->getStartLine());
 					$propertyDocItem->isNullable = $this->isNullable($stmt->type);
+					$propertyDocItem->access = $this->getPropertyAccessLevel($stmt);
 					$propertyDocItem->isStatic = $stmt->isStatic();
 					$propertyDocItem->returnTypes = $this->getTypesArray($stmt->type);
 					$propertyDocItem->defaultValue = $this->getPropertyDefaultValue($property);
 
-					// Add the property DocItem to the class
-					$docItem->addProperty($propertyDocItem);
+					$this->currentClass->addProperty($propertyDocItem);
 				}
 			}
 		}
 	}
 
 	/**
-	 * @param Node\Stmt\ClassMethod $node
+	 * @param Node\Stmt\Class_ $node
 	 * @return void
 	 */
-	private function collectMethod(Node\Stmt\ClassMethod $node): void
+	private function collectClassConstants(Node\Stmt\Class_ $node): void
 	{
-		$docItem = $this->createDocItem($node);
-		$this->updateObject($docItem);
-	}
+		foreach ($node->stmts as $stmt) {
+			if ($stmt instanceof Node\Stmt\ClassConst) {
+				foreach ($stmt->consts as $constant) {
+					$constName = $constant->name->toString();
 
-	/**
-	 * @param Node\Stmt\ClassConst $node
-	 * @return void
-	 */
-	private function collectClassConst(Node\Stmt\ClassConst $node): void
-	{
-		$constName = $node->consts[0]->name->toString();
+					$constDocItem = $this->createDocItem($constant, $constName);
+					$constDocItem->node = 'class-constant';
+					$constDocItem->isStatic = true;
 
-		$docItem = new DocItem($constName, $node->getStartLine());
-		$docItem->type = get_class($node);
-		$docItem->description = $this->getDescription($node);
-		$docItem->isStatic = true;
-		$docItem->class = $this->currentClass?->name;
-		$docItem->namespace = $this->currentNamespace;
-
-		$this->updateObject($docItem);
-
-		if ($this->currentClass) {
-			if( array_key_exists( $this->currentClass->getReference(), $this->objects ) ) {
-				$this->objects[$this->currentClass->getReference()]->constants[] = $docItem;
-			} else {
-				$this->currentClass->constants[] = $docItem;
+					$this->currentClass->addConstant($constDocItem);
+				}
 			}
 		}
 	}
 
 	/**
-	 * @param Node\Param[] $parameters
-	 * @return array
+	 * @param Node\Stmt\Class_ $node
+	 * @return void
 	 */
-	private function collectParameters(array $parameters, DocItem $docItem): void
+	private function collectClassMethods(Node\Stmt\Class_ $node): void
+	{
+		foreach ($node->stmts as $stmt) {
+			if ($stmt instanceof Node\Stmt\ClassMethod) {
+				$methodDocItem = $this->createDocItem($stmt);
+				$this->currentClass->addMethod($methodDocItem);
+			}
+		}
+	}
+
+	/**
+	 * Collect Constants
+	 * @param Node\Stmt\Const_ $node
+	 * @return void
+	 */
+	private function collectConst(Node\Stmt\Const_ $node): void
+	{
+		foreach ($node->consts as $const) {
+			// Create a new DocItem for each constant
+			$constName = $const->name->toString();
+			$constDocItem = new DocItem($constName, $node->getStartLine());
+			$constDocItem->path = $this->path;
+			$constDocItem->node = 'constant';
+			$constDocItem->description = $this->getDescription($node);
+			$constDocItem->isStatic = true; // Constants are always static
+
+			$this->updateObject($constDocItem);
+		}
+	}
+
+	/**
+	 * @param Node\Param[] $parameters
+	 * @return void
+	 */
+	private function collectParameters(array $parameters): void
 	{
 		foreach ($parameters as $param) {
-			$parameterDocItem = new DocItem($param->var->name, $param->getStartLine());
-			$parameterDocItem->type = $this->getTypeString($param->type);
-			$parameterDocItem->isNullable = $this->isNullable($param->type);
-			$parameterDocItem->description = $this->getDescription($param);
+			$paramName = $param->var->name;
+			$parameterDocItem = $this->createDocItem($param, $paramName);
 
-			$docItem->addParameter($parameterDocItem);
+			$this->currentFunction->addParameter($parameterDocItem);
 		}
 	}
 
 	/**
 	 * @param mixed $expr
-	 * @return string|null
+	 * @return ?string
 	 */
 	private function getPropertyDefaultValue(mixed $expr): ?string
 	{
@@ -244,10 +264,27 @@ class CodeCollection extends NodeVisitorAbstract
 	}
 
 	/**
-	 * @param Node\Stmt\ClassMethod $stmt
+	 * @param ClassMethod $stmt
 	 * @return string
 	 */
-	private function getAccessLevel(Node\Stmt\ClassMethod $stmt): string
+	private function getAccessLevel(ClassMethod $stmt): string
+	{
+		if ($stmt->isPublic()) {
+			return 'public';
+		} elseif ($stmt->isProtected()) {
+			return 'protected';
+		} elseif ($stmt->isPrivate()) {
+			return 'private';
+		} else {
+			return 'unknown';
+		}
+	}
+
+	/**
+	 * @param Node\Stmt\Property $stmt
+	 * @return string
+	 */
+	private function getPropertyAccessLevel(Node\Stmt\Property $stmt): string
 	{
 		if ($stmt->isPublic()) {
 			return 'public';
@@ -262,32 +299,74 @@ class CodeCollection extends NodeVisitorAbstract
 
 	/**
 	 * @param Node $node
+	 * @param ?string $name
+	 * @param ?int $startLine
 	 * @return DocItem
 	 */
-	private function createDocItem(Node $node): DocItem
+	private function createDocItem(Node $node, string $name = null, int $startLine = null): DocItem
 	{
-		$name = is_string( $node->name ) ? $node->name : $node->name->toString();
-		$description = $this->getDescription($node);
+		if ( is_null( $name ) ) {
+			$name = is_string( $node->name ) ? $node->name : $node->name->toString();
+		}
+		if ( is_null( $startLine ) ) {
+			$startLine = $node->getStartLine();
+		}
 
-		$docItem = new DocItem($name, $node->getStartLine());
+		$docItem = new DocItem($name, $startLine);
 		$docItem->path = $this->path;
-		$docItem->type = get_class($node);
+		$docItem->node = $this->getNodeType($node);
 		$docItem->namespace = $this->currentNamespace;
-		$docItem->description = $description;
+		$docItem->description = $this->getDescription($node);
 
-		if( $node instanceof Node\Stmt\Function_ || $node instanceof Node\Stmt\ClassMethod ) {
-			$this->collectParameters($node->params, $docItem);
+		if ($this->currentClass) {
+			$docItem->class = $this->currentClass->name;
+		}
+		if ($this->currentFunction) {
+			$docItem->function = $this->currentFunction->name;
+		}
+
+		if( $node instanceof Function_ || $node instanceof ClassMethod ) {
+			$this->currentFunction = $docItem;
+			$this->collectParameters($node->params);
+		}
+
+		if( $node instanceof ClassMethod ) {
+			$docItem->access = $this->getAccessLevel($node);
+			$docItem->isStatic = $node->isStatic();
+		}
+
+		if( $node instanceof Function_ || $node instanceof  ClassMethod ) {
 			$docItem->returnTypes = $this->getTypesArray($node->returnType);
 			$docItem->isNullable = $this->isNullable($node->returnType);
 		}
 
-		if( $node instanceof Node\Stmt\ClassMethod ) {
-			$docItem->access = $this->getAccessLevel($node);
-			$docItem->isStatic = $node->isStatic();
-			$docItem->class = $this->currentClass?->name;
+		if( $node instanceof Node\Param || $node instanceof Node\Stmt\Property ) {
+			$docItem->returnTypes = [$this->getTypeString($node->type)];
+			$docItem->isNullable = $this->isNullable($node->type);
 		}
 
 		return $docItem;
+	}
+
+	/**
+	 * Get the node type
+	 * @param $node
+	 * @return string
+	 */
+	private function getNodeType($node): string
+	{
+		$class = get_class( $node );
+
+		return match( $class ) {
+			Node\Stmt\Namespace_::class => 'namespace',
+			Node\Stmt\Class_::class => 'class',
+			Function_::class => 'function',
+			ClassMethod::class => 'method',
+			Node\Stmt\ClassConst::class => 'class-constant',
+			Node\Stmt\Property::class => 'property',
+			Node\Param::class => 'parameter',
+			default => $class,
+		};
 	}
 
 	/**
@@ -353,5 +432,13 @@ class CodeCollection extends NodeVisitorAbstract
 	private function resetCurrentClass(): void
 	{
 		$this->currentClass = null;
+	}
+
+	/**
+	 * @return void
+	 */
+	private function resetCurrentFunction(): void
+	{
+		$this->currentFunction = null;
 	}
 }

@@ -5,10 +5,13 @@
  * phpcs:disable
  *
  * @var DocItem $object
+ * @var int     $offset
+ * @var Builder $this
  *
  * @package WPDocsGenerator
  */
 
+use Viget\ComposerScripts\WPDocsGenerator\Builders\Builder;
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
 ?>
@@ -29,8 +32,21 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
 	nullable: <?php echo $object->isNullable ? 'true' : 'false'; ?>
 
-	parameters:
-		<?php $this->prettyPrint( $object->parameters, 2 ); ?>
+	parameters:<?php
+		if( ! $object->parameters ) {
+			echo ' none';
+		} else {
+			echo PHP_EOL . "\t\t";
+			echo $this->getBuildObjects( $object->parameters );
+		}
+		?>
+
+<?php if ( count( $object->returnTypes ) > 1 ) : ?>
 	returns:
-		<?php $this->prettyPrint( $object->returnTypes, 2 ); ?>
+<?php $this->prettyPrint($object->returnTypes); ?>
+
+<?php else : ?>
+	return: <?php echo $object->returnTypes[0]; ?>
+
+<?php endif; ?>
 

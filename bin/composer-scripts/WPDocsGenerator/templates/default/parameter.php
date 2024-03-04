@@ -5,6 +5,7 @@
  * phpcs:disable
  *
  * @var DocItem $object
+ * @var int     $offset
  * @var Builder $this
  *
  * @package WPDocsGenerator
@@ -16,14 +17,17 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 ?>
 <?php echo $object->getReference(); ?>
 
-	node: <?php echo $object->node; ?>
+<?php if ( count( $object->returnTypes ) > 1 ) : ?>
+	types:
+		<?php $this->prettyPrint($object->returnTypes); ?>
 
-	description: <?php echo $object->description; ?>
+<?php else : ?>
+	type: <?php echo $object->returnTypes[0]; ?>
 
+<?php endif; ?>
 	source: <?php echo $object->path . ':' . $object->lineNumber; ?>
 
-	namespace: <?php echo $object->namespace; ?>
+	nullable: <?php echo $object->isNullable ? 'true' : 'false'; ?>
 
-	object:
-		<?php $this->prettyPrint( $object, 2 ); ?>
+	default: <?php echo $object->defaultValue; ?>
 

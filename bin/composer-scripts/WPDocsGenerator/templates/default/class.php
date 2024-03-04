@@ -5,14 +5,16 @@
  * phpcs:disable
  *
  * @var DocItem $object
+ * @var Builder $this
  *
  * @package WPDocsGenerator
  */
 
+use Viget\ComposerScripts\WPDocsGenerator\Builders\Builder;
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
 ?>
-<?php echo $object->getReference(); ?>()
+new <?php echo $object->getReference(); ?>()
 	description: <?php echo $object->description; ?>
 
 	source: <?php echo $object->path . ':' . $object->lineNumber; ?>
@@ -21,8 +23,31 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 	namespace: <?php echo $object->namespace; ?>
 
 <?php endif; ?>
-	constants:
-		<?php $this->prettyPrint( $object->constants, 2 ); ?>
-	properties:
-		<?php $this->prettyPrint( $object->properties, 2 ); ?>
+	constants:<?php
+		if ( ! $object->constants ) :
+			echo ' none';
+		else :
+			echo PHP_EOL . "\t\t";
+			echo $this->getBuildObjects( $object->constants );
+		endif;
+		?>
+
+	properties:<?php
+		if ( ! $object->properties ) :
+			echo ' none';
+		else :
+			echo PHP_EOL . "\t\t";
+			echo $this->getBuildObjects( $object->properties );
+		endif;
+		?>
+
+	methods:<?php
+		if ( ! $object->methods ) :
+			echo ' none';
+		else :
+			echo PHP_EOL . "\t\t";
+			echo $this->getBuildObjects( $object->methods );
+		endif;
+		?>
+
 

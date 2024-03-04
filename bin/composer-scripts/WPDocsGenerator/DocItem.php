@@ -15,11 +15,6 @@ class DocItem {
 	/**
 	 * @var string
 	 */
-	public string $type;
-
-	/**
-	 * @var string
-	 */
 	public string $name;
 
 	/**
@@ -35,12 +30,22 @@ class DocItem {
 	/**
 	 * @var ?string
 	 */
+	public ?string $node = null;
+
+	/**
+	 * @var ?string
+	 */
 	public ?string $namespace = null;
 
 	/**
 	 * @var ?string
 	 */
 	public ?string $class = null;
+
+	/**
+	 * @var ?string
+	 */
+	public ?string $function = null;
 
 	/**
 	 * @var array
@@ -90,7 +95,7 @@ class DocItem {
 	/**
 	 * @var mixed
 	 */
-	public mixed $defaultValue;
+	public mixed $defaultValue = null;
 
 	/**
 	 * DocItem constructor.
@@ -104,12 +109,30 @@ class DocItem {
 	}
 
 	/**
+	 * @param DocItem $constantDocItem
+	 * @return void
+	 */
+	public function addConstant(DocItem $constantDocItem): void
+	{
+		$this->constants[ $constantDocItem->getReference() ] = $constantDocItem;
+	}
+
+	/**
+	 * @param DocItem $methodDocItem
+	 * @return void
+	 */
+	public function addMethod(DocItem $methodDocItem): void
+	{
+		$this->methods[ $methodDocItem->getReference() ] = $methodDocItem;
+	}
+
+	/**
 	 * @param DocItem $propertyDocItem
 	 * @return void
 	 */
 	public function addProperty(DocItem $propertyDocItem): void
 	{
-		$this->properties[] = $propertyDocItem;
+		$this->properties[ $propertyDocItem->getReference() ] = $propertyDocItem;
 	}
 
 	/**
@@ -118,7 +141,7 @@ class DocItem {
 	 */
 	public function addParameter(DocItem $parameterDocItem): void
 	{
-		$this->parameters[] = $parameterDocItem;
+		$this->parameters[ $parameterDocItem->getReference() ] = $parameterDocItem;
 	}
 
 	/**
@@ -128,8 +151,17 @@ class DocItem {
 	{
 		$reference = $this->name;
 
+		if ( 'constant' === $this->node ) {
+			return $reference;
+		}
+
+		if ( 'parameter' === $this->node ) {
+			return '$' . $reference;
+		}
+
 		if ( $this->class ) {
-			$reference = $this->class . '::' . $reference;
+			$separator = $this->isStatic ? '::' : '->';
+			$reference = $this->class . $separator . $reference;
 		}
 
 		if ( $this->namespace ) {
