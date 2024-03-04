@@ -133,6 +133,7 @@ export function UpdateStep({
 				<ErrorWrapper>
 					{__(
 						'Error updating your reward. Check your product details.',
+						'goodbids',
 					)}
 				</ErrorWrapper>
 			)}
