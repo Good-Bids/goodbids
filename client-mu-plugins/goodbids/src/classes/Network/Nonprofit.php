@@ -21,6 +21,21 @@ class Nonprofit {
 
 	/**
 	 * @since 1.0.0
+	 */
+	const STATUS_PENDING = 'pending';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_LIVE = 'live';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_INACTIVE = 'inactive';
+
+	/**
+	 * @since 1.0.0
 	 * @var int
 	 */
 	private int $site_id;

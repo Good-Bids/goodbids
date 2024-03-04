@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
 use GoodBids\Utilities\Log;
 
 /**
@@ -320,22 +321,22 @@ class Verification {
 			'status'               => [
 				'label'       => __( 'Site Status', 'goodbids' ),
 				'type'        => 'select',
-				'default'     => 'pending',
+				'default'     => Nonprofit::STATUS_PENDING,
 				'placeholder' => '',
 				'required'    => true,
 				'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
 				'options'     => [
 					[
 						'label' => __( 'Pending', 'goodbids' ),
-						'value' => 'pending',
+						'value' => Nonprofit::STATUS_PENDING,
 					],
 					[
 						'label' => __( 'Live', 'goodbids' ),
-						'value' => 'live',
+						'value' => Nonprofit::STATUS_LIVE,
 					],
 					[
 						'label' => __( 'Inactive', 'goodbids' ),
-						'value' => 'inactive',
+						'value' => Nonprofit::STATUS_INACTIVE,
 					],
 				],
 			],
