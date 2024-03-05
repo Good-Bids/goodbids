@@ -26,6 +26,13 @@ class Guide {
 
 	/**
 	 * @since 1.0.0
+	 *
+	 * @var ?Nonprofit
+	 */
+	private ?Nonprofit $nonprofit = null;
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		if ( is_main_site() || is_network_admin() ) {
@@ -192,7 +199,7 @@ class Guide {
 			'invoicesURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 			'commentsURL'             => admin_url( 'edit-comments.php' ),
 			'siteStatus'              => $this->nonprofit->get_status(),
-			'siteStatusOptions'       => $this->nonprofit->get_site_status_options(),
+			'siteStatusOptions'       => goodbids()->network->nonprofits->get_site_status_options(),
 		];
 	}
 

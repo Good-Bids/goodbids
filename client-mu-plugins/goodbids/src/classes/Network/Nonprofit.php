@@ -137,7 +137,7 @@ class Nonprofit {
 	 * @return bool|int
 	 */
 	public function set_status( string $status ): bool|int {
-		if ( ! in_array( $status, $this->get_site_status_options() ) ) {
+		if ( ! in_array( $status, goodbids()->network->nonprofits->get_site_status_options(), true ) ) {
 			return false;
 		}
 
@@ -279,20 +279,5 @@ class Nonprofit {
 	 */
 	public function is_verified(): bool {
 		return goodbids()->verification->is_verified( $this->get_id() );
-	}
-
-	/**
-	 * Returns Site Status options
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_site_status_options(): array {
-		return [
-			self::STATUS_PENDING,
-			self::STATUS_LIVE,
-			self::STATUS_INACTIVE,
-		];
 	}
 }

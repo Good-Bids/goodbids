@@ -168,4 +168,19 @@ class Nonprofits {
 			$site_id
 		);
 	}
+
+	/**
+	 * Returns Site Status options
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_site_status_options(): array {
+		return [
+			Nonprofit::STATUS_PENDING,
+			Nonprofit::STATUS_LIVE,
+			Nonprofit::STATUS_INACTIVE,
+		];
+	}
 }
