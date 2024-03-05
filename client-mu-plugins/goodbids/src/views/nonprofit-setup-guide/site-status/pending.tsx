@@ -15,7 +15,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 	const publishSite = usePublishSite();
 
 	const handlePublishSite = () => {
-		publishSite.mutate({ site_id: 1 });
+		publishSite.mutate({ site_id: gbNonprofitSetupGuide.siteId });
 	};
 
 	return (
