@@ -26,20 +26,11 @@ class Guide {
 
 	/**
 	 * @since 1.0.0
-	 *
-	 * @var ?Nonprofit
-	 */
-	private ?Nonprofit $nonprofit = null;
-
-	/**
-	 * @since 1.0.0
 	 */
 	public function __construct() {
 		if ( is_main_site() || is_network_admin() ) {
 			return;
 		}
-
-		$this->nonprofit = new Nonprofit( get_current_blog_id() );
 
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
@@ -174,6 +165,8 @@ class Guide {
 	 * @return array
 	 */
 	private function get_js_vars(): array {
+		$nonprofit = new Nonprofit( get_current_blog_id() );
+
 		return [
 			'appID'   => self::PAGE_SLUG,
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
@@ -204,7 +197,7 @@ class Guide {
 			'auctionsURL'      => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
 			'invoicesURL'      => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 
-			'siteStatus'        => $this->nonprofit->get_status(),
+			'siteStatus'        => $nonprofit->get_status(),
 			'siteStatusOptions' => goodbids()->network->nonprofits->get_site_status_options(),
 		];
 	}
