@@ -60,6 +60,7 @@ module.exports = {
 					main: '#0a3624',
 					accent: '#70ff8f',
 					secondary: '#125E3E',
+					gray: '#f0f0f1',
 				},
 				'admin-blue': {
 					300: '#2271b1',

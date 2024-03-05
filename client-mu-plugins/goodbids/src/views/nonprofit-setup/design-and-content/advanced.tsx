@@ -15,10 +15,19 @@ export function Advanced() {
 			<MultiStepExpansion
 				items={[
 					{
-						title: __('Build Custom Pages', 'goodbids'),
-						content: __(
-							'You can create additional site pages in the Pages section to highlight your cause. Click Add New Page to get started, and choose from any of the available Patterns and Page Blocks.',
-							'goodbids',
+						title: __('Add and Edit Custom Pages', 'goodbids'),
+						content: (
+							<>
+								{__(
+									'You can create additional site pages in the',
+									'goodbids',
+								)}{' '}
+								<i>{__('Pages')}</i>{' '}
+								{__(
+									'section to highlight your cause. Click Add New Page to get started, and choose from any of the available Patterns and Page Blocks.',
+									'goodbids',
+								)}
+							</>
 						),
 						component: (
 							<div className="w-full max-w-60 py-3">

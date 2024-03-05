@@ -11,6 +11,8 @@ declare const gbAuctionWizard: PHPVariables;
 // These are only defined for the nonprofit setup page
 declare const gbNonprofitSetup: {
 	appID: string;
+	siteStatus: string;
+	siteStatusOptions: ['pending', 'live', 'inactive'];
 	ajaxUrl: string;
 	optionsGeneralURL: string;
 	createWooCommerceURL: string;
