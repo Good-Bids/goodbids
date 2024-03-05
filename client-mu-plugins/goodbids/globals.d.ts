@@ -15,8 +15,6 @@ declare const gbNonprofitSetupGuide: {
 	siteStatusOptions: ['pending', 'live', 'inactive'];
 	ajaxUrl: string;
 	optionsGeneralURL: string;
-	createWooCommerceURL: string;
-	setUpPaymentURL: string;
 	configureShippingURL: string;
 	jetpackURL: string;
 	akismetURL: string;
