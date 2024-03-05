@@ -112,6 +112,9 @@ class Onboarding {
 		// Customize the WooCommerce onboarding button
 		$this->customize_wc_onboarding_button();
 
+		// Remove the WooCommerce Settings Tabs when setting up Stripe
+		$this->hide_woocommerce_settings_tabs();
+
 		// Flag Onboarding as Completed.
 		$this->mark_onboarding_completed();
 	}
@@ -286,6 +289,21 @@ class Onboarding {
 					exit;
 				}
 
+				// Make sure they're not jumping ahead.
+				if ( self::STEP_ONBOARDING_COMPLETE === $this->get_current_step() ) {
+					if ( ! $this->completed_wc_onboarding() ) {
+						set_transient( self::STEP_TRANSIENT, self::STEP_CREATE_STORE );
+						wp_safe_redirect( $this->get_url( self::STEP_CREATE_STORE ) );
+						exit;
+					}
+
+					if ( ! $this->completed_payments_onboarding() ) {
+						set_transient( self::STEP_TRANSIENT, self::STEP_SET_UP_PAYMENTS );
+						wp_safe_redirect( $this->get_url( self::STEP_SET_UP_PAYMENTS ) );
+						exit;
+					}
+				}
+
 				$step = get_transient( self::STEP_TRANSIENT );
 
 				if ( $step && $step !== $this->get_current_step() ) {
@@ -437,7 +455,7 @@ class Onboarding {
 	 * @return bool
 	 */
 	private function is_mid_onboarding(): bool {
-		if ( ! is_admin() ) {
+		if ( ! is_admin() || goodbids()->network->nonprofits->is_onboarded() ) {
 			return false;
 		}
 
@@ -609,7 +627,7 @@ class Onboarding {
 			}
 		);
 
-		// Redirect to the final step after the payments setup is completed.
+		// Set the redirect to the final step after the payments setup is completed.
 		add_action(
 			'admin_init',
 			function () {
@@ -678,6 +696,32 @@ class Onboarding {
 						);
 					} );
 				</script>
+				<?php
+			}
+		);
+	}
+
+	/**
+	 * Hide WooCommerce settings tabs.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function hide_woocommerce_settings_tabs(): void {
+		add_action(
+			'admin_footer',
+			function () {
+				if ( ! $this->is_stripe_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+				?>
+				<style>
+					.woocommerce #mainform .nav-tab-wrapper,
+					.notice.wcs-nux__notice {
+						display: none;
+					}
+				</style>
 				<?php
 			}
 		);

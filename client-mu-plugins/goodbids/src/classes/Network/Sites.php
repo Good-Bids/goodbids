@@ -122,7 +122,8 @@ class Sites {
 					wp_safe_redirect( $redirect_url );
 					exit;
 				}
-			}
+			},
+			200 // Make sure DB tables are created.
 		);
 	}
 
