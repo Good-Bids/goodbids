@@ -671,7 +671,7 @@ class Onboarding {
 				?>
 				<script>
 					jQuery( function( $ ) {
-						const gbOnboardingInterval = setInterval(
+						const gbStripeCloseInterval = setInterval(
 							function () {
 								const $button = $( '.components-modal__header button' );
 
@@ -686,6 +686,26 @@ class Onboarding {
 											return false;
 										}
 									);
+								}
+							},
+							100
+						);
+
+						let gbStripeModalOpened = false;
+						const gbStripeModalInterval = setInterval(
+							function () {
+								const $modal = $( '.wcstripe-confirmation-modal' );
+
+								if ( $modal.length ) {
+									if ( ! gbStripeModalOpened ) { // Modal was opened.
+										gbStripeModalOpened = true;
+									}
+								} else {
+									if ( gbStripeModalOpened ) { // Modal was closed automatically.
+										clearInterval( gbStripeModalInterval );
+										window.location.href = '<?php echo esc_js( $redirect ); ?>';
+										return false;
+									}
 								}
 							},
 							100
