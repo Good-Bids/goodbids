@@ -162,13 +162,20 @@ class Wizard {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?int $auction_id Auction ID.
+	 * @param ?int $reward_id  Reward ID.
+	 *
 	 * @return string
 	 */
 	public function get_wizard_url( ?int $auction_id = null, ?int $reward_id = null ): string {
-		$wizard_url = admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . self::PAGE_SLUG );
+		$wizard_url = admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() );
+		$wizard_url = add_query_arg( 'page', self::PAGE_SLUG, $wizard_url );
 
-		if ( $auction_id && $reward_id ) {
-			$wizard_url .= '&' . self::AUCTION_ID_PARAM . '=' . $auction_id . '&' . self::REWARD_EDIT_PARAM . '=' . $reward_id;
+		if ( $auction_id ) {
+			$wizard_url = add_query_arg( self::AUCTION_ID_PARAM, $auction_id, $wizard_url );
+		}
+		if ( $reward_id ) {
+			$wizard_url = add_query_arg( self::REWARD_EDIT_PARAM, $reward_id, $wizard_url );
 		}
 
 		return $wizard_url;
@@ -236,11 +243,11 @@ class Wizard {
 	private function get_js_vars(): array {
 		return [
 			// General.
-			'baseURL' => $this->get_wizard_url(),
-			'appID'   => self::PAGE_SLUG,
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'adminURL' => admin_url( ),
-			'auctionIdParam' => self::AUCTION_ID_PARAM,
+			'baseURL'         => $this->get_wizard_url(),
+			'appID'           => self::PAGE_SLUG,
+			'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+			'adminURL'        => admin_url(),
+			'auctionIdParam'  => self::AUCTION_ID_PARAM,
 			'editRewardParam' => self::REWARD_EDIT_PARAM,
 
 			// WP/WC Variables.
