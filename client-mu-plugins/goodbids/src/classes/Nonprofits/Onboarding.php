@@ -214,11 +214,7 @@ class Onboarding {
 	 * @return void
 	 */
 	public function nonprofit_onboarding_page(): void {
-		$id = self::PAGE_SLUG;
-
-		// conditions
-
-		goodbids()->load_view( 'admin/setup/onboarding.php', [ 'nonprofit_onboarding_id' => $id ] );
+		goodbids()->load_view( 'admin/setup/onboarding.php', [ 'nonprofit_onboarding_id' => self::PAGE_SLUG ] );
 	}
 
 	/**
