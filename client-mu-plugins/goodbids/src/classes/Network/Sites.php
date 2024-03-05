@@ -1115,7 +1115,7 @@ class Sites {
 	 */
 	public function set_nonprofit_navigation(): void {
 		add_action(
-			'goodbids_initialize_site',
+			'goodbids_nonprofit_verified',
 			function (): void {
 				$nav_links = [
 					intval( get_option( self::ABOUT_OPTION ) ), // About Page ID.
