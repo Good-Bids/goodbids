@@ -11,7 +11,7 @@ namespace GoodBids\Nonprofits;
 use GoodBids\Auctions\Wizard;
 
 /**
- * Setup Class
+ * Guide Class
  *
  * @since 1.0.0
  */
@@ -123,7 +123,7 @@ class Guide {
 				wp_enqueue_media();
 
 				// Get the asset file.
-				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-setup.asset.php';
+				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-setup-guide.asset.php';
 				if ( file_exists( $asset_file ) ) {
 					$script = require $asset_file;
 				} else {
@@ -133,17 +133,17 @@ class Guide {
 					];
 				}
 
-				// Register the New Site Setup script.
+				// Register the Nonprofit Setup Guide script.
 				wp_register_script(
 					self::PAGE_SLUG,
-					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-setup.js',
+					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-setup-guide.js',
 					$script['dependencies'],
 					$script['version'],
 					[ 'strategy' => 'defer' ]
 				);
 
 				// Localize Vars.
-				wp_localize_script( self::PAGE_SLUG, 'gbNonprofitSetup', $this->get_js_vars() );
+				wp_localize_script( self::PAGE_SLUG, 'gbNonprofitSetupGuide', $this->get_js_vars() );
 
 				// Set translations.
 				wp_set_script_translations( self::PAGE_SLUG, 'goodbids' );

@@ -2,7 +2,7 @@ import { render } from '@wordpress/element';
 import { Driver } from './driver';
 
 function renderReact() {
-	const root = document.getElementById(gbNonprofitSetup.appID);
+	const root = document.getElementById(gbNonprofitOnboarding.appID);
 
 	if (root) {
 		render(<Driver />, root);

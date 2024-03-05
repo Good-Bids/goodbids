@@ -26,6 +26,30 @@ class Onboarding {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_PARAM = 'step';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_CREATE_STORE = 'create-store';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_SET_UP_PAYMENTS = 'set-up-payments';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_ONBOARDING_COMPLETE = 'onboarding-complete';
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		if ( is_main_site() || is_network_admin() ) {
@@ -223,20 +247,22 @@ class Onboarding {
 	/**
 	 * Localized JS Variables
 	 *
+	 * See globals.d.ts for matching TypeScript types.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
 	private function get_js_vars(): array {
+		// TODO: Add the appropriate URLs for the onboarding steps.
+
 		return [
-			'appID'                   => self::PAGE_SLUG,
-			'ajaxUrl'                 => admin_url( 'admin-ajax.php' ),
-			'optionsGeneralURL'       => admin_url( 'options-general.php' ),
-			'createWooCommerceURL'    => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
-			'setUpPaymentURL'         => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ),
-			'configureShippingURL'    => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
-			'woocommerceSettingsURL'  => admin_url( 'admin.php?page=wc-settings&tab=general' ),
-			'homeURL'                 => home_url(),
+			'appID'                 => self::PAGE_SLUG,
+			'stepParam'             => self::STEP_PARAM,
+			'stepOptions'                 => [ self::STEP_CREATE_STORE, self::STEP_SET_UP_PAYMENTS, self::STEP_ONBOARDING_COMPLETE ],
+			'createStoreUrl'        => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
+			'setUpPaymentsUrl'      => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ),
+			'onboardingCompleteUrl' => admin_url(),
 		];
 	}
 

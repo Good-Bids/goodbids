@@ -15,7 +15,7 @@ export function CustomizeHomepage() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.customizeHomepageURL}
+					href={gbNonprofitSetupGuide.customizeHomepageURL}
 				>
 					{__('Modify Front Page ', 'goodbids')}
 				</ButtonLink>

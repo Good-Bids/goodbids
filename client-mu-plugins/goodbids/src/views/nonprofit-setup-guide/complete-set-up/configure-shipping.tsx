@@ -25,7 +25,7 @@ export function ManageShipping() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.configureShippingURL}
+					href={gbNonprofitSetupGuide.configureShippingURL}
 				>
 					{__('Add Shipping Zones', 'goodbids')}
 				</ButtonLink>
