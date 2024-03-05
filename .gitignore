@@ -55,7 +55,6 @@ build
 # Local config file
 client-mu-plugins/goodbids/config.local.json
 
-
 # Plugins that are NOT loaded via Composer
 !/plugins/miniorange-oauth-oidc-single-sign-on/
 !/plugins/accessibility-checker-pro/
