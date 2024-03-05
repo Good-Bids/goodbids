@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Network\Nonprofit;
+use Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile;
 
 /**
  * Setup Class
@@ -177,14 +178,18 @@ class Onboarding {
 	 * @return void
 	 */
 	private function add_menu_dashboard_page(): void {
-		// Disable for the main site.
-		if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
-			return;
-		}
-
 		add_action(
 			'admin_menu',
 			function () {
+				// Disable for the main site.
+				if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
+					if ( $this->is_onboarding_page() ) {
+						wp_safe_redirect( admin_url() );
+						exit;
+					}
+					return;
+				}
+
 				add_menu_page(
 					__( 'GoodBids Onboarding', 'goodbids' ),
 					__( 'Onboarding', 'goodbids' ),
@@ -415,12 +420,6 @@ class Onboarding {
 	 * @return string
 	 */
 	private function get_current_step(): string {
-		$step = get_transient( self::STEP_TRANSIENT );
-
-		if ( $step ) {
-			return $step;
-		}
-
 		if ( ! empty( $_GET[ self::STEP_PARAM ] ) ) { // phpcs:ignore
 			$step = sanitize_text_field( wp_unslash( $_GET[ self::STEP_PARAM ] ) ); // phpcs:ignore
 			set_transient( self::STEP_TRANSIENT, $step );
@@ -478,7 +477,11 @@ class Onboarding {
 	 * @return bool
 	 */
 	private function completed_wc_onboarding(): bool {
-		return boolval( get_option( 'woocommerce_default_country' ) );
+		if ( ! class_exists( 'Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile' ) ) {
+			require_once dirname( WC_PLUGIN_FILE ) . '/src/Admin/API/OnboardingProfile.php';
+		}
+
+		return ! OnboardingProfile::needs_completion();
 	}
 
 	/**
@@ -596,7 +599,7 @@ class Onboarding {
 				}
 
 				// Don't redirect if we are on supported pages
-				if ( $this->is_stripe_page() && $this->is_mid_onboarding() ) {
+				if ( $this->is_stripe_page() && $this->is_mid_onboarding() && ! $this->completed_payments_onboarding() ) {
 					return;
 				}
 
@@ -617,6 +620,66 @@ class Onboarding {
 				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( self::STEP_ONBOARDING_COMPLETE ) );
 			},
 			50
+		);
+
+		// Hijack the clean_url filter to prevent the Stripe redirect from happening.
+		add_filter(
+			'clean_url',
+			function ( $url ) {
+				if ( ! isset( $_GET['wcs_stripe_code'], $_GET['wcs_stripe_state'] ) ) { // phpcs:ignore
+					return $url;
+				}
+
+				$redirect = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $this->completed_payments_onboarding() || ! $redirect ) {
+					return $url;
+				}
+
+				delete_transient( self::REDIRECT_TRANSIENT );
+
+				return $redirect;
+			}
+		);
+
+		add_action(
+			'admin_footer',
+			function () {
+				if ( ! $this->is_stripe_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				$redirect = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $redirect ) {
+					return;
+				}
+				?>
+				<script>
+					jQuery( function( $ ) {
+						const gbOnboardingInterval = setInterval(
+							function () {
+								const $button = $( '.components-modal__header button' );
+
+								if ( $button.length ) {
+									clearInterval( gbOnboardingInterval );
+
+									$button.on(
+										'click',
+										function ( e ) {
+											e.preventDefault();
+											window.location.href = '<?php echo esc_js( $redirect ); ?>';
+											return false;
+										}
+									);
+								}
+							},
+							100
+						);
+					} );
+				</script>
+				<?php
+			}
 		);
 	}
 
