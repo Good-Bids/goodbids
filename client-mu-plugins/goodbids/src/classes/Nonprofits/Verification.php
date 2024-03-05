@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
 use GoodBids\Utilities\Log;
 
 /**
@@ -209,12 +210,12 @@ class Verification {
 				// Remove Spam action.
 				unset( $actions['spam'] );
 
-				if ( ! $this->is_verified( $blog_id ) ) {
-					$page = self::PAGE_SLUG;
+				$page = self::PAGE_SLUG;
+				$url  = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
+				$url  = add_query_arg( 'id', $blog_id, $url );
 
+				if ( ! $this->is_verified( $blog_id ) ) {
 					// Adjust Edit Link.
-					$url = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
-					$url = add_query_arg( 'id', $blog_id, $url );
 					$actions['edit'] = sprintf(
 						'<a href="%s">%s</a>',
 						esc_url( $url ),
@@ -224,7 +225,15 @@ class Verification {
 					// Remove other actions until verified.
 					unset( $actions['visit'] );
 					unset( $actions['backend'] );
+
+					return $actions;
 				}
+
+				$actions['details'] = sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( $url ),
+					__( 'Details', 'goodbids' )
+				);
 
 				return $actions;
 			},
@@ -320,22 +329,22 @@ class Verification {
 			'status'               => [
 				'label'       => __( 'Site Status', 'goodbids' ),
 				'type'        => 'select',
-				'default'     => 'pending',
+				'default'     => Nonprofit::STATUS_PENDING,
 				'placeholder' => '',
 				'required'    => true,
 				'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
 				'options'     => [
 					[
 						'label' => __( 'Pending', 'goodbids' ),
-						'value' => 'pending',
+						'value' => Nonprofit::STATUS_PENDING,
 					],
 					[
-						'label' => __( 'Published', 'goodbids' ),
-						'value' => 'published',
+						'label' => __( 'Live', 'goodbids' ),
+						'value' => Nonprofit::STATUS_LIVE,
 					],
 					[
-						'label' => __( 'Disabled', 'goodbids' ),
-						'value' => 'disabled',
+						'label' => __( 'Inactive', 'goodbids' ),
+						'value' => Nonprofit::STATUS_INACTIVE,
 					],
 				],
 			],
