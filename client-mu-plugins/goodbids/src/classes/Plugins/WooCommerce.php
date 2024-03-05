@@ -639,30 +639,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Modify register Page
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function modify_checkout_page(): void {
-		add_action(
-			'woocommerce_register_form_end',
-			function () {
-				if ( ! is_user_logged_in() ) {
-					printf(
-						'<p>%s %s %s %s.<p>',
-						esc_html__( 'By registering an account, you agree to GOODBIDS\'', 'goodbids' ),
-						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
-						esc_html__( 'and', 'goodbids' ),
-						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
-					);
-				}
-			}
-		);
-	}
-
-	/**
 	 * Limit access from WooCommerce pages for non-Super Admins.
 	 *
 	 * @since 1.0.0
