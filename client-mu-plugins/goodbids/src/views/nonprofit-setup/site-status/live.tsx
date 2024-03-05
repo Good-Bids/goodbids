@@ -8,8 +8,8 @@ export function Live() {
 
 			<P>
 				{__(
-					'Your site is live and ready for you to start adding products and auctions!',
-					'goobids',
+					'Please refer to the Nonprofit Site Guide for details on managing your site, planning auctions, and getting the most out of the GOODBIDS network!',
+					'goodbids',
 				)}
 			</P>
 		</>

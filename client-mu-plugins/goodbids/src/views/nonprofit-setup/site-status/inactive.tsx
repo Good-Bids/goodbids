@@ -9,7 +9,7 @@ export function Inactive() {
 			<P>
 				{__(
 					'Your site is inactive. Contact GOODBIDS support to reactivate your site.',
-					'goobids',
+					'goodbids',
 				)}
 			</P>
 		</>

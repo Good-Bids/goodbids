@@ -25,7 +25,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 			<P>
 				{__(
 					'Before you launch your site, be sure to confirm your',
-					'goobids',
+					'goodbids',
 				)}{' '}
 				<a href={gbNonprofitSetup.optionsGeneralURL}>
 					{__('site timezone', 'goodbids')}
@@ -83,7 +83,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 								<H1>{__('Site Launched!', 'goodbids')}</H1>
 								<P>
 									{__(
-										'Your site is live and ready for you to start adding products and auctions!',
+										'Congratulations, your GOODBIDS Nonprofit Site is live!',
 										'goodbids',
 									)}
 								</P>
