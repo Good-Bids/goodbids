@@ -1106,7 +1106,6 @@ class Sites {
 		return get_page_by_path( $path ); // phpcs:ignore
 	}
 
-
 	/**
 	 * Set the nonprofit navigation
 	 *
@@ -1115,14 +1114,16 @@ class Sites {
 	 * @since 1.0.0
 	 */
 	public function set_nonprofit_navigation(): void {
-		// TODO: Figure out why it does not fire on setup
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$about_id    = get_option( self::ABOUT_OPTION );
-				$auctions_id = get_option( self::AUCTIONS_OPTION );
+				$nav_links = [
+					intval( get_option( self::ABOUT_OPTION ) ), // About Page ID.
+					intval( get_option( self::AUCTIONS_OPTION ) ), // Auctions Page ID.
+				];
 
-				if ( ! $about_id && ! $auctions_id ) {
+				if ( 2 !== count( array_filter( $nav_links ) ) ) {
+					Log::warning( 'Missing one or more Nonprofit Navigation items' );
 					return;
 				}
 
@@ -1133,17 +1134,19 @@ class Sites {
 					]
 				);
 
-				$nav_links = [
-					get_post( $about_id ),
-					get_post( $auctions_id ),
-				];
+				if ( ! $wp_navigation->have_posts() ) {
+					Log::error( 'Unable to locate Nonprofit Navigation' );
+					return;
+				}
+
+				$navigation_id = $wp_navigation->posts[0]->ID;
 
 				// Set the navigation content
 				ob_start();
 				goodbids()->load_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) );
 
 				$navigation_content = [
-					'ID'           => $wp_navigation->post->ID,
+					'ID'           => $navigation_id,
 					'post_content' => ob_get_clean(),
 				];
 
@@ -1153,7 +1156,8 @@ class Sites {
 				if ( is_wp_error( $update ) ) {
 					Log::error( 'Error updating Nonprofit Navigation: ' . $update->get_error_message() );
 				}
-			}
+			},
+			50
 		);
 	}
 }
