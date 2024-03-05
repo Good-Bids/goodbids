@@ -77,6 +77,7 @@ class Sites {
 		// Refresh transients when Auctions change status.
 		$this->maybe_clear_transients();
 
+		// Setup default Nonprofit Navigation.
 		$this->set_nonprofit_navigation();
 	}
 
@@ -373,7 +374,7 @@ class Sites {
 	}
 
 	/**
-	 * Create the GOODBIDS About page and sets the pattern template
+	 * Creates the GOODBIDS About page and sets the pattern template
 	 *
 	 * @since 1.0.0
 	 *
@@ -384,9 +385,10 @@ class Sites {
 			'goodbids_initialize_site',
 			function (): void {
 				$about_slug = 'about';
+				$existing   = get_option( self::ABOUT_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $this->get_page_path( $about_slug ) ) {
+				if ( $this->get_page_path( $about_slug ) || $existing ) {
 					return;
 				}
 
@@ -407,6 +409,7 @@ class Sites {
 
 				if ( is_wp_error( $about_id ) ) {
 					Log::error( $about_id->get_error_message() );
+					return;
 				}
 
 				update_option( self::ABOUT_OPTION, $about_id );
@@ -426,9 +429,10 @@ class Sites {
 			'goodbids_initialize_site',
 			function (): void {
 				$auctions_slug = 'explore-auctions';
+				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $this->get_page_path( $auctions_slug ) ) {
+				if ( $this->get_page_path( $auctions_slug ) || $existing ) {
 					return;
 				}
 
@@ -449,6 +453,7 @@ class Sites {
 
 				if ( is_wp_error( $auctions_id ) ) {
 					Log::error( $auctions_id->get_error_message() );
+					return;
 				}
 
 				update_option( self::AUCTIONS_OPTION, $auctions_id );
@@ -457,7 +462,7 @@ class Sites {
 	}
 
 	/**
-	 * Delete the sample page
+	 * Attempt to delete the Sample Page
 	 *
 	 * @since 1.0.0
 	 *
@@ -1112,8 +1117,8 @@ class Sites {
 	public function set_nonprofit_navigation(): void {
 		// TODO: Figure out why it does not fire on setup
 		add_action(
-			'goodbids_nonprofit_verified',
-			function ( int $site_id ): void {
+			'goodbids_initialize_site',
+			function (): void {
 				$about_id    = get_option( self::ABOUT_OPTION );
 				$auctions_id = get_option( self::AUCTIONS_OPTION );
 
@@ -1143,10 +1148,10 @@ class Sites {
 				];
 
 				// Update the navigation into the database
-				wp_update_post( $navigation_content );
+				$update = wp_update_post( $navigation_content );
 
-				if ( is_wp_error( $navigation_content ) ) {
-					Log::error( $navigation_content->get_error_message() );
+				if ( is_wp_error( $update ) ) {
+					Log::error( 'Error updating Nonprofit Navigation: ' . $update->get_error_message() );
 				}
 			}
 		);
