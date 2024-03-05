@@ -30,10 +30,11 @@ if ( $auction->has_started() ) {
 
 	$time = __( 'Ending ', 'goodbids' ) . $auction->get_end_date_time( 'M d' );
 
-	if ( $remaining_time->d < 1 ) {
+	if ( $remaining_time->d < 1 && $remaining_time->h > 1 ) {
 		$clock_svg = true;
 		$time      = $remaining_time->format( '%hh %im' );
-	} elseif ( $remaining_time->d < 1 && $remaining_time->h < 1 ) {
+	}
+	if ( $remaining_time->d < 1 && $remaining_time->h > 1 && $remaining_time->m > 60 ) {
 		$time_class .= 'text-red-500';
 		$clock_svg   = true;
 		$time        = $remaining_time->format( '%im' );
