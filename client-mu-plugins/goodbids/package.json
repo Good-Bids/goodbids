@@ -22,6 +22,7 @@
     "prepare": "cd ../../ && husky install",
     "start": "wp-scripts start",
     "staged": "lint-staged",
+    "translate": "vendor/bin/wp i18n make-pot ./ ./languages/goodbids.pot",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js"
   },
