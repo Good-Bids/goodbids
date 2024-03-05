@@ -718,7 +718,8 @@ class Onboarding {
 				?>
 				<style>
 					.woocommerce #mainform .nav-tab-wrapper,
-					.notice.wcs-nux__notice {
+					.notice.wcs-nux__notice,
+					h2 .wc-admin-breadcrumb {
 						display: none;
 					}
 				</style>
