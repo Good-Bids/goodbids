@@ -197,6 +197,7 @@ class Guide {
 			'auctionsURL'      => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
 			'invoicesURL'      => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 
+			'siteId'			=> $nonprofit->get_id(),
 			'siteStatus'        => $nonprofit->get_status(),
 			'siteStatusOptions' => goodbids()->network->nonprofits->get_site_status_options(),
 		];
