@@ -33,14 +33,9 @@ class WPDocsGenerator {
 	private ?Parser $parser = null;
 
 	/**
-	 * @var DocItem[]
+	 * @var ?CodeCollection
 	 */
-	private array $objects = [];
-
-	/**
-	 * @var DocItem[]
-	 */
-	private array $tree = [];
+	private ?CodeCollection $collection = null;
 
 	/**
 	 * @var array
@@ -87,7 +82,7 @@ class WPDocsGenerator {
 		$this->parse( $dir );
 
 		// Group objects together.
-//		$this->collect();
+		$this->collect( $this->collection->tree );
 
 		// Generate the docs.
 		$this->build();
@@ -121,19 +116,14 @@ class WPDocsGenerator {
 		if ( ! empty( $files ) ) {
 			foreach ( $files as $file ) {
 				$relative = str_replace( $this->config['source'], basename( $this->config['source'] ) . '/', $file );
-				$collection = $this->parser->parse( $file, $relative );
+				$collection = $this->parser->parse( $file, $relative, $this->collection );
 
 				if ( is_null( $collection ) ) {
-					$this->script::writeError( $this->parser->error );
+					$this->script::writeError( 'Parser Collection Error: ' . $this->parser->error );
 					continue;
 				}
 
-				if ( empty( $collection->objects ) ) {
-					continue;
-				}
-
-				$this->objects = array_merge( $this->objects, $collection->objects );
-				$this->tree    = array_merge( $this->tree, $collection->tree );
+				$this->collection = $collection;
 			}
 		}
 
@@ -145,11 +135,19 @@ class WPDocsGenerator {
 	}
 
 	/**
+	 * @param DocItem[] $objects
 	 * @return void
 	 */
-	private function collect(): void
+	private function collect( array $objects): void
 	{
-		// TODO: Add grouping logic.
+		foreach ( $objects as $reference => &$object ) {
+			foreach ( $object->returnTypes as $returnType ) {
+				if ( array_key_exists( $returnType, $this->collection->classes ) ) {
+					$object->api = $this->collection->classes[ $returnType ];
+//					$this->currentApi = $object;
+				}
+			}
+		}
 	}
 
 	/**
@@ -169,14 +167,14 @@ class WPDocsGenerator {
 	private function getBuilder(): Builder|MarkdownBuilder|HtmlBuilder
 	{
 		if ( 'markdown' === $this->config['format'] ) {
-			return new MarkdownBuilder( $this->tree, $this->objects, $this->config );
+			return new MarkdownBuilder( $this->collection, $this->config );
 		}
 
 		if ( 'html' === $this->config['format'] ) {
-			return new HtmlBuilder( $this->tree, $this->objects, $this->config );
+			return new HtmlBuilder( $this->collection, $this->config );
 		}
 
-		return new Builder( $this->tree, $this->objects, $this->config );
+		return new Builder( $this->collection, $this->config );
 	}
 
 	/**

@@ -98,6 +98,11 @@ class DocItem {
 	public mixed $defaultValue = null;
 
 	/**
+	 * @var ?DocItem
+	 */
+	public ?DocItem $api = null;
+
+	/**
 	 * DocItem constructor.
 	 *
 	 * @param string $name

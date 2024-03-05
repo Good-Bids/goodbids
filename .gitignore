@@ -57,3 +57,6 @@ build
 
 # Local config file
 client-mu-plugins/goodbids/config.local.json
+
+# Docs Testing Files
+docs/goodbids

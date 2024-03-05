@@ -20,12 +20,17 @@ class CodeCollection extends NodeVisitorAbstract
 	/**
 	 * @var DocItem[]
 	 */
-	public array $objects = [];
+	public array $tree = [];
 
 	/**
 	 * @var DocItem[]
 	 */
-	public array $tree = [];
+	public array $objects = [];
+
+	/**
+	 * @var string[]
+	 */
+	public array $classes = [];
 
 	/**
 	 * @var string
@@ -51,6 +56,15 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param string $path
 	 */
 	public function __construct( string $path )
+	{
+		$this->setPath( $path );
+	}
+
+	/**
+	 * @param string $path
+	 * @return void
+	 */
+	public function setPath( string $path ): void
 	{
 		$this->path = $path;
 	}
@@ -102,6 +116,7 @@ class CodeCollection extends NodeVisitorAbstract
 		$this->collectClassMethods($node);
 
 		$this->addObject($classDocItem);
+		$this->classes[ $classDocItem->getReference() ] = $classDocItem;
 	}
 
 	/**

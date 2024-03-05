@@ -7,20 +7,16 @@
 
 namespace Viget\ComposerScripts\WPDocsGenerator\Builders;
 
+use Viget\ComposerScripts\WPDocsGenerator\CodeCollection;
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
 class Builder
 {
 
 	/**
-	 * @var DocItem[]
+	 * @var CodeCollection
 	 */
-	private array $tree;
-
-	/**
-	 * @var DocItem[]
-	 */
-	private array $objects;
+	private CodeCollection $collection;
 
 	/**
 	 * @var array
@@ -28,14 +24,12 @@ class Builder
 	private array $config;
 
 	/**
-	 * @param DocItem[] $tree
-	 * @param DocItem[] $objects
+	 * @param CodeCollection $collection
 	 * @param array $config
 	 */
-	public function __construct( array $tree, array $objects, array $config )
+	public function __construct( CodeCollection $collection, array $config )
 	{
-		$this->tree = $tree;
-		$this->objects = $objects;
+		$this->collection = $collection;
 		$this->config = $config;
 	}
 
@@ -49,15 +43,24 @@ class Builder
 		$this->emptyDirectory($outputDir);
 
 		$path = $this->getOutputPath();
-		$file = $this->getObjectFile();
+		$tree = 'tree.txt';
 
-		$filename = $path . '/' . $file;
+		$tree_path = $path . '/' . $tree;
 
 		ob_start();
-		var_dump( $this->tree ); // phpcs:ignore
+		var_dump( $this->collection->tree ); // phpcs:ignore
 		$contents = ob_get_clean();
 
-		$this->writeToFile( $filename, $contents );
+		$this->writeToFile( $tree_path, $contents );
+
+		$objects      = 'objects.txt';
+		$objects_path = $path . '/' . $objects;
+
+		ob_start();
+		var_dump( $this->collection->objects ); // phpcs:ignore
+		$contents = ob_get_clean();
+
+		$this->writeToFile( $objects_path, $contents );
 	}
 
 	/**

@@ -37,7 +37,7 @@ class Parser {
 	 * @param string $relative_path
 	 * @return ?CodeCollection
 	 */
-	public function parse( string $path, string $relative_path ): ?CodeCollection
+	public function parse( string $path, string $relative_path, ?CodeCollection $collection ): ?CodeCollection
 	{
 		if ( ! file_exists( $path ) ) {
 			throw new \InvalidArgumentException( 'File does not exist' );
@@ -52,8 +52,14 @@ class Parser {
 			return null;
 		}
 
-		$traverser  = new NodeTraverser();
-		$collection = new CodeCollection( $relative_path );
+		$traverser = new NodeTraverser();
+
+		if ( ! is_null( $collection ) ) {
+			$collection->setPath( $relative_path );
+		} else {
+			$collection = new CodeCollection( $relative_path );
+		}
+
 		$traverser->addVisitor( $collection );
 
 		$traverser->traverse( $parsed );
