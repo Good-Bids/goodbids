@@ -66,5 +66,24 @@ class Network {
 		$this->bidders    = new Bidders();
 
 		$this->logs       = new Logs();
+
+		// Setup API Endpoints.
+		$this->setup_api_endpoints();
+	}
+
+	/**
+	 * Register Auction REST API Endpoints
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_api_endpoints(): void {
+		add_action(
+			'rest_api_init',
+			function () {
+				( new API\Publish() )->register_routes();
+			}
+		);
 	}
 }

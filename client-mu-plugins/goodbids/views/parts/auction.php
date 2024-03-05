@@ -33,10 +33,10 @@ if ( $auction->has_started() ) {
 	if ( $remaining_time->h < 1 ) {
 		$time_class .= 'text-red-500';
 		$clock_svg   = true;
-		$time        = $remaining_time->format( '-%im' );
+		$time        = $remaining_time->format( '%im' );
 	} elseif ( $remaining_time->d < 1 ) {
 		$clock_svg = true;
-		$time      = $remaining_time->format( '-%hh %im' );
+		$time      = $remaining_time->format( '%hh %im' );
 	}
 } else {
 	try {

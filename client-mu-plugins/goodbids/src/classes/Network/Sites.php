@@ -138,7 +138,8 @@ class Sites {
 					wp_safe_redirect( $redirect_url );
 					exit;
 				}
-			}
+			},
+			200 // Make sure DB tables are created.
 		);
 	}
 
@@ -662,7 +663,7 @@ class Sites {
 	 * @return array
 	 */
 	public function get_featured_auctions( array $query_args = [] ): array {
-		return collect( $this->get_all_auctions( $query_args ) )
+		return collect( $this->get_all_open_auctions( $query_args ) )
 			->slice( 0, 3 )
 			->values()
 			->all();
@@ -1037,6 +1038,7 @@ class Sites {
 			'wpmu_blogs_columns',
 			function ( $columns ) {
 				$columns['verified'] = __( 'Verified?', 'goodbids' );
+				$columns['status']   = __( 'Status', 'goodbids' );
 				$columns['standing'] = __( 'Account Standing', 'goodbids' );
 				return $columns;
 			}
@@ -1045,7 +1047,8 @@ class Sites {
 		add_action(
 			'manage_sites_custom_column',
 			function ( string $column, string $site_id ) {
-				$nonprofit_cols = [ 'standing', 'verified' ];
+				$nonprofit_cols = [ 'verified', 'status', 'standing' ];
+
 				if ( get_main_site_id() === intval( $site_id ) && in_array( $column, $nonprofit_cols, true ) ) {
 					echo '&mdash;';
 					return;
@@ -1053,8 +1056,8 @@ class Sites {
 
 				$nonprofit = new Nonprofit( intval( $site_id ) );
 
-				if ( 'standing' === $column ) {
-					echo esc_html( $nonprofit->get_standing() );
+				if ( 'status' === $column ) {
+					echo esc_html( ucwords( $nonprofit->get_status() ) );
 					return;
 				}
 
@@ -1073,6 +1076,12 @@ class Sites {
 						esc_attr__( 'Pending', 'goodbids' ),
 						esc_html__( 'Pending', 'goodbids' )
 					);
+					return;
+				}
+
+
+				if ( 'standing' === $column ) {
+					echo esc_html( $nonprofit->get_standing() );
 				}
 			},
 			10,

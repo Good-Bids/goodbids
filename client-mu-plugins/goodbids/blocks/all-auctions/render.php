@@ -49,7 +49,7 @@ $active_class = 'btn-fill-secondary outline-dotted outline-1 outline-offset-2 ho
 			<div class="flex justify-end">
 				<select
 					aria-label="<?php esc_attr_e( 'Sort Auctions', 'goodbids' ); ?>"
-					class="p-2 border-transparent rounded-sm bg-contrast-3 text-contrast"
+					class="p-3 pr-10 bg-[right_0.5rem_center] bg-no-repeat border-transparent rounded appearance-none bg-contrast-3 text-contrast bg-select-arrow bg-[length:20px_20px]"
 					name="<?php echo esc_attr( AllAuctions::SORT_QUERY_ARG ); ?>"
 					hx-get="<?php echo esc_url( $sort_url ); ?>"
 					hx-select="[data-auction-grid]"

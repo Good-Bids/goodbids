@@ -43,6 +43,9 @@ class Nonprofits {
 	public function __construct() {
 		// Initialize Screen Options.
 		$this->init_screen_options();
+
+		// Add redirects for pending sites.
+		$this->redirect_pending_sites();
 	}
 
 	/**
@@ -112,5 +115,57 @@ class Nonprofits {
 		);
 
 		return $this->nonprofits;
+	}
+
+	/**
+	 * Redirect sites marked as Pending
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_pending_sites(): void {
+		add_action(
+			'template_redirect',
+			function () {
+				if ( is_main_site() || is_super_admin() ) {
+					return;
+				}
+
+				$site_id   = get_current_blog_id();
+				$nonprofit = new Nonprofit( $site_id );
+
+				if ( Nonprofit::STATUS_PENDING !== $nonprofit->get_status() ) {
+					return;
+				}
+
+				if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+					return;
+				}
+
+				// Redirect anonymous users and non-admins to the main site.
+				wp_safe_redirect( get_site_url( get_main_site_id() ) );
+				exit;
+			}
+		);
+	}
+
+	/** Check if onboarding is completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $site_id
+	 *
+	 * @return bool
+	 */
+	public function is_onboarded( ?int $site_id = null ): bool {
+		if ( ! $site_id ) {
+			$site_id = get_current_blog_id();
+		}
+
+		return goodbids()->sites->swap(
+			fn () => boolval( get_option( 'goodbids_onboarded' ) ),
+			$site_id
+		);
 	}
 }

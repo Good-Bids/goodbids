@@ -34,6 +34,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	userFreeBids: 0,
 	userTotalBids: 0,
 	userTotalDonated: 0,
+	rewardClaimed: false,
 	isLastBidder: false,
 
 	initialFetchComplete: false,
