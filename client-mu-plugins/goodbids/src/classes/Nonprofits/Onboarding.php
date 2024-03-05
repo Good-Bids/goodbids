@@ -9,7 +9,6 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Network\Nonprofit;
-use GoodBids\Auctions\Wizard;
 
 /**
  * Setup Class
@@ -29,6 +28,12 @@ class Onboarding {
 	 * @var string
 	 */
 	const STEP_PARAM = 'step';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const IS_ONBOARING_PARAM = 'gb-is-onboarding';
 
 	/**
 	 * @since 1.0.0
@@ -69,6 +74,9 @@ class Onboarding {
 
 		// Enqueue Scripts
 		$this->enqueue_scripts();
+
+		// Customize the WooCommerce onboarding button
+		$this->customize_wc_onboarding_button();
 	}
 
 	/**
@@ -256,13 +264,25 @@ class Onboarding {
 	private function get_js_vars(): array {
 		// TODO: Add the appropriate URLs for the onboarding steps.
 
+		// Store Setup URL
+		$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
+		$create_store_url = add_query_arg( self::IS_ONBOARING_PARAM, 1, $create_store_url );
+
+		// Payments Setup URL
+		$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' );
+		$payments_url = add_query_arg( self::IS_ONBOARING_PARAM, 1, $payments_url );
+
+		// Onboarding Complete URL
+		$onboarding_complete_url = admin_url();
+//		$onboarding_complete_url = add_query_arg( self::IS_ONBOARING_PARAM, 1, $payments_url );
+
 		return [
 			'appID'                 => self::PAGE_SLUG,
 			'stepParam'             => self::STEP_PARAM,
-			'stepOptions'                 => [ self::STEP_CREATE_STORE, self::STEP_SET_UP_PAYMENTS, self::STEP_ONBOARDING_COMPLETE ],
-			'createStoreUrl'        => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
-			'setUpPaymentsUrl'      => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ),
-			'onboardingCompleteUrl' => admin_url(),
+			'stepOptions'           => [ self::STEP_CREATE_STORE, self::STEP_SET_UP_PAYMENTS, self::STEP_ONBOARDING_COMPLETE ],
+			'createStoreUrl'        => $create_store_url,
+			'setUpPaymentsUrl'      => $payments_url,
+			'onboardingCompleteUrl' => $onboarding_complete_url,
 		];
 	}
 
@@ -282,6 +302,76 @@ class Onboarding {
 				}
 
 				remove_all_actions( 'admin_notices' );
+			}
+		);
+	}
+
+	/**
+	 * Check if we are on the WooCommerce onboarding page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_wc_onboarding_page(): bool {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		global $pagenow;
+
+		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-admin' === $_GET['page'] && ! empty( $_GET['path'] ) && '/setup-wizard' === $_GET['path']; // phpcs:ignore
+	}
+
+	/**
+	 * Check if we are mid-onboarding
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_mid_onboarding(): bool {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		return ! empty( $_GET[ self::IS_ONBOARING_PARAM ] ); // phpcs:ignore
+	}
+
+	/**
+	 * Change the text of the WooCommerce onboarding button
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function customize_wc_onboarding_button(): void {
+		add_action(
+			'admin_footer',
+			function() {
+				if ( ! $this->is_wc_onboarding_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				$text = __( 'Continue with Onboarding', 'goodbids' );
+				?>
+				<script>
+					jQuery( function( $ ) {
+						const gbOnboardingInterval = setInterval(
+							function () {
+								const $target = $( '.woocommerce-profiler-go-to-mystore__button-container button' ),
+									newText = '<?php echo esc_js( $text ); ?>';
+
+								if ( $target.length && newText !== $target.text() ) {
+									$target.text( newText );
+									clearInterval( gbOnboardingInterval );
+								}
+							},
+							100
+						);
+					} );
+				</script>
+				<?php
 			}
 		);
 	}

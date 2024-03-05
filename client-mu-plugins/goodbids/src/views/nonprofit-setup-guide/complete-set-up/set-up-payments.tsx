@@ -10,7 +10,7 @@ export function SetUpPayments() {
 				<>
 					{__(
 						'Create a Stripe account or connect an existing one to accept donations for auction bids. Click the button below, then click "Create or connect an account" on the WooCommerce > Settings > Payments > Stripe page. This will send you to',
-						'goobids',
+						'goodbids',
 					)}{' '}
 					<a href="https://connect.stripe.com">
 						{__('connect.stripe.com', 'goodbids')}
