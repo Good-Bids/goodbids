@@ -28,6 +28,7 @@ use GoodBids\Nonprofits\Verification;
 use GoodBids\Nonprofits\Setup;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Permissions;
@@ -458,6 +459,7 @@ class Core {
 				new Blocks();
 				new OneTrust();
 				new Setup();
+				new EqualizeDigital();
 			}
 		);
 	}
