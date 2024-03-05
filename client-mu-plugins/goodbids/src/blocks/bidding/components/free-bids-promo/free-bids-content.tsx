@@ -5,7 +5,8 @@ import { liveStatuses, upcomingStatuses } from '../../utils/statuses';
 import { fadeAnimation } from '../../utils/animations';
 
 export function FreeBidsContent() {
-	const { auctionStatus, userId, freeBidsAvailable } = useBiddingState();
+	const { auctionStatus, userId, freeBidsAvailable, isLastBidder } =
+		useBiddingState();
 
 	return (
 		<div className="relative">
@@ -17,11 +18,12 @@ export function FreeBidsContent() {
 
 				{liveStatuses.includes(auctionStatus) &&
 					userId &&
-					freeBidsAvailable && <LiveAndUserAndFreeBids />}
+					freeBidsAvailable &&
+					!isLastBidder && <LiveAndUserAndFreeBids />}
 
 				{liveStatuses.includes(auctionStatus) &&
 					userId &&
-					!freeBidsAvailable && <LiveAndUser />}
+					(!freeBidsAvailable || isLastBidder) && <LiveAndUser />}
 
 				{auctionStatus !== 'initializing' && !userId && <NoUser />}
 			</AnimatePresence>
@@ -53,6 +55,11 @@ function UpcomingAndUser() {
 	);
 }
 
+// Displayed if:
+// - the auction is live
+// - the user is logged in
+// - the auction has free bids available
+// - the user is not the last bidder
 function LiveAndUserAndFreeBids() {
 	const { currentBid } = useBiddingState();
 
@@ -67,6 +74,13 @@ function LiveAndUserAndFreeBids() {
 	);
 }
 
+// Displayed if:
+// - the auction is live
+// - the user is logged in
+// and if:
+// - the auction has no free bids available
+// or
+// - the user is the last bidder
 function LiveAndUser() {
 	return (
 		<ContentWrapper>
