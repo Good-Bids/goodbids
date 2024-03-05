@@ -149,4 +149,23 @@ class Nonprofits {
 			}
 		);
 	}
+
+	/** Check if onboarding is completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $site_id
+	 *
+	 * @return bool
+	 */
+	public function is_onboarded( ?int $site_id = null ): bool {
+		if ( ! $site_id ) {
+			$site_id = get_current_blog_id();
+		}
+
+		return goodbids()->sites->swap(
+			fn () => boolval( get_option( 'goodbids_onboarded' ) ),
+			$site_id
+		);
+	}
 }

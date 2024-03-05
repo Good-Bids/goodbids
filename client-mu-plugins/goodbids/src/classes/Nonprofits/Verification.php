@@ -223,10 +223,10 @@ class Verification {
 					);
 
 					// Remove other actions until verified.
-					unset( $actions['visit'] );
-					unset( $actions['backend'] );
-
-					return $actions;
+					if ( ! is_super_admin() ) {
+						unset( $actions['visit'] );
+						unset( $actions['backend'] );
+					}
 				}
 
 				$actions['details'] = sprintf(
