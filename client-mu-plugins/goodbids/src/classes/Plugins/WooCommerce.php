@@ -23,6 +23,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Orders;
+use GoodBids\Plugins\WooCommerce\Stripe;
 use WC_Product;
 use WP_Error;
 
@@ -110,6 +111,9 @@ class WooCommerce {
 		$this->orders   = new Orders();
 		$this->cart     = new Cart();
 		$this->checkout = new Checkout();
+
+		// Some Stripe Tweaks.
+		new Stripe();
 
 		// Init API Endpoints.
 		$this->setup_api_endpoints();
