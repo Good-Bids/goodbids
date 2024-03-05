@@ -26,7 +26,7 @@ export function ModerateComments() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.commentsURL}
+					href={gbNonprofitSetupGuide.commentsURL}
 				>
 					{__('See Comments', 'goodbids')}
 				</ButtonLink>

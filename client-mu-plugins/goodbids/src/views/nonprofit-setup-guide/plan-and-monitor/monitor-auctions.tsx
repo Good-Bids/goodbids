@@ -24,7 +24,7 @@ export function MonitorAuctions() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.auctionsURL}
+					href={gbNonprofitSetupGuide.auctionsURL}
 				>
 					{__('See Auction Metrics', 'goodbids')}
 				</ButtonLink>

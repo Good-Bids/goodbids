@@ -24,7 +24,7 @@ export function GeneralSettings() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.optionsGeneralURL}
+					href={gbNonprofitSetupGuide.optionsGeneralURL}
 				>
 					{__('Update Site Settings', 'goodbids')}
 				</ButtonLink>

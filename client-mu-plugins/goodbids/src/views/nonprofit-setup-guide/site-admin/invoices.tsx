@@ -21,7 +21,7 @@ export function Invoices() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.invoicesURL}
+					href={gbNonprofitSetupGuide.invoicesURL}
 				>
 					{__('See Invoices', 'goodbids')}
 				</ButtonLink>

@@ -23,7 +23,7 @@ export function TrackBidsAndRewards() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.orderMetricsURL}
+					href={gbNonprofitSetupGuide.orderMetricsURL}
 				>
 					{__('See Order Metrics', 'goodbids')}
 				</ButtonLink>

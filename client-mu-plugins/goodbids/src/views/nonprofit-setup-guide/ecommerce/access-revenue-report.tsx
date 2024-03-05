@@ -26,7 +26,7 @@ export function AccessRevenueReport() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.revenueMetricsURL}
+					href={gbNonprofitSetupGuide.revenueMetricsURL}
 				>
 					{__('See Revenue Metrics', 'goodbids')}
 				</ButtonLink>

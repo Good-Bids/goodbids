@@ -7,12 +7,12 @@ import { Inactive } from './inactive';
 import { z } from 'zod';
 
 const siteStatusSchema = z
-	.enum(gbNonprofitSetup.siteStatusOptions)
+	.enum(gbNonprofitSetupGuide.siteStatusOptions)
 	.catch('pending');
 
 export function SiteStatus() {
 	const [status, setStatus] = useState(
-		siteStatusSchema.parse(gbNonprofitSetup.siteStatus),
+		siteStatusSchema.parse(gbNonprofitSetupGuide.siteStatus),
 	);
 
 	const manuallySetToLive = () => {

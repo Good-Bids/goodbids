@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Auctions\Wizard;
+use GoodBids\Network\Nonprofit;
 
 /**
  * Guide Class
@@ -30,6 +31,8 @@ class Guide {
 		if ( is_main_site() || is_network_admin() ) {
 			return;
 		}
+
+		$this->nonprofit = new Nonprofit( get_current_blog_id() );
 
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
@@ -188,6 +191,8 @@ class Guide {
 			'revenueMetricsURL'       => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 			'invoicesURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 			'commentsURL'             => admin_url( 'edit-comments.php' ),
+			'siteStatus'              => $this->nonprofit->get_status(),
+			'siteStatusOptions'       => $this->nonprofit->get_site_status_options(),
 		];
 	}
 

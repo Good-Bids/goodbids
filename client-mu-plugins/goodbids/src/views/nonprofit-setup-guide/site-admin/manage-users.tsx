@@ -15,7 +15,7 @@ export function ManageUsers() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetup.addUsersURL}
+					href={gbNonprofitSetupGuide.addUsersURL}
 				>
 					{__('Add New Users', 'goodbids')}
 				</ButtonLink>

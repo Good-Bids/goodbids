@@ -462,7 +462,6 @@ class Core {
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
-				new Setup();
 				new EqualizeDigital();
 				new Onboarding();
 				new Guide();

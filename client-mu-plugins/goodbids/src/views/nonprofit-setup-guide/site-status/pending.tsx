@@ -27,15 +27,15 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 					'Before you launch your site, be sure to confirm your',
 					'goodbids',
 				)}{' '}
-				<a href={gbNonprofitSetup.optionsGeneralURL}>
+				<a href={gbNonprofitSetupGuide.optionsGeneralURL}>
 					{__('site timezone', 'goodbids')}
 				</a>
 				{__(', update your', 'goodbids')}{' '}
-				<a href={gbNonprofitSetup.customizeHomepageURL}>
+				<a href={gbNonprofitSetupGuide.customizeHomepageURL}>
 					{__('homepage', 'goodbids')}
 				</a>
 				{__(', and review the', 'goodbids')}{' '}
-				<a href={gbNonprofitSetup.accessibilityCheckerURL}>
+				<a href={gbNonprofitSetupGuide.accessibilityCheckerURL}>
 					{__('site-wide accessibility report', 'goodbids')}
 				</a>
 				.{' '}
@@ -43,7 +43,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 					'If you plan to auction physical products, you will also need to configure',
 					'goodbids',
 				)}{' '}
-				<a href={gbNonprofitSetup.configureShippingURL}>
+				<a href={gbNonprofitSetupGuide.configureShippingURL}>
 					{__('shipping zones.')}
 				</a>
 			</P>
