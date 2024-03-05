@@ -44,6 +44,8 @@ declare const gbNonprofitOnboarding: {
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
 	onboardingCompleteUrl: string;
+	setupGuideUrl: string;
+	adminUrl: string;
 };
 
 // TODO: Type this properly
