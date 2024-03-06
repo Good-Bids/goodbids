@@ -284,24 +284,18 @@ class Verification {
 					return $fields;
 				}
 
-				$new_fields = [];
+				$fields['sep_verification'] = [
+					'type' => 'separator',
+				];
+				$fields['verification']     = [
+					'label'       => __( 'Verified', 'goodbids' ),
+					'type'        => 'toggle',
+					'default'     => '',
+					'placeholder' => '',
+					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
+				];
 
-				foreach ( $fields as $key => $field ) {
-					$new_fields[ $key ] = $field;
-
-					// Insert after Status.
-					if ( self::STATUS_OPTION === $key ) {
-						$new_fields['verification'] = [
-							'label'       => __( 'Verified', 'goodbids' ),
-							'type'        => 'toggle',
-							'default'     => '',
-							'placeholder' => '',
-							'description' => __( 'Only visible to Super Admins', 'goodbids' ),
-						];
-					}
-				}
-
-				return $new_fields;
+				return $fields;
 			}
 		);
 	}
@@ -415,21 +409,18 @@ class Verification {
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
-				'required'    => true,
 			],
 			'finance_contact_email' => [
 				'label'       => __( 'Finance Contact Email Address', 'goodbids' ),
 				'type'        => 'email',
 				'default'     => '',
 				'placeholder' => 'email@domain.com',
-				'required'    => true,
 			],
 			'finance_contact_title' => [
 				'label'       => __( 'Finance Contact Job Title', 'goodbids' ),
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
-				'required'    => true,
 			],
 		];
 	}

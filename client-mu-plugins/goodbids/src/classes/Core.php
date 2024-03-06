@@ -23,6 +23,7 @@ use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
+use GoodBids\Nonprofits\Admin as NonprofitAdmin;
 use GoodBids\Nonprofits\Guide;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Nonprofits\Onboarding;
@@ -465,6 +466,7 @@ class Core {
 				new EqualizeDigital();
 				new Onboarding();
 				new Guide();
+				new NonprofitAdmin();
 			}
 		);
 	}
