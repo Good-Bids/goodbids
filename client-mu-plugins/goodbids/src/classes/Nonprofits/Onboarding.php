@@ -70,6 +70,12 @@ class Onboarding {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const ACTIVATE_ACCESSIBILITY_CHECKER = 'activate-accessibility-checker';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const STEP_ONBOARDING_COMPLETE = 'onboarding-complete';
 
 	/**
@@ -79,6 +85,7 @@ class Onboarding {
 	const ONBOARDING_STEPS = [
 		self::STEP_CREATE_STORE,
 		self::STEP_SET_UP_PAYMENTS,
+		self::ACTIVATE_ACCESSIBILITY_CHECKER,
 		self::STEP_ONBOARDING_COMPLETE,
 	];
 
@@ -327,9 +334,6 @@ class Onboarding {
 					return $dependencies;
 				}
 
-				// Include WP Media.
-				wp_enqueue_media();
-
 				// Get the asset file.
 				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-onboarding.asset.php';
 				if ( file_exists( $asset_file ) ) {
@@ -341,7 +345,7 @@ class Onboarding {
 					];
 				}
 
-				// Register the New Site Setup script.
+				// Register the Onboarding script.
 				wp_register_script(
 					self::PAGE_SLUG,
 					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-onboarding.js',
@@ -382,6 +386,10 @@ class Onboarding {
 		$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
 		$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
 
+		// Accessibility Checker URL
+		$accessibility_checker_url = admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' );
+		$accessibility_checker_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $accessibility_checker_url );
+
 		// Onboarding Complete URL
 		$onboarding_complete_url = home_url();
 		$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
@@ -395,14 +403,15 @@ class Onboarding {
 		$admin_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $admin_url );
 
 		return [
-			'appID'                 => self::PAGE_SLUG,
-			'stepParam'             => self::STEP_PARAM,
-			'stepOptions'           => self::ONBOARDING_STEPS,
-			'createStoreUrl'        => $create_store_url,
-			'setUpPaymentsUrl'      => $payments_url,
-			'onboardingCompleteUrl' => $onboarding_complete_url,
-			'setupGuideUrl'         => $setup_guide_url,
-			'adminUrl'              => $admin_url,
+			'appID'                   => self::PAGE_SLUG,
+			'stepParam'               => self::STEP_PARAM,
+			'stepOptions'             => self::ONBOARDING_STEPS,
+			'createStoreUrl'          => $create_store_url,
+			'setUpPaymentsUrl'        => $payments_url,
+			'onboardingCompleteUrl'   => $onboarding_complete_url,
+			`accessibilityCheckerUrl` => $accessibility_checker_url,
+			'setupGuideUrl'           => $setup_guide_url,
+			'adminUrl'                => $admin_url,
 		];
 	}
 

@@ -11,37 +11,49 @@ declare const gbAuctionWizard: PHPVariables;
 // These are only defined for the nonprofit setup page
 declare const gbNonprofitSetupGuide: {
 	appID: string;
-	siteId: number;
-	siteStatus: string;
-	siteStatusOptions: ['pending', 'live', 'inactive'];
 	ajaxUrl: string;
+	homeURL: string;
+
 	optionsGeneralURL: string;
-	configureShippingURL: string;
+	commentsURL: string;
 	jetpackURL: string;
 	akismetURL: string;
+	accessibilityCheckerURL: string;
+
 	woocommerceSettingsURL: string;
+	configureShippingURL: string;
+	orderMetricsURL: string;
+	revenueMetricsURL: string;
+
 	styleURL: string;
 	updateLogoURL: string;
 	customizeHomepageURL: string;
+
 	pagesURL: string;
 	patternsURL: string;
-	auctionWizardURL: string;
 	addUsersURL: string;
-	accessibilityCheckerURL: string;
-	homeURL: string;
+
+	auctionWizardURL: string;
 	auctionsURL: string;
-	orderMetricsURL: string;
-	revenueMetricsURL: string;
 	invoicesURL: string;
-	commentsURL: string;
+
+	siteId: number;
+	siteStatus: string;
+	siteStatusOptions: ['pending', 'live', 'inactive'];
 };
 
 declare const gbNonprofitOnboarding: {
 	appID: string;
 	stepParam: string;
-	stepOptions: ['create-store', 'set-up-payments', 'onboarding-complete'];
+	stepOptions: [
+		'create-store',
+		'set-up-payments',
+		'activate-accessibility-checker',
+		'onboarding-complete',
+	];
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
+	activateAccessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;
 	adminUrl: string;
