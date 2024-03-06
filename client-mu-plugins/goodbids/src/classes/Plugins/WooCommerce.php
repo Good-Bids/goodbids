@@ -24,6 +24,8 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Orders;
 use GoodBids\Plugins\WooCommerce\Stripe;
+use GoodBids\Plugins\WooCommerce\Taxes;
+use WC_Email;
 use WC_Product;
 use WP_Error;
 
@@ -95,6 +97,12 @@ class WooCommerce {
 	public ?Checkout $checkout = null;
 
 	/**
+	 * @since 1.0.0
+	 * @var ?Taxes
+	 */
+	public ?Taxes $taxes = null;
+
+	/**
 	 * Initialize WooCommerce Functionality
 	 *
 	 * @since 1.0.0
@@ -111,6 +119,7 @@ class WooCommerce {
 		$this->orders   = new Orders();
 		$this->cart     = new Cart();
 		$this->checkout = new Checkout();
+		$this->taxes    = new Taxes();
 
 		// Some Stripe Tweaks.
 		new Stripe();
