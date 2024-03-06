@@ -34,15 +34,21 @@ class Sites {
 
 	/**
 	 * @since 1.0.0
-	 * @var array
+	 * @var string
 	 */
 	const ABOUT_OPTION = 'gb_about_page';
 
 	/**
 	 * @since 1.0.0
-	 * @var array
+	 * @var string
 	 */
 	const AUCTIONS_OPTION = 'gb_auctions_page';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const NAVIGATION_ID_OPTION = 'gb_navigation_id';
 
 	/**
 	 * @since 1.0.0
@@ -79,6 +85,9 @@ class Sites {
 
 		// Setup default Nonprofit Navigation.
 		$this->set_nonprofit_navigation();
+
+		// Prevent SVG Support Errors
+		$this->prevent_svg_support_errors();
 	}
 
 	/**
@@ -160,7 +169,8 @@ class Sites {
 				if ( wp_get_theme( $stylesheet )->exists() ) {
 					switch_theme( $stylesheet );
 				}
-			}
+			},
+			80
 		);
 	}
 
@@ -276,7 +286,7 @@ class Sites {
 
 		return collect( get_sites( $site_args ) )
 			->flatMap(
-				fn( WP_Site $site ) => $this->swap(
+				fn ( WP_Site $site ) => $this->swap(
 					fn ( int $site_id ) => call_user_func( $callback, $site_id ),
 					$site->blog_id
 				)
@@ -388,32 +398,30 @@ class Sites {
 				$existing   = get_option( self::ABOUT_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $this->get_page_path( $about_slug ) || $existing ) {
+				if ( $existing || get_page_by_path( $about_slug ) ) { // phpcs:ignore
 					return;
 				}
 
-				ob_start();
+				$about_args = [
+					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+					'post_content' => goodbids()->get_view( 'patterns/template-about-page.php' ),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => $about_slug,
+				];
 
-				goodbids()->load_view( 'patterns/template-about-page.php' );
-
-				$about_id = wp_insert_post(
-					[
-						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
-						'post_content' => ob_get_clean(),
-						'post_type'    => 'page',
-						'post_status'  => 'publish',
-						'post_author'  => 1,
-						'post_name'    => $about_slug,
-					]
-				);
+				$about_id = wp_insert_post( $about_args );
 
 				if ( is_wp_error( $about_id ) ) {
 					Log::error( $about_id->get_error_message() );
 					return;
 				}
 
+				Log::debug( 'About Page Created.' );
 				update_option( self::ABOUT_OPTION, $about_id );
-			}
+			},
+			100
 		);
 	}
 
@@ -432,32 +440,30 @@ class Sites {
 				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $this->get_page_path( $auctions_slug ) || $existing ) {
+				if ( $existing || get_page_by_path( $auctions_slug ) ) { // phpcs:ignore
 					return;
 				}
 
-				ob_start();
+				$auctions_args = [
+					'post_title'   => __( 'Explore Auctions', 'goodbids' ),
+					'post_content' => goodbids()->get_view( 'patterns/template-archive-auction.php' ),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => $auctions_slug,
+				];
 
-				goodbids()->load_view( 'patterns/template-archive-auction.php' );
-
-				$auctions_id = wp_insert_post(
-					[
-						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
-						'post_content' => ob_get_clean(),
-						'post_type'    => 'page',
-						'post_status'  => 'publish',
-						'post_author'  => 1,
-						'post_name'    => $auctions_slug,
-					]
-				);
+				$auctions_id = wp_insert_post( $auctions_args );
 
 				if ( is_wp_error( $auctions_id ) ) {
 					Log::error( $auctions_id->get_error_message() );
 					return;
 				}
 
+				Log::debug( 'Auctions Page Created.' );
 				update_option( self::AUCTIONS_OPTION, $auctions_id );
-			}
+			},
+			110
 		);
 	}
 
@@ -472,7 +478,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$page = $this->get_page_path( 'sample-page' );
+				$page = get_page_by_path( 'sample-page' ); // phpcs:ignore
 
 				if ( ! $page ) {
 					return;
@@ -482,10 +488,17 @@ class Sites {
 					return;
 				}
 
+				// Disable third-party plugin hook.
+				remove_action( 'wp_trash_post', 'edac_delete_post' );
+
 				if ( ! wp_delete_post( $page->ID ) ) {
 					Log::warning( 'There was a problem deleting the Sample Page' );
+					return;
 				}
-			}
+
+				Log::debug( 'Sample page deleted.' );
+			},
+			120
 		);
 	}
 
@@ -716,7 +729,7 @@ class Sites {
 	 */
 	public function clear_all_site_transients(): void {
 		$this->loop(
-			fn() => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
+			fn () => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
 		);
 	}
 
@@ -864,7 +877,7 @@ class Sites {
 			)
 			->groupBy( 'auction_id' )
 			->map(
-				fn( Collection $group ) => [
+				fn ( Collection $group ) => [
 					'site_id'    => $group->first()['site_id'],
 					'auction_id' => $group->first()['auction_id'],
 					'count'      => $group->count(),
@@ -888,7 +901,7 @@ class Sites {
 	public function get_user_live_participating_auctions(): array {
 		return collect( $this->get_user_participating_auctions() )
 			->filter(
-				fn( array $item ) => $this->swap(
+				fn ( array $item ) => $this->swap(
 					function () use ( &$item ) {
 						$auction = goodbids()->auctions->get( $item['auction_id'] );
 						return Auction::STATUS_LIVE === $auction->get_status();
@@ -1015,7 +1028,7 @@ class Sites {
 				)
 			)
 			->sortBy(
-				fn( array $auction_data ) => goodbids()->sites->swap(
+				fn ( array $auction_data ) => goodbids()->sites->swap(
 					function () use ( $auction_data ) {
 						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 						return $auction->get_end_date_time();
@@ -1079,7 +1092,6 @@ class Sites {
 					return;
 				}
 
-
 				if ( 'standing' === $column ) {
 					echo esc_html( $nonprofit->get_standing() );
 				}
@@ -1090,40 +1102,27 @@ class Sites {
 	}
 
 	/**
-	 * Get Page Path
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $path
-	 *
-	 * @return ?WP_Post
-	 */
-	private function get_page_path( string $path ): ?WP_Post {
-		if ( function_exists( 'wpcom_vip_get_page_by_path' ) ) {
-			return wpcom_vip_get_page_by_path( $path );
-		}
-
-		return get_page_by_path( $path ); // phpcs:ignore
-	}
-
-	/**
 	 * Set the nonprofit navigation
 	 *
 	 * @return void
 	 *
 	 * @since 1.0.0
 	 */
-	public function set_nonprofit_navigation(): void {
+	private function set_nonprofit_navigation(): void {
 		add_action(
-			'goodbids_nonprofit_verified',
+			'goodbids_initialize_site',
 			function (): void {
+				if ( get_option( self::NAVIGATION_ID_OPTION ) ) {
+					return;
+				}
+
 				$nav_links = [
 					intval( get_option( self::ABOUT_OPTION ) ), // About Page ID.
 					intval( get_option( self::AUCTIONS_OPTION ) ), // Auctions Page ID.
 				];
 
 				if ( 2 !== count( array_filter( $nav_links ) ) ) {
-					Log::warning( 'Missing one or more Nonprofit Navigation items' );
+					Log::warning( 'Missing one or more Nonprofit Navigation items', compact( 'nav_links' ) );
 					return;
 				}
 
@@ -1135,29 +1134,81 @@ class Sites {
 				);
 
 				if ( ! $wp_navigation->have_posts() ) {
-					Log::error( 'Unable to locate Nonprofit Navigation' );
-					return;
+					$nav_id = $this->create_navigation();
+
+					if ( ! $nav_id ) {
+						Log::error( 'Unable to update Nonprofit Navigation', compact( 'wp_navigation' ) );
+						return;
+					}
+				} else {
+					$nav_id = $wp_navigation->post->ID;
 				}
 
-				$navigation_id = $wp_navigation->posts[0]->ID;
-
 				// Set the navigation content
-				ob_start();
-				goodbids()->load_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) );
-
-				$navigation_content = [
-					'ID'           => $navigation_id,
-					'post_content' => ob_get_clean(),
+				$nav_content = [
+					'ID'           => $nav_id,
+					'post_content' => goodbids()->get_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) ),
 				];
 
-				// Update the navigation into the database
-				$update = wp_update_post( $navigation_content );
+				// Update the navigation content
+				$update = wp_update_post( $nav_content );
 
 				if ( is_wp_error( $update ) ) {
 					Log::error( 'Error updating Nonprofit Navigation: ' . $update->get_error_message() );
+					return;
 				}
+
+				update_option( self::NAVIGATION_ID_OPTION, $nav_id );
+				Log::debug( 'Nonprofit Navigation updated', [ 'site_id' => get_current_blog_id(), 'nav_id' => $nav_id ] );
 			},
-			50
+			200 // Higher priority than page creation.
 		);
+	}
+
+	/**
+	 * Create the Default Nonprofit Navigation.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int|null
+	 */
+	private function create_navigation(): ?int {
+		$id = wp_insert_post(
+			[
+				'post_title'   => __( 'Navigation', 'goodbids' ),
+				'post_content' => '<!-- wp:page-list /-->',
+				'post_status'  => 'publish',
+				'post_type'    => 'wp_navigation',
+				'post_name'    => 'navigation',
+				'post_author'  => 1,
+			]
+		);
+
+		if ( is_wp_error( $id ) ) {
+			Log::error( 'Error creating Nonprofit Navigation: ' . $id->get_error_message() );
+			return null;
+		}
+
+		return $id;
+	}
+
+	/**
+	 * Prevent SVG Support from producing an error on init.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function prevent_svg_support_errors(): void {
+		$return_array = function( mixed $value ): array {
+			if ( ! is_array( $value ) || empty( $value ) ) {
+				return [];
+			}
+
+			return $value;
+		};
+
+		add_filter( 'option_bodhi_svgs_settings', $return_array );
+		add_filter( 'default_option_bodhi_svgs_settings', $return_array );
 	}
 }

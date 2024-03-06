@@ -156,6 +156,10 @@ class Verification {
 		$prefix    = self::OPTION_SLUG;
 		$page_slug = self::PAGE_SLUG;
 
+		if ( ! empty( $_POST ) ) { // phpcs:ignore
+			$data = array_merge( $data, $_POST[ self::OPTION_SLUG ] ); // phpcs:ignore
+		}
+
 		if ( $disabled ) {
 			foreach ( $fields as $key => $field ) {
 				$fields[ $key ]['disabled'] = true;
@@ -586,7 +590,7 @@ class Verification {
 
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
-						$verified   = true;
+						$verified   = boolval( $meta_value );
 					}
 
 					update_site_meta( $site_id, $meta_key, $meta_value );
@@ -652,7 +656,6 @@ class Verification {
 				if ( is_main_site() ) {
 					return;
 				}
-
 
 				if ( ! is_super_admin() && ! $this->is_verified( get_current_blog_id() ) ) {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
