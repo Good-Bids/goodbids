@@ -55,7 +55,7 @@ class EqualizeDigital {
 	 */
 	private function load_as_needed(): void {
 		add_action(
-			'init',
+			'plugins_loaded',
 			function (): void {
 				if ( is_network_admin() || ! function_exists( 'wpcom_vip_load_plugin' ) ) {
 					return;
