@@ -28,7 +28,7 @@ class CodeCollection extends NodeVisitorAbstract
 	public array $objects = [];
 
 	/**
-	 * @var string[]
+	 * @var DocItem[]
 	 */
 	public array $classes = [];
 
@@ -100,7 +100,7 @@ class CodeCollection extends NodeVisitorAbstract
 	private function collectFunction(Function_ $node): void
 	{
 		$functionDocItem = $this->createDocItem($node);
-		$this->addObject($functionDocItem);
+		$this->addObject($functionDocItem );
 	}
 
 	/**
@@ -111,19 +111,19 @@ class CodeCollection extends NodeVisitorAbstract
 	{
 		$classDocItem = $this->createDocItem($node);
 		$this->currentClass = $classDocItem;
-		$this->collectProperties($node);
+		$this->collectClassProperties($node);
 		$this->collectClassConstants($node);
 		$this->collectClassMethods($node);
 
-		$this->addObject($classDocItem);
-		$this->classes[ $classDocItem->getReference() ] = $classDocItem;
+		$this->addObject($this->currentClass);
+		$this->classes[ $this->currentClass->getReference() ] = $this->currentClass;
 	}
 
 	/**
 	 * @param Node\Stmt\Class_ $node
 	 * @return void
 	 */
-	private function collectProperties(Node\Stmt\Class_ $node): void
+	private function collectClassProperties(Node\Stmt\Class_ $node): void
 	{
 		foreach ($node->stmts as $stmt) {
 			if ($stmt instanceof Node\Stmt\Property) {
@@ -349,6 +349,8 @@ class CodeCollection extends NodeVisitorAbstract
 		if( $node instanceof Function_ || $node instanceof ClassMethod ) {
 			$this->currentFunction = $docItem;
 			$this->collectParameters($node->params);
+			$docItem->returnTypes = $this->getTypesArray($node->returnType);
+			$docItem->isNullable = $this->isNullable($node->returnType);
 		}
 
 		if( $node instanceof ClassMethod ) {
@@ -356,14 +358,17 @@ class CodeCollection extends NodeVisitorAbstract
 			$docItem->isStatic = $node->isStatic();
 		}
 
-		if( $node instanceof Function_ || $node instanceof  ClassMethod ) {
-			$docItem->returnTypes = $this->getTypesArray($node->returnType);
-			$docItem->isNullable = $this->isNullable($node->returnType);
+		if( $node instanceof Function_ ) {
+			$docItem->access = 'public';
 		}
 
 		if( $node instanceof Node\Param || $node instanceof Node\Stmt\Property ) {
 			$docItem->returnTypes = [$this->getTypeString($node->type)];
 			$docItem->isNullable = $this->isNullable($node->type);
+		}
+
+		if( $node instanceof Function_ || $node instanceof ClassMethod ) {
+			return $this->currentFunction;
 		}
 
 		return $docItem;

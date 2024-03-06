@@ -98,9 +98,9 @@ class DocItem {
 	public mixed $defaultValue = null;
 
 	/**
-	 * @var ?DocItem
+	 * @var DocItem[]
 	 */
-	public ?DocItem $api = null;
+	public array $api = [];
 
 	/**
 	 * DocItem constructor.
@@ -156,6 +156,11 @@ class DocItem {
 	public function getReference( bool $unique = false ): string
 	{
 		$reference = $this->name;
+
+		if ( 'function' === $this->node ) {
+			$reference .= '()';
+			return $reference;
+		}
 
 		if ( 'constant' === $this->node ) {
 			return $reference;

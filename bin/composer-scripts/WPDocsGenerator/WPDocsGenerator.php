@@ -81,7 +81,7 @@ class WPDocsGenerator {
 		// Parse the PHP files into objects.
 		$this->parse( $dir );
 
-		// Group objects together.
+		// Group objects together, starting at the root of the tree.
 		$this->collect( $this->collection->tree );
 
 		// Generate the docs.
@@ -138,13 +138,28 @@ class WPDocsGenerator {
 	 * @param DocItem[] $objects
 	 * @return void
 	 */
-	private function collect( array $objects): void
+	private function collect( array $objects ): void
 	{
 		foreach ( $objects as $reference => &$object ) {
 			foreach ( $object->returnTypes as $returnType ) {
 				if ( array_key_exists( $returnType, $this->collection->classes ) ) {
-					$object->api = $this->collection->classes[ $returnType ];
-//					$this->currentApi = $object;
+					$class = $this->collection->classes[ $returnType ];
+
+					foreach ( $class->methods as $method ) {
+						if ( 'public' !== $method->access || in_array( $method->name, [ '__construct', 'get_instance' ], true ) ) {
+							continue;
+						}
+						$object->api[] = $method;
+					}
+
+					foreach ( $class->properties as $property ) {
+						if ( 'public' !== $property->access ) {
+							continue;
+						}
+						$object->api[] = $property;
+					}
+
+					$this->collect( $object->api );
 				}
 			}
 		}

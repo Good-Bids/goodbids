@@ -41,10 +41,10 @@ class Builder
 	{
 		$outputDir = $this->config['output'];
 		$this->emptyDirectory($outputDir);
-
 		$path = $this->getOutputPath();
-		$tree = 'tree.txt';
 
+		// Generate Tree Dump
+		$tree      = 'tree.txt';
 		$tree_path = $path . '/' . $tree;
 
 		ob_start();
@@ -53,6 +53,7 @@ class Builder
 
 		$this->writeToFile( $tree_path, $contents );
 
+		// Generate Objects Dump
 		$objects      = 'objects.txt';
 		$objects_path = $path . '/' . $objects;
 
@@ -61,6 +62,16 @@ class Builder
 		$contents = ob_get_clean();
 
 		$this->writeToFile( $objects_path, $contents );
+
+		// Generate API Dump
+		$api      = 'api.txt';
+		$api_path = $path . '/' . $api;
+
+		ob_start();
+		require $this->config['_basedir'] . '/templates/default/api.php';
+		$contents = ob_get_clean();
+
+		$this->writeToFile( $api_path, $contents );
 	}
 
 	/**
