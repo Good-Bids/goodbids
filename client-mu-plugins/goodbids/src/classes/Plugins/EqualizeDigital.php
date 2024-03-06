@@ -19,7 +19,13 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	private string $slug = 'accessibility-checker-pro';
+	private string $free_slug = 'accessibility-checker';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private string $pro_slug = 'accessibility-checker-pro';
 
 	/**
 	 * Initialize the class.
@@ -27,7 +33,9 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( ! goodbids()->is_plugin_active( $this->slug ) ) {
+		$this->load_as_needed();
+
+		if ( ! goodbids()->is_plugin_active( $this->pro_slug ) ) {
 			return;
 		}
 
@@ -36,6 +44,27 @@ class EqualizeDigital {
 
 		// Adjust Post Types
 		$this->set_default_settings();
+	}
+
+	/**
+	 * Do not load this plugin from the Network Admin
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function load_as_needed(): void {
+		add_action(
+			'init',
+			function (): void {
+				if ( is_network_admin() || ! function_exists( 'wpcom_vip_load_plugin' ) ) {
+					return;
+				}
+
+				wpcom_vip_load_plugin( $this->free_slug );
+				wpcom_vip_load_plugin( $this->pro_slug );
+			}
+		);
 	}
 
 	/**
