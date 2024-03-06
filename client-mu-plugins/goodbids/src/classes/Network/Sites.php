@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use Automattic\WP\Cron_Control\Events_Store;
 use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
@@ -152,6 +153,10 @@ class Sites {
 
 				if ( isset( $_REQUEST['action'] ) && 'add-site' === $_REQUEST['action'] ) { // phpcs:ignore
 					$_POST['blog']['email'] = wp_get_current_user()->user_email;
+
+					if ( class_exists( 'Events_Store' ) ) {
+						remove_action( 'shutdown', [ Events_Store::instance(), 'maybe_install_during_shutdown'] );
+					}
 				}
 			}
 		);
@@ -186,7 +191,8 @@ class Sites {
 					$redirect_url = network_admin_url( Verification::PARENT_PAGE );
 					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
 					$redirect_url = add_query_arg( 'id', $new_site->blog_id, $redirect_url );
-					wp_safe_redirect( $redirect_url );
+
+					header( 'Location: ' . $redirect_url );
 					exit;
 				}
 			},

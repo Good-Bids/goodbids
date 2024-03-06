@@ -392,7 +392,12 @@ class Core {
 			return;
 		}
 
-		$plugins = $this->get_config( 'active-plugins' );
+		$plugins              = $this->get_config( 'active-plugins' );
+		$post_install_plugins = $this->get_config( 'post-install-plugins' );
+
+		if ( ! is_network_admin() ) {
+			array_push( $plugins, ...$post_install_plugins );
+		}
 
 		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
 			return;

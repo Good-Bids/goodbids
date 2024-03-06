@@ -100,13 +100,7 @@ class Taxes {
 				// Catch the response.
 				ob_start();
 				( new \WC_Tax_Rate_Importer() )->import( $ny_taxes_path );
-				$output = ob_get_clean();
-
-				if ( ! $output ) {
-					return;
-				}
-
-				goodbids()->utilities->display_admin_custom( $output );
+				ob_end_clean();
 			}
 		);
 	}

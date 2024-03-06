@@ -838,6 +838,13 @@ class Onboarding {
 				update_option( 'goodbids_onboarded', current_time( 'mysql' ) );
 			}
 
+			/**
+			 * Action after Onboarding has completed
+			 * @since 1.0.0
+			 * @param int $blog_id The blog ID.
+			 */
+			do_action( 'goodbids_onboarding_completed', get_current_blog_id() );
+
 			$redirect = remove_query_arg( self::DONE_ONBOARDING_PARAM );
 			wp_safe_redirect( $redirect );
 			exit;
