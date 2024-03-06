@@ -156,6 +156,7 @@ class WooCommerce {
 
 		// Adjust the Login page.
 		$this->modify_login_page();
+		$this->modify_register_page();
 
 		// Add email notifications.
 		$this->setup_email_notifications();
@@ -642,6 +643,37 @@ class WooCommerce {
 						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full font-extrabold">%s</p>%s</div>',
 						esc_html__( 'Or login with one of these providers', 'goodbids' ),
 						do_shortcode( '[mo_oauth_login]' ),
+					);
+					printf(
+						'<p>%s %s %s %s.<p>',
+						esc_html__( 'By clicking to continue with any of these providers, you agree to GOODBIDS\'', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+						esc_html__( 'and', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
+					);
+				}
+			}
+		);
+	}
+
+	/**
+	 * Modify register Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_register_page(): void {
+		add_action(
+			'woocommerce_register_form_end',
+			function () {
+				if ( ! is_user_logged_in() ) {
+					printf(
+						'<p>%s %s %s %s.<p>',
+						esc_html__( 'By registering an account, you agree to GOODBIDS\'', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+						esc_html__( 'and', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
 					);
 				}
 			}

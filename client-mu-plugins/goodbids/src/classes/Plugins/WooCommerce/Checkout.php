@@ -37,6 +37,9 @@ class Checkout {
 
 		// Automatically mark processing orders as Complete.
 		$this->automatically_complete_orders();
+
+		// Add terms & conditions and privacy policy text to checkout
+		$this->show_terms_conditions_privacy_policy();
 	}
 
 	/**
@@ -187,6 +190,34 @@ class Checkout {
 
 				$order->update_status( 'completed' );
 			}
+		);
+	}
+
+	/**
+	 * Add terms & conditions and privacy policy text to checkout
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function show_terms_conditions_privacy_policy(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				if ( empty( $block['blockName'] ) || 'woocommerce/checkout-terms-block' !== $block['blockName'] ) {
+					return $block_content;
+				}
+
+				return sprintf(
+					'<p class="mt-10 ml-10">%s %s %s %s.<p>',
+					esc_html__( 'By proceeding with your order, you agree to GOODBIDS\'', 'goodbids' ),
+					wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+					esc_html__( 'and', 'goodbids' ),
+					wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
+				);
+			},
+			10,
+			2
 		);
 	}
 }
