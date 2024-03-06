@@ -162,6 +162,10 @@ class Verification {
 		$prefix    = self::OPTION_SLUG;
 		$page_slug = self::PAGE_SLUG;
 
+		if ( ! empty( $_POST ) ) { // phpcs:ignore
+			$data = array_merge( $data, $_POST[ self::OPTION_SLUG ] ); // phpcs:ignore
+		}
+
 		if ( $disabled ) {
 			foreach ( $fields as $key => $field ) {
 				$fields[ $key ]['disabled'] = true;
@@ -280,24 +284,18 @@ class Verification {
 					return $fields;
 				}
 
-				$new_fields = [];
+				$fields['sep_verification'] = [
+					'type' => 'separator',
+				];
+				$fields['verification']     = [
+					'label'       => __( 'Verified', 'goodbids' ),
+					'type'        => 'toggle',
+					'default'     => '',
+					'placeholder' => '',
+					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
+				];
 
-				foreach ( $fields as $key => $field ) {
-					$new_fields[ $key ] = $field;
-
-					// Insert after Status.
-					if ( self::STATUS_OPTION === $key ) {
-						$new_fields['verification'] = [
-							'label'       => __( 'Verified', 'goodbids' ),
-							'type'        => 'toggle',
-							'default'     => '',
-							'placeholder' => '',
-							'description' => __( 'Only visible to Super Admins', 'goodbids' ),
-						];
-					}
-				}
-
-				return $new_fields;
+				return $fields;
 			}
 		);
 	}
@@ -411,21 +409,18 @@ class Verification {
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
-				'required'    => true,
 			],
 			'finance_contact_email' => [
 				'label'       => __( 'Finance Contact Email Address', 'goodbids' ),
 				'type'        => 'email',
 				'default'     => '',
 				'placeholder' => 'email@domain.com',
-				'required'    => true,
 			],
 			'finance_contact_title' => [
 				'label'       => __( 'Finance Contact Job Title', 'goodbids' ),
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
-				'required'    => true,
 			],
 		];
 	}
@@ -592,7 +587,7 @@ class Verification {
 
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
-						$verified   = true;
+						$verified   = boolval( $meta_value );
 					}
 
 					update_site_meta( $site_id, $meta_key, $meta_value );
@@ -658,7 +653,6 @@ class Verification {
 				if ( is_main_site() ) {
 					return;
 				}
-
 
 				if ( ! is_super_admin() && ! $this->is_verified( get_current_blog_id() ) ) {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );

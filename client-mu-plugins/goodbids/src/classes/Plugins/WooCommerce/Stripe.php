@@ -33,12 +33,21 @@ class Stripe {
 	 * @return void
 	 */
 	private function clear_stripe_nulls(): void {
-		$clear_nulls = function ( array $settings ) : array {
+		$clear_nulls = function ( mixed $settings ) : mixed {
+			if ( empty( $settings ) ) {
+				return [];
+			}
+
+			if ( ! is_array( $settings ) ) {
+				return $settings;
+			}
+
 			foreach ( $settings as $key => $value ) {
 				if ( is_null( $value ) ) {
 					$settings[ $key ] = '';
 				}
 			}
+
 			return $settings;
 		};
 

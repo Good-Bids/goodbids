@@ -42,36 +42,36 @@ class Dashboard {
 		add_action(
 			'network_admin_menu',
 			function (): void {
+				if ( ! is_super_admin() ) {
+					return;
+				}
+
 				$icon = GOODBIDS_PLUGIN_PATH . 'assets/images/Goodbids-Icon-white.svg';
 				$icon = file_get_contents( $icon ); // phpcs:ignore
 
 				// Main Dashboard.
 				add_menu_page(
-					esc_html__( 'GoodBids', 'goodbids' ),
-					esc_html__( 'GoodBids', 'goodbids' ),
+					esc_html__( 'GOODBIDS', 'goodbids' ),
+					esc_html__( 'GOODBIDS', 'goodbids' ),
 					'manage_network',
 					self::PAGE_SLUG,
-					[ $this, 'dashboard_page' ],
+					[ $this, 'nonprofits_page' ],
 					'data:image/svg+xml;base64,' . base64_encode( $icon )
 				);
 
-				if ( ! is_super_admin() ) {
-					return;
-				}
-
 				// Nonprofits Page
 				add_submenu_page(
-					'goodbids',
+					self::PAGE_SLUG,
 					esc_html__( 'Nonprofits', 'goodbids' ),
 					esc_html__( 'Nonprofits', 'goodbids' ),
 					'manage_sites',
-					Nonprofits::PAGE_SLUG,
+					self::PAGE_SLUG,
 					[ $this, 'nonprofits_page' ]
 				);
 
 				// Invoices Page
 				add_submenu_page(
-					'goodbids',
+					self::PAGE_SLUG,
 					esc_html__( 'Invoices', 'goodbids' ),
 					esc_html__( 'Invoices', 'goodbids' ),
 					'manage_network',
@@ -81,7 +81,7 @@ class Dashboard {
 
 				// Auctions Page
 				add_submenu_page(
-					'goodbids',
+					self::PAGE_SLUG,
 					esc_html__( 'Auctions', 'goodbids' ),
 					esc_html__( 'Auctions', 'goodbids' ),
 					'manage_network',
@@ -91,7 +91,7 @@ class Dashboard {
 
 				// Bidders Page
 				add_submenu_page(
-					'goodbids',
+					self::PAGE_SLUG,
 					esc_html__( 'Bidders', 'goodbids' ),
 					esc_html__( 'Bidders', 'goodbids' ),
 					'manage_network',
