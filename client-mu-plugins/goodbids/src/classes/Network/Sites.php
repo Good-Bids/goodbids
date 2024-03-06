@@ -35,6 +35,9 @@ class Sites {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Add New Site Form
+		$this->default_new_site_email();
+
 		// Redirect to the Verification page after creating a new site.
 		$this->redirect_on_save_new_site();
 
@@ -86,6 +89,41 @@ class Sites {
 					'network/edit-site-fields.php',
 					compact( 'verified' )
 				);
+			}
+		);
+	}
+
+	/**
+	 * Default new site email addresses to the current user's email.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function default_new_site_email(): void {
+		add_action(
+			'network_site_new_form',
+			function () {
+				?>
+				<style>
+					tr.form-field:has(#admin-email) {
+						display:none;
+					}
+				</style>
+				<?php
+			}
+		);
+
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! is_network_admin() ) {
+					return;
+				}
+
+				if ( isset( $_REQUEST['action'] ) && 'add-site' === $_REQUEST['action'] ) { // phpcs:ignore
+					$_POST['blog']['email'] = wp_get_current_user()->user_email;
+				}
 			}
 		);
 	}
