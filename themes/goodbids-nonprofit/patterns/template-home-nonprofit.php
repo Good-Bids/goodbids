@@ -1,3 +1,12 @@
+<?php
+/**
+ * Title: GoodBids Home Template
+ * Slug: goodbids-np/template-home-nonprofit
+ *
+ * @package GoodBidsNonprofit
+ */
+
+?>
 <!-- wp:group {"align":"full","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull">
 	<!-- wp:media-text {"align":"wide","mediaPosition":"right","verticalAlignment":"top"} -->
