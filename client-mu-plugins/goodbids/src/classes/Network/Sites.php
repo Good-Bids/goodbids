@@ -1161,7 +1161,7 @@ class Sites {
 				update_option( self::NAVIGATION_ID_OPTION, $nav_id );
 				Log::debug( 'Nonprofit Navigation updated', [ 'site_id' => get_current_blog_id(), 'nav_id' => $nav_id ] );
 			},
-			200
+			200 // Higher priority than page creation.
 		);
 	}
 
