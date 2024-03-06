@@ -127,8 +127,6 @@ class Shortcodes {
 	 * @return string
 	 */
 	private function get_view( string $view, array $context = [] ): string {
-		ob_start();
-		goodbids()->load_view( 'admin/referrals/' . $view . '.php', $context );
-		return ob_get_clean();
+		return goodbids()->get_view( 'admin/referrals/' . $view . '.php', $context );
 	}
 }
