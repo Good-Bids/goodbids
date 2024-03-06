@@ -13,7 +13,8 @@
     "user-switching",
     "woocommerce",
     "woocommerce-gateway-stripe",
-    "woocommerce-services"
+    "woocommerce-services",
+    "zapier"
   ],
   "vip-constants": {
     "auctioneer": {
