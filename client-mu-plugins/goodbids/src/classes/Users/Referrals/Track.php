@@ -9,6 +9,7 @@
 namespace GoodBids\Users\Referrals;
 
 use GoodBids\Utilities\Cookies;
+use GoodBids\Utilities\Log;
 
 /**
  * Class for Tracking Referrals
@@ -25,7 +26,7 @@ class Track {
 	/**
 	 * @since 1.0.0
 	 */
-	const REFERRER_COOKIE = 'wrc_referrer_code';
+	const REFERRER_COOKIE = 'goodbids_referrer_code';
 
 	/**
 	 * Initialize Referral Tracking
@@ -117,8 +118,15 @@ class Track {
 	 *
 	 * @return ?string
 	 */
-	public function get_cookie(): ?string {
-		return Cookies::get( self::REFERRER_COOKIE );
+	public function get_cookie_code(): ?string {
+		$cookie = Cookies::get( self::REFERRER_COOKIE );
+		if ( ! $cookie ) {
+			return null;
+		}
+
+		$cookie = json_decode( $cookie, true );
+
+		return $cookie['code'] ?? null;
 	}
 
 	/**
@@ -143,7 +151,7 @@ class Track {
 		add_action(
 			'user_register',
 			function ( int $user_id ) {
-				$code = $this->get_cookie();
+				$code = $this->get_cookie_code();
 
 				if ( ! $code ) {
 					return;
@@ -158,7 +166,7 @@ class Track {
 				}
 
 				// Create the new referral.
-				goodbids()->referrals->add_referral( $user_id, $referrer_id , $code );
+				goodbids()->referrals->add_referral( $referrer_id, $user_id, $code );
 
 				$this->clear_cookie();
 			},
