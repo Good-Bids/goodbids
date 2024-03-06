@@ -280,24 +280,18 @@ class Verification {
 					return $fields;
 				}
 
-				$new_fields = [];
+				$fields['sep_verification'] = [
+					'type' => 'separator',
+				];
+				$fields['verification']     = [
+					'label'       => __( 'Verified', 'goodbids' ),
+					'type'        => 'toggle',
+					'default'     => '',
+					'placeholder' => '',
+					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
+				];
 
-				foreach ( $fields as $key => $field ) {
-					$new_fields[ $key ] = $field;
-
-					// Insert after Status.
-					if ( self::STATUS_OPTION === $key ) {
-						$new_fields['verification'] = [
-							'label'       => __( 'Verified', 'goodbids' ),
-							'type'        => 'toggle',
-							'default'     => '',
-							'placeholder' => '',
-							'description' => __( 'Only visible to Super Admins', 'goodbids' ),
-						];
-					}
-				}
-
-				return $new_fields;
+				return $fields;
 			}
 		);
 	}
