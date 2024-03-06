@@ -591,6 +591,20 @@ class WooCommerce {
 			8,
 			3
 		);
+
+		add_filter(
+			'wc_get_template',
+			function ( $template, $template_name ): string {
+				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
+				if ( file_exists( $goodbids_path ) ) {
+					return $goodbids_path;
+				}
+
+				return $template;
+			},
+			8,
+			2
+		);
 	}
 
 	/**
