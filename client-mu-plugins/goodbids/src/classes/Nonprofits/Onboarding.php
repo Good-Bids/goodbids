@@ -409,7 +409,7 @@ class Onboarding {
 			'createStoreUrl'          => $create_store_url,
 			'setUpPaymentsUrl'        => $payments_url,
 			'onboardingCompleteUrl'   => $onboarding_complete_url,
-			`accessibilityCheckerUrl` => $accessibility_checker_url,
+			'accessibilityCheckerUrl' => $accessibility_checker_url,
 			'setupGuideUrl'           => $setup_guide_url,
 			'adminUrl'                => $admin_url,
 		];
