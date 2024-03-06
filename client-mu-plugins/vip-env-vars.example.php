@@ -1,12 +1,14 @@
 <?php
 /**
- * Local environment variables
+ * Local Environment Variables
+ *
+ * @package GoodBids
  */
 
 /**
  * Copy and paste this file, renaming it to "vip-env-vars.local.php"
  *
- * Fill in any TODO env vars
+ * Fill in any TODO with the appropriate value
  *
  * Do not store sensitive data in this example file.
  * Feel free to pre-fill environment variables that contain
@@ -31,8 +33,12 @@ defined( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_URL_PRODUCTION' ) || define( 'VIP_ENV_
 defined( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_API_KEY' ) || define( 'VIP_ENV_VAR_GOODBIDS_AUCTIONEER_API_KEY', 'YOUR_VALUE_HERE' );
 
 /**
- * ACF Environment Variables
+ * Third-Party Plugin Constants
  *
  * TODO
  */
+// ACF Pro
 defined( 'VIP_ENV_VAR_GOODBIDS_ACF_LICENSE_KEY' ) || define( 'VIP_ENV_VAR_GOODBIDS_ACF_LICENSE_KEY', 'YOUR_VALUE_HERE' );
+
+// Accessibility Checker Pro
+defined( 'GOODBIDS_EDACP_LICENSE_KEY' ) || define( 'GOODBIDS_EDACP_LICENSE_KEY', 'YOUR_VALUE_HERE' );

@@ -21,6 +21,21 @@ class Nonprofit {
 
 	/**
 	 * @since 1.0.0
+	 */
+	const STATUS_PENDING = 'pending';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_LIVE = 'live';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const STATUS_INACTIVE = 'inactive';
+
+	/**
+	 * @since 1.0.0
 	 * @var int
 	 */
 	private int $site_id;
@@ -87,6 +102,17 @@ class Nonprofit {
 			},
 			$this->get_id()
 		);
+	}
+
+	/**
+	 * Get the Nonprofit Site status
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_status(): string {
+		return goodbids()->verification->get_nonprofit_data( $this->get_id(), 'status' );
 	}
 
 	/**
@@ -224,5 +250,20 @@ class Nonprofit {
 	 */
 	public function is_verified(): bool {
 		return goodbids()->verification->is_verified( $this->get_id() );
+	}
+
+	/**
+	 * Returns Site Status options
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function get_site_status_options(): array {
+		return [
+			self::STATUS_PENDING,
+			self::STATUS_LIVE,
+			self::STATUS_INACTIVE,
+		];
 	}
 }

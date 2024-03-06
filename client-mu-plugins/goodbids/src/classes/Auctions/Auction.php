@@ -137,7 +137,8 @@ class Auction {
 	 * @return string
 	 */
 	public function get_edit_url(): string {
-		return get_edit_post_link( $this->get_id() );
+		$edit_url = get_edit_post_link( $this->get_id() );
+		return $edit_url ?: '#';
 	}
 
 	/**

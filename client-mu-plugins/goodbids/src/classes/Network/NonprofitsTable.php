@@ -98,6 +98,7 @@ class NonprofitsTable extends WP_List_Table {
 			'auctions'  => __( 'Total Auctions', 'goodbids' ),
 			'raised'    => __( 'Total Raised', 'goodbids' ),
 			'revenue'   => __( 'Total Revenue', 'goodbids' ),
+			'status'    => __( 'Status', 'goodbids' ),
 			'standing'  => __( 'Account Standing', 'goodbids' ),
 			'age'       => __( 'Age', 'goodbids' ),
 		];
@@ -162,6 +163,12 @@ class NonprofitsTable extends WP_List_Table {
 				false,
 				__( 'Total Revenue', 'goodbids' ),
 				__( 'Table ordered by Total Revenue.', 'goodbids' ),
+			],
+			'status'  => [
+				'status',
+				false,
+				__( 'Status', 'goodbids' ),
+				__( 'Table ordered by Status.', 'goodbids' ),
 			],
 			'standing'  => [
 				'standing',
@@ -358,6 +365,7 @@ class NonprofitsTable extends WP_List_Table {
 			'auctions'   => $nonprofit->get_total_auctions(),
 			'raised'     => wc_price( $nonprofit->get_total_raised() ),
 			'revenue'    => wc_price( $nonprofit->get_total_revenue() ),
+			'status'     => ucwords( $nonprofit->get_status() ),
 			'standing'   => $nonprofit->get_standing(),
 			'age'        => sprintf(
 				'<span title="%s">%s</span>',

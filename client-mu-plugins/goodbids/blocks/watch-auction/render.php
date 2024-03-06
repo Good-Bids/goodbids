@@ -17,9 +17,9 @@ $watchers      = goodbids()->watchers->get_watcher_count();
 $watch_text    = __( 'Watch', 'goodbids' );
 $unwatch_text  = __( 'Unwatch', 'goodbids' );
 $button_text   = $watching ? $unwatch_text : $watch_text;
-$watch_class   = 'btn-fill';
-$unwatch_class = 'btn-fill-secondary';
-$button_class  = $watching ? $watch_class : $unwatch_class;
+$watch_class   = 'btn-fill-secondary';
+$unwatch_class = 'btn-fill-gray';
+$button_class  = $watching ? $unwatch_class : $watch_class;
 $post_url      = admin_url( 'admin-ajax.php' );
 ?>
 <div <?php block_attr( $block ); ?>>

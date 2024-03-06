@@ -8,7 +8,8 @@
 
 namespace GoodBids\Nonprofits;
 
-use GoodBids\Auctions\Wizard;
+use GoodBids\Network\Nonprofit;
+use Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile;
 
 /**
  * Setup Class
@@ -25,11 +26,71 @@ class Onboarding {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_PARAM = 'step';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const IS_ONBOARDING_PARAM = 'gb-is-onboarding';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const DONE_ONBOARDING_PARAM = 'gb-onboarding-complete';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const REDIRECT_TRANSIENT = 'gb-onboarding-redirect';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_TRANSIENT = 'gb-onboarding-step';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_CREATE_STORE = 'create-store';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_SET_UP_PAYMENTS = 'set-up-payments';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STEP_ONBOARDING_COMPLETE = 'onboarding-complete';
+
+	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	const ONBOARDING_STEPS = [
+		self::STEP_CREATE_STORE,
+		self::STEP_SET_UP_PAYMENTS,
+		self::STEP_ONBOARDING_COMPLETE,
+	];
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		if ( is_main_site() || is_network_admin() ) {
 			return;
 		}
+
+		$this->nonprofit = new Nonprofit( get_current_blog_id() );
 
 		// Redirect to Onboarding page if not yet onboarded.
 		$this->force_setup();
@@ -42,6 +103,20 @@ class Onboarding {
 
 		// Enqueue Scripts
 		$this->enqueue_scripts();
+
+		// Perform redirects as needed
+		$this->redirect_current_step();
+		$this->wc_onboarding_redirect();
+		$this->payments_redirect();
+
+		// Customize the WooCommerce onboarding button
+		$this->customize_wc_onboarding_button();
+
+		// Remove the WooCommerce Settings Tabs when setting up Stripe
+		$this->hide_woocommerce_settings_tabs();
+
+		// Flag Onboarding as Completed.
+		$this->mark_onboarding_completed();
 	}
 
 	/**
@@ -106,14 +181,18 @@ class Onboarding {
 	 * @return void
 	 */
 	private function add_menu_dashboard_page(): void {
-		// Disable for the main site.
-		if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
-			return;
-		}
-
 		add_action(
 			'admin_menu',
 			function () {
+				// Disable for the main site.
+				if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
+					if ( $this->is_onboarding_page() ) {
+						wp_safe_redirect( admin_url() );
+						exit;
+					}
+					return;
+				}
+
 				add_menu_page(
 					__( 'GoodBids Onboarding', 'goodbids' ),
 					__( 'Onboarding', 'goodbids' ),
@@ -135,11 +214,25 @@ class Onboarding {
 	 * @return void
 	 */
 	public function nonprofit_onboarding_page(): void {
-		$id = self::PAGE_SLUG;
+		goodbids()->load_view( 'admin/setup/onboarding.php', [ 'nonprofit_onboarding_id' => self::PAGE_SLUG ] );
+	}
 
-		// conditions
+	/**
+	 * Get the URL for the nonprofit onboarding page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $step
+	 *
+	 * @return string
+	 */
+	public function get_url( string $step = '' ): string {
+		$url = admin_url( 'admin.php?page=' . self::PAGE_SLUG );
 
-		goodbids()->load_view( 'admin/setup/onboarding.php', [ 'nonprofit_onboarding_id' => $id ] );
+		if ( $step ) {
+			$url = add_query_arg( self::STEP_PARAM, $step, $url );
+		}
+		return $url;
 	}
 
 	/**
@@ -163,6 +256,60 @@ class Onboarding {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Redirect to current step if they click on the Onboarding menu item.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_current_step(): void {
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! $this->is_onboarding_page() ) {
+					return;
+				}
+
+				if ( self::STEP_CREATE_STORE === $this->get_current_step() && $this->completed_wc_onboarding() ) {
+					set_transient( self::STEP_TRANSIENT, self::STEP_SET_UP_PAYMENTS );
+					wp_safe_redirect( $this->get_url( self::STEP_SET_UP_PAYMENTS ) );
+					exit;
+				}
+
+				if ( self::STEP_SET_UP_PAYMENTS === $this->get_current_step() && $this->completed_payments_onboarding() ) {
+					set_transient( self::STEP_TRANSIENT, self::STEP_ONBOARDING_COMPLETE );
+					wp_safe_redirect( $this->get_url( self::STEP_ONBOARDING_COMPLETE ) );
+					exit;
+				}
+
+				// Make sure they're not jumping ahead.
+				if ( self::STEP_ONBOARDING_COMPLETE === $this->get_current_step() ) {
+					if ( ! $this->completed_wc_onboarding() ) {
+						set_transient( self::STEP_TRANSIENT, self::STEP_CREATE_STORE );
+						wp_safe_redirect( $this->get_url( self::STEP_CREATE_STORE ) );
+						exit;
+					}
+
+					if ( ! $this->completed_payments_onboarding() ) {
+						set_transient( self::STEP_TRANSIENT, self::STEP_SET_UP_PAYMENTS );
+						wp_safe_redirect( $this->get_url( self::STEP_SET_UP_PAYMENTS ) );
+						exit;
+					}
+				}
+
+				$step = get_transient( self::STEP_TRANSIENT );
+
+				if ( $step && $step !== $this->get_current_step() ) {
+					delete_transient( self::STEP_TRANSIENT );
+					wp_safe_redirect( $this->get_url( $step ) );
+					exit;
+				}
+			}
+		);
+
 	}
 
 	/**
@@ -220,20 +367,42 @@ class Onboarding {
 	/**
 	 * Localized JS Variables
 	 *
+	 * See globals.d.ts for matching TypeScript types.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
 	private function get_js_vars(): array {
+		// Store Setup URL
+		$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
+		$create_store_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $create_store_url );
+
+		// Payments Setup URL
+		$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
+		$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
+
+		// Onboarding Complete URL
+		$onboarding_complete_url = home_url();
+		$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
+
+		// Setup Guide URL
+		$setup_guide_url = admin_url( 'admin.php?page=' . Guide::PAGE_SLUG );
+		$setup_guide_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $setup_guide_url );
+
+		// Admin URL
+		$admin_url = admin_url();
+		$admin_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $admin_url );
+
 		return [
-			'appID'                   => self::PAGE_SLUG,
-			'ajaxUrl'                 => admin_url( 'admin-ajax.php' ),
-			'optionsGeneralURL'       => admin_url( 'options-general.php' ),
-			'createWooCommerceURL'    => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
-			'setUpPaymentURL'         => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ),
-			'configureShippingURL'    => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
-			'woocommerceSettingsURL'  => admin_url( 'admin.php?page=wc-settings&tab=general' ),
-			'homeURL'                 => home_url(),
+			'appID'                 => self::PAGE_SLUG,
+			'stepParam'             => self::STEP_PARAM,
+			'stepOptions'           => self::ONBOARDING_STEPS,
+			'createStoreUrl'        => $create_store_url,
+			'setUpPaymentsUrl'      => $payments_url,
+			'onboardingCompleteUrl' => $onboarding_complete_url,
+			'setupGuideUrl'         => $setup_guide_url,
+			'adminUrl'              => $admin_url,
 		];
 	}
 
@@ -255,5 +424,341 @@ class Onboarding {
 				remove_all_actions( 'admin_notices' );
 			}
 		);
+	}
+
+	/**
+	 * Get the current Onboarding Step.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_current_step(): string {
+		if ( ! empty( $_GET[ self::STEP_PARAM ] ) ) { // phpcs:ignore
+			$step = sanitize_text_field( wp_unslash( $_GET[ self::STEP_PARAM ] ) ); // phpcs:ignore
+			set_transient( self::STEP_TRANSIENT, $step );
+			return $step;
+		}
+
+		return self::STEP_CREATE_STORE;
+	}
+
+	/**
+	 * Check if we are mid-onboarding
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_mid_onboarding(): bool {
+		if ( ! is_admin() || goodbids()->network->nonprofits->is_onboarded() ) {
+			return false;
+		}
+
+		if ( ! empty( $_GET[ self::IS_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
+			return true;
+		}
+
+		if ( get_transient( self::STEP_TRANSIENT ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if we are on the WooCommerce onboarding page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_wc_onboarding_page(): bool {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		global $pagenow;
+
+		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-admin' === $_GET['page'] && ! empty( $_GET['path'] ) && '/setup-wizard' === $_GET['path']; // phpcs:ignore
+	}
+
+	/**
+	 * Check if WooCommerce onboarding is completed
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function completed_wc_onboarding(): bool {
+		if ( ! class_exists( 'Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile' ) ) {
+			require_once dirname( WC_PLUGIN_FILE ) . '/src/Admin/API/OnboardingProfile.php';
+		}
+
+		return ! OnboardingProfile::needs_completion();
+	}
+
+	/**
+	 * Change the text of the WooCommerce onboarding button
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function customize_wc_onboarding_button(): void {
+		add_action(
+			'admin_footer',
+			function() {
+				if ( ! $this->is_wc_onboarding_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				$text = __( 'Continue with Onboarding', 'goodbids' );
+				?>
+				<script>
+					jQuery( function( $ ) {
+						const gbOnboardingInterval = setInterval(
+							function () {
+								const $target = $( '.woocommerce-profiler-go-to-mystore__button-container button' ),
+									newText = '<?php echo esc_js( $text ); ?>';
+
+								if ( $target.length && newText !== $target.text() ) {
+									$target.text( newText );
+									clearInterval( gbOnboardingInterval );
+								}
+							},
+							100
+						);
+					} );
+				</script>
+				<?php
+			}
+		);
+	}
+
+	/**
+	 * Redirect back to the onboarding Payments page after setting up WooCommerce
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function wc_onboarding_redirect(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$transient = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $transient ) {
+					return;
+				}
+
+				// Don't redirect if we are on supported pages
+				if ( $this->is_wc_onboarding_page() && $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				delete_transient( self::REDIRECT_TRANSIENT );
+				wp_safe_redirect( $transient );
+				exit;
+			}
+		);
+
+		// Redirect to the next step after the store setup is completed.
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! $this->is_wc_onboarding_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( self::STEP_SET_UP_PAYMENTS ) );
+			},
+			50
+		);
+	}
+
+	/**
+	 * Check if we are on the Stripe Payments setup page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_stripe_page(): bool {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
+		global $pagenow;
+
+		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-settings' === $_GET['page'] && ! empty( $_GET['section'] ) && 'stripe' === $_GET['section']; // phpcs:ignore
+	}
+
+	/**
+	 * Redirect back to the onboarding Finalize page after setting up Stripe
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function payments_redirect(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$transient = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $transient ) {
+					return;
+				}
+
+				// Don't redirect if we are on supported pages
+				if ( $this->is_stripe_page() && $this->is_mid_onboarding() && ! $this->completed_payments_onboarding() ) {
+					return;
+				}
+
+				delete_transient( self::REDIRECT_TRANSIENT );
+				wp_safe_redirect( $transient );
+				exit;
+			}
+		);
+
+		// Set the redirect to the final step after the payments setup is completed.
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! $this->is_stripe_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( self::STEP_ONBOARDING_COMPLETE ) );
+			},
+			50
+		);
+
+		// Hijack the clean_url filter to prevent the Stripe redirect from happening.
+		add_filter(
+			'clean_url',
+			function ( $url ) {
+				if ( ! isset( $_GET['wcs_stripe_code'], $_GET['wcs_stripe_state'] ) ) { // phpcs:ignore
+					return $url;
+				}
+
+				$redirect = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $this->completed_payments_onboarding() || ! $redirect ) {
+					return $url;
+				}
+
+				delete_transient( self::REDIRECT_TRANSIENT );
+
+				return $redirect;
+			}
+		);
+
+		add_action(
+			'admin_footer',
+			function () {
+				if ( ! $this->is_stripe_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				$redirect = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $redirect ) {
+					return;
+				}
+				?>
+				<script>
+					jQuery( function( $ ) {
+						const gbOnboardingInterval = setInterval(
+							function () {
+								const $button = $( '.components-modal__header button' );
+
+								if ( $button.length ) {
+									clearInterval( gbOnboardingInterval );
+
+									$button.on(
+										'click',
+										function ( e ) {
+											e.preventDefault();
+											window.location.href = '<?php echo esc_js( $redirect ); ?>';
+											return false;
+										}
+									);
+								}
+							},
+							100
+						);
+					} );
+				</script>
+				<?php
+			}
+		);
+	}
+
+	/**
+	 * Hide WooCommerce settings tabs.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function hide_woocommerce_settings_tabs(): void {
+		add_action(
+			'admin_footer',
+			function () {
+				if ( ! $this->is_stripe_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+				?>
+				<style>
+					.woocommerce #mainform .nav-tab-wrapper,
+					.notice.wcs-nux__notice,
+					h2 .wc-admin-breadcrumb {
+						display: none;
+					}
+				</style>
+				<?php
+			}
+		);
+	}
+
+	/**
+	 * Check if Payments Onboarding is completed
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function completed_payments_onboarding(): bool {
+		return count( WC()->payment_gateways()->get_available_payment_gateways() ) > 0;
+	}
+
+	/**
+	 * Mark Onboarding as Completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function mark_onboarding_completed(): void {
+		$mark_completed = function () {
+			if ( empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
+				return;
+			}
+
+			delete_transient( self::STEP_TRANSIENT );
+			delete_transient( self::REDIRECT_TRANSIENT );
+			update_option( 'goodbids_onboarded', current_time( 'mysql' ) );
+
+			$redirect = remove_query_arg( self::DONE_ONBOARDING_PARAM );
+
+			wp_safe_redirect( $redirect );
+			exit;
+		};
+
+		add_action( 'init', $mark_completed );
+		add_action( 'admin_init', $mark_completed );
 	}
 }

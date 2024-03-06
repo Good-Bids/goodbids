@@ -11,7 +11,7 @@
     "compile": "tsc",
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses",
-    "dev": "webpack serve",
+    "dev": "NODE_ENV=develop webpack serve",
     "format": "prettier --check ./src/**/*.{css,ts,tsx,js}",
     "format:fix": "prettier --write ./src/**/*.{css,ts,tsx,js}",
     "lint": "eslint ./src/**/*.{ts,tsx}",
@@ -22,6 +22,7 @@
     "prepare": "cd ../../ && husky install",
     "start": "wp-scripts start",
     "staged": "lint-staged",
+    "translate": "vendor/bin/wp i18n make-pot ./ ./languages/goodbids.pot",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js"
   },

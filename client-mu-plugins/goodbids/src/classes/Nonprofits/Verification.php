@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
 use GoodBids\Utilities\Log;
 
 /**
@@ -209,12 +210,12 @@ class Verification {
 				// Remove Spam action.
 				unset( $actions['spam'] );
 
-				if ( ! $this->is_verified( $blog_id ) ) {
-					$page = self::PAGE_SLUG;
+				$page = self::PAGE_SLUG;
+				$url  = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
+				$url  = add_query_arg( 'id', $blog_id, $url );
 
+				if ( ! $this->is_verified( $blog_id ) ) {
 					// Adjust Edit Link.
-					$url = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
-					$url = add_query_arg( 'id', $blog_id, $url );
 					$actions['edit'] = sprintf(
 						'<a href="%s">%s</a>',
 						esc_url( $url ),
@@ -227,6 +228,12 @@ class Verification {
 						unset( $actions['backend'] );
 					}
 				}
+
+				$actions['details'] = sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( $url ),
+					__( 'Details', 'goodbids' )
+				);
 
 				return $actions;
 			},
@@ -322,22 +329,22 @@ class Verification {
 			'status'               => [
 				'label'       => __( 'Site Status', 'goodbids' ),
 				'type'        => 'select',
-				'default'     => 'pending',
+				'default'     => Nonprofit::STATUS_PENDING,
 				'placeholder' => '',
 				'required'    => true,
 				'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
 				'options'     => [
 					[
 						'label' => __( 'Pending', 'goodbids' ),
-						'value' => 'pending',
+						'value' => Nonprofit::STATUS_PENDING,
 					],
 					[
-						'label' => __( 'Published', 'goodbids' ),
-						'value' => 'published',
+						'label' => __( 'Live', 'goodbids' ),
+						'value' => Nonprofit::STATUS_LIVE,
 					],
 					[
-						'label' => __( 'Disabled', 'goodbids' ),
-						'value' => 'disabled',
+						'label' => __( 'Inactive', 'goodbids' ),
+						'value' => Nonprofit::STATUS_INACTIVE,
 					],
 				],
 			],
@@ -517,15 +524,19 @@ class Verification {
 			$field_key   = self::OPTION_SLUG . '-' . $key;
 			$field_value = get_site_meta( $site_id, $field_key, true );
 
-			if ( ! $field_value && ! empty( $field['default'] ) ) {
+			if ( ! $field_value && isset( $field['default'] ) ) {
 				$field_value = $field['default'];
 			}
 
-			if ( $key === $field_id ) {
-				return $field_value;
+			$data[ $key ] = $field_value;
+		}
+
+		if ( ! empty( $field_id ) ) {
+			if ( isset( $data[ $field_id ] ) ) {
+				return $data[ $field_id ];
 			}
 
-			$data[ $key ] = $field_value;
+			return null;
 		}
 
 		return $data;

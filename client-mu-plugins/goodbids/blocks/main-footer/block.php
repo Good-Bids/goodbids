@@ -26,16 +26,26 @@ class MainFooter extends ACFBlock {
 	 * @return string
 	 */
 	public function get_sitename_text(): string {
-		$sitename_text = __( 'GOODBIDS Positive Auctions', 'goodbids' );
+		$site_name        = __( 'GOODBIDS', 'goodbids' );
+		$site_description = __( 'We reimagined nonprofit auctions.', 'goodbids' );
 
 		if ( ! is_multisite() ) {
-			return $sitename_text;
+			return $site_name;
+		}
+
+		if ( get_blog_option( get_main_site_id(), 'blogname' ) ) {
+			$site_name = get_blog_option( get_main_site_id(), 'blogname' );
+		}
+
+		if ( get_blog_option( get_main_site_id(), 'blogdescription' ) ) {
+			$site_description = get_blog_option( get_main_site_id(), 'blogdescription' );
 		}
 
 		return sprintf(
-			'%s %s',
-			get_blog_option( get_main_site_id(), 'blogname' ),
-			get_blog_option( get_main_site_id(), 'blogdescription' )
+			'<a href="%s">%s</a> %s',
+			esc_url( get_home_url( get_main_site_id() ) ),
+			$site_name,
+			$site_description
 		);
 	}
 }

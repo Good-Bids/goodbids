@@ -6,6 +6,7 @@
   },
   "active-plugins": [
     "accessibility-checker",
+    "accessibility-checker-pro",
     "advanced-custom-fields-pro/acf.php",
     "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
     "svg-support",

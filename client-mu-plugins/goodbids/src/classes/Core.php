@@ -29,6 +29,7 @@ use GoodBids\Nonprofits\Onboarding;
 use GoodBids\Nonprofits\Verification;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Permissions;
@@ -225,11 +226,19 @@ class Core {
 			return;
 		}
 
+		// Load plugin dependencies and modules.
 		$this->load_dependencies();
 		$this->load_plugins();
 		$this->load_modules();
 		$this->init_modules();
+
+		// Load the text domain for translations.
+		$this->load_text_domain();
+
+		// Restrict REST API access.
 		$this->restrict_rest_api_access();
+
+		// Disable CSS concatenation.
 		$this->disable_css_concatenation();
 
 		$this->initialized = true;
@@ -453,6 +462,7 @@ class Core {
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
+				new EqualizeDigital();
 				new Onboarding();
 				new Guide();
 			}
@@ -510,6 +520,26 @@ class Core {
 		extract( $_data ); // phpcs:ignore
 
 		require $_path;
+	}
+
+	/**
+	 * Load Text Domain
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function load_text_domain(): void {
+		add_action(
+			'init',
+			function () {
+				load_plugin_textdomain(
+					'goodbids',
+					false,
+					GOODBIDS_PLUGIN_PATH . 'languages'
+				);
+			}
+		);
 	}
 
 	/**

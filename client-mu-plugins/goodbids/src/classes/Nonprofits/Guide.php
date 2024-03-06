@@ -9,9 +9,10 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Auctions\Wizard;
+use GoodBids\Network\Nonprofit;
 
 /**
- * Setup Class
+ * Guide Class
  *
  * @since 1.0.0
  */
@@ -30,6 +31,8 @@ class Guide {
 		if ( is_main_site() || is_network_admin() ) {
 			return;
 		}
+
+		$this->nonprofit = new Nonprofit( get_current_blog_id() );
 
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
@@ -123,7 +126,7 @@ class Guide {
 				wp_enqueue_media();
 
 				// Get the asset file.
-				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-setup.asset.php';
+				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-setup-guide.asset.php';
 				if ( file_exists( $asset_file ) ) {
 					$script = require $asset_file;
 				} else {
@@ -133,17 +136,17 @@ class Guide {
 					];
 				}
 
-				// Register the New Site Setup script.
+				// Register the Nonprofit Setup Guide script.
 				wp_register_script(
 					self::PAGE_SLUG,
-					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-setup.js',
+					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-setup-guide.js',
 					$script['dependencies'],
 					$script['version'],
 					[ 'strategy' => 'defer' ]
 				);
 
 				// Localize Vars.
-				wp_localize_script( self::PAGE_SLUG, 'gbNonprofitSetup', $this->get_js_vars() );
+				wp_localize_script( self::PAGE_SLUG, 'gbNonprofitSetupGuide', $this->get_js_vars() );
 
 				// Set translations.
 				wp_set_script_translations( self::PAGE_SLUG, 'goodbids' );
@@ -188,6 +191,8 @@ class Guide {
 			'revenueMetricsURL'       => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 			'invoicesURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 			'commentsURL'             => admin_url( 'edit-comments.php' ),
+			'siteStatus'              => $this->nonprofit->get_status(),
+			'siteStatusOptions'       => $this->nonprofit->get_site_status_options(),
 		];
 	}
 

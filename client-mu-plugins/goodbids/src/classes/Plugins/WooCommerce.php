@@ -714,7 +714,7 @@ class WooCommerce {
 
 		add_filter(
 			'woocommerce_email_get_option',
-			function( mixed $value, WC_Email $email, mixed $original_value, string $key ) {
+			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
 				if ( 'new_order' !== $email->id || 'enabled' !== $key ) {
 					return $value;
 				}
@@ -740,7 +740,7 @@ class WooCommerce {
 
 		add_filter(
 			'woocommerce_email_get_option',
-			function( mixed $value, WC_Email $email, mixed $original_value, string $key ) {
+			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
 				if ( 'customer_processing_order' !== $email->id || 'enabled' !== $key ) {
 					return $value;
 				}

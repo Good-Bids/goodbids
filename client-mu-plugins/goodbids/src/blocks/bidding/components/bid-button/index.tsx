@@ -10,12 +10,13 @@ import { AuctionStatus } from '../../store/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
 import { fadeAnimation } from '../../utils/animations';
+import { __ } from '@wordpress/i18n';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 const liveAndClosingStatuses: AuctionStatus[] = ['live', ...closingStatuses];
 
 export function BidButton() {
-	const { auctionStatus, isLastBidder } = useBiddingState();
+	const { auctionStatus, isLastBidder, rewardClaimed } = useBiddingState();
 
 	return (
 		<AnimatePresence>
@@ -23,8 +24,12 @@ export function BidButton() {
 				<LiveAndClosing />
 			)}
 
-			{auctionStatus === 'closed' && isLastBidder && (
-				<ClosedAndLastBidder />
+			{auctionStatus === 'closed' && isLastBidder && !rewardClaimed && (
+				<ClosedLastBidderAndRewardUnclaimed />
+			)}
+
+			{auctionStatus === 'closed' && isLastBidder && rewardClaimed && (
+				<ClosedAndLastBidderAndRewardClaimed />
 			)}
 		</AnimatePresence>
 	);
@@ -64,12 +69,13 @@ function LiveAndClosing() {
 			href={isLastBidder ? '#' : bidUrl}
 			aria-live="polite"
 		>
-			GOODBID <motion.span>{calculatedValue}</motion.span> Now
+			{__('GOODBID', 'goodbids')}{' '}
+			<motion.span>{calculatedValue}</motion.span> {__('Now', 'goodbids')}
 		</motion.a>
 	);
 }
 
-function ClosedAndLastBidder() {
+function ClosedLastBidderAndRewardUnclaimed() {
 	const { rewardUrl } = useBiddingState();
 
 	return (
@@ -80,7 +86,20 @@ function ClosedAndLastBidder() {
 			className="btn-fill text-center"
 			aria-live="polite"
 		>
-			Claim Your Reward
+			{__('Claim Your Reward', 'goodbids')}
 		</motion.a>
+	);
+}
+
+function ClosedAndLastBidderAndRewardClaimed() {
+	return (
+		<motion.span
+			layout
+			{...fadeAnimation}
+			className="rounded py-2 px-6 border border-solid border-transparent leading-normal no-underline bg-contrast text-base-2 text-center"
+			aria-live="polite"
+		>
+			{__('Congratulations! Your reward has been claimed.', 'goodbids')}
+		</motion.span>
 	);
 }
