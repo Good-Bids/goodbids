@@ -21,17 +21,29 @@ export function AuctionStep() {
 		let anyInvalid = false;
 
 		if (!startDate.value) {
-			setAuctionValue('startDate', '', __('Start date is required', 'goodbids'));
+			setAuctionValue(
+				'startDate',
+				'',
+				__('Start date is required', 'goodbids'),
+			);
 			anyInvalid = true;
 		}
 
 		if (!endDate.value) {
-			setAuctionValue('endDate', '', __('End date is required','goodbids'));
+			setAuctionValue(
+				'endDate',
+				'',
+				__('End date is required', 'goodbids'),
+			);
 			anyInvalid = true;
 		}
 
 		if (!bidIncrement.value) {
-			setAuctionValue('bidIncrement', '', __('Bid increment is required', 'goodbids'));
+			setAuctionValue(
+				'bidIncrement',
+				'',
+				__('Bid increment is required', 'goodbids'),
+			);
 			anyInvalid = true;
 		}
 
@@ -39,7 +51,7 @@ export function AuctionStep() {
 			setAuctionValue(
 				'bidExtensionMinutes',
 				'',
-				__('Bid extension is required', 'goodbids' ),
+				__('Bid extension is required', 'goodbids'),
 			);
 			anyInvalid = true;
 		}

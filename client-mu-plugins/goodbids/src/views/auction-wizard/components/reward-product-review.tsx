@@ -46,7 +46,7 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 				</li>
 				<li className="text-admin-content">
 					<b>{__('Fair Market Value.', 'goodbids')}</b>{' '}
-					{product.regularPrice.value}
+					{`${product.regularPrice.value}`}
 				</li>
 				<li className="text-admin-content">
 					<b>{__('Product Category.', 'goodbids')}</b>{' '}
