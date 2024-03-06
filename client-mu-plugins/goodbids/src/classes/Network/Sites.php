@@ -12,6 +12,7 @@ use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Nonprofits\Verification;
+use GoodBids\Users\Permissions;
 use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
 use WP_Block_Type_Registry;
@@ -60,6 +61,9 @@ class Sites {
 
 		// Sites Custom Columns
 		$this->customize_sites_columns();
+
+		// Restrict BDP Admin to only specific Sites
+		$this->restrict_bdp_admin_sites_table();
 
 		// Auto-register users on new sites.
 		$this->auto_register_user();
@@ -1093,13 +1097,42 @@ class Sites {
 					return;
 				}
 
-
 				if ( 'standing' === $column ) {
 					echo esc_html( $nonprofit->get_standing() );
 				}
 			},
 			10,
 			2
+		);
+	}
+
+	private function restrict_bdp_admin_sites_table(): void {
+		add_filter(
+			'ms_sites_list_table_query_args',
+			function ( $args ) {
+				$roles = wp_get_current_user()->roles;
+				if ( ! in_array( Permissions::BDP_ADMIN_ROLE, $roles, true ) ) {
+					return $args;
+				}
+
+				$bdp_admin_sites = [];
+				$bdp_admin_id    = get_current_user_id();
+				$all_user_blogs  = get_blogs_of_user( $bdp_admin_id, true );
+
+				foreach ( $all_user_blogs as $blog_id => $blog ) {
+					// Check if the specified role exists for the user on this blog
+					if ( user_can( $bdp_admin_id, Permissions::BDP_ADMIN_ROLE, $blog_id ) ) {
+						$bdp_admin_sites[] = $blog_id;
+					}
+					if ( user_can( $bdp_admin_id, 'administrator', $blog_id ) ) {
+						$bdp_admin_sites[] = $blog_id;
+					}
+				}
+
+				$args['site__in'] = $bdp_admin_sites;
+
+				return $args;
+			}
 		);
 	}
 

@@ -24,6 +24,11 @@ class Permissions {
 	const VERSION_OPTION = 'goodbids_permissions_version';
 
 	/**
+	 * @since 1.0.0
+	 */
+	const BDP_ADMIN_ROLE = 'bdp_administrator';
+
+	/**
 	 * Increment this number whenever changes are made to this class.
 	 *
 	 * @since 1.0.0
@@ -74,8 +79,7 @@ class Permissions {
 
 				Log::debug( 'Creating BDP Admin Role.' );
 
-				// Role ID and Name.
-				$role_id   = 'bdp_administrator';
+				// Role Name.
 				$role_name = __( 'BDP Administrator', 'goodbids' );
 
 				// Limited capabilities to Add Sites from Network Admin.
@@ -88,7 +92,7 @@ class Permissions {
 					'manage_woocommerce',
 				];
 
-				$this->create_or_update_role( $role_id, $role_name, $role_capabilities );
+				$this->create_or_update_role( self::BDP_ADMIN_ROLE, $role_name, $role_capabilities );
 
 				$this->update_version();
 			}
