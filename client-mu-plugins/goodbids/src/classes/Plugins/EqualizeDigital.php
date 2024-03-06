@@ -163,7 +163,7 @@ class EqualizeDigital {
 	 *
 	 * @return bool
 	 */
-	private function is_license_page(): bool {
+	public function is_license_page(): bool {
 		global $pagenow;
 
 		if ( 'admin.php' !== $pagenow || empty( $_GET['page'] ) ) { // phpcs:ignore

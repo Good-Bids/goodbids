@@ -728,7 +728,12 @@ class Auction {
 	 */
 	public function get_last_bidder(): ?WP_User {
 		$last_bid = $this->get_last_bid();
-		return $last_bid?->get_user();
+
+		if ( ! $last_bid ) {
+			return null;
+		}
+
+		return $last_bid->get_user();
 	}
 
 	/**

@@ -53,7 +53,7 @@ declare const gbNonprofitOnboarding: {
 	];
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
-	activateAccessibilityCheckerUrl: string;
+	accessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;
 	adminUrl: string;

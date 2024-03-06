@@ -20,7 +20,7 @@ export function ActivateAccessibilityCheckerStep() {
 			</div>
 
 			<ButtonLink
-				href={gbNonprofitOnboarding.activateAccessibilityCheckerUrl}
+				href={gbNonprofitOnboarding.accessibilityCheckerUrl}
 			>
 				{__('Activate Plugin', 'goodbids')}
 			</ButtonLink>
