@@ -266,7 +266,7 @@ class Verification {
 			return true;
 		}
 
-		return boolval( $this->get_nonprofit_data( $site_id, 'verification' ) );
+		return boolval( $this->get_nonprofit_data( $site_id, 'verification', 'read' ) );
 	}
 
 	/**
@@ -279,8 +279,8 @@ class Verification {
 	private function manipulate_custom_fields(): void {
 		add_filter(
 			'goodbids_nonprofit_custom_fields',
-			function ( $fields ): array {
-				if ( ! is_super_admin() ) {
+			function ( array $fields, string $context ): array {
+				if ( ! is_super_admin() && 'edit' === $context ) {
 					return $fields;
 				}
 
@@ -296,7 +296,9 @@ class Verification {
 				];
 
 				return $fields;
-			}
+			},
+			10,
+			2
 		);
 	}
 
@@ -430,14 +432,22 @@ class Verification {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param string $context The context of the fields.
+	 *
 	 * @return array
 	 */
-	public function get_custom_fields(): array {
+	public function get_custom_fields( string $context = 'edit' ): array {
 		if ( empty( $this->custom_fields ) ) {
 			$this->init_custom_fields();
 		}
 
-		return apply_filters( 'goodbids_nonprofit_custom_fields', $this->custom_fields );
+		/**
+		 * Filter the Nonprofit custom fields.
+		 * @since 1.0.0
+		 * @param array $fields The custom fields array
+		 * @param string $context Whether we're using this for editing.
+		 */
+		return apply_filters( 'goodbids_nonprofit_custom_fields', $this->custom_fields, $context );
 	}
 
 	/**
@@ -515,13 +525,18 @@ class Verification {
 	 *
 	 * @param ?int   $site_id  Site ID.
 	 * @param string $field_id The Field ID to retrieve. Default empty.
+	 * @param string $context  The context for retrieving the data.
 	 *
 	 * @return mixed
 	 */
-	public function get_nonprofit_data( ?int $site_id, string $field_id = '' ): mixed {
+	public function get_nonprofit_data( ?int $site_id, string $field_id = '', string $context = 'edit' ): mixed {
 		$data = [];
 
-		foreach ( $this->get_custom_fields() as $key => $field ) {
+		foreach ( $this->get_custom_fields( $context ) as $key => $field ) {
+			if ( 'separator' === $field['type'] ) {
+				continue;
+			}
+
 			$field_key   = self::OPTION_SLUG . '-' . $key;
 			$field_value = get_site_meta( $site_id, $field_key, true );
 
@@ -577,7 +592,7 @@ class Verification {
 				$data     = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 				$verified = false;
 
-				foreach ( $this->get_custom_fields() as $key => $field ) {
+				foreach ( $this->get_custom_fields( 'save' ) as $key => $field ) {
 					if ( ! isset( $data[ $key ] ) ) {
 						continue;
 					}
@@ -650,11 +665,11 @@ class Verification {
 				}
 
 				// Disable this feature for GoodBids Main Site.
-				if ( is_main_site() ) {
+				if ( is_main_site() || is_super_admin() ) {
 					return;
 				}
 
-				if ( ! is_super_admin() && ! $this->is_verified( get_current_blog_id() ) ) {
+				if ( ! $this->is_verified( get_current_blog_id() ) ) {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
 				}
 			}
