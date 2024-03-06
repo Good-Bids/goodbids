@@ -525,6 +525,22 @@ class Core {
 	}
 
 	/**
+	 * Get the contents of a view file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $_name
+	 * @param array $_data
+	 *
+	 * @return string
+	 */
+	public function get_view( string $_name, array $_data = [] ): string {
+		ob_start();
+		$this->load_view( $_name, $_data );
+		return ob_get_clean();
+	}
+
+	/**
 	 * Load Text Domain
 	 *
 	 * @since 1.0.0
