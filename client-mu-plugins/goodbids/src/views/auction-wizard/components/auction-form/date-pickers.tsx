@@ -76,7 +76,7 @@ export function DatePickers() {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h2 className="text-admin-large text-admin-main m-0">
+			<h2 className="m-0 text-admin-large text-admin-main">
 				{__('Auction Schedule', 'goodbids')}
 			</h2>
 
@@ -84,7 +84,7 @@ export function DatePickers() {
 				When will the auction take place?
 			</span>
 
-			<div className="grid gap-4 grid-cols-2 max-w-120">
+			<div className="grid max-w-120 grid-cols-2 gap-4">
 				<TextInput
 					label={__('Auction Start', 'goodbids')}
 					type="datetime-local"

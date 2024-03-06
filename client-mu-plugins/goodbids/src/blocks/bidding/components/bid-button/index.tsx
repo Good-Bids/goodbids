@@ -96,7 +96,7 @@ function ClosedAndLastBidderAndRewardClaimed() {
 		<motion.span
 			layout
 			{...fadeAnimation}
-			className="rounded py-2 px-6 border border-solid border-transparent leading-normal no-underline bg-contrast text-base-2 text-center"
+			className="rounded border border-solid border-transparent bg-contrast px-6 py-2 text-center leading-normal text-base-2 no-underline"
 			aria-live="polite"
 		>
 			{__('Congratulations! Your reward has been claimed.', 'goodbids')}

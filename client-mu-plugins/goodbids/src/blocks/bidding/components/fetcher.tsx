@@ -53,7 +53,7 @@ export function Fetcher({ auctionId, children }: FetcherProps) {
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				transition={{ duration: 0.2 }}
-				className="flex items-start gap-4 bg-error-bg text-error-text rounded p-4"
+				className="flex items-start gap-4 rounded bg-error-bg p-4 text-error-text"
 			>
 				<div className="h-6 w-6">
 					<WarningIcon />

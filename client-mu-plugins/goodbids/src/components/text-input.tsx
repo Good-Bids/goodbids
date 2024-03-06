@@ -22,10 +22,10 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 			...rest
 		} = props;
 
-		const inputClasses = clsx('rounded-md w-full border bg-white', {
+		const inputClasses = clsx('w-full rounded-md border bg-white', {
 			'border-gray-300': !error,
 			'border-error-bg': error,
-			'pl-6 p-2': startIcon,
+			'p-2 pl-6': startIcon,
 			'p-2': !startIcon,
 		});
 
@@ -36,7 +36,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
 		return (
 			<div className="flex flex-col gap-2">
-				<div className="flex gap-3 items-center">
+				<div className="flex items-center gap-3">
 					<label htmlFor={id} className={labelClasses}>
 						{label}
 					</label>

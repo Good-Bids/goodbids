@@ -9,7 +9,7 @@ export function FreeBidsPromo() {
 
 	if (nonClosedStatuses.includes(auctionStatus)) {
 		return (
-			<div className="flex flex-col justify-start gap-4 p-4 rounded-sm bg-contrast-5">
+			<div className="flex flex-col justify-start gap-4 rounded-sm bg-contrast-5 p-4">
 				<FreeBidsHeading />
 				<div className="flex flex-col gap-4 pl-6">
 					<FreeBidsContent />

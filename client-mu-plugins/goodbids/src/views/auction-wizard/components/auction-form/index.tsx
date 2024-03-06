@@ -4,7 +4,7 @@ import { __ } from '@wordpress/i18n';
 
 export function AuctionForm() {
 	return (
-		<div className="flex gap-4 justify-between">
+		<div className="flex justify-between gap-4">
 			<Form />
 
 			<Tips>

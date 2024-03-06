@@ -2,7 +2,7 @@
 	/* Jetpack Forms */
 	.wp-block-jetpack-contact-form-container,
 	.wp-block-jetpack-contact-form {
-		@apply bg-contrast rounded p-4;
+		@apply rounded bg-contrast p-4;
 
 		label,
 		legend,
@@ -14,7 +14,7 @@
 		input,
 		textarea,
 		.contact-form-dropdown__button.ui-button {
-			@apply bg-contrast rounded border-base border-solid text-base-2 placeholder:text-base focus:outline-contrast-3;
+			@apply rounded border-solid border-base bg-contrast text-base-2 placeholder:text-base focus:outline-contrast-3;
 		}
 
 		.wp-block-button__link {
@@ -27,19 +27,19 @@
 		.form-row {
 			textarea,
 			input.input-text {
-				@apply rounded border-base border-solid;
+				@apply rounded border-solid border-base;
 			}
 		}
 
 		fieldset {
-			@apply rounded border-contrast border-solid;
+			@apply rounded border-solid border-contrast;
 		}
 
 		/* Login form */
 		&.login,
 		&.register,
 		&.lost_reset_password {
-			@apply border-0 bg-contrast rounded text-base-2;
+			@apply rounded border-0 bg-contrast text-base-2;
 
 			.wp-element-button {
 				@apply btn-fill-secondary;
@@ -54,6 +54,6 @@
 	.wc-block-checkout__actions_row
 		.wc-block-components-checkout-place-order-button,
 	.lost_reset_password {
-		@apply py-2 px-6;
+		@apply px-6 py-2;
 	}
 }

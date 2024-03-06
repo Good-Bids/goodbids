@@ -4,7 +4,7 @@ type ReviewWrapperProps = {
 
 export function ReviewWrapper({ children }: ReviewWrapperProps) {
 	return (
-		<div className="flex flex-col gap-4 rounded-md bg-gray-300 p-3 w-full max-w-80 transition-all">
+		<div className="flex w-full max-w-80 flex-col gap-4 rounded-md bg-gray-300 p-3 transition-all">
 			{children}
 		</div>
 	);

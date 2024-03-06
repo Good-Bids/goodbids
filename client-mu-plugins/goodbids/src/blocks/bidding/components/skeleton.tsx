@@ -8,7 +8,7 @@ type SkeletonProps = {
 
 export function Skeleton({ size = 'sm', visible }: SkeletonProps) {
 	const classes = clsx(
-		'animate-pulse w-full bg-contrast-2 duration-500 rounded-sm',
+		'w-full animate-pulse rounded-sm bg-contrast-2 duration-500',
 		{
 			'h-8': size === 'sm',
 			'h-24': size === 'lg',

@@ -8,15 +8,15 @@ type FinishStepProps = {
 
 export function FinishStep({ auctionId }: FinishStepProps) {
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-2">
+		<div className="flex w-full flex-col items-center gap-2 py-10">
 			<div>
 				<img src={AuctionEndImage} />
 			</div>
-			<h1 className="text-6xl font-bold text-admin-main m-0">
+			<h1 className="m-0 text-6xl font-bold text-admin-main">
 				{__('Product updated!', 'goodbids')}
 			</h1>
 			<div className="max-w-xl">
-				<p className="text-admin-content text-center">
+				<p className="text-center text-admin-content">
 					{__(
 						'Your product has been updated and your auction is ready to go! Continue customizing your auction page to make it your own.',
 						'goodbids',

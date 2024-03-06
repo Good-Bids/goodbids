@@ -15,9 +15,9 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 
 	if (status === 'pending') {
 		return (
-			<div className="flex flex-col gap-2 items-center">
+			<div className="flex flex-col items-center gap-2">
 				<ProgressIcon spin width={48} />
-				<h2 className="text-admin-large text-admin-main m-0">
+				<h2 className="m-0 text-admin-large text-admin-main">
 					Saving {product.name.value}
 				</h2>
 			</div>
@@ -26,9 +26,9 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 
 	if (status === 'success') {
 		return (
-			<div className="flex flex-col gap-2 items-center text-admin-main">
+			<div className="flex flex-col items-center gap-2 text-admin-main">
 				<CheckIcon width={48} />
-				<h2 className="text-admin-large text-admin-main m-0">
+				<h2 className="m-0 text-admin-large text-admin-main">
 					{product.name.value} saved!
 				</h2>
 			</div>
@@ -37,7 +37,7 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 
 	return (
 		<>
-			<h2 className="text-admin-large text-admin-main m-0">
+			<h2 className="m-0 text-admin-large text-admin-main">
 				{__('Your Reward Product', 'goodbids')}
 			</h2>
 			<ul>
@@ -98,7 +98,7 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 				{product.productImage ? (
 					<img
 						src={product.productImage.value.src}
-						className="max-w-44 max-h-32"
+						className="max-h-32 max-w-44"
 					/>
 				) : (
 					<span>{__('No image selected', 'goodbids')}</span>
@@ -116,7 +116,7 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 							<li key={image.value.id}>
 								<img
 									src={image.value.src}
-									className="max-w-44 max-h-32"
+									className="max-h-32 max-w-44"
 								/>
 							</li>
 						))}

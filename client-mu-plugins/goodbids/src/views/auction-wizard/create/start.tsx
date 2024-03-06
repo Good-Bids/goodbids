@@ -26,11 +26,11 @@ export function StartStep({ loading }: StartStepProps) {
 	};
 
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-2">
+		<div className="flex w-full flex-col items-center gap-2 py-10">
 			<div>
 				<img src={AuctionStartImage} />
 			</div>
-			<h1 className="text-6xl font-bold text-admin-main m-0">
+			<h1 className="m-0 text-6xl font-bold text-admin-main">
 				{__('Build an Auction!', 'goodbids')}
 			</h1>
 			<div className="max-w-xl">
@@ -48,7 +48,7 @@ export function StartStep({ loading }: StartStepProps) {
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.2 }}
-						className="mt-4 font-bold text-admin-main text-admin-content"
+						className="mt-4 text-admin-content font-bold text-admin-main"
 					>
 						Loading...
 					</motion.span>
@@ -63,7 +63,7 @@ export function StartStep({ loading }: StartStepProps) {
 							transition={{ duration: 0.3 }}
 							className="mt-4 flex flex-col items-center gap-3"
 						>
-							<h2 className="text-2xl font-bold text-admin-main m-0">
+							<h2 className="m-0 text-2xl font-bold text-admin-main">
 								{__('Pick up where you left off?', 'goodbids')}
 							</h2>
 

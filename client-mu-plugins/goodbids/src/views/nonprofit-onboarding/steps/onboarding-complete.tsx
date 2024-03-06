@@ -5,7 +5,7 @@ import { H1, P } from '../../../components/typography';
 
 export function OnboardingCompleteStep() {
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-4">
+		<div className="flex w-full flex-col items-center gap-4 py-10">
 			<img src={AuctionStartImage} alt="" />
 
 			<H1>{__('Onboarding Complete', 'goodbids')}</H1>
@@ -19,7 +19,7 @@ export function OnboardingCompleteStep() {
 				</P>
 			</div>
 
-			<div className="flex gap-2 flex-wrap">
+			<div className="flex flex-wrap gap-2">
 				<ButtonLink
 					href={gbNonprofitOnboarding.onboardingCompleteUrl}
 					target="_blank"

@@ -6,7 +6,7 @@
 
 		input,
 		textarea {
-			@apply bg-contrast text-base-2 border-base rounded placeholder:text-base focus:outline-contrast-3;
+			@apply rounded border-base bg-contrast text-base-2 placeholder:text-base focus:outline-contrast-3;
 		}
 
 		.wp-block-button__link {

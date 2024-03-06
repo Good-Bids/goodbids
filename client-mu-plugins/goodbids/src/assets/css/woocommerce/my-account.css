@@ -29,7 +29,7 @@
 				}
 
 				a.edit {
-					@apply !inline-block !float-none btn-fill-sm mb-4;
+					@apply btn-fill-sm !float-none mb-4 !inline-block;
 				}
 			}
 

@@ -6,13 +6,13 @@ type ButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
 
 export function ButtonLink({ variant = 'outline', ...rest }: ButtonProps) {
 	const classes = clsx(
-		'py-2 px-6 cursor-pointer text-admin-content no-underline text-center block',
+		'block cursor-pointer px-6 py-2 text-center text-admin-content no-underline',
 		{
-			'border-none rounded-admin-sm bg-admin-main text-white hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 focus:text-white':
+			'focus:outline-opacity-50 rounded-admin-sm border-none bg-admin-main text-white transition-colors hover:bg-admin-accent hover:text-black focus:text-white focus:ring-2 focus:ring-admin-main focus:ring-opacity-50':
 				variant === 'solid',
-			'border border-solid rounded-admin-sm border-admin-main text-admin-main':
+			'rounded-admin-sm border border-solid border-admin-main text-admin-main':
 				variant === 'outline',
-			'border border-solid rounded-admin-sm border-error-bg text-error-bg':
+			'rounded-admin-sm border border-solid border-error-bg text-error-bg':
 				variant === 'warning',
 		},
 	);

@@ -14,9 +14,9 @@ export function RadioItem(props: RadioItemProps) {
 			<Primitive.Item
 				id={id}
 				{...rest}
-				className="bg-white w-6 h-6 rounded-full shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-admin-accent focus:ring-offset-2 border-none cursor-pointer"
+				className="h-6 w-6 cursor-pointer rounded-full border-none bg-white shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-admin-accent focus:ring-offset-2"
 			>
-				<Primitive.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-3 after:h-3 after:rounded-full after:bg-admin-main" />
+				<Primitive.Indicator className="relative flex h-full w-full items-center justify-center after:block after:h-3 after:w-3 after:rounded-full after:bg-admin-main after:content-['']" />
 			</Primitive.Item>
 			<label htmlFor={id} className="text-admin-content">
 				{children}
@@ -36,7 +36,7 @@ export function RadioInput(props: RadioInputProps) {
 	return (
 		<div className="flex flex-col gap-2">
 			<div className="flex gap-2">
-				<span className="text-admin-large text-admin-main font-bold">
+				<span className="text-admin-large font-bold text-admin-main">
 					{label}
 				</span>
 				{tooltip && <Tooltip>{tooltip}</Tooltip>}

@@ -17,7 +17,7 @@ export function FreeBidsInfo() {
 						className="flex items-center gap-2"
 					>
 						<InfoIcon width={16} />
-						<a href="/earn-free-bids" className="text-sm block">
+						<a href="/earn-free-bids" className="block text-sm">
 							Learn more
 						</a>
 					</motion.div>

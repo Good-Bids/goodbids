@@ -12,7 +12,7 @@ export function CardHeading({ title, content, children }: CardHeadingProps) {
 		'p-4': children,
 	});
 
-	const headingClasses = clsx('w-full flex flex-col gap-1', {
+	const headingClasses = clsx('flex w-full flex-col gap-1', {
 		'max-w-120': children,
 		'p-4': !children,
 	});

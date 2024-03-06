@@ -6,7 +6,7 @@ export type ProductFormProps = FormProps;
 
 export function ProductForm({ shippingClasses }: ProductFormProps) {
 	return (
-		<div className="flex gap-4 justify-between">
+		<div className="flex justify-between gap-4">
 			<Form shippingClasses={shippingClasses} />
 
 			<Tips>
