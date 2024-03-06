@@ -1,5 +1,6 @@
 const path = require('path');
 const defaults = require('@wordpress/scripts/config/webpack.config.js');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
 	...defaults,
@@ -77,5 +78,9 @@ module.exports = {
 	output: {
 		filename: '[name].js',
 		path: path.resolve(process.cwd(), 'build'),
+	},
+	resolve: {
+		...defaults.resolve,
+		plugins: [new TsconfigPathsPlugin()],
 	},
 };

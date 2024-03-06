@@ -30,6 +30,18 @@ class Wizard {
 	const PAGE_SLUG = 'gb-auction-wizard';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTION_ID_PARAM = 'auction_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const REWARD_EDIT_PARAM = 'reward_id';
+
+	/**
 	 * Wizard Admin Page ID
 	 *
 	 * @since 1.0.0
@@ -150,10 +162,23 @@ class Wizard {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?int $auction_id Auction ID.
+	 * @param ?int $reward_id  Reward ID.
+	 *
 	 * @return string
 	 */
-	private function get_url(): string {
-		return admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . self::PAGE_SLUG );
+	public function get_wizard_url( ?int $auction_id = null, ?int $reward_id = null ): string {
+		$wizard_url = admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() );
+		$wizard_url = add_query_arg( 'page', self::PAGE_SLUG, $wizard_url );
+
+		if ( $auction_id ) {
+			$wizard_url = add_query_arg( self::AUCTION_ID_PARAM, $auction_id, $wizard_url );
+		}
+		if ( $reward_id ) {
+			$wizard_url = add_query_arg( self::REWARD_EDIT_PARAM, $reward_id, $wizard_url );
+		}
+
+		return $wizard_url;
 	}
 
 	/**
@@ -218,9 +243,12 @@ class Wizard {
 	private function get_js_vars(): array {
 		return [
 			// General.
-			'baseURL' => $this->get_url(),
-			'appID'   => self::PAGE_SLUG,
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'baseURL'         => $this->get_wizard_url(),
+			'appID'           => self::PAGE_SLUG,
+			'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+			'adminURL'        => admin_url(),
+			'auctionIdParam'  => self::AUCTION_ID_PARAM,
+			'editRewardParam' => self::REWARD_EDIT_PARAM,
 
 			// WP/WC Variables.
 			'rewardCategorySlug' => Rewards::ITEM_TYPE,
@@ -243,7 +271,7 @@ class Wizard {
 				$node = $wp_admin_bar->get_node( 'new-' . goodbids()->auctions->get_post_type() );
 
 				if ( $node ) {
-					$node->href = $this->get_url();
+					$node->href = $this->get_wizard_url();
 					$wp_admin_bar->add_node( (array) $node );
 				}
 			},
@@ -259,7 +287,7 @@ class Wizard {
 					return;
 				}
 
-				$url = $this->get_url();
+				$url = $this->get_wizard_url();
 				$url = esc_js( $url );
 				$url = str_replace( '&amp;', '&', $url );
 				?>

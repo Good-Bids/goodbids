@@ -1,19 +1,21 @@
 import { useDebouncedCallback } from 'use-debounce';
-import { TextInput } from '../../../components/text-input';
-import { AuctionState, useAuctionWizardState } from '../store';
+import { TextInput } from '~/components/text-input';
 import { DatePickers } from './date-pickers';
-import { validateDecimal, validateInteger } from '../../../utils/number';
-import { MoneyIcon } from '../../../components/money-icon';
-import { Tooltip } from '../../../components/tooltip';
+import { validateDecimal, validateInteger } from '~/utils/number';
+import { MoneyIcon } from '~/components/money-icon';
+import { Tooltip } from '~/components/tooltip';
 import { __ } from '@wordpress/i18n';
+import { AuctionState, useAuctionWizardState } from '../../store';
+import { TextArea } from '~/components/text-area';
 
 export function Form() {
 	const {
 		auction: {
+			title,
+			excerpt,
 			bidIncrement,
 			startingBid,
 			bidExtensionMinutes,
-			bidExtensionSeconds,
 			auctionGoal,
 			expectedHighBid,
 			estimatedRetailValue,
@@ -44,6 +46,42 @@ export function Form() {
 			<h1 className="text-4xl text-admin-main m-0">
 				{__('Add Auction Details', 'goodbids')}
 			</h1>
+
+			<div className="flex flex-col gap-4">
+				<h2 className="text-admin-large text-admin-main m-0">
+					{__('Auction Content', 'goodbids')}
+				</h2>
+
+				<div className="w-full max-w-80">
+					<TextInput
+						label={__('Auction Page Title', 'goodbids')}
+						id="auction-title"
+						tooltip={__(
+							'Leave blank to default to Reward Title.',
+							'goodbids',
+						)}
+						defaultValue={title.value}
+						onChange={(e) =>
+							handleDebounce('title', e.target.value)
+						}
+					/>
+				</div>
+
+				<div className="w-full max-w-120">
+					<TextArea
+						id="auction-excerpt"
+						label={__('Auction Page Excerpt', 'goodbids')}
+						tooltip={__(
+							'Limit excerpt to 55 words to optimize page layout',
+							'goodbids',
+						)}
+						defaultValue={excerpt.value}
+						onChange={(e) =>
+							handleDebounce('excerpt', e.target.value)
+						}
+					/>
+				</div>
+			</div>
 
 			<DatePickers />
 
@@ -115,31 +153,17 @@ export function Form() {
 					</Tooltip>
 				</div>
 
-				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
+				<div className="w-full max-w-60">
 					<TextInput
 						label={__('Minutes', 'goodbids')}
 						id="bid-extension-minutes"
 						defaultValue={bidExtensionMinutes.value}
 						error={bidExtensionMinutes.error}
 						inputMode="numeric"
+						required
 						onChange={(e) =>
 							handleDebounce(
 								'bidExtensionMinutes',
-								e.target.value,
-								validateInteger,
-							)
-						}
-					/>
-
-					<TextInput
-						label={__('Seconds', 'goodbids')}
-						id="bid-extension-seconds"
-						defaultValue={bidExtensionSeconds.value}
-						error={bidExtensionSeconds.error}
-						inputMode="numeric"
-						onChange={(e) =>
-							handleDebounce(
-								'bidExtensionSeconds',
 								e.target.value,
 								validateInteger,
 							)

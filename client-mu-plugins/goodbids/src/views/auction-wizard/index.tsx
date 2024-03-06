@@ -1,17 +1,11 @@
 import { render } from '@wordpress/element';
-import { CreateWizard } from './create-wizard';
-import { Providers } from './providers';
+import { Driver } from './driver';
 
 function renderReact() {
 	const root = document.getElementById(gbAuctionWizard.appID);
 
 	if (root) {
-		render(
-			<Providers>
-				<CreateWizard />
-			</Providers>,
-			root,
-		);
+		render(<Driver />, root);
 	}
 }
 

@@ -1,16 +1,16 @@
-import { Button } from '../../../components/button';
-import { CheckIcon } from '../../../components/check-icon';
-import { ProgressIcon } from '../../../components/progress-icon';
-import { ShippingClasses } from '../api/shipping-classes';
+import { ProgressIcon } from '~/components/progress-icon';
 import { useAuctionWizardState } from '../store';
+import { ShippingClasses } from '../api/get-shipping-classes';
+import { CheckIcon } from '~/components/check-icon';
 import { __ } from '@wordpress/i18n';
+import { Button } from '~/components/button';
 
-type RewardProductProps = {
+type ReviewProductProps = {
 	shippingClasses: ShippingClasses;
 	status: 'pending' | 'error' | 'success' | 'idle';
 };
 
-export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
+export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 	const { product, setStep } = useAuctionWizardState();
 
 	if (status === 'pending') {
@@ -46,7 +46,7 @@ export function RewardProduct({ shippingClasses, status }: RewardProductProps) {
 				</li>
 				<li className="text-admin-content">
 					<b>{__('Fair Market Value.', 'goodbids')}</b>{' '}
-					{product.regularPrice.value}
+					{`${product.regularPrice.value}`}
 				</li>
 				<li className="text-admin-content">
 					<b>{__('Product Category.', 'goodbids')}</b>{' '}

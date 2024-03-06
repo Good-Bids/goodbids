@@ -1,18 +1,19 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import AuctionStartImage from '../../../../assets/images/auction-start.png';
-import { Button } from '../../../components/button';
+import { Button } from '~/components/button';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 
-type AuctionWizardStartProps = {
+type StartStepProps = {
 	loading: boolean;
 };
 
-export function AuctionWizardStart({ loading }: AuctionWizardStartProps) {
+export function StartStep({ loading }: StartStepProps) {
 	const {
 		setStep,
 		clearStore,
 		product: { name },
+		auction: { title },
 	} = useAuctionWizardState();
 
 	const setProductStep = () => {
@@ -68,7 +69,7 @@ export function AuctionWizardStart({ loading }: AuctionWizardStartProps) {
 
 							<Button autoFocus onClick={setProductStep}>
 								{__('Continue creating', 'goodbids')}{' '}
-								{name.value}
+								{title.value || name.value}
 							</Button>
 
 							<Button onClick={clearAndSetProductStep}>
