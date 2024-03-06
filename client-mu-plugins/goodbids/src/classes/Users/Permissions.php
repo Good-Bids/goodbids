@@ -48,6 +48,12 @@ class Permissions {
 
 		// Set Admin Auction Capabilities.
 		$this->set_admin_auction_capabilities();
+
+		// Remove some user roles.
+		$this->remove_unused_roles();
+
+		// Set the default role for new users.
+		$this->set_default_role();
 	}
 
 	/**
@@ -227,4 +233,49 @@ class Permissions {
 		}
 	}
 
+	/**
+	 * Remove Unused Roles for Nonprofit sites.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function remove_unused_roles(): void {
+		add_action(
+			'init',
+			function () {
+				if ( is_main_site() ) {
+					return;
+				}
+
+				remove_role( 'subscriber' );
+				remove_role( 'contributor' );
+				remove_role( 'shop_manager' );
+				remove_role( 'author' );
+				remove_role( 'editor' );
+				remove_role( 'vip_support' );
+				remove_role( 'vip_support_inactive' );
+			}
+		);
+	}
+
+	/**
+	 * Set the default role for Nonprofits to Administrator.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function set_default_role(): void {
+		add_filter(
+			'option_default_role',
+			function ( string $role ): string {
+				if ( is_main_site() ) {
+					return $role;
+				}
+
+				return 'administrator';
+			}
+		);
+	}
 }
