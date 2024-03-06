@@ -170,22 +170,17 @@ class Nonprofits {
 	}
 
 	/**
-	 * Check if onboarding is completed.
+	 * Returns Site Status options
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $site_id
-	 *
-	 * @return bool
+	 * @return array
 	 */
-	public function is_onboarded( ?int $site_id = null ): bool {
-		if ( ! $site_id ) {
-			$site_id = get_current_blog_id();
-		}
-
-		return goodbids()->sites->swap(
-			fn () => boolval( get_option( 'goodbids_onboarded' ) ),
-			$site_id
-		);
+	public function get_site_status_options(): array {
+		return [
+			Nonprofit::STATUS_PENDING,
+			Nonprofit::STATUS_LIVE,
+			Nonprofit::STATUS_INACTIVE,
+		];
 	}
 }

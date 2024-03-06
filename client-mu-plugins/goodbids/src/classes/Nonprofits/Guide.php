@@ -32,8 +32,6 @@ class Guide {
 			return;
 		}
 
-		$this->nonprofit = new Nonprofit( get_current_blog_id() );
-
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
 
@@ -167,32 +165,41 @@ class Guide {
 	 * @return array
 	 */
 	private function get_js_vars(): array {
+		$nonprofit = new Nonprofit( get_current_blog_id() );
+
 		return [
-			'appID'                   => self::PAGE_SLUG,
-			'ajaxUrl'                 => admin_url( 'admin-ajax.php' ),
-			'optionsGeneralURL'       => admin_url( 'options-general.php' ),
-			'createWooCommerceURL'    => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
-			'setUpPaymentURL'         => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ),
-			'configureShippingURL'    => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
-			'jetpackURL'              => admin_url( 'admin.php?page=jetpack#/dashboard' ),
-			'akismetURL'              => admin_url( 'admin.php?page=akismet-key-config' ),
-			'woocommerceSettingsURL'  => admin_url( 'admin.php?page=wc-settings&tab=general' ),
-			'styleURL'                => admin_url( 'site-editor.php?path=/wp_global_styles' ),
-			'updateLogoURL'           => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
-			'customizeHomepageURL'    => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
-			'pagesURL'                => admin_url( 'edit.php?post_type=page' ),
-			'patternsURL'             => admin_url( 'site-editor.php?path=/patterns' ),
-			'auctionWizardURL'        => admin_url( Wizard::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),
-			'addUsersURL'             => admin_url( 'user-new.php' ),
-			'accessibilityCheckerURL' => admin_url( 'admin.php?page=accessibility_checker' ),
-			'homeURL'                 => home_url(),
-			'auctionsURL'             => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
-			'orderMetricsURL'         => admin_url( 'admin.php?page=wc-admin&path=/analytics/categories' ),
-			'revenueMetricsURL'       => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
-			'invoicesURL'             => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
-			'commentsURL'             => admin_url( 'edit-comments.php' ),
-			'siteStatus'              => $this->nonprofit->get_status(),
-			'siteStatusOptions'       => $this->nonprofit->get_site_status_options(),
+			'appID'   => self::PAGE_SLUG,
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'homeURL' => home_url(),
+
+			'optionsGeneralURL' => admin_url( 'options-general.php' ),
+			'commentsURL'       => admin_url( 'edit-comments.php' ),
+			'jetpackURL'        => admin_url( 'admin.php?page=jetpack#/dashboard' ),
+			'akismetURL'        => admin_url( 'admin.php?page=akismet-key-config' ),
+
+			'woocommerceSettingsURL' => admin_url( 'admin.php?page=wc-settings&tab=general' ),
+			'configureShippingURL'   => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
+			'orderMetricsURL'        => admin_url( 'admin.php?page=wc-admin&path=/analytics/categories' ),
+			'revenueMetricsURL'      => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
+
+			'styleURL'             => admin_url( 'site-editor.php?path=/wp_global_styles' ),
+			'updateLogoURL'        => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
+			'customizeHomepageURL' => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
+
+			'pagesURL'    => admin_url( 'edit.php?post_type=page' ),
+			'patternsURL' => admin_url( 'site-editor.php?path=/patterns' ),
+			'addUsersURL' => admin_url( 'user-new.php' ),
+
+			'accessibilityCheckerLicenseURL' => admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' ),
+			'accessibilityCheckerURL'        => admin_url( 'admin.php?page=accessibility_checker' ),
+
+			'auctionWizardURL' => admin_url( Wizard::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),
+			'auctionsURL'      => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
+			'invoicesURL'      => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
+
+			'siteId'			=> $nonprofit->get_id(),
+			'siteStatus'        => $nonprofit->get_status(),
+			'siteStatusOptions' => goodbids()->network->nonprofits->get_site_status_options(),
 		];
 	}
 

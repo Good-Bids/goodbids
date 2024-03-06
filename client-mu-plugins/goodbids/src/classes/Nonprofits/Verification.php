@@ -41,6 +41,12 @@ class Verification {
 	const OPTION_SLUG = 'gbnp';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STATUS_OPTION = 'status';
+
+	/**
 	 * Nonprofit custom fields
 	 *
 	 * @since 1.0.0
@@ -280,7 +286,7 @@ class Verification {
 					$new_fields[ $key ] = $field;
 
 					// Insert after Status.
-					if ( 'status' === $key ) {
+					if ( self::STATUS_OPTION === $key ) {
 						$new_fields['verification'] = [
 							'label'       => __( 'Verified', 'goodbids' ),
 							'type'        => 'toggle',
@@ -326,7 +332,7 @@ class Verification {
 				'placeholder' => 'https://',
 				'required'    => true,
 			],
-			'status'               => [
+			self::STATUS_OPTION    => [
 				'label'       => __( 'Site Status', 'goodbids' ),
 				'type'        => 'select',
 				'default'     => Nonprofit::STATUS_PENDING,

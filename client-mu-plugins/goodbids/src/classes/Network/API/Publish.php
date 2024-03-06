@@ -10,6 +10,7 @@ namespace GoodBids\Network\API;
 
 defined( 'ABSPATH' ) || exit;
 
+use GoodBids\Network\Nonprofit;
 use WC_REST_Controller;
 use WP_Error;
 use WP_REST_Request;
@@ -75,13 +76,22 @@ class Publish extends WC_REST_Controller {
 	 * @return WP_Error|WP_REST_Response
 	 */
 	public function publish_site( WP_REST_Request $request ): WP_Error|WP_REST_Response {
-		$site_id = $request->get_param( 'site_id' );
+		$site_id = intval( $request->get_param( 'site_id' ) );
 
 		if ( ! $site_id ) {
 			return new WP_Error( 'goodbids_missing_required_parameters', __( 'The required `site_id` parameter was not found.', 'goodbids' ) );
 		}
 
-		// TODO: If site not found, return a 404 error.
+		$nonprofit = new Nonprofit( $site_id );
+
+		if ( ! $nonprofit->is_valid() ) {
+			return new WP_Error( 'goodbids_invalid_site', __( 'The provided `site_id` does not belong to a valid site.', 'goodbids' ) );
+		}
+
+		// Make it live!
+		if ( ! $nonprofit->set_status( Nonprofit::STATUS_LIVE ) ) {
+			return new WP_Error( 'goodbids_status_update_failed', __( 'There was a problem adjusting the Site Status.', 'goodbids' ) );
+		}
 
 		return new WP_REST_Response( $site_id, 200 );
 	}

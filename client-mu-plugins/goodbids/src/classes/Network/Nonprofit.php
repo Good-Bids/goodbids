@@ -10,6 +10,7 @@ namespace GoodBids\Network;
 
 use GoodBids\Auctions\Auction;
 use GoodBids\Nonprofits\Invoice;
+use GoodBids\Nonprofits\Verification;
 use WP_Site;
 
 /**
@@ -66,6 +67,17 @@ class Nonprofit {
 	}
 
 	/**
+	 * Check to see if the site is valid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return (bool) $this->site;
+	}
+
+	/**
 	 * Get the Site URL
 	 *
 	 * @since 1.0.0
@@ -113,6 +125,23 @@ class Nonprofit {
 	 */
 	public function get_status(): string {
 		return goodbids()->verification->get_nonprofit_data( $this->get_id(), 'status' );
+	}
+
+	/**
+	 * Update the Site's Status
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $status
+	 *
+	 * @return bool|int
+	 */
+	public function set_status( string $status ): bool|int {
+		if ( ! in_array( $status, goodbids()->network->nonprofits->get_site_status_options(), true ) ) {
+			return false;
+		}
+
+		return update_site_meta( $this->get_id(), Verification::STATUS_OPTION, $status );
 	}
 
 	/**
@@ -250,20 +279,5 @@ class Nonprofit {
 	 */
 	public function is_verified(): bool {
 		return goodbids()->verification->is_verified( $this->get_id() );
-	}
-
-	/**
-	 * Returns Site Status options
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool
-	 */
-	public function get_site_status_options(): array {
-		return [
-			self::STATUS_PENDING,
-			self::STATUS_LIVE,
-			self::STATUS_INACTIVE,
-		];
 	}
 }
