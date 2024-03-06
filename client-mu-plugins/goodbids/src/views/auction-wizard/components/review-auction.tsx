@@ -17,9 +17,9 @@ export function ReviewAuction({
 
 	if (createStatus === 'pending' || updateStatus === 'pending') {
 		return (
-			<div className="flex flex-col gap-2 items-center">
+			<div className="flex flex-col items-center gap-2">
 				<ProgressIcon spin width={48} />
-				<h2 className="text-admin-large text-admin-main m-0">
+				<h2 className="m-0 text-admin-large text-admin-main">
 					{__('Saving Auction', 'goodbids')}
 				</h2>
 			</div>
@@ -28,9 +28,9 @@ export function ReviewAuction({
 
 	if (createStatus === 'success' && updateStatus === 'success') {
 		return (
-			<div className="flex flex-col gap-2 items-center text-admin-main">
+			<div className="flex flex-col items-center gap-2 text-admin-main">
 				<CheckIcon width={48} />
-				<h2 className="text-admin-large text-admin-main m-0">
+				<h2 className="m-0 text-admin-large text-admin-main">
 					{__('Auction saved!', 'goodbids')}
 				</h2>
 			</div>
@@ -39,7 +39,7 @@ export function ReviewAuction({
 
 	return (
 		<>
-			<h2 className="text-admin-large text-admin-main m-0">
+			<h2 className="m-0 text-admin-large text-admin-main">
 				Your Auction
 			</h2>
 

@@ -4,7 +4,7 @@ type ErrorWrapperProps = {
 
 export function ErrorWrapper({ children }: ErrorWrapperProps) {
 	return (
-		<div className="w-full bg-error-bg text-error-text p-4 rounded-md">
+		<div className="w-full rounded-md bg-error-bg p-4 text-error-text">
 			{children}
 		</div>
 	);

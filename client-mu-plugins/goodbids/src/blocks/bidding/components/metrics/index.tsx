@@ -15,7 +15,7 @@ export function Metrics() {
 			{renderStatuses.includes(auctionStatus) && (
 				<motion.div
 					{...fadeAnimation}
-					className="grid grid-cols-3 gap-2 -mt-[0.75rem]"
+					className="-mt-[0.75rem] grid grid-cols-3 gap-2"
 				>
 					<MetricBlock type="raised" value={totalRaised} />
 					<MetricBlock

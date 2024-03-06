@@ -68,7 +68,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 1 }}
 						transition={{ ease: 'easeInOut', duration: 0.2 }}
-						className="absolute top-0 left-0 w-full h-full bg-admin-gray flex flex-col items-center pt-20 gap-4 text-admin-main"
+						className="absolute left-0 top-0 flex h-full w-full flex-col items-center gap-4 bg-admin-gray pt-20 text-admin-main"
 					>
 						{publishSite.status === 'pending' && (
 							<>

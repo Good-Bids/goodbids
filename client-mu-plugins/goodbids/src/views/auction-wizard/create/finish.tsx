@@ -7,11 +7,11 @@ export function FinishStep() {
 	const { auctionId } = useAuctionWizardState();
 
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-2">
+		<div className="flex w-full flex-col items-center gap-2 py-10">
 			<div>
 				<img src={AuctionEndImage} />
 			</div>
-			<h1 className="text-6xl font-bold text-admin-main m-0">
+			<h1 className="m-0 text-6xl font-bold text-admin-main">
 				{__('Almost there!', 'goodbids')}
 			</h1>
 			<div className="max-w-xl">

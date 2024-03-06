@@ -17,7 +17,7 @@ export function MultiStep({ defaultStep, steps }: MultiStepProps) {
 
 	return (
 		<div className="flex">
-			<div className="flex flex-col min-w-80">
+			<div className="flex min-w-80 flex-col">
 				{Object.entries(steps).map(([key, value]) => (
 					<Button
 						key={key}
@@ -47,7 +47,7 @@ function Button(props: ButtonProps) {
 	const { active, fade = false, ...rest } = props;
 
 	const classes = clsx(
-		'px-4 py-2 text-admin-large border-none text-left hover:bg-admin-secondary hover:text-white focus:text-white transition-all ',
+		'border-none px-4 py-2 text-left text-admin-large transition-all hover:bg-admin-secondary hover:text-white focus:text-white ',
 		{
 			'bg-admin-main text-white': active,
 			'bg-transparent text-admin-main': !active && !fade,
@@ -64,7 +64,7 @@ type ContainerProps = {
 
 function Container({ children }: ContainerProps) {
 	return (
-		<div className="w-full border-t-8 border-l-8 border-r-6 border-b-6 border-admin-main border-solid p-4 flex flex-col items-center">
+		<div className="flex w-full flex-col items-center border-b-6 border-l-8 border-r-6 border-t-8 border-solid border-admin-main p-4">
 			{children}
 		</div>
 	);

@@ -5,7 +5,7 @@ import { H1, P } from '../../../components/typography';
 
 export function ActivateAccessibilityCheckerStep() {
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-4">
+		<div className="flex w-full flex-col items-center gap-4 py-10">
 			<img src={AuctionStartImage} alt="" />
 
 			<H1>{__('Activate Accessibility Checker Pro', 'goodbids')}</H1>

@@ -1,3 +1,7 @@
+function pxToRem(px) {
+	return `${px / 16}rem`;
+}
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	corePlugins: {
@@ -66,6 +70,9 @@ module.exports = {
 					300: '#2271b1',
 					600: '#135e96',
 				},
+				'admin-gray': {
+					100: '#BDBFBE',
+				},
 			},
 			fontSize: {
 				xs: 'var(--wp--preset--font-size--x-small)',
@@ -74,11 +81,11 @@ module.exports = {
 				lg: 'var(--wp--preset--font-size--large)',
 				xl: 'var(--wp--preset--font-size--x-large)',
 				xxl: 'var(--wp--preset--font-size--xx-large)',
-				'admin-label': '0.875rem',
-				'admin-content': '1rem',
-				'admin-medium': '1.125rem',
-				'admin-large': '1.25rem',
-				'admin-extra-large': '1.5rem',
+				'admin-label': pxToRem(12),
+				'admin-content': pxToRem(16),
+				'admin-medium': pxToRem(18),
+				'admin-large': pxToRem(20),
+				'admin-extra-large': pxToRem(24),
 			},
 			keyframes: {
 				'spin-left': {
@@ -91,11 +98,12 @@ module.exports = {
 				},
 			},
 			maxWidth: {
-				100: '25rem',
-				120: '30rem',
+				100: pxToRem(100),
+				120: pxToRem(120),
+				536: pxToRem(536),
 			},
 			minWidth: {
-				88: '22rem',
+				88: pxToRem(88),
 			},
 		},
 	},

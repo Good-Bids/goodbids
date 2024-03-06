@@ -1,6 +1,6 @@
 @layer components {
 	ul.page-numbers {
-		@apply flex gap-5 list-none p-0 justify-center items-center;
+		@apply flex list-none items-center justify-center gap-5 p-0;
 
 		li {
 			@apply flex;

@@ -3,7 +3,7 @@ import { WaveIcon } from '../icons/wave-icon';
 
 export function EditorFreeBidsPromo() {
 	return (
-		<div className="flex flex-col justify-start gap-4 p-4 rounded-sm bg-contrast-5">
+		<div className="flex flex-col justify-start gap-4 rounded-sm bg-contrast-5 p-4">
 			<EditorFreeBidsHeading />
 			<div className="flex flex-col gap-4 pl-6">
 				<EditorFreeBidsContent />
@@ -27,7 +27,7 @@ function EditorFreeBidsInfo() {
 function EditorFreeBidsHeading() {
 	return (
 		<div className="flex items-center gap-3">
-			<div className="w-6 h-6">
+			<div className="h-6 w-6">
 				<WaveIcon />
 			</div>
 			<p className="m-0">

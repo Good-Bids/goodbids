@@ -17,14 +17,14 @@ export function Tooltip({ children }: TooltipProps) {
 	return (
 		<Primitive.Root>
 			<Primitive.Trigger asChild>
-				<button className="border-none hover:bg-gray-500 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 rounded-full bg-gray-300 flex items-center justify-center h-5 w-5">
+				<button className="flex h-5 w-5 items-center justify-center rounded-full border-none bg-gray-300 hover:bg-gray-500 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50">
 					<InfoIcon width={12} />
 				</button>
 			</Primitive.Trigger>
 			<Primitive.Portal>
 				<Primitive.Content
 					side="right"
-					className="text-admin-content max-w-60 bg-gray-300 shadow-md p-2 rounded-md z-[1000]"
+					className="z-[1000] max-w-60 rounded-md bg-gray-300 p-2 text-admin-content shadow-md"
 				>
 					{children}
 					<Primitive.Arrow className="fill-gray-300" />

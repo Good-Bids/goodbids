@@ -4,8 +4,8 @@ type TipsProps = {
 
 export function Tips({ children }: TipsProps) {
 	return (
-		<section className="flex flex-col gap-4 bg-admin-main/25 text-black max-w-80 p-3 rounded-md">
-			<h2 className="text-3xl font-bold m-0 text-black">Tips</h2>
+		<section className="flex max-w-80 flex-col gap-4 rounded-md bg-admin-main/25 p-3 text-black">
+			<h2 className="m-0 text-3xl font-bold text-black">Tips</h2>
 			{children}
 		</section>
 	);

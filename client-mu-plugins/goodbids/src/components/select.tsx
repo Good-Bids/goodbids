@@ -13,7 +13,7 @@ export function Select(props: SelectProps) {
 	const { children, label, tooltip, error, id, ...rest } = props;
 
 	const triggerClasses = clsx(
-		'inline-flex items-center justify-between rounded-md text-admin-content bg-white shadow-inner hover:bg-gray-300 outline-none border h-9 w-full',
+		'inline-flex h-9 w-full items-center justify-between rounded-md border bg-white text-admin-content shadow-inner outline-none hover:bg-gray-300',
 		{
 			'border-error-bg': error,
 			'border-gray-300': !error,
@@ -26,7 +26,7 @@ export function Select(props: SelectProps) {
 
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex gap-3 items-center">
+			<div className="flex items-center gap-3">
 				<label htmlFor={id} className={labelClasses}>
 					{label}
 				</label>
@@ -40,7 +40,7 @@ export function Select(props: SelectProps) {
 				</Primitive.Trigger>
 
 				<Primitive.Portal>
-					<Primitive.Content className="overflow-hidden bg-gray-100 rounded-md shadow-sm">
+					<Primitive.Content className="overflow-hidden rounded-md bg-gray-100 shadow-sm">
 						<Primitive.Viewport>{children}</Primitive.Viewport>
 					</Primitive.Content>
 				</Primitive.Portal>
@@ -59,7 +59,7 @@ export function SelectItem(props: SelectItemProps) {
 	return (
 		<Primitive.Item
 			{...rest}
-			className="text-admin-content first:rounded-t-md last:rounded-b-md even:bg-gray-100 hover:bg-gray-300 data flex items-center p-1"
+			className="data flex items-center p-1 text-admin-content first:rounded-t-md last:rounded-b-md even:bg-gray-100 hover:bg-gray-300"
 		>
 			<Primitive.ItemText>{children}</Primitive.ItemText>
 		</Primitive.Item>

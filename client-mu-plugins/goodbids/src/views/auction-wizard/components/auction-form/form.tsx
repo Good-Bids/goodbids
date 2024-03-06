@@ -43,12 +43,12 @@ export function Form() {
 
 	return (
 		<div className="flex flex-col gap-8">
-			<h1 className="text-4xl text-admin-main m-0">
+			<h1 className="m-0 text-4xl text-admin-main">
 				{__('Add Auction Details', 'goodbids')}
 			</h1>
 
 			<div className="flex flex-col gap-4">
-				<h2 className="text-admin-large text-admin-main m-0">
+				<h2 className="m-0 text-admin-large text-admin-main">
 					{__('Auction Content', 'goodbids')}
 				</h2>
 
@@ -86,11 +86,11 @@ export function Form() {
 			<DatePickers />
 
 			<div className="flex flex-col gap-4">
-				<h2 className="text-admin-large text-admin-main m-0">
+				<h2 className="m-0 text-admin-large text-admin-main">
 					{__('Auction Bidding', 'goodbids')}
 				</h2>
 
-				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
+				<div className="grid max-w-120 grid-cols-2 items-start gap-4">
 					<TextInput
 						label={__('Bid Increment', 'goodbids')}
 						id="bid-increment"
@@ -129,7 +129,7 @@ export function Form() {
 								)
 							}
 						/>
-						<span className="italic px-1">
+						<span className="px-1 italic">
 							{__(
 								'Leave blank to default the starting bid to the bid increment.',
 								'goodbids',
@@ -174,7 +174,7 @@ export function Form() {
 
 			<div className="flex flex-col gap-4">
 				<div className="flex items-center gap-4">
-					<h2 className="text-admin-large text-admin-main m-0">
+					<h2 className="m-0 text-admin-large text-admin-main">
 						{__('Auction Fundraising', 'goodbids')}
 					</h2>
 					<Tooltip>
@@ -185,7 +185,7 @@ export function Form() {
 					</Tooltip>
 				</div>
 
-				<div className="grid grid-cols-2 items-start gap-4 max-w-120">
+				<div className="grid max-w-120 grid-cols-2 items-start gap-4">
 					<TextInput
 						label={__('Auction Goal', 'goodbids')}
 						id="auction-goal"

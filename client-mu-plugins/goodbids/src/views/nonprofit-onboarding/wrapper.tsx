@@ -7,9 +7,9 @@ type WrapperProps = ProgressBarProps & {
 
 export function Wrapper({ children, progress }: WrapperProps) {
 	return (
-		<div className="pr-5 py-3 flex flex-col gap-8">
+		<div className="flex flex-col gap-8 py-3 pr-5">
 			<ProgressBar progress={progress} />
-			<div className="flex justify-between items-center">
+			<div className="flex items-center justify-between">
 				<Logo />
 			</div>
 

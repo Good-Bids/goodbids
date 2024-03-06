@@ -12,8 +12,8 @@ export function MultiStepHeading({
 	children,
 }: MultiStepHeadingProps) {
 	return (
-		<div className="flex flex-col justify-between w-full h-full items-center gap-3">
-			<div className="w-full text-left flex flex-col gap-3">
+		<div className="flex h-full w-full flex-col items-center justify-between gap-3">
+			<div className="flex w-full flex-col gap-3 text-left">
 				<H2>{title}</H2>
 				<P>{content}</P>
 			</div>

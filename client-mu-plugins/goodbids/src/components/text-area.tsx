@@ -15,10 +15,10 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 		const { disabled, error, label, id, tooltip, startIcon, ...rest } =
 			props;
 
-		const inputClasses = clsx('rounded-md w-full border', {
+		const inputClasses = clsx('w-full rounded-md border', {
 			'border-gray-300': !error,
 			'border-error-bg': error,
-			'pl-6 p-2': startIcon,
+			'p-2 pl-6': startIcon,
 			'p-2': !startIcon,
 		});
 
@@ -28,7 +28,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
 		return (
 			<div className="flex flex-col gap-2">
-				<div className="flex gap-3 items-center">
+				<div className="flex items-center gap-3">
 					<label htmlFor={id} className={labelClasses}>
 						{label}
 					</label>

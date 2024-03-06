@@ -73,7 +73,7 @@ export function EditFlow({ auctionId, rewardId }: EditFlowProps) {
 
 	if (loading) {
 		return (
-			<div className="w-full pt-48 flex flex-col gap-2 items-center text-admin-main">
+			<div className="flex w-full flex-col items-center gap-2 pt-48 text-admin-main">
 				<ProgressIcon spin width={48} />
 				<H1>{__('Finding your product!', 'goodbids')}</H1>
 			</div>

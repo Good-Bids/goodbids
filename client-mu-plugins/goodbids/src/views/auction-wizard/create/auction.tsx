@@ -69,7 +69,7 @@ export function AuctionStep() {
 
 			<AuctionForm />
 
-			<div className="w-full flex justify-center">
+			<div className="flex w-full justify-center">
 				<Button variant="solid" onClick={handleNextPage}>
 					{__('Save and continue', 'goodbids')}
 				</Button>

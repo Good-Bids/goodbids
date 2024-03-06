@@ -28,7 +28,7 @@ export function MetricBlock({ type, value }: MetricBlockProps) {
 
 	return (
 		<div
-			className="px-4 py-2 rounded-sm bg-contrast-5"
+			className="rounded-sm bg-contrast-5 px-4 py-2"
 			role="region"
 			aria-live="polite"
 			aria-atomic="true"

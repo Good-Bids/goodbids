@@ -15,7 +15,7 @@ export function Driver() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<Wrapper>
-				<div className="max-w-2xl flex flex-col items-start gap-4">
+				<div className="flex max-w-2xl flex-col items-start gap-4">
 					<H1>{__('Site Setup', 'goodbids')}</H1>
 					<SiteAdmin />
 					<Ecommerce />

@@ -54,10 +54,10 @@ export function Form({ shippingClasses }: FormProps) {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h1 className="text-4xl text-admin-main m-0">
+			<h1 className="m-0 text-4xl text-admin-main">
 				{__('Create Auction Reward', 'goodbids')}
 			</h1>
-			<h2 className="text-admin-large text-admin-main m-0">
+			<h2 className="m-0 text-admin-large text-admin-main">
 				{__('What are you auctioning?', 'goodbids')}
 			</h2>
 
@@ -100,7 +100,7 @@ export function Form({ shippingClasses }: FormProps) {
 				</div>
 			</div>
 
-			<div className="py-6 flex flex-col gap-4">
+			<div className="flex flex-col gap-4 py-6">
 				<ProductImage />
 				<ProductGallery />
 			</div>
@@ -142,7 +142,7 @@ export function Form({ shippingClasses }: FormProps) {
 						/>
 					</div>
 
-					<div className="grid grid-cols-3 gap-2 w-full max-w-120">
+					<div className="grid w-full max-w-120 grid-cols-3 gap-2">
 						<div className="w-full">
 							<TextInput
 								id="product-length"
@@ -226,7 +226,7 @@ export function Form({ shippingClasses }: FormProps) {
 			)}
 			<div className="h-[1px] w-full bg-gray-600/50" />
 			{productType.value === 'physical' && (
-				<div className="w-full max-w-80 flex flex-col">
+				<div className="flex w-full max-w-80 flex-col">
 					<Select
 						id="shipping-class"
 						label={__('Shipping Class', 'goodbids')}

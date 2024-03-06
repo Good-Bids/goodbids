@@ -13,7 +13,7 @@ export function SocketError() {
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
-					className="flex items-start gap-4 bg-warning-bg text-warning-text rounded p-4"
+					className="flex items-start gap-4 rounded bg-warning-bg p-4 text-warning-text"
 				>
 					<div className="h-6 w-6">
 						<WarningIcon />

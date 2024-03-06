@@ -140,10 +140,10 @@ export function UpdateStep({
 
 			<ProductForm shippingClasses={shippingClasses} />
 
-			<div className="w-full flex justify-center">
+			<div className="flex w-full justify-center">
 				<Button variant="solid" onClick={handleSubmit}>
 					{updateProduct.status === 'pending' ? (
-						<div className="flex gap-2 items-center justify-center">
+						<div className="flex items-center justify-center gap-2">
 							<ProgressIcon spin />
 							<span>{__('Saving your changes', 'goodbids')}</span>
 						</div>

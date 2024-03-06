@@ -166,8 +166,8 @@ export function ReviewStep({
 	};
 
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-2">
-			<h1 className="text-6xl font-bold text-admin-main m-0">
+		<div className="flex w-full flex-col items-center gap-2 py-10">
+			<h1 className="m-0 text-6xl font-bold text-admin-main">
 				{__('Almost there!', 'goodbids')}
 			</h1>
 
@@ -181,12 +181,12 @@ export function ReviewStep({
 			</div>
 
 			{createProduct.status === 'error' && (
-				<span className="text-error-bg text-admin-content">
+				<span className="text-admin-content text-error-bg">
 					{__('Error creating product', 'goodbids')}
 				</span>
 			)}
 
-			<div className="flex gap-4 items-start w-full justify-center">
+			<div className="flex w-full items-start justify-center gap-4">
 				<ReviewWrapper>
 					<ReviewProduct
 						shippingClasses={shippingClasses}
