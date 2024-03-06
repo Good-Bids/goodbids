@@ -29,7 +29,7 @@ export function UploadLogo() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetupGuide.updateLogoURL}
+					href={gbNonprofitSetupGuide.customizeHomepageURL}
 				>
 					{__('Modify Site Header', 'goodbids')}
 				</ButtonLink>

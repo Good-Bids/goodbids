@@ -172,10 +172,11 @@ class Guide {
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 			'homeURL' => home_url(),
 
-			'optionsGeneralURL' => admin_url( 'options-general.php' ),
-			'commentsURL'       => admin_url( 'edit-comments.php' ),
-			'jetpackURL'        => admin_url( 'admin.php?page=jetpack#/dashboard' ),
-			'akismetURL'        => admin_url( 'admin.php?page=akismet-key-config' ),
+			'optionsGeneralURL'       => admin_url( 'options-general.php' ),
+			'commentsURL'             => admin_url( 'edit-comments.php' ),
+			'jetpackURL'              => admin_url( 'admin.php?page=jetpack#/dashboard' ),
+			'akismetURL'              => admin_url( 'admin.php?page=akismet-key-config' ),
+			'accessibilityCheckerURL' => admin_url( 'admin.php?page=accessibility_checker' ),
 
 			'woocommerceSettingsURL' => admin_url( 'admin.php?page=wc-settings&tab=general' ),
 			'configureShippingURL'   => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
@@ -183,15 +184,11 @@ class Guide {
 			'revenueMetricsURL'      => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 
 			'styleURL'             => admin_url( 'site-editor.php?path=/wp_global_styles' ),
-			'updateLogoURL'        => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
 			'customizeHomepageURL' => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
 
 			'pagesURL'    => admin_url( 'edit.php?post_type=page' ),
 			'patternsURL' => admin_url( 'site-editor.php?path=/patterns' ),
 			'addUsersURL' => admin_url( 'user-new.php' ),
-
-			'accessibilityCheckerLicenseURL' => admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' ),
-			'accessibilityCheckerURL'        => admin_url( 'admin.php?page=accessibility_checker' ),
 
 			'auctionWizardURL' => admin_url( Wizard::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),
 			'auctionsURL'      => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),

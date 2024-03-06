@@ -177,6 +177,12 @@ class Core {
 	public Watchers $watchers;
 
 	/**
+	 * @since 1.0.0
+	 * @var EqualizeDigital
+	 */
+	public EqualizeDigital $accessibility;
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.0.0
@@ -437,24 +443,25 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->utilities    = new Utilities();
-				$this->acf          = new ACF();
-				$this->admin        = new Admin();
-				$this->auctions     = new Auctions();
-				$this->auctioneer   = new Auctioneer();
-				$this->products     = new Products();
-				$this->bids         = new Bids();
-				$this->rewards      = new Rewards();
-				$this->network      = new Network();
-				$this->sites        = new Sites();
-				$this->invoices     = new Invoices();
-				$this->verification = new Verification();
-				$this->settings     = new Settings();
-				$this->woocommerce  = new WooCommerce();
-				$this->notices      = new Notices();
-				$this->users        = new Users();
-				$this->watchers     = new Watchers();
-				$this->referrals    = new Referrals();
+				$this->utilities     = new Utilities();
+				$this->acf           = new ACF();
+				$this->admin         = new Admin();
+				$this->auctions      = new Auctions();
+				$this->auctioneer    = new Auctioneer();
+				$this->products      = new Products();
+				$this->bids          = new Bids();
+				$this->rewards       = new Rewards();
+				$this->network       = new Network();
+				$this->sites         = new Sites();
+				$this->invoices      = new Invoices();
+				$this->verification  = new Verification();
+				$this->settings      = new Settings();
+				$this->woocommerce   = new WooCommerce();
+				$this->notices       = new Notices();
+				$this->users         = new Users();
+				$this->watchers      = new Watchers();
+				$this->referrals     = new Referrals();
+				$this->accessibility = new EqualizeDigital();
 
 				// Init Modules not part of the API.
 				new Permissions();
@@ -463,7 +470,6 @@ class Core {
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
-				new EqualizeDigital();
 				new Onboarding();
 				new Guide();
 				new NonprofitAdmin();

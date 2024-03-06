@@ -8,7 +8,6 @@
 
 namespace GoodBids\Nonprofits;
 
-use GoodBids\Network\Nonprofit;
 use Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile;
 
 /**
@@ -70,6 +69,12 @@ class Onboarding {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const STEP_ACCESSIBILITY_CHECKER_LICENSE = 'activate-accessibility-checker';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const STEP_ONBOARDING_COMPLETE = 'onboarding-complete';
 
 	/**
@@ -79,6 +84,7 @@ class Onboarding {
 	const ONBOARDING_STEPS = [
 		self::STEP_CREATE_STORE,
 		self::STEP_SET_UP_PAYMENTS,
+		self::STEP_ACCESSIBILITY_CHECKER_LICENSE,
 		self::STEP_ONBOARDING_COMPLETE,
 	];
 
@@ -89,8 +95,6 @@ class Onboarding {
 		if ( is_main_site() || is_network_admin() ) {
 			return;
 		}
-
-		$this->nonprofit = new Nonprofit( get_current_blog_id() );
 
 		// Redirect to Onboarding page if not yet onboarded.
 		$this->force_setup();
@@ -108,6 +112,7 @@ class Onboarding {
 		$this->redirect_current_step();
 		$this->wc_onboarding_redirect();
 		$this->payments_redirect();
+		$this->accessibility_redirect();
 
 		// Customize the WooCommerce onboarding button
 		$this->customize_wc_onboarding_button();
@@ -280,6 +285,12 @@ class Onboarding {
 				}
 
 				if ( self::STEP_SET_UP_PAYMENTS === $this->get_current_step() && $this->completed_payments_onboarding() ) {
+					set_transient( self::STEP_TRANSIENT, self::STEP_ACCESSIBILITY_CHECKER_LICENSE );
+					wp_safe_redirect( $this->get_url( self::STEP_ACCESSIBILITY_CHECKER_LICENSE ) );
+					exit;
+				}
+
+				if ( self::STEP_ACCESSIBILITY_CHECKER_LICENSE === $this->get_current_step() && $this->completed_accessibility_license() ) {
 					set_transient( self::STEP_TRANSIENT, self::STEP_ONBOARDING_COMPLETE );
 					wp_safe_redirect( $this->get_url( self::STEP_ONBOARDING_COMPLETE ) );
 					exit;
@@ -296,6 +307,12 @@ class Onboarding {
 					if ( ! $this->completed_payments_onboarding() ) {
 						set_transient( self::STEP_TRANSIENT, self::STEP_SET_UP_PAYMENTS );
 						wp_safe_redirect( $this->get_url( self::STEP_SET_UP_PAYMENTS ) );
+						exit;
+					}
+
+					if ( ! $this->completed_accessibility_license() ) {
+						set_transient( self::STEP_TRANSIENT, self::STEP_ACCESSIBILITY_CHECKER_LICENSE );
+						wp_safe_redirect( $this->get_url( self::STEP_ACCESSIBILITY_CHECKER_LICENSE ) );
 						exit;
 					}
 				}
@@ -327,9 +344,6 @@ class Onboarding {
 					return $dependencies;
 				}
 
-				// Include WP Media.
-				wp_enqueue_media();
-
 				// Get the asset file.
 				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-onboarding.asset.php';
 				if ( file_exists( $asset_file ) ) {
@@ -341,7 +355,7 @@ class Onboarding {
 					];
 				}
 
-				// Register the New Site Setup script.
+				// Register the Onboarding script.
 				wp_register_script(
 					self::PAGE_SLUG,
 					GOODBIDS_PLUGIN_URL . 'build/views/nonprofit-onboarding.js',
@@ -382,6 +396,10 @@ class Onboarding {
 		$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
 		$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
 
+		// Accessibility Checker URL
+		$accessibility_checker_url = admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' );
+		$accessibility_checker_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $accessibility_checker_url );
+
 		// Onboarding Complete URL
 		$onboarding_complete_url = home_url();
 		$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
@@ -395,14 +413,15 @@ class Onboarding {
 		$admin_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $admin_url );
 
 		return [
-			'appID'                 => self::PAGE_SLUG,
-			'stepParam'             => self::STEP_PARAM,
-			'stepOptions'           => self::ONBOARDING_STEPS,
-			'createStoreUrl'        => $create_store_url,
-			'setUpPaymentsUrl'      => $payments_url,
-			'onboardingCompleteUrl' => $onboarding_complete_url,
-			'setupGuideUrl'         => $setup_guide_url,
-			'adminUrl'              => $admin_url,
+			'appID'                   => self::PAGE_SLUG,
+			'stepParam'               => self::STEP_PARAM,
+			'stepOptions'             => self::ONBOARDING_STEPS,
+			'createStoreUrl'          => $create_store_url,
+			'setUpPaymentsUrl'        => $payments_url,
+			'onboardingCompleteUrl'   => $onboarding_complete_url,
+			'accessibilityCheckerUrl' => $accessibility_checker_url,
+			'setupGuideUrl'           => $setup_guide_url,
+			'adminUrl'                => $admin_url,
 		];
 	}
 
@@ -592,7 +611,11 @@ class Onboarding {
 
 		global $pagenow;
 
-		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-settings' === $_GET['page'] && ! empty( $_GET['section'] ) && 'stripe' === $_GET['section']; // phpcs:ignore
+		if ( 'admin.php' !== $pagenow || empty( $_GET['page'] ) || 'wc-settings' !== $_GET['page'] ) { // phpcs:ignore
+			return false;
+		}
+
+		return ! empty( $_GET['section'] ) && 'stripe' === $_GET['section']; // phpcs:ignore
 	}
 
 	/**
@@ -617,10 +640,16 @@ class Onboarding {
 					return;
 				}
 
+				// Wait until these are removed before performing our redirect.
+				if ( isset( $_GET['wcs_stripe_code'], $_GET['wcs_stripe_state'] ) ) { // phpcs:ignore
+					return;
+				}
+
 				delete_transient( self::REDIRECT_TRANSIENT );
 				wp_safe_redirect( $transient );
 				exit;
-			}
+			},
+			50
 		);
 
 		// Set the redirect to the final step after the payments setup is completed.
@@ -631,29 +660,9 @@ class Onboarding {
 					return;
 				}
 
-				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( self::STEP_ONBOARDING_COMPLETE ) );
+				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( self::STEP_ACCESSIBILITY_CHECKER_LICENSE ) );
 			},
 			50
-		);
-
-		// Hijack the clean_url filter to prevent the Stripe redirect from happening.
-		add_filter(
-			'clean_url',
-			function ( $url ) {
-				if ( ! isset( $_GET['wcs_stripe_code'], $_GET['wcs_stripe_state'] ) ) { // phpcs:ignore
-					return $url;
-				}
-
-				$redirect = get_transient( self::REDIRECT_TRANSIENT );
-
-				if ( ! $this->completed_payments_onboarding() || ! $redirect ) {
-					return $url;
-				}
-
-				delete_transient( self::REDIRECT_TRANSIENT );
-
-				return $redirect;
-			}
 		);
 
 		add_action(
@@ -756,6 +765,59 @@ class Onboarding {
 	}
 
 	/**
+	 * Redirect to the next step after the accessibility license setup is completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function accessibility_redirect(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$transient = get_transient( self::REDIRECT_TRANSIENT );
+
+				if ( ! $transient ) {
+					return;
+				}
+
+				// Don't redirect if we are on supported pages
+				if ( goodbids()->accessibility->is_license_page() && $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				delete_transient( self::REDIRECT_TRANSIENT );
+				wp_safe_redirect( $transient );
+				exit;
+			}
+		);
+
+		// Set the redirect when on the Accessibility Checker License page.
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! goodbids()->accessibility->is_license_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( self::STEP_ONBOARDING_COMPLETE ) );
+			},
+			50
+		);
+	}
+
+	/**
+	 * Check if Accessibility Checker License is completed
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function completed_accessibility_license(): bool {
+		return ( defined( 'EDACP_KEY_VALID' ) && true === EDACP_KEY_VALID ) || 'valid' === get_option( 'edacp_license_status' );
+	}
+
+	/**
 	 * Mark Onboarding as Completed.
 	 *
 	 * @since 1.0.0
@@ -784,4 +846,5 @@ class Onboarding {
 		add_action( 'init', $mark_completed );
 		add_action( 'admin_init', $mark_completed );
 	}
+
 }
