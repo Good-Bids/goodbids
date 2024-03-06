@@ -268,6 +268,10 @@ class Coupons {
 		add_filter(
 			'query',
 			function ( string $query ): string {
+				if ( is_main_site() || is_admin() ) {
+					return $query;
+				}
+
 				if ( ! str_contains( $query, 'SELECT' ) || ! str_contains( $query, 'FOR UPDATE' ) ) {
 					return $query;
 				}
