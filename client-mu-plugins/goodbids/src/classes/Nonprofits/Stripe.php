@@ -183,7 +183,6 @@ class Stripe {
 		$customer_id = get_site_option( self::STRIPE_CUSTOMER_ID_OPT );
 
 		if ( ! $customer_id ) {
-			Log::debug( 'No Stripe Customer ID found.', $context );
 			return null;
 		}
 
@@ -201,8 +200,6 @@ class Stripe {
 	 * @return bool
 	 */
 	private function create_customer(): bool {
-		Log::debug( 'Creating new Stripe Customer.' );
-
 		$context = [ 'invoice' => $this->invoice ];
 		$params  = [
 			'email' => get_bloginfo( 'admin_email' ),
@@ -257,8 +254,6 @@ class Stripe {
 			Log::warning( 'Stripe Invoice already exists.', $context );
 			return $this->invoice->get_stripe_invoice_id();
 		}
-
-		Log::debug( 'Creating new Stripe Invoice.', $context );
 
 		$params = [
 			'customer'          => $this->get_customer_id(),
@@ -316,10 +311,7 @@ class Stripe {
 		}
 
 		$context = [ 'invoice' => $this->get_invoice() ];
-
-		Log::debug( 'Creating new Stripe Invoice Item.', $context );
-
-		$params = [
+		$params  = [
 			'customer' => $this->get_customer_id(),
 			'invoice'  => $this->invoice->get_stripe_invoice_id(),
 			'amount'   => $this->invoice->get_amount() * 100, // Convert to cents.
@@ -372,8 +364,6 @@ class Stripe {
 			return false;
 		}
 
-		Log::debug( 'Finalizing Stripe Invoice.', $context );
-
 		$stripe_invoice = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id, $context ): ?stdClass {
 				try {
@@ -422,8 +412,6 @@ class Stripe {
 			Log::error( 'Can\'t send Stripe Invoice. No Stripe Invoice ID found.', $context );
 			return false;
 		}
-
-		Log::debug( 'Sending Stripe Invoice.', $context );
 
 		$invoice_url = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id, $context ): ?string {

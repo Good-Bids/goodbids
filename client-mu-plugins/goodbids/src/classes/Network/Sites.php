@@ -464,7 +464,6 @@ class Sites {
 					return;
 				}
 
-				Log::debug( 'About Page Created.' );
 				update_option( self::ABOUT_OPTION, $about_id );
 			},
 			100
@@ -506,7 +505,6 @@ class Sites {
 					return;
 				}
 
-				Log::debug( 'Auctions Page Created.' );
 				update_option( self::AUCTIONS_OPTION, $auctions_id );
 			},
 			110
@@ -539,10 +537,7 @@ class Sites {
 
 				if ( ! wp_delete_post( $page->ID ) ) {
 					Log::warning( 'There was a problem deleting the Sample Page' );
-					return;
 				}
-
-				Log::debug( 'Sample page deleted.' );
 			},
 			120
 		);
@@ -1235,7 +1230,6 @@ class Sites {
 				}
 
 				update_option( self::NAVIGATION_ID_OPTION, $nav_id );
-				Log::debug( 'Nonprofit Navigation updated', [ 'site_id' => get_current_blog_id(), 'nav_id' => $nav_id ] );
 			},
 			200 // Higher priority than page creation.
 		);

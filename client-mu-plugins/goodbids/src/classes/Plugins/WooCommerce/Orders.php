@@ -68,7 +68,6 @@ class Orders {
 		}
 
 		if ( ! $auction_id || ! $order_type ) {
-			Log::debug( 'No Auction ID or Order Type found', compact( 'order_id' ) );
 			return null;
 		}
 

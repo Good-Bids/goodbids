@@ -309,8 +309,6 @@ class Rewards {
 					return;
 				}
 
-				Log::debug( 'Updating Reward Price for Auction ID: ' . $auction_id );
-
 				$auction     = goodbids()->auctions->get( $auction_id );
 				$winning_bid = $auction->get_last_bid();
 

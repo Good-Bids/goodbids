@@ -50,7 +50,6 @@ class AuctionSummaryAdmin extends Email {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ) {
-				Log::debug( 'Triggering Auction Summary Admin emails for Auction: ' . $auction_id );
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_admins( $auction );
 			},

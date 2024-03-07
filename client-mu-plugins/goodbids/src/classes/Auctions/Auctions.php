@@ -933,7 +933,6 @@ class Auctions {
 					$auction = goodbids()->auctions->get( $auction_id );
 					// Skip START Action on Auctions that have ended.
 					if ( $auction->has_ended() ) {
-						Log::debug( 'Auction not started because it has already ended', compact( 'auction_id' ) );
 						continue;
 					}
 

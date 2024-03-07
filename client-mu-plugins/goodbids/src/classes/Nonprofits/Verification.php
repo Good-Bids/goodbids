@@ -587,8 +587,6 @@ class Verification {
 					return;
 				}
 
-				Log::debug( 'Updating Nonprofit Data.' );
-
 				$data     = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 				$verified = false;
 

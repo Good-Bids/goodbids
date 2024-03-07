@@ -64,7 +64,6 @@ class Permissions {
 	 * @return void
 	 */
 	private function update_version(): void {
-		Log::debug( 'Updating Permissions Version.' );
 		update_option( self::VERSION_OPTION, $this->version );
 	}
 
@@ -82,8 +81,6 @@ class Permissions {
 				if ( $this->version <= get_option( self::VERSION_OPTION ) ) {
 					return;
 				}
-
-				Log::debug( 'Creating BDP Admin Role.' );
 
 				// Role Name.
 				$role_name = __( 'BDP Administrator', 'goodbids' );
@@ -165,8 +162,6 @@ class Permissions {
 				if ( ! $role->has_cap( 'publish_auctions' ) ) {
 					return;
 				}
-
-				Log::debug( 'Setting Admin Auction Capabilities.' );
 
 				$types = [
 					goodbids()->auctions->get_post_type(),
