@@ -35,6 +35,12 @@ class Coupons {
 	const FREE_BID_COUPON_META_KEY = '_goodbids_free_bid_%d_coupon_id';
 
 	/**
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	public bool $hyperdb_enabled = true;
+
+	/**
 	 * Initialize Coupons
 	 *
 	 * @since 1.0.0
@@ -268,7 +274,7 @@ class Coupons {
 		add_filter(
 			'query',
 			function ( string $query ): string {
-				if ( is_main_site() || is_admin() ) {
+				if ( is_main_site() || is_admin() || ! $this->hyperdb_enabled ) {
 					return $query;
 				}
 

@@ -35,7 +35,7 @@ if ( ! function_exists( 'dd' ) ) {
 	 *
 	 * @return void
 	 */
-	function dd( mixed $data, ?string $method = 'export', bool $die = true ): void {
+	function dd( mixed $data, ?string $method = 'dump', bool $die = true ): void {
 		// Disable if not in dev environment.
 		if ( ! GoodBids\Core::is_local_env() ) {
 			return;
@@ -47,28 +47,47 @@ if ( ! function_exists( 'dd' ) ) {
 		ini_set( 'highlight.keyword', '#7FA3BC; font-weight: bold' );
 		ini_set( 'highlight.string', '#F2C47E' );
 
-		if ( in_array( $method, [ 'var_dump', 'dump' ], true ) ) {
-			ob_start();
-			var_dump( $data ); // phpcs:ignore
-			$dump = ob_get_clean();
-		} elseif ( in_array( $method, [ 'print_r', 'printr' ], true ) ) {
-			$dump = print_r( $data, true ); // phpcs:ignore
-		} else {
-			$dump = var_export( $data, true ); // phpcs:ignore
-		}
-
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			echo $dump; // phpcs:ignore
-
-			if ( ! $die ) {
-				return;
+		/**
+		 * Dump the data.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param mixed  $data
+		 * @param string $method
+		 * @param bool   $return
+		 *
+		 * @return ?string
+		 */
+		$do_dump = function( mixed $data, string $method = 'dump', bool $return = false ): ?string {
+			if ( $return ) {
+				ob_start();
 			}
 
-			die();
-		}
+			if ( in_array( $method, [ 'var_dump', 'dump' ], true ) ) {
+				var_dump( $data ); // phpcs:ignore
+			} elseif ( in_array( $method, [ 'print_r', 'printr' ], true ) ) {
+				print_r( $data ); // phpcs:ignore
+			} elseif ( in_array( $method, [ 'export', 'var_export' ], true ) ) {
+				var_export( $data ); // phpcs:ignore
+			} elseif ( in_array( $method, [ 'json', 'json_encode' ], true ) ) {
+				echo wp_json_encode( $data ); // phpcs:ignore
+			}
 
-		$output = highlight_string( "<?php\n\n" . $dump, true ); // phpcs:ignore
-		echo "<div style=\"background-color: #1C1E21; padding: 1rem\">{$output}</div>"; // phpcs:ignore
+			if ( $return ) {
+				return ob_get_clean();
+			}
+
+			return null;
+		};
+
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			$do_dump( $data, $method );
+		} else {
+			echo '<div style="background-color: #1C1E21; padding: 1rem">';
+			highlight_string( "<?php\n\n" );
+			highlight_string( $do_dump( $data, $method, true ) );
+			echo '</div>';
+		}
 
 		if ( ! $die ) {
 			return;

@@ -45,12 +45,6 @@ class Onboarding {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const REDIRECT_TRANSIENT = 'gb-onboarding-redirect';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
 	const STEP_TRANSIENT = 'gb-onboarding-step';
 
 	/**
@@ -107,7 +101,6 @@ class Onboarding {
 		$this->enqueue_scripts();
 
 		// Perform redirects as needed
-		$this->redirect_current_step();
 		$this->onboarding_redirect();
 
 		// Adjustments for Onboarding Pages
@@ -316,40 +309,6 @@ class Onboarding {
 	}
 
 	/**
-	 * Redirect to current step if they click on the Onboarding menu item.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function redirect_current_step(): void {
-		add_action(
-			'admin_init',
-			function () {
-				if ( ! $this->is_onboarding_page() ) {
-					return;
-				}
-
-				$continue = $this->get_first_incomplete_step();
-
-				if ( $continue && $continue !== $this->get_current_step_key() ) {
-					wp_safe_redirect( $this->get_url( $continue ) );
-					exit;
-				}
-
-				$step = get_transient( self::STEP_TRANSIENT );
-
-				if ( $step && $step !== $this->get_current_step_key() ) {
-					delete_transient( self::STEP_TRANSIENT );
-					wp_safe_redirect( $this->get_url( $step ) );
-					exit;
-				}
-			}
-		);
-
-	}
-
-	/**
 	 * Enqueue Admin Scripts
 	 *
 	 * @since 1.0.0
@@ -463,14 +422,21 @@ class Onboarding {
 
 		if ( ! empty( $_GET[ self::STEP_PARAM ] ) ) { // phpcs:ignore
 			$step = sanitize_text_field( wp_unslash( $_GET[ self::STEP_PARAM ] ) ); // phpcs:ignore
+		} elseif ( $this->is_onboarding_page() ) {
+			$step = array_key_first( $this->steps );
 		}
 
 		// Default to first step.
 		if ( ! $step || ! array_key_exists( $step, $this->steps ) ) {
+			$step = get_transient( self::STEP_TRANSIENT );
+		}
+
+		// Fallback on first step.
+		if ( ! $step ) {
 			$step = array_key_first( $this->steps );
 		}
 
-		set_transient( self::STEP_TRANSIENT, $step );
+		$this->set_step_transient( $step );
 
 		return $step;
 	}
@@ -582,18 +548,34 @@ class Onboarding {
 	 * @return void
 	 */
 	private function onboarding_redirect(): void {
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! $this->is_onboarding_page() || wp_doing_ajax() ) {
+					return;
+				}
+
+				$step = $this->get_current_step();
+
+				if ( $step['is_complete'] && $this->get_next_step_key() ) {
+					wp_safe_redirect( $this->get_url( $this->get_next_step_key() ) );
+					exit;
+				}
+			},
+			30
+		);
+
 		// Perform the Redirect to the next step.
 		add_action(
 			'admin_init',
 			function () {
-				$transient = $this->get_redirect_transient();
-
-				if ( ! $transient || ! $this->is_mid_onboarding() ) {
+				if ( wp_doing_ajax() || $this->is_onboarding_page() || ! $this->is_mid_onboarding() ) {
 					return;
 				}
 
 				// Don't redirect if we are on supported pages
 				$current_step = $this->get_current_step();
+
 				if ( $current_step['is_step_page'] && ! $current_step['is_complete'] ) {
 					return;
 				}
@@ -602,52 +584,31 @@ class Onboarding {
 					call_user_func( $current['callback'] );
 				}
 
-				delete_transient( self::REDIRECT_TRANSIENT );
-				wp_safe_redirect( $transient );
+				if ( ! $this->get_next_step_key() ) {
+					// Not supposed to happen.
+					wp_safe_redirect( admin_url() );
+					exit;
+				}
+
+				$redirect = $this->get_url( $this->get_next_step_key() );
+				wp_safe_redirect( $redirect );
 				exit;
 			},
 			50
 		);
-
-		// Prepare the redirect to the next step when we're on the step page.
-		add_action(
-			'admin_init',
-			function () {
-				$current_step = get_transient( self::STEP_TRANSIENT );
-				if ( ! $current_step || ! $this->is_mid_onboarding() || $this->is_onboarding_page() ) {
-					return;
-				}
-
-				$current = $this->steps[ $current_step ];
-
-				if ( ! $current['is_step_page'] ) {
-					return;
-				}
-
-				set_transient(
-					self::REDIRECT_TRANSIENT,
-					$this->get_url( $this->get_next_step_key() )
-				);
-			},
-			60
-		);
 	}
 
 	/**
-	 * Get the redirect transient
+	 * Set the Current Step
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return ?string
+	 * @param string $step
+	 *
+	 * @return void
 	 */
-	private function get_redirect_transient(): ?string {
-		$transient = get_transient( self::REDIRECT_TRANSIENT );
-
-		if ( ! $transient ) {
-			return null;
-		}
-
-		return str_replace( '&amp;', '&', $transient );
+	private function set_step_transient( string $step ): void {
+		set_transient( self::STEP_TRANSIENT, $step );
 	}
 
 	/**
@@ -665,6 +626,23 @@ class Onboarding {
 		global $pagenow;
 
 		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-admin' === $_GET['page'] && ! empty( $_GET['path'] ) && '/setup-wizard' === $_GET['path']; // phpcs:ignore
+	}
+
+	/**
+	 * Check if we are on the WooCommerce Admin page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_wc_admin_page(): bool {
+		if ( $this->is_wc_onboarding_page() ) {
+			return false;
+		}
+
+		global $pagenow;
+
+		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-admin' === $_GET['page'] && empty( $_GET['path'] ); // phpcs:ignore
 	}
 
 	/**
@@ -786,7 +764,7 @@ class Onboarding {
 				</style>
 				<?php
 
-				$redirect = $this->get_redirect_transient();
+				$redirect = $this->get_url( $this->get_next_step_key() );
 
 				if ( ! $redirect ) {
 					return;
@@ -874,12 +852,11 @@ class Onboarding {
 	 */
 	private function mark_onboarding_completed(): void {
 		$mark_completed = function () {
-			if ( empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
+			if ( wp_doing_ajax() || empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
 				return;
 			}
 
 			delete_transient( self::STEP_TRANSIENT );
-			delete_transient( self::REDIRECT_TRANSIENT );
 
 			// Make sure Onboarding isn't already marked as completed.
 			if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
