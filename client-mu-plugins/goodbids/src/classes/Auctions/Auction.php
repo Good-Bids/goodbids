@@ -522,6 +522,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Goal Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_goal_formatted(): string {
+		return wc_price( $this->get_goal() );
+	}
+
+	/**
 	 * Get the Auction Expected High Bid Amount
 	 *
 	 * @since 1.0.0
