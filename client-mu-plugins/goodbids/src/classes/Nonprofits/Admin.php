@@ -44,8 +44,13 @@ class Admin {
 					return;
 				}
 
+				// Remove WP VIP Admin Menu item
 				remove_menu_page( 'vip-dashboard' );
+
+				// Remove Posts Admin Menu item
 				remove_menu_page( 'edit.php' );
+
+				// Remove Products Admin Menu item
 				remove_menu_page( 'edit.php?post_type=product' );
 			},
 			200
@@ -55,16 +60,13 @@ class Admin {
 		add_filter(
 			'woocommerce_admin_features',
 			function ( array $features ): array {
-				/**
-				 * Filter list of features and remove those not needed     *
-				 */
-				return array_values(
-					array_filter(
-						$features,
-						function( $feature ) {
-							return $feature !== 'marketing';
-						}
-					)
+				if ( is_main_site() || is_super_admin() ) {
+					return $features;
+				}
+
+				return array_filter(
+					$features,
+					fn( $feature ) => $feature !== 'marketing'
 				);
 			}
 		);
