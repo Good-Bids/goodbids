@@ -4,7 +4,7 @@ type CardProps = {
 
 export function Card({ children }: CardProps) {
 	return (
-		<section className="flex w-full flex-col border-2 border-solid border-admin-main">
+		<section className="flex w-full flex-col border-2 border-solid border-gb-green-700">
 			{children}
 		</section>
 	);

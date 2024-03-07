@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { H1, P } from '../../../components/typography';
-import { Button } from '../../../components/button';
+import { H1, P } from '~/components/typography';
+import { Button } from '~/components/button';
 import { usePublishSite } from '../api/publish-site';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ProgressIcon } from '../../../components/progress-icon';
-import { CloseIcon } from '../../../components/close-icon';
-import AuctionEndImage from '../../../../assets/images/auction-end.png';
+import { ProgressIcon } from '~/components/icons/progress-icon';
+import { CloseIcon } from '~/components/icons/close-icon';
+import { CoinManImage } from '~/components/images/coin-man';
 
 type PendingProps = {
 	manuallySetToLive: () => void;
@@ -68,7 +68,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 1 }}
 						transition={{ ease: 'easeInOut', duration: 0.2 }}
-						className="absolute left-0 top-0 flex h-full w-full flex-col items-center gap-4 bg-admin-gray pt-20 text-admin-main"
+						className="absolute left-0 top-0 flex h-full w-full flex-col items-center gap-4 bg-gb-gray-100 pt-20 text-gb-green-700"
 					>
 						{publishSite.status === 'pending' && (
 							<>
@@ -79,7 +79,7 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 
 						{publishSite.status === 'success' && (
 							<>
-								<img src={AuctionEndImage} alt="" />
+								<CoinManImage className="aspect-auto h-60 py-10" />
 								<H1>{__('Site Launched!', 'goodbids')}</H1>
 								<P>
 									{__(
@@ -88,12 +88,14 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 									)}
 								</P>
 
-								<Button
-									variant="solid"
-									onClick={manuallySetToLive}
-								>
-									{__('Return to the guide', 'goodbids')}
-								</Button>
+								<div className="w-full max-w-60">
+									<Button
+										variant="solid"
+										onClick={manuallySetToLive}
+									>
+										{__('Return to the guide', 'goodbids')}
+									</Button>
+								</div>
 							</>
 						)}
 

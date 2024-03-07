@@ -47,10 +47,10 @@ function Button(props: ButtonProps) {
 	const { active, fade = false, ...rest } = props;
 
 	const classes = clsx(
-		'border-none px-4 py-2 text-left text-admin-large transition-all hover:bg-admin-secondary hover:text-white focus:text-white ',
+		'border-none px-4 py-2 text-left text-gb-lg transition-all hover:bg-gb-green-500 hover:text-white focus:text-white ',
 		{
-			'bg-admin-main text-white': active,
-			'bg-transparent text-admin-main': !active && !fade,
+			'bg-gb-green-700 text-white': active,
+			'bg-transparent text-gb-green-700': !active && !fade,
 			'bg-transparent text-black/50': !active && fade,
 		},
 	);
@@ -64,7 +64,7 @@ type ContainerProps = {
 
 function Container({ children }: ContainerProps) {
 	return (
-		<div className="flex w-full flex-col items-center border-b-6 border-l-8 border-r-6 border-t-8 border-solid border-admin-main p-4">
+		<div className="flex w-full flex-col items-center border-b-6 border-l-8 border-r-6 border-t-8 border-solid border-gb-green-700 p-4">
 			{children}
 		</div>
 	);

@@ -23,7 +23,7 @@ export function SiteStatus() {
 		<div className="flex min-w-60 max-w-2xl flex-1 flex-col items-start gap-4">
 			<H1>{__('Site Status', 'goodbids')}</H1>
 
-			<section className="flex flex-col items-center gap-3 border-2 border-solid border-admin-main p-4">
+			<section className="flex flex-col items-center gap-3 border-2 border-solid border-gb-green-700 p-4">
 				{status === 'pending' && (
 					<Pending manuallySetToLive={manuallySetToLive} />
 				)}
