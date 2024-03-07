@@ -10,6 +10,7 @@ namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Auctions\Bids;
 use GoodBids\Frontend\Notices;
+use GoodBids\Network\Nonprofit;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 
@@ -38,8 +39,11 @@ class Checkout {
 		// Automatically mark processing orders as Complete.
 		$this->automatically_complete_orders();
 
-		// Add terms & conditions and privacy policy text to checkout
-		$this->show_terms_conditions_privacy_policy();
+		// Add additional terms & conditions to the Checkout page
+		$this->adjust_terms_block();
+
+		// Add the Nonprofit name to the Checkout page title
+		$this->adjust_checkout_title();
 	}
 
 	/**
@@ -200,20 +204,72 @@ class Checkout {
 	 *
 	 * @return void
 	 */
-	private function show_terms_conditions_privacy_policy(): void {
+	private function adjust_terms_block(): void {
 		add_filter(
 			'render_block',
 			function ( string $block_content, array $block ): string {
-				if ( empty( $block['blockName'] ) || 'woocommerce/checkout-terms-block' !== $block['blockName'] ) {
+				if ( empty( $block['blockName'] ) || 'woocommerce/checkout-terms-block' !== $block['blockName'] || is_main_site() ) {
 					return $block_content;
 				}
 
-				return sprintf(
+				$block_content = '';
+
+				if ( goodbids()->woocommerce->cart->is_bid_order() ) {
+					$bid_amount = goodbids()->woocommerce->cart->get_total();
+					if ( $bid_amount ) {
+						$nonprofit = new Nonprofit( get_current_blog_id() );
+
+						$block_content .= sprintf(
+							'<p class="mt-10 ml-10">%s $%s %s %s. %s</p>',
+							__( 'By placing this bid, you are making a donation for your full bid amount of', 'goodbids' ),
+							esc_html( $bid_amount ),
+							__( 'to', 'goodbids' ),
+							esc_html( $nonprofit->get_name() ),
+							__( 'This is a non-refundable donation.', 'goodbids' )
+						);
+					}
+				}
+
+				$block_content .= sprintf(
 					'<p class="mt-10 ml-10">%s %s %s %s.<p>',
 					esc_html__( 'By proceeding with your order, you agree to GOODBIDS\'', 'goodbids' ),
 					wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
 					esc_html__( 'and', 'goodbids' ),
 					wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
+				);
+
+				return $block_content;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Add the Nonprofit name to the Checkout page title
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_checkout_title(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				if ( ! is_checkout() || empty( $block['blockName'] ) || 'core/post-title' !== $block['blockName'] || is_main_site() ) {
+					return $block_content;
+				}
+
+				$nonprofit = new Nonprofit( get_current_blog_id() );
+
+				return str_replace(
+					'Checkout',
+					sprintf(
+						'%s %s',
+						$nonprofit->get_name(),
+						esc_html__( 'Checkout', 'goodbids' )
+					),
+					$block_content
 				);
 			},
 			10,

@@ -308,4 +308,35 @@ class Cart {
 			}
 		);
 	}
+
+	/**
+	 * Check if the current order is a Bid Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_bid_order(): bool {
+		$cart = WC()->cart->get_cart_contents();
+
+		foreach ( $cart as $cart_item ) {
+			$product = $cart_item['data'];
+			if ( Bids::ITEM_TYPE === goodbids()->products->get_type( $product->get_id() ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the total amount of the current order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return float
+	 */
+	public function get_total(): float {
+		return WC()->cart->get_total( 'edit' );
+	}
 }
