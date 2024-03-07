@@ -30,7 +30,6 @@
     "@hotwired/stimulus": "^3.1.1",
     "@radix-ui/react-radio-group": "^1.1.3",
     "@radix-ui/react-select": "^2.0.0",
-    "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.17.15",
     "@wordpress/api-fetch": "^6.48.0",
     "@wordpress/core-data": "^6.25.0",

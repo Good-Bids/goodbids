@@ -1,8 +1,6 @@
-type CloseIconProps = {
-	width?: number;
-};
+import { IconProps } from './types';
 
-export function CloseIcon({ width = 24 }: CloseIconProps) {
+export function CloseIcon({ width = 24 }: IconProps) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
