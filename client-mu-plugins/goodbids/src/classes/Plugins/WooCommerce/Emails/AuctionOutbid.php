@@ -80,7 +80,6 @@ class AuctionOutbid extends Email {
 					return;
 				}
 
-				Log::debug( 'Triggering Outbid email for Auction: ' . $auction_id );
 				$this->trigger( $auction, $order->get_user_id() );
 			},
 			10,

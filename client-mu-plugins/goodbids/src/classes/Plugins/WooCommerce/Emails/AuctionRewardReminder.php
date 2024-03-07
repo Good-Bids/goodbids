@@ -57,7 +57,6 @@ class AuctionRewardReminder extends Email {
 				}
 
 				foreach ( $auctions as $auction_id ) {
-					Log::debug( 'Triggering Auction Reward Claim Reminder email for Auction: ' . $auction_id );
 					$auction = goodbids()->auctions->get( $auction_id );
 					$winner  = $auction->get_winning_bidder();
 					$this->trigger( $auction, $winner->ID );

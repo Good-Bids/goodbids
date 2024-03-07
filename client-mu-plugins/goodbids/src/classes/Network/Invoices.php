@@ -104,8 +104,6 @@ class Invoices {
 					return;
 				}
 
-				Log::debug( 'Processing Bulk Action: ' . $action );
-
 				if ( ! empty( $_POST['bulk-action'] ) ) { // phpcs:ignore
 					$ids = $_POST['bulk-action']; // phpcs:ignore
 				} elseif ( ! empty( $_GET['invoice'] ) ) { // phpcs:ignore

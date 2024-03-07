@@ -124,8 +124,6 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 			'payload' => $this->payload,
 		];
 
-		Log::debug( 'Stripe Webhook Received: ' . $event->type, $context );
-
 		match ( $event->type ) {
 			'invoice.sent' => $this->process_webhook_sent(),
 			'invoice.paid' => $this->process_webhook_paid(),

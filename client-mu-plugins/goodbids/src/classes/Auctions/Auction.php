@@ -952,8 +952,6 @@ class Auction {
 			return;
 		}
 
-		Log::debug( 'Triggering Auction Start for Auction ID: ' . $this->get_id() );
-
 		// Update the Auction meta to indicate it has started.
 		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
 
@@ -988,8 +986,6 @@ class Auction {
 		if ( ! $this->has_ended() || $this->end_triggered() ) {
 			return;
 		}
-
-		Log::debug( 'Triggering Auction End for Auction ID: ' . $this->get_id() );
 
 		// Update the Auction meta to indicate it has closed.
 		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );

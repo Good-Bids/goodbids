@@ -328,8 +328,6 @@ class Referrals {
 	public function add_referral( int $referrer_id, int $user_id, string $code = null ): bool {
 		$referral = new Referral();
 
-		Log::debug( 'Adding new Referral: ' . $referrer_id . ' -> ' . $user_id );
-
 		$referral->set_referrer_id( $referrer_id );
 		$referral->set_user_id( $user_id );
 		$referral->set_code( $code );

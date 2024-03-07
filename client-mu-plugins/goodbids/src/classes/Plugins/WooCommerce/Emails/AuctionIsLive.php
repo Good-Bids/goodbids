@@ -52,7 +52,6 @@ class AuctionIsLive extends Email {
 		add_action(
 			'goodbids_auction_start',
 			function ( int $auction_id ) {
-				Log::debug( 'Triggering Auction is Live emails for Auction: ' . $auction_id );
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_watchers( $auction );
 			},
