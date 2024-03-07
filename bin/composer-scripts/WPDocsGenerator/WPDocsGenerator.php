@@ -138,31 +138,56 @@ class WPDocsGenerator {
 	 * @param DocItem[] $objects
 	 * @return void
 	 */
-	private function collect( array $objects ): void
+	private function collect( array &$objects ): void
 	{
-		foreach ( $objects as $reference => &$object ) {
-			foreach ( $object->returnTypes as $returnType ) {
-				if ( array_key_exists( $returnType, $this->collection->classes ) ) {
-					$class = $this->collection->classes[ $returnType ];
+		foreach ( $objects as &$object ) {
+			$object = $this->collectReturnTypes( $object );
 
-					foreach ( $class->methods as $method ) {
-						if ( 'public' !== $method->access || in_array( $method->name, [ '__construct', 'get_instance' ], true ) ) {
-							continue;
-						}
-						$object->api[] = $method;
-					}
-
-					foreach ( $class->properties as $property ) {
-						if ( 'public' !== $property->access ) {
-							continue;
-						}
-						$object->api[] = $property;
-					}
-
-					$this->collect( $object->api );
-				}
-			}
+			// Traverse through this objects API.
+			$this->collect( $object->api );
 		}
+	}
+
+	private function collectReturnTypes( DocItem $object ): DocItem
+	{
+		foreach ( $object->returnTypes as $returnType ) {
+			if ( ! array_key_exists( $returnType, $this->collection->objects ) ) {
+				continue;
+			}
+
+			$returnObject = $this->collection->objects[ $returnType ];
+
+			// Exclude circular references.
+			if ( 'class' !== $returnObject->node || $returnObject->getReference() === $object->getReference() ) {
+				continue;
+			}
+
+			$object->api = $this->collectPropertiesAndMethods( $returnObject );
+		}
+
+		return $object;
+	}
+
+	private function collectPropertiesAndMethods( DocItem $object ): array
+	{
+		$api = [];
+		foreach ( $object->methods as $method ) {
+			if ( 'public' !== $method->access || in_array( $method->name, [ '__construct', 'get_instance' ], true ) ) {
+				continue;
+			}
+;
+			$api[$method->getReference()] = $this->collectReturnTypes($method);
+		}
+
+		foreach ( $object->properties as $property ) {
+			if ( 'public' !== $property->access || 'instance' === $property->name ) {
+				continue;
+			}
+
+			$api[$property->getReference()] = $this->collectReturnTypes($property);
+		}
+
+		return $api;
 	}
 
 	/**

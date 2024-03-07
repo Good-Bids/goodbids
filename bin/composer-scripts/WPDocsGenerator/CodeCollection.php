@@ -28,11 +28,6 @@ class CodeCollection extends NodeVisitorAbstract
 	public array $objects = [];
 
 	/**
-	 * @var DocItem[]
-	 */
-	public array $classes = [];
-
-	/**
 	 * @var string
 	 */
 	private string $currentNamespace = '';
@@ -116,7 +111,6 @@ class CodeCollection extends NodeVisitorAbstract
 		$this->collectClassMethods($node);
 
 		$this->addObject($this->currentClass);
-		$this->classes[ $this->currentClass->getReference() ] = $this->currentClass;
 	}
 
 	/**
@@ -233,13 +227,15 @@ class CodeCollection extends NodeVisitorAbstract
 	}
 
 	/**
+	 * TODO: See getTypesArray.
+	 *
 	 * @param $type
 	 * @return string
 	 */
 	private function getTypeString($type): string
 	{
 		if ($type instanceof Node\UnionType) {
-			return implode(
+			$typeString = implode(
 				'|',
 				array_map(
 					function ($subtype) {
@@ -249,15 +245,31 @@ class CodeCollection extends NodeVisitorAbstract
 				)
 			);
 		} elseif ($type instanceof Node\NullableType) {
-			return 'null|' . $this->getTypeString($type->type);
+			$typeString = 'null|' . $this->getTypeString($type->type);
 		} elseif ($type !== null) {
-			return $type->toString();
+			$typeString = is_string( $type ) ? $type : $type->toString();
 		} else {
-			return 'mixed';
+			$typeString = 'mixed';
 		}
+
+		// If the type has a namespace, return it as is
+		if (str_contains($typeString, '\\') || class_exists($typeString)) {
+			return $typeString;
+		}
+
+		// Check if we're not inside a namespace or the type doesn't start with a capital letter.
+		if (!$this->currentNamespace || !ctype_upper($typeString[0])) {
+			return $typeString;
+		}
+
+		// Prepend the current namespace.
+		return $this->currentNamespace . '\\' . $typeString;
 	}
 
 	/**
+	 * TODO: GoodBids\Utilities\Utilities NOT \GoodBids\Utilities
+	 * TODO: Get user References.
+	 *
 	 * @param $type
 	 * @return string[]
 	 */
@@ -271,7 +283,12 @@ class CodeCollection extends NodeVisitorAbstract
 				$type->types
 			);
 		} elseif ($type instanceof Node\NullableType) {
-			return explode('|', $this->getTypeString($type));
+			return array_map(
+				function ($subtype) {
+					return $this->getTypeString(trim($subtype));
+				},
+				explode('|', $this->getTypeString($type))
+			);
 		} elseif ($type !== null) {
 			return [$this->getTypeString($type)];
 		} else {
@@ -363,8 +380,11 @@ class CodeCollection extends NodeVisitorAbstract
 		}
 
 		if( $node instanceof Node\Param || $node instanceof Node\Stmt\Property ) {
-			$docItem->returnTypes = [$this->getTypeString($node->type)];
-			$docItem->isNullable = $this->isNullable($node->type);
+			$docItem->returnTypes = $node->type ? $this->getTypesArray($node->type) : ['mixed'];
+			if ( $this->isNullable($node->type) ) {
+				$docItem->isNullable = true;
+				$docItem->returnTypes[] = 'null';
+			}
 		}
 
 		if( $node instanceof Function_ || $node instanceof ClassMethod ) {

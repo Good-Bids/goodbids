@@ -61,7 +61,6 @@ class Parser {
 		}
 
 		$traverser->addVisitor( $collection );
-
 		$traverser->traverse( $parsed );
 
 		return $collection;
