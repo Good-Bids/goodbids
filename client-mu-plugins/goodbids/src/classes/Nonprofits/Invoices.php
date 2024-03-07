@@ -673,6 +673,10 @@ class Invoices {
 		add_action(
 			'admin_init',
 			function (): void {
+				if ( is_main_site() ) {
+					return;
+				}
+
 				if ( ! $this->has_overdue_invoices() ) {
 					return;
 				}

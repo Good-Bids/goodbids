@@ -1173,6 +1173,10 @@ class Auctions {
 		add_action(
 			'transition_post_status',
 			function ( string $new_status, string $old_status, WP_Post $post ): void {
+				if ( is_main_site() ) {
+					return;
+				}
+
 				if ( 'publish' !== $new_status ) {
 					return;
 				}
