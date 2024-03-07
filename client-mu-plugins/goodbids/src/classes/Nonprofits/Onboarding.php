@@ -119,51 +119,60 @@ class Onboarding {
 	}
 
 	/**
-	 * Create the Onboarding Steps
+	 * Initialize the Onboarding Steps.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
 	private function init_steps(): void {
-		// Store Setup URL
-		$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
-		$create_store_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $create_store_url );
+		add_action(
+			'admin_init',
+			function () {
+				// Store Setup URL
+				$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
+				$create_store_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $create_store_url );
 
-		// Payments Setup URL
-		$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
-		$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
+				// Payments Setup URL
+				$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
+				$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
 
-		// Accessibility Checker URL
-		$accessibility_checker_url = admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' );
-		$accessibility_checker_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $accessibility_checker_url );
+				// Accessibility Checker URL
+				$accessibility_checker_url = admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' );
+				$accessibility_checker_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $accessibility_checker_url );
 
-		// Onboarding Complete URL
-		$onboarding_complete_url = home_url();
-		$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
+				// Onboarding Complete URL
+				$onboarding_complete_url = home_url();
+				$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
 
-		$this->steps = [
-			self::STEP_CREATE_STORE                  => [
-				'url'          => $create_store_url,
-				'is_complete'  => $this->completed_wc_onboarding(),
-				'is_step_page' => $this->is_wc_onboarding_page(),
-			],
-			self::STEP_SET_UP_PAYMENTS               => [
-				'url'          => $payments_url,
-				'is_complete'  => $this->completed_payments_onboarding(),
-				'is_step_page' => $this->is_stripe_page(),
-			],
-			self::STEP_ACCESSIBILITY_CHECKER_LICENSE => [
-				'url'          => $accessibility_checker_url,
-				'is_complete'  => $this->completed_accessibility_license(),
-				'is_step_page' => goodbids()->accessibility->is_license_page(),
-			],
-			self::STEP_ONBOARDING_COMPLETE           => [
-				'url'          => $onboarding_complete_url,
-				'is_complete'  => goodbids()->network->nonprofits->is_onboarded(),
-				'is_step_page' => false,
-			],
-		];
+				$this->steps = [
+					self::STEP_CREATE_STORE                  => [
+						'url'          => $create_store_url,
+						'is_complete'  => $this->completed_wc_onboarding(),
+						'is_step_page' => $this->is_wc_onboarding_page(),
+						'callback'     => [ $this, 'mark_wc_onboarding_skipped' ],
+					],
+					self::STEP_SET_UP_PAYMENTS               => [
+						'url'          => $payments_url,
+						'is_complete'  => $this->completed_payments_onboarding(),
+						'is_step_page' => $this->is_stripe_page(),
+						'callback'     => null,
+					],
+					self::STEP_ACCESSIBILITY_CHECKER_LICENSE => [
+						'url'          => $accessibility_checker_url,
+						'is_complete'  => $this->completed_accessibility_license(),
+						'is_step_page' => goodbids()->accessibility->is_license_page(),
+						'callback'     => null,
+					],
+					self::STEP_ONBOARDING_COMPLETE           => [
+						'url'          => $onboarding_complete_url,
+						'is_complete'  => goodbids()->network->nonprofits->is_onboarded(),
+						'is_step_page' => false,
+						'callback'     => null,
+					],
+				];
+			}
+		);
 	}
 
 	/**
@@ -320,27 +329,16 @@ class Onboarding {
 					return;
 				}
 
-				$current_step = $this->get_current_step();
-				if ( $current_step['is_complete'] ) {
-					wp_safe_redirect( $this->get_url( $this->get_next_step_key() ) );
+				$continue = $this->get_first_incomplete_step();
+
+				if ( $continue && $continue !== $this->get_current_step_key() ) {
+					wp_safe_redirect( $this->get_url( $continue ) );
 					exit;
-				}
-
-				// Make sure they're not jumping ahead.
-				foreach ( $this->steps as $step_id => $step_data ) {
-					if ( $step_data['is_complete'] ) {
-						continue;
-					}
-
-					if ( $step_id !== $this->get_current_step_key() ) {
-						wp_safe_redirect( $this->get_url( $step_id ) );
-						exit;
-					}
 				}
 
 				$step = get_transient( self::STEP_TRANSIENT );
 
-				if ( $step && $step !== $this->get_current_step() ) {
+				if ( $step && $step !== $this->get_current_step_key() ) {
 					delete_transient( self::STEP_TRANSIENT );
 					wp_safe_redirect( $this->get_url( $step ) );
 					exit;
@@ -530,6 +528,25 @@ class Onboarding {
 	}
 
 	/**
+	 * Get the first incomplete step
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	private function get_first_incomplete_step(): ?string {
+		foreach ( $this->steps as $step_id => $step_data ) {
+			if ( $step_data['is_complete'] ) {
+				continue;
+			}
+
+			return $step_id;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Check if we are mid-onboarding
 	 *
 	 * @since 1.0.0
@@ -564,19 +581,24 @@ class Onboarding {
 	 * @return void
 	 */
 	private function onboarding_redirect(): void {
+		// Perform the Redirect to the next step.
 		add_action(
 			'admin_init',
 			function () {
 				$transient = get_transient( self::REDIRECT_TRANSIENT );
 
-				if ( ! $transient ) {
+				if ( ! $transient || ! $this->is_mid_onboarding() ) {
 					return;
 				}
 
 				// Don't redirect if we are on supported pages
 				$current_step = $this->get_current_step();
-				if ( $current_step['is_step_page'] && $this->is_mid_onboarding() && ! $current_step['is_complete'] ) {
+				if ( $current_step['is_step_page'] && ! $current_step['is_complete'] ) {
 					return;
+				}
+
+				if ( ! empty( $current['callback'] ) && is_callable( $current['callback'] ) ) {
+					call_user_func( $current['callback'] );
 				}
 
 				delete_transient( self::REDIRECT_TRANSIENT );
@@ -586,18 +608,27 @@ class Onboarding {
 			50
 		);
 
-		// Redirect to the next step after the store setup is completed.
+		// Prepare the redirect to the next step when we're on the step page.
 		add_action(
 			'admin_init',
 			function () {
-				$current_step = $this->get_current_step();
-				if ( ! $current_step['is_step_page'] || ! $this->is_mid_onboarding() || ! $current_step['is_complete'] ) {
+				$current_step = get_transient( self::STEP_TRANSIENT );
+				if ( ! $current_step || ! $this->is_mid_onboarding() || $this->is_onboarding_page() ) {
 					return;
 				}
 
-				set_transient( self::REDIRECT_TRANSIENT, $this->get_url( $this->get_next_step_key() ) );
+				$current = $this->steps[ $current_step ];
+
+				if ( ! $current['is_step_page'] ) {
+					return;
+				}
+
+				set_transient(
+					self::REDIRECT_TRANSIENT,
+					$this->get_url( $this->get_next_step_key() )
+				);
 			},
-			50
+			60
 		);
 	}
 
@@ -625,7 +656,7 @@ class Onboarding {
 	 *
 	 * @return void
 	 */
-	private function mark_wc_onboarding_skipped(): void {
+	public function mark_wc_onboarding_skipped(): void {
 		$profile = get_option( 'woocommerce_onboarding_profile', [] );
 
 		if ( ! isset( $profile['skipped'] ) ) {
@@ -825,9 +856,6 @@ class Onboarding {
 			if ( empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
 				return;
 			}
-
-			// Finalize WooCommerce Setup.
-			$this->mark_wc_onboarding_skipped();
 
 			delete_transient( self::STEP_TRANSIENT );
 			delete_transient( self::REDIRECT_TRANSIENT );

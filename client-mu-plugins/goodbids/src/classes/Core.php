@@ -428,7 +428,7 @@ class Core {
 	}
 
 	/**
-	 * Check if a plugin is in the active plugins list.
+	 * Check if a plugin is active.
 	 *
 	 * @since 1.0.0
 	 *
@@ -437,8 +437,23 @@ class Core {
 	 * @return bool
 	 */
 	public function is_plugin_active( string $plugin ): bool {
-		$plugins = $this->get_config( 'active-plugins' );
-		return in_array( $plugin, $plugins, true );
+		$plugins              = $this->get_config( 'active-plugins' );
+		$post_install_plugins = $this->get_config( 'post-install-plugins' );
+
+		if ( ! is_network_admin() ) {
+			array_push( $plugins, ...$post_install_plugins );
+		}
+
+		if ( in_array( $plugin, $plugins, true ) ) {
+			return true;
+		}
+
+		if ( function_exists( 'is_plugin_active' ) ) {
+			$plugin_file = str_contains( $plugin, '/' ) ? $plugin : $plugin . '/' . $plugin . '.php';
+			return is_plugin_active( $plugin_file );
+		}
+
+		return false;
 	}
 
 	/**
