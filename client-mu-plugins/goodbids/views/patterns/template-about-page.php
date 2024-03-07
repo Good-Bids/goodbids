@@ -37,11 +37,16 @@
 				<!-- wp:group {"layout":{"type":"constrained"}} -->
 				<div class="wp-block-group">
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'GOODBIDS is a little company founded by a worldwide team of ruckusmakers. Our focus is on connecting worthy causes with people who want to have fun supporting them. Its free to use–the charities pay us for the auctions that work, and every penny you bid goes directly to the cause you care about.', 'goodbids' ); ?></p>
+					<p><?php esc_html_e( 'GOODBIDS is a new project founded by a worldwide team of ruckusmakers. We’re building a tool that connects worthy causes with people who want to have fun supporting them.', 'goodbids' ); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'Each of us has spent our careers working with important causes, often as volunteers. When Seth Godin, our founder, invented the idea of the positive auction, we knew it was time to offer this tool to non-profits that could benefit from it. The founding team includes our head of partnerships, Anne Marie Cruz, our technical Warlock, Jasper Croome, and our guru of interaction, Felice Della Gatta. We’re grateful for the support of Automattic, the lead developers of the WordPress universe.', 'goodbids' ); ?>
+					<p><?php esc_html_e( 'GOODBIDS is free for you to use–the charities pay a fee for the auctions that work, and every penny you bid is transferred directly to the cause you care about.', 'goodbids' ); ?>
+					</p>
+					<!-- /wp:paragraph -->
+
+					<!-- wp:paragraph -->
+					<p><?php esc_html_e( 'Each of us has spent our careers working with important causes, often as volunteers. When Seth Godin, our founder, invented the idea of the positive auction, we knew it was time to offer this tool to non-profits that could benefit from it. The founding team includes our head of partnerships, Anne Marie Cruz, our technical lead, Jasper Croome, and our guru of interaction, Felice Della Gatta. Avaleen Morris leads our non-profit outreach and Jennifer Myers Chua is the guru of prizes. We’re grateful for the support of Automattic, the lead developers of the WordPress universe as well as the warlocks and magicians at Viget.', 'goodbids' ); ?>
 					</p>
 					<!-- /wp:paragraph -->
 				</div>
@@ -62,11 +67,11 @@
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'A GOODBIDS positive auction has a great prize, and you can submit bids, but the big difference is that every bid is a non-refundable donation to a charity you care about.', 'goodbids' ); ?></p>
+					<p><?php esc_html_e( 'A GOODBIDS positive auction features a fabulous reward for the winning bidder. The big difference is that EVERY bid is a non-refundable, valued donation to a charity you care about.', 'goodbids' ); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
-					<p><?php esc_html_e( 'That means that great prizes end up going for really low bids. And charities end up raising more money at the same time.', 'goodbids' ); ?></p>
+					<p><?php esc_html_e( 'The highest bidder gets a reward, every bidder gets the satisfaction of supporting a good cause, and charities get more contributions and more donors which equals more opportunity to do more good.', 'goodbids' ); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:paragraph -->
