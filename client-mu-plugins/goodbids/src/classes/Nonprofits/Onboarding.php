@@ -51,6 +51,12 @@ class Onboarding {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const STEP_INIT_ONBOARDING = 'init-onboarding';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const STEP_CREATE_STORE = 'create-store';
 
 	/**
@@ -88,8 +94,8 @@ class Onboarding {
 		// Setup Onboarding Steps
 		$this->init_steps();
 
-		// Redirect to Onboarding page if not yet onboarded.
-		$this->force_setup();
+		// Tweak Admin for Onboarding.
+		$this->focused_setup();
 
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
@@ -108,7 +114,7 @@ class Onboarding {
 		$this->woocommerce_adjustments();
 
 		// Flag Onboarding as Completed.
-		$this->mark_onboarding_completed();
+		$this->maybe_mark_onboarding_completed();
 	}
 
 	/**
@@ -122,6 +128,9 @@ class Onboarding {
 		add_action(
 			'admin_init',
 			function () {
+				// Initialize Onboarding URL
+				$init_onboarding_url = add_query_arg( 'page', self::PAGE_SLUG, admin_url( 'admin.php' ) );
+
 				// Store Setup URL
 				$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
 				$create_store_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $create_store_url );
@@ -139,6 +148,12 @@ class Onboarding {
 				$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
 
 				$this->steps = [
+					self::STEP_INIT_ONBOARDING                  => [
+						'url'          => $init_onboarding_url,
+						'is_complete'  => get_transient( self::STEP_TRANSIENT ) || goodbids()->network->nonprofits->is_onboarded(),
+						'is_step_page' => $this->is_onboarding_page(),
+						'callback'     => null,
+					],
 					self::STEP_CREATE_STORE                  => [
 						'url'          => $create_store_url,
 						'is_complete'  => $this->completed_wc_onboarding(),
@@ -169,36 +184,13 @@ class Onboarding {
 	}
 
 	/**
-	 * Require Setup
+	 * Focus the Onboarding Setup
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function force_setup(): void {
-		add_action(
-			'current_screen',
-			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() || $this->is_onboarding_page() || is_super_admin() ) {
-					return;
-				}
-
-				$screen      = get_current_screen();
-				$setup_pages = [
-					'options-general',
-					'woocommerce_page_wc-admin',
-					'woocommerce_page_wc-settings',
-				];
-
-				if ( in_array( $screen->id, $setup_pages, true ) ) {
-					return;
-				}
-
-				wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
-				exit;
-			}
-		);
-
+	private function focused_setup(): void {
 		add_action(
 			'admin_menu',
 			function () {
@@ -235,10 +227,6 @@ class Onboarding {
 			function () {
 				// Disable for the main site.
 				if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
-					if ( $this->is_onboarding_page() ) {
-						wp_safe_redirect( admin_url() );
-						exit;
-					}
 					return;
 				}
 
@@ -478,39 +466,16 @@ class Onboarding {
 	}
 
 	/**
-	 * Get the next step array.
+	 * Check if the current step is the last step.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return ?array
+	 * @return bool
 	 */
-	private function get_next_step(): ?array {
-		$next = $this->get_next_step_key();
-
-		if ( ! $next ) {
-			return null;
-		}
-
-		return $this->steps[ $next ];
-	}
-
-	/**
-	 * Get the first incomplete step
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return ?string
-	 */
-	private function get_first_incomplete_step(): ?string {
-		foreach ( $this->steps as $step_id => $step_data ) {
-			if ( $step_data['is_complete'] ) {
-				continue;
-			}
-
-			return $step_id;
-		}
-
-		return null;
+	private function is_last_step(): bool {
+		$current = $this->get_current_step_key();
+		$last    = array_key_last( $this->steps );
+		return $current && $current === $last;
 	}
 
 	/**
@@ -584,10 +549,9 @@ class Onboarding {
 					call_user_func( $current['callback'] );
 				}
 
+				// We're done here.
 				if ( ! $this->get_next_step_key() ) {
-					// Not supposed to happen.
-					wp_safe_redirect( admin_url() );
-					exit;
+					return;
 				}
 
 				$redirect = $this->get_url( $this->get_next_step_key() );
@@ -595,6 +559,19 @@ class Onboarding {
 				exit;
 			},
 			50
+		);
+
+		add_action(
+			'admin_footer',
+			function () {
+				if ( $this->is_last_step() ) {
+					if ( ! $this->is_onboarding_page() || wp_doing_ajax() || goodbids()->network->nonprofits->is_onboarded() ) {
+						return;
+					}
+
+					$this->mark_onboarding_completed();
+				}
+			}
 		);
 	}
 
@@ -844,24 +821,42 @@ class Onboarding {
 	}
 
 	/**
+	 * Maybe Mark Onboarding as Completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_mark_onboarding_completed(): void {
+		$maybe = function() {
+			if ( wp_doing_ajax() || empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
+				return;
+			}
+
+			$this->mark_onboarding_completed();
+
+			$redirect = remove_query_arg( self::DONE_ONBOARDING_PARAM );
+			wp_safe_redirect( $redirect );
+			exit;
+		};
+
+		add_action( 'init', $maybe );
+		add_action( 'admin_init', $maybe );
+	}
+
+	/**
 	 * Mark Onboarding as Completed.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function mark_onboarding_completed(): void {
-		$mark_completed = function () {
-			if ( wp_doing_ajax() || empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
-				return;
-			}
+	public function mark_onboarding_completed(): void {
+		delete_transient( self::STEP_TRANSIENT );
 
-			delete_transient( self::STEP_TRANSIENT );
-
-			// Make sure Onboarding isn't already marked as completed.
-			if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
-				update_option( 'goodbids_onboarded', current_time( 'mysql' ) );
-			}
+		// Make sure Onboarding isn't already marked as completed.
+		if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
+			update_option( 'goodbids_onboarded', current_time( 'mysql' ) );
 
 			/**
 			 * Action after Onboarding has completed
@@ -869,13 +864,6 @@ class Onboarding {
 			 * @param int $blog_id The blog ID.
 			 */
 			do_action( 'goodbids_onboarding_completed', get_current_blog_id() );
-
-			$redirect = remove_query_arg( self::DONE_ONBOARDING_PARAM );
-			wp_safe_redirect( $redirect );
-			exit;
-		};
-
-		add_action( 'init', $mark_completed );
-		add_action( 'admin_init', $mark_completed );
+		}
 	}
 }

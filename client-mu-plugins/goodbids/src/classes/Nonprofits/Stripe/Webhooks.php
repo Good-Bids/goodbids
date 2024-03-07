@@ -64,15 +64,15 @@ class Webhooks extends WC_Stripe_Webhook_Handler {
 	public function check_for_webhook(): void {
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] )
 			|| ( 'POST' !== $_SERVER['REQUEST_METHOD'] )
-			|| ! isset( $_GET['wc-api'] )
-			|| ( 'wc_stripe' !== $_GET['wc-api'] )
+			|| ! isset( $_GET['wc-api'] ) // phpcs:ignore
+			|| ( 'wc_stripe' !== $_GET['wc-api'] ) // phpcs:ignore
 		) {
 			return;
 		}
 
 		goodbids()->sites->main(
 			function () {
-				$request_body    = file_get_contents( 'php://input' );
+				$request_body    = file_get_contents( 'php://input' ); // phpcs:ignore
 				$request_headers = array_change_key_case( $this->get_request_headers(), CASE_UPPER );
 
 				// Validate it to make sure it is legit.
