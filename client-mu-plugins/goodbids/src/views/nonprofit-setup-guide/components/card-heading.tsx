@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { H1, P } from '../../../components/typography';
+import { H2, P } from '~/components/typography';
 
 type CardHeadingProps = {
 	title: string;
@@ -20,7 +20,7 @@ export function CardHeading({ title, content, children }: CardHeadingProps) {
 	return (
 		<div className={containerClasses}>
 			<div className={headingClasses}>
-				<H1>{title}</H1>
+				<H2 as="h1">{title}</H2>
 				{content && <P>{content}</P>}
 			</div>
 

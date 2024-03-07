@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Create } from './create';
-import { EditFlow } from './edit';
-import { TooltipProvider } from '~/components/tooltip';
+import { Edit } from './edit';
 import { useState } from 'react';
 
 function Wizard() {
@@ -15,7 +14,7 @@ function Wizard() {
 
 	if (auctionId && rewardId) {
 		return (
-			<EditFlow
+			<Edit
 				auctionId={parseInt(auctionId, 10)}
 				rewardId={parseInt(rewardId, 10)}
 			/>
@@ -30,9 +29,7 @@ export function Driver() {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<TooltipProvider>
-				<Wizard />
-			</TooltipProvider>
+			<Wizard />
 		</QueryClientProvider>
 	);
 }

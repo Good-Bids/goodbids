@@ -1,7 +1,7 @@
 import clsx from 'clsx';
+import { IconProps } from './types';
 
-type ProgressIconProps = {
-	width?: number;
+type ProgressIconProps = IconProps & {
 	spin?: boolean;
 };
 

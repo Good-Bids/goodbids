@@ -1,14 +1,10 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import AuctionStartImage from '../../../../assets/images/auction-start.png';
 import { Button } from '~/components/button';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
+import { PuzzleManImage } from '~/components/images/puzzle-man';
+import { H1, H3, P } from '~/components/typography';
 
-type StartStepProps = {
-	loading: boolean;
-};
-
-export function StartStep({ loading }: StartStepProps) {
+export function StartStep() {
 	const {
 		setStep,
 		clearStore,
@@ -26,77 +22,43 @@ export function StartStep({ loading }: StartStepProps) {
 	};
 
 	return (
-		<div className="flex w-full flex-col items-center gap-2 py-10">
-			<div>
-				<img src={AuctionStartImage} />
-			</div>
-			<h1 className="m-0 text-6xl font-bold text-admin-main">
-				{__('Build an Auction!', 'goodbids')}
-			</h1>
-			<div className="max-w-xl">
-				<p className="text-admin-content">
+		<div className="flex flex-col items-center gap-8 p-10">
+			<PuzzleManImage className="aspect-auto h-50 py-10" />
+
+			<div className="flex flex-col gap-3">
+				<H1>{__('Let’s build an auction!', 'goodbids')}</H1>
+				<P>
 					{__(
-						'This Auction setup will guide you through the required steps for creating and configuring your new Auction. You will be required to create and configure a Product and Auction details. It is recommended to have your product details, descriptions, images, and metadata at hand before starting. You will also be required to set your Auction start and end times, bidding details, and fundraising goals.',
+						"Before you begin, we advise having your auction's start and end times, bidding parameters, and fundraising goals, as well as your prize details, including descriptions, and images ready. You’ll have the opportunity to preview your page before publishing at the end.",
 						'goodbids',
 					)}
-				</p>
+				</P>
 			</div>
 
-			<div className="relative">
-				{loading && (
-					<motion.span
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ duration: 0.2 }}
-						className="mt-4 text-admin-content font-bold text-admin-main"
-					>
-						Loading...
-					</motion.span>
-				)}
+			{name.value.length > 0 ? (
+				<div className="flex w-full flex-col gap-3">
+					<H3 as="h2">
+						{__('Pick up where you left off?', 'goodbids')}
+					</H3>
 
-				<AnimatePresence>
-					{!loading && name.value.length > 0 && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.3 }}
-							className="mt-4 flex flex-col items-center gap-3"
-						>
-							<h2 className="m-0 text-2xl font-bold text-admin-main">
-								{__('Pick up where you left off?', 'goodbids')}
-							</h2>
+					<Button variant="solid" autoFocus onClick={setProductStep}>
+						{__('Continue creating', 'goodbids')}{' '}
+						{title.value || name.value}
+					</Button>
 
-							<Button autoFocus onClick={setProductStep}>
-								{__('Continue creating', 'goodbids')}{' '}
-								{title.value || name.value}
-							</Button>
-
-							<Button onClick={clearAndSetProductStep}>
-								{__(
-									'Start a new product and auction',
-									'goodbids',
-								)}
-							</Button>
-						</motion.div>
-					)}
-				</AnimatePresence>
-
-				<AnimatePresence>
-					{!loading && !name.value.length && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.3 }}
-						>
-							<Button onClick={clearAndSetProductStep} autoFocus>
-								{__("Let's get started", 'goodbids')}
-							</Button>
-						</motion.div>
-					)}
-				</AnimatePresence>
-			</div>
+					<Button variant="outline" onClick={clearAndSetProductStep}>
+						{__('Start a new auction', 'goodbids')}
+					</Button>
+				</div>
+			) : (
+				<Button
+					variant="solid"
+					onClick={clearAndSetProductStep}
+					autoFocus
+				>
+					{__('Get started', 'goodbids')}
+				</Button>
+			)}
 		</div>
 	);
 }

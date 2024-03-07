@@ -1,13 +1,30 @@
-import { ProgressIcon } from '~/components/progress-icon';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
-import { CheckIcon } from '~/components/check-icon';
-import { Button } from '~/components/button';
+import { H3 } from '~/components/typography';
+import { ReviewStatus } from './review-status';
+import { ReviewTable, ReviewTH, ReviewTD } from './review-table';
+import { formatStringToCurrency } from '~/utils/number';
 
 type ReviewAuctionProps = {
-	createStatus: string;
-	updateStatus: string;
+	createStatus: 'idle' | 'pending' | 'error' | 'success';
+	updateStatus: 'idle' | 'pending' | 'error' | 'success';
 };
+
+function getStatus(createStatus: string, updateStatus: string) {
+	if (createStatus === 'pending' || updateStatus === 'pending') {
+		return 'pending';
+	}
+
+	if (createStatus === 'error' || updateStatus === 'error') {
+		return 'error';
+	}
+
+	if (createStatus === 'success' || updateStatus === 'success') {
+		return 'success';
+	}
+
+	return 'idle';
+}
 
 export function ReviewAuction({
 	createStatus,
@@ -15,95 +32,106 @@ export function ReviewAuction({
 }: ReviewAuctionProps) {
 	const { auction, setStep } = useAuctionWizardState();
 
-	if (createStatus === 'pending' || updateStatus === 'pending') {
-		return (
-			<div className="flex flex-col items-center gap-2">
-				<ProgressIcon spin width={48} />
-				<h2 className="m-0 text-admin-large text-admin-main">
-					{__('Saving Auction', 'goodbids')}
-				</h2>
-			</div>
-		);
-	}
-
-	if (createStatus === 'success' && updateStatus === 'success') {
-		return (
-			<div className="flex flex-col items-center gap-2 text-admin-main">
-				<CheckIcon width={48} />
-				<h2 className="m-0 text-admin-large text-admin-main">
-					{__('Auction saved!', 'goodbids')}
-				</h2>
-			</div>
-		);
-	}
+	const status = getStatus(createStatus, updateStatus);
 
 	return (
-		<>
-			<h2 className="m-0 text-admin-large text-admin-main">
-				Your Auction
-			</h2>
+		<div>
+			<H3 as="h2">{__('DETAILS', 'goodbids')}</H3>
 
-			{auction.title.value && (
-				<span className="text-admin-content">
-					<b>{__('Auction Title.', 'goodbids')}</b>{' '}
-					{auction.title.value}
-				</span>
-			)}
+			<ReviewTable>
+				{auction.title.value && (
+					<tr>
+						<ReviewTH>{__('Title', 'goodbids')}</ReviewTH>
+						<ReviewTD>{auction.title.value}</ReviewTD>
+					</tr>
+				)}
 
-			{auction.excerpt.value && (
-				<span className="text-admin-content">
-					<b>{__('Auction Excerpt.', 'goodbids')}</b>{' '}
-					{auction.excerpt.value}
-				</span>
-			)}
+				{auction.excerpt.value && (
+					<tr>
+						<ReviewTH>{__('Description', 'goodbids')}</ReviewTH>
+						<ReviewTD>{auction.excerpt.value}</ReviewTD>
+					</tr>
+				)}
 
-			<ul>
-				<li className="text-admin-content">
-					<b>{__('Auction Start.', 'goodbids')}</b>{' '}
-					{new Date(auction.startDate.value).toLocaleString()}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Auction End.', 'goodbids')}</b>{' '}
-					{new Date(auction.endDate.value).toLocaleString()}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Bid Increment.', 'goodbids')}</b> $
-					{auction.bidIncrement.value}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Starting Bid.', 'goodbids')}</b>{' '}
-					{auction.startingBid.value
-						? `$${auction.startingBid.value}`
-						: __('None', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Bid Extension.', 'goodbids')}</b>{' '}
-					{auction.bidExtensionMinutes.value}{' '}
-					{__('minutes', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Auction Goal.')}</b>{' '}
-					{auction.auctionGoal.value
-						? `$${auction.auctionGoal.value}`
-						: __('None', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>Expected High Bid.</b>{' '}
-					{auction.expectedHighBid.value
-						? `$${auction.expectedHighBid.value}`
-						: __('None', 'goodbids')}
-				</li>
-				<li className="text-admin-content">
-					<b>Estimated Retail Value.</b>{' '}
-					{auction.estimatedRetailValue.value
-						? `$${auction.estimatedRetailValue.value}`
-						: __('None', 'goodbids')}
-				</li>
-			</ul>
+				<tr>
+					<ReviewTH>{__('Start', 'goodbids')}</ReviewTH>
+					<ReviewTD>
+						{new Date(auction.startDate.value).toLocaleString()}
+					</ReviewTD>
+				</tr>
 
-			<Button onClick={() => setStep('auction')}>
-				{__('Edit Auction', 'goodbids')}
-			</Button>
-		</>
+				<tr>
+					<ReviewTH>{__('End', 'goodbids')}</ReviewTH>
+					<ReviewTD>
+						{new Date(auction.endDate.value).toLocaleString()}
+					</ReviewTD>
+				</tr>
+
+				<tr>
+					<ReviewTH>{__('Bid increment', 'goodbids')}</ReviewTH>
+					<ReviewTD>
+						{formatStringToCurrency(auction.bidIncrement.value)}
+					</ReviewTD>
+				</tr>
+
+				<tr>
+					<ReviewTH>{__('Starting bid', 'goodbids')}</ReviewTH>
+					<ReviewTD>
+						{auction.startingBid.value
+							? `${formatStringToCurrency(auction.startingBid.value)}`
+							: `${formatStringToCurrency(auction.bidIncrement.value)}`}
+					</ReviewTD>
+				</tr>
+
+				<tr>
+					<ReviewTH>{__('Bid extension', 'goodbids')}</ReviewTH>
+					<ReviewTD>
+						{auction.bidExtensionMinutes.value}{' '}
+						{__('minutes', 'goodbids')}
+					</ReviewTD>
+				</tr>
+
+				{auction.auctionGoal.value.length > 0 && (
+					<tr>
+						<ReviewTH>{__('Goal', 'goodbids')}</ReviewTH>
+						<ReviewTD>
+							{auction.auctionGoal.value
+								? `${formatStringToCurrency(auction.auctionGoal.value)}`
+								: __('None', 'goodbids')}
+						</ReviewTD>
+					</tr>
+				)}
+
+				{auction.expectedHighBid.value.length > 0 && (
+					<tr>
+						<ReviewTH>{__('Exp. high bid', 'goodbids')}</ReviewTH>
+						<ReviewTD>
+							{auction.expectedHighBid.value
+								? `${formatStringToCurrency(auction.expectedHighBid.value)}`
+								: __('None', 'goodbids')}
+						</ReviewTD>
+					</tr>
+				)}
+
+				{auction.estimatedRetailValue.value.length > 0 && (
+					<tr>
+						<ReviewTH>{__('Est. value', 'goodbids')}</ReviewTH>
+						<ReviewTD>
+							{auction.estimatedRetailValue.value
+								? `${formatStringToCurrency(auction.estimatedRetailValue.value)}`
+								: __('None', 'goodbids')}
+						</ReviewTD>
+					</tr>
+				)}
+			</ReviewTable>
+
+			<ReviewStatus
+				idleText={__('Edit auction', 'goodbids')}
+				onClick={() => setStep('auction')}
+				pendingText={__('Creating auction', 'goodbids')}
+				status={status}
+				successText={__('Auction created!', 'goodbids')}
+			/>
+		</div>
 	);
 }

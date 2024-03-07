@@ -4,6 +4,7 @@ import { SetUpPaymentsStep } from './steps/set-up-payments';
 import { OnboardingCompleteStep } from './steps/onboarding-complete';
 import { z } from 'zod';
 import { ActivateAccessibilityCheckerStep } from './steps/activate-accessibility-checker';
+import { Card } from '../../components/card';
 
 const stepSchema = z
 	.enum(gbNonprofitOnboarding.stepOptions)
@@ -31,10 +32,12 @@ export function Driver() {
 	);
 
 	return (
-		<main className="flex flex-col gap-4 p-2">
-			<Wrapper progress={stepToProgress[step]}>
-				{stepToComponent[step]}
-			</Wrapper>
-		</main>
+		<div className="flex w-full justify-center pt-12">
+			<Card>
+				<Wrapper progress={stepToProgress[step]}>
+					{stepToComponent[step]}
+				</Wrapper>
+			</Card>
+		</div>
 	);
 }

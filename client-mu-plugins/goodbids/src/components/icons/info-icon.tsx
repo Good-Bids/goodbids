@@ -1,8 +1,6 @@
-type InfoIconProps = {
-	width?: string | number;
-};
+import { IconProps } from './types';
 
-export function InfoIcon({ width = 24 }: InfoIconProps) {
+export function InfoIcon({ width = 24 }: IconProps) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

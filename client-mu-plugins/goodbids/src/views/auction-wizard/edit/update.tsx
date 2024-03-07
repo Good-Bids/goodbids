@@ -1,13 +1,13 @@
 import { ShippingClasses } from '../api/get-shipping-classes';
-import { ErrorWrapper } from '../../../components/error';
-import { Logo } from '../../../components/logo';
+import { ErrorWrapper } from '~/components/error';
 import { ProductForm } from '../components/product-form';
 import { Button } from '~/components/button';
 import { __ } from '@wordpress/i18n';
 import { useAuctionWizardState } from '../store';
 import { useUpdateProduct } from '../api/update-product';
 import { ProductCategories } from '../api/get-product-categories';
-import { ProgressIcon } from '~/components/progress-icon';
+import { ProgressIcon } from '~/components/icons/progress-icon';
+import { H2 } from '~/components/typography';
 
 type UpdateStepProps = {
 	rewardId: number;
@@ -126,9 +126,7 @@ export function UpdateStep({
 	};
 
 	return (
-		<div className="flex flex-col gap-8">
-			<Logo />
-
+		<div className="flex flex-col gap-8 p-10 text-gb-green-900">
 			{updateProduct.status === 'error' && (
 				<ErrorWrapper>
 					{__(
@@ -138,20 +136,20 @@ export function UpdateStep({
 				</ErrorWrapper>
 			)}
 
+			<H2 as="h1">{__('Update your reward')}</H2>
+
 			<ProductForm shippingClasses={shippingClasses} />
 
-			<div className="flex w-full justify-center">
-				<Button variant="solid" onClick={handleSubmit}>
-					{updateProduct.status === 'pending' ? (
-						<div className="flex items-center justify-center gap-2">
-							<ProgressIcon spin />
-							<span>{__('Saving your changes', 'goodbids')}</span>
-						</div>
-					) : (
-						__('Save and Update', 'goodbids')
-					)}
-				</Button>
-			</div>
+			<Button variant="solid" onClick={handleSubmit}>
+				{updateProduct.status === 'pending' ? (
+					<div className="flex items-center justify-center gap-2">
+						<ProgressIcon spin />
+						<span>{__('Saving your changes', 'goodbids')}</span>
+					</div>
+				) : (
+					__('Save and Update', 'goodbids')
+				)}
+			</Button>
 		</div>
 	);
 }

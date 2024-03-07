@@ -1,4 +1,4 @@
-import { H2, P } from '../../../components/typography';
+import { H3, P } from '~/components/typography';
 
 type MultiStepHeadingProps = {
 	title: string;
@@ -14,7 +14,7 @@ export function MultiStepHeading({
 	return (
 		<div className="flex h-full w-full flex-col items-center justify-between gap-3">
 			<div className="flex w-full flex-col gap-3 text-left">
-				<H2>{title}</H2>
+				<H3 as="h2">{title}</H3>
 				<P>{content}</P>
 			</div>
 

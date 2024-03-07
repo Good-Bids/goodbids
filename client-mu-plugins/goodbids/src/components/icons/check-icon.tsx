@@ -1,8 +1,6 @@
-type CheckIconProps = {
-	width?: number;
-};
+import { IconProps } from './types';
 
-export function CheckIcon({ width = 24 }: CheckIconProps) {
+export function CheckIcon({ width = 24 }: IconProps) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

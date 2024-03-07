@@ -26,6 +26,7 @@ module.exports = {
 				sm: '1rem',
 				DEFAULT: '2rem',
 				'admin-sm': '0.375rem',
+				gb: pxToRem(8),
 			},
 			borderWidth: {
 				DEFAULT: '1px',
@@ -57,21 +58,26 @@ module.exports = {
 					text: '#000',
 					bg: '#f87171',
 				},
-				red: {
-					500: '#c70808',
-				},
-				admin: {
-					main: '#0a3624',
-					accent: '#70ff8f',
-					secondary: '#125E3E',
-					gray: '#f0f0f1',
-				},
-				'admin-blue': {
-					300: '#2271b1',
-					600: '#135e96',
-				},
-				'admin-gray': {
-					100: '#BDBFBE',
+				gb: {
+					blue: {
+						300: '#2271b1',
+						600: '#135e96',
+					},
+					gray: {
+						100: '#f0f0f1',
+						200: '#BDBFBE',
+						300: '#A7A9A8',
+						500: '#7B7E7D',
+					},
+					green: {
+						100: '#D9FFD2',
+						500: '#125E3E',
+						700: '#0A3624',
+						900: '#232826',
+					},
+					red: {
+						500: '#c70808',
+					},
 				},
 			},
 			fontSize: {
@@ -81,11 +87,14 @@ module.exports = {
 				lg: 'var(--wp--preset--font-size--large)',
 				xl: 'var(--wp--preset--font-size--x-large)',
 				xxl: 'var(--wp--preset--font-size--xx-large)',
-				'admin-label': pxToRem(12),
-				'admin-content': pxToRem(16),
-				'admin-medium': pxToRem(18),
-				'admin-large': pxToRem(20),
-				'admin-extra-large': pxToRem(24),
+				'gb-md': pxToRem(16),
+				'gb-lg': pxToRem(18),
+				'gb-xl': pxToRem(30),
+				'gb-2xl': pxToRem(36),
+			},
+			height: {
+				25: pxToRem(100),
+				50: pxToRem(200),
 			},
 			keyframes: {
 				'spin-left': {
@@ -98,12 +107,16 @@ module.exports = {
 				},
 			},
 			maxWidth: {
+				'1/3': '33.333333%',
 				100: pxToRem(100),
 				120: pxToRem(120),
-				536: pxToRem(536),
+				584: pxToRem(584),
 			},
 			minWidth: {
 				88: pxToRem(88),
+			},
+			scale: {
+				102: '1.02',
 			},
 		},
 	},

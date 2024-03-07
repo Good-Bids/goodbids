@@ -8,7 +8,7 @@ import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 import { ReviewAuction } from '../components/review-auction';
 import { ReviewProduct } from '../components/reward-product-review';
-import { ReviewWrapper } from '../components/review-wrapper';
+import { Wrapper } from './wrapper';
 
 type ReviewStepProps = {
 	shippingClasses: ShippingClasses;
@@ -166,46 +166,26 @@ export function ReviewStep({
 	};
 
 	return (
-		<div className="flex w-full flex-col items-center gap-2 py-10">
-			<h1 className="m-0 text-6xl font-bold text-admin-main">
-				{__('Almost there!', 'goodbids')}
-			</h1>
+		<Wrapper
+			progress={90}
+			step={3}
+			title={__('Review your auction settings', 'goodbids')}
+		>
+			<div className="flex flex-col gap-8">
+				<ReviewProduct
+					shippingClasses={shippingClasses}
+					status={createProduct.status}
+				/>
 
-			<div className="max-w-xl">
-				<p className="text-admin-content">
-					{__(
-						'Take a moment to review your reward product and auction!',
-						'goodbids',
-					)}
-				</p>
-			</div>
+				<ReviewAuction
+					createStatus={createAuction.status}
+					updateStatus={updateAuctionContent.status}
+				/>
 
-			{createProduct.status === 'error' && (
-				<span className="text-admin-content text-error-bg">
-					{__('Error creating product', 'goodbids')}
-				</span>
-			)}
-
-			<div className="flex w-full items-start justify-center gap-4">
-				<ReviewWrapper>
-					<ReviewProduct
-						shippingClasses={shippingClasses}
-						status={createProduct.status}
-					/>
-				</ReviewWrapper>
-				<ReviewWrapper>
-					<ReviewAuction
-						createStatus={createAuction.status}
-						updateStatus={updateAuctionContent.status}
-					/>
-				</ReviewWrapper>
-			</div>
-
-			<div className="pt-4">
 				<Button variant="solid" onClick={handleSubmitStart}>
-					{__('Looks Good!', 'goodbids')}
+					{__('Save and continue', 'goodbids')}
 				</Button>
 			</div>
-		</div>
+		</Wrapper>
 	);
 }

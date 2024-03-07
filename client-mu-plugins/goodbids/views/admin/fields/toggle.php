@@ -52,7 +52,7 @@ $toggle_class = ! empty( $field['disabled'] ) ? 'cursor-default' : 'cursor-point
 				<?php checked( boolval( $value ) ); ?>
 				<?php disabled( ! empty( $field['disabled'] ) ) ?>
 			>
-			<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-admin-blue-600 dark:peer-focus:ring-admin-blue-600 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white peer-disabled:after:bg-[#45536a] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-admin-blue-300"></div>
+			<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gb-blue-600 dark:peer-focus:ring-gb-blue-600 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white peer-disabled:after:bg-[#45536a] after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-gb-blue-300"></div>
 			<?php if ( ! empty( $field['text'] ) ): ?>
 				<span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"><?php echo esc_html( $field['text'] ); ?></span>
 			<?php endif; ?>

@@ -1,8 +1,6 @@
-type MoneyIconProps = {
-	width?: string | number;
-};
+import { IconProps } from './types';
 
-export function MoneyIcon({ width = 24 }: MoneyIconProps) {
+export function MoneyIcon({ width = 24 }: IconProps) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

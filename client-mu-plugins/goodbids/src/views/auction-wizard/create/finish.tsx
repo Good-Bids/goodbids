@@ -1,36 +1,33 @@
-import AuctionEndImage from '../../../../assets/images/auction-end.png';
 import { ButtonLink } from '~/components/button-link';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
+import { CoinManImage } from '~/components/images/coin-man';
+import { H1, P } from '~/components/typography';
 
 export function FinishStep() {
 	const { auctionId } = useAuctionWizardState();
 
 	return (
-		<div className="flex w-full flex-col items-center gap-2 py-10">
-			<div>
-				<img src={AuctionEndImage} />
-			</div>
-			<h1 className="m-0 text-6xl font-bold text-admin-main">
-				{__('Almost there!', 'goodbids')}
-			</h1>
-			<div className="max-w-xl">
-				<p className="text-admin-content">
+		<div className="flex flex-col items-center gap-8 p-10">
+			<CoinManImage className="aspect-auto h-60 py-10" />
+
+			<div className="flex flex-col gap-3">
+				<H1>{__('Almost there!', 'goodbids')}</H1>
+				<P>
 					{__(
-						'Now that you have configured your Product and Auction details, continue editing your Auction page to really make it shine! Consider adding additional content to your Auction page to get potential bidders interested. Once you have completed your edits, publish your Auction!',
+						'Your auction is set up! You can now edit your auction page to really make it shine! Consider adding additional content to your auction page to get potential bidders interested. Once you have completed your edits, publish your auction!',
 						'goodbids',
 					)}
-				</p>
+				</P>
 			</div>
 
-			<div className="w-fit">
-				<ButtonLink
-					href={`${gbAuctionWizard.adminURL}/wp-admin/post.php?post=${auctionId}&action=edit`}
-					autoFocus
-				>
-					{__('Customize Auction page', 'goodbids')}
-				</ButtonLink>
-			</div>
+			<ButtonLink
+				autoFocus
+				href={`${gbAuctionWizard.adminURL}/wp-admin/post.php?post=${auctionId}&action=edit`}
+				variant="solid"
+			>
+				{__('Customize auction page', 'goodbids')}
+			</ButtonLink>
 		</div>
 	);
 }

@@ -3,6 +3,7 @@ import { ErrorWrapper } from '~/components/error';
 import { useAuctionWizardState } from '../store';
 import { __ } from '@wordpress/i18n';
 import { AuctionForm } from '../components/auction-form';
+import { Wrapper } from './wrapper';
 
 export function AuctionStep() {
 	const {
@@ -64,16 +65,20 @@ export function AuctionStep() {
 	};
 
 	return (
-		<>
-			{error && <ErrorWrapper>{error}</ErrorWrapper>}
+		<Wrapper
+			progress={60}
+			step={2}
+			title={__('Auction details', 'goodbids')}
+		>
+			<div className="flex flex-col gap-8">
+				{error && <ErrorWrapper>{error}</ErrorWrapper>}
 
-			<AuctionForm />
+				<AuctionForm />
 
-			<div className="flex w-full justify-center">
 				<Button variant="solid" onClick={handleNextPage}>
 					{__('Save and continue', 'goodbids')}
 				</Button>
 			</div>
-		</>
+		</Wrapper>
 	);
 }
