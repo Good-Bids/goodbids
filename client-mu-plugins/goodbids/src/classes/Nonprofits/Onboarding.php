@@ -129,7 +129,7 @@ class Onboarding {
 			'admin_init',
 			function () {
 				// Initialize Onboarding URL
-				$init_onboarding_url = add_query_arg( 'page', self::PAGE_SLUG, admin_url( 'admin.php' ) );
+				$init_onboarding_url = $this->get_url();
 
 				// Store Setup URL
 				$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
@@ -179,7 +179,8 @@ class Onboarding {
 						'callback'     => null,
 					],
 				];
-			}
+			},
+			8
 		);
 	}
 
@@ -195,6 +196,15 @@ class Onboarding {
 			'admin_menu',
 			function () {
 				if ( goodbids()->network->nonprofits->is_onboarded() || is_super_admin() ) {
+					// Setup Guide URL
+					$setup_guide_url = admin_url( 'admin.php?page=' . Guide::PAGE_SLUG );
+					$setup_guide_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $setup_guide_url );
+
+					if ( $this->is_onboarding_page() ) {
+						wp_safe_redirect( $setup_guide_url );
+						exit;
+					}
+
 					return;
 				}
 
@@ -516,7 +526,7 @@ class Onboarding {
 		add_action(
 			'admin_init',
 			function () {
-				if ( ! $this->is_onboarding_page() || wp_doing_ajax() ) {
+				if ( ! $this->is_onboarding_page() || wp_doing_ajax() || goodbids()->network->nonprofits->is_onboarded() ) {
 					return;
 				}
 
@@ -534,7 +544,7 @@ class Onboarding {
 		add_action(
 			'admin_init',
 			function () {
-				if ( wp_doing_ajax() || $this->is_onboarding_page() || ! $this->is_mid_onboarding() ) {
+				if ( wp_doing_ajax() || $this->is_onboarding_page() || ! $this->is_mid_onboarding() || goodbids()->network->nonprofits->is_onboarded() ) {
 					return;
 				}
 
@@ -564,13 +574,11 @@ class Onboarding {
 		add_action(
 			'admin_footer',
 			function () {
-				if ( $this->is_last_step() ) {
-					if ( ! $this->is_onboarding_page() || wp_doing_ajax() || goodbids()->network->nonprofits->is_onboarded() ) {
-						return;
-					}
-
-					$this->mark_onboarding_completed();
+				if ( goodbids()->network->nonprofits->is_onboarded() || ! $this->is_onboarding_page() || wp_doing_ajax() || ! $this->is_last_step() ) {
+					return;
 				}
+
+				$this->mark_onboarding_completed();
 			}
 		);
 	}
