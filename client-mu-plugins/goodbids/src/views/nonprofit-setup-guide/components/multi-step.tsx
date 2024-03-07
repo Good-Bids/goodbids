@@ -47,7 +47,7 @@ function Button(props: ButtonProps) {
 	const { active, fade = false, ...rest } = props;
 
 	const classes = clsx(
-		'border-none px-4 py-2 text-left text-gb-lg transition-all hover:bg-gb-green-500 hover:text-white focus:text-white ',
+		'border-none px-4 py-2 text-left text-gb-lg transition-all hover:bg-gb-green-500 hover:text-white focus:underline',
 		{
 			'bg-gb-green-700 text-white': active,
 			'bg-transparent text-gb-green-700': !active && !fade,
