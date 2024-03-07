@@ -586,7 +586,7 @@ class Onboarding {
 		add_action(
 			'admin_init',
 			function () {
-				$transient = get_transient( self::REDIRECT_TRANSIENT );
+				$transient = $this->get_redirect_transient();
 
 				if ( ! $transient || ! $this->is_mid_onboarding() ) {
 					return;
@@ -631,6 +631,23 @@ class Onboarding {
 			},
 			60
 		);
+	}
+
+	/**
+	 * Get the redirect transient
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	private function get_redirect_transient(): ?string {
+		$transient = get_transient( self::REDIRECT_TRANSIENT );
+
+		if ( ! $transient ) {
+			return null;
+		}
+
+		return str_replace( '&amp;', '&', $transient );
 	}
 
 	/**
@@ -769,11 +786,14 @@ class Onboarding {
 				</style>
 				<?php
 
-				$redirect = get_transient( self::REDIRECT_TRANSIENT );
+				$redirect = $this->get_redirect_transient();
 
 				if ( ! $redirect ) {
 					return;
 				}
+
+				$redirect = esc_js( $redirect );
+				$redirect = str_replace( '&amp;', '&', $redirect );
 				?>
 				<script>
 					jQuery( function( $ ) {
@@ -788,7 +808,7 @@ class Onboarding {
 										'click',
 										function ( e ) {
 											e.preventDefault();
-											window.location.href = '<?php echo esc_js( $redirect ); ?>';
+											window.location.href = '<?php echo $redirect; // phpcs:ignore ?>';
 											return false;
 										}
 									);
@@ -809,7 +829,7 @@ class Onboarding {
 								} else {
 									if ( gbStripeModalOpened ) { // Modal was closed automatically.
 										clearInterval( gbStripeModalInterval );
-										window.location.href = '<?php echo esc_js( $redirect ); ?>';
+										window.location.href = '<?php echo $redirect; // phpcs:ignore ?>';
 										return false;
 									}
 								}
