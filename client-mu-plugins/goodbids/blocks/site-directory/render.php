@@ -8,6 +8,8 @@
  * @package GoodBids
  */
 
+use GoodBids\Network\Nonprofit;
+
 if ( ! is_main_site() ) :
 	return;
 endif;
@@ -20,6 +22,11 @@ endif;
 			function ( $site_id ) {
 				// Skip main site
 				if ( get_main_site_id() === $site_id ) {
+					return;
+				}
+				// Skip if site is not live
+				$nonprofit = new Nonprofit( get_current_blog_id() );
+				if ( Nonprofit::STATUS_LIVE !== $nonprofit->get_status() ) {
 					return;
 				}
 				goodbids()->load_view( 'parts/site-grid.php', compact( 'site_id' ) );
