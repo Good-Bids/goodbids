@@ -120,9 +120,6 @@ class Guide {
 					return $dependencies;
 				}
 
-				// Include WP Media.
-				wp_enqueue_media();
-
 				// Get the asset file.
 				$asset_file = GOODBIDS_PLUGIN_PATH . 'build/views/nonprofit-setup-guide.asset.php';
 				if ( file_exists( $asset_file ) ) {
