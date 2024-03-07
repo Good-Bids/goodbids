@@ -11,6 +11,7 @@ const stepSchema = z
 	.catch('create-store');
 
 const stepToProgress = {
+	'init-onboarding': 0,
 	'create-store': 10,
 	'set-up-payments': 40,
 	'activate-accessibility-checker': 70,
@@ -18,6 +19,7 @@ const stepToProgress = {
 };
 
 const stepToComponent = {
+	'init-onboarding': <CreateStoreStep />,
 	'create-store': <CreateStoreStep />,
 	'set-up-payments': <SetUpPaymentsStep />,
 	'activate-accessibility-checker': <ActivateAccessibilityCheckerStep />,
