@@ -288,6 +288,7 @@ class Onboarding {
 		if ( $step ) {
 			$url = add_query_arg( self::STEP_PARAM, $step, $url );
 		}
+
 		return $url;
 	}
 
@@ -781,7 +782,7 @@ class Onboarding {
 								const $button = $( '.components-modal__header button' );
 
 								if ( $button.length ) {
-									clearInterval( gbOnboardingInterval );
+									clearInterval( gbStripeCloseInterval );
 
 									$button.on(
 										'click',
