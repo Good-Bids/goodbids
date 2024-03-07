@@ -1,6 +1,7 @@
-import AuctionEndImage from '../../../../assets/images/auction-end.png';
 import { ButtonLink } from '~/components/button-link';
 import { __ } from '@wordpress/i18n';
+import { H1, P } from '~/components/typography';
+import { CoinManImage } from '~/components/images/coin-man';
 
 type FinishStepProps = {
 	auctionId: number;
@@ -8,30 +9,26 @@ type FinishStepProps = {
 
 export function FinishStep({ auctionId }: FinishStepProps) {
 	return (
-		<div className="flex w-full flex-col items-center gap-2 py-10">
-			<div>
-				<img src={AuctionEndImage} />
-			</div>
-			<h1 className="m-0 text-6xl font-bold text-admin-main">
-				{__('Product updated!', 'goodbids')}
-			</h1>
-			<div className="max-w-xl">
-				<p className="text-center text-admin-content">
+		<div className="flex flex-col items-center gap-8 p-10">
+			<CoinManImage className="aspect-auto h-50 py-10" />
+
+			<div className="flex flex-col gap-3">
+				<H1>{__('Product updated!', 'goodbids')}</H1>
+				<P>
 					{__(
-						'Your product has been updated and your auction is ready to go! Continue customizing your auction page to make it your own.',
+						'Your product has been updated! Continue customizing your auction page to make it your own.',
 						'goodbids',
 					)}
-				</p>
+				</P>
 			</div>
 
-			<div className="w-fit">
-				<ButtonLink
-					href={`${gbAuctionWizard.adminURL}/wp-admin/post.php?post=${auctionId}&action=edit`}
-					autoFocus
-				>
-					{__('Return to Auction page', 'goodbids')}
-				</ButtonLink>
-			</div>
+			<ButtonLink
+				autoFocus
+				href={`${gbAuctionWizard.adminURL}/wp-admin/post.php?post=${auctionId}&action=edit`}
+				variant="solid"
+			>
+				{__('Return to auction page', 'goodbids')}
+			</ButtonLink>
 		</div>
 	);
 }

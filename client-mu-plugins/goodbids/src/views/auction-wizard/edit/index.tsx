@@ -1,21 +1,30 @@
 import { useGetShippingClasses } from '../api/get-shipping-classes';
-import { ErrorWrapper } from '../../../components/error';
-import { __ } from '@wordpress/i18n';
 import { useGetProduct } from '../api/get-product';
 import { useEffect } from 'react';
 import { useAuctionWizardState } from '../store';
 import { useGetProductCategories } from '../api/get-product-categories';
-import { ProgressIcon } from '~/components/progress-icon';
-import { H1 } from '~/components/typography';
 import { FinishStep } from './finish';
 import { UpdateStep } from './update';
+import { Loading } from '../components/loading';
+import { Error } from '../components/error';
+import { Card } from '../../../components/card';
 
-type EditFlowProps = {
+type EditProps = {
 	auctionId: number;
 	rewardId: number;
 };
 
-export function EditFlow({ auctionId, rewardId }: EditFlowProps) {
+export function Edit({ auctionId, rewardId }: EditProps) {
+	return (
+		<div className="flex w-full justify-center pt-12">
+			<Card>
+				<EditContent auctionId={auctionId} rewardId={rewardId} />
+			</Card>
+		</div>
+	);
+}
+
+export function EditContent({ auctionId, rewardId }: EditProps) {
 	const { setProduct, step } = useAuctionWizardState();
 	const htmlRegex = /(<([^>]+)>)/gi;
 
@@ -72,20 +81,11 @@ export function EditFlow({ auctionId, rewardId }: EditFlowProps) {
 	}, [getProduct.data]);
 
 	if (loading) {
-		return (
-			<div className="flex w-full flex-col items-center gap-2 pt-48 text-admin-main">
-				<ProgressIcon spin width={48} />
-				<H1>{__('Finding your product!', 'goodbids')}</H1>
-			</div>
-		);
+		return <Loading />;
 	}
 
 	if (error) {
-		return (
-			<ErrorWrapper>
-				{__('Something went wrong. Try again later.', 'goodbids')}
-			</ErrorWrapper>
-		);
+		return <Error />;
 	}
 
 	if (step === 'finish') {
