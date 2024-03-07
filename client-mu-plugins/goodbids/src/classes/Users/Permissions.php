@@ -48,6 +48,7 @@ class Permissions {
 
 		// Set Admin Auction Capabilities.
 		$this->set_admin_auction_capabilities();
+		$this->edit_admin_capabilities();
 
 		// Remove some user roles.
 		$this->remove_unused_roles();
@@ -165,7 +166,7 @@ class Permissions {
 
 				$types = [
 					goodbids()->auctions->get_post_type(),
-					'auction'
+					'auction',
 				];
 
 				$actions = [
@@ -206,6 +207,38 @@ class Permissions {
 		);
 	}
 
+
+	/**
+	 * Edit Administrator Capabilities
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function edit_admin_capabilities(): void {
+		add_action(
+			'admin_init',
+			function () {
+				if ( $this->version <= get_option( self::VERSION_OPTION ) ) {
+					return;
+				}
+
+				$role         = get_role( 'administrator' );
+				$capabilities = [
+					'list_users',
+					'edit_users',
+					'promote_users',
+					'remove_users',
+					'delete_users',
+
+				];
+
+				$this->remove_role( $role, $capabilities );
+				$this->update_version();
+			}
+		);
+	}
+
 	/**
 	 * Add capabilities to role
 	 *
@@ -224,6 +257,28 @@ class Permissions {
 		} else {
 			foreach ( $capabilities as $capability ) {
 				$role->add_cap( $capability );
+			}
+		}
+	}
+
+	/**
+	 * Remove capabilities from role
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_Role $role
+	 * @param array   $capabilities
+	 *
+	 * @return void
+	 */
+	private function remove_role( WP_Role $role, array $capabilities ): void {
+		$role->capabilities = array_merge( $role->capabilities, $capabilities );
+
+		if ( function_exists( 'wpcom_vip_remove_role_caps' ) ) {
+			wpcom_vip_remove_role_caps( $role->name, $capabilities );
+		} else {
+			foreach ( $capabilities as $capability ) {
+				$role->remove_cap( $capability );
 			}
 		}
 	}
