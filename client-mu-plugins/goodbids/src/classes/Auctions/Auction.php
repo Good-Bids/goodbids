@@ -251,6 +251,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Reward Estimated Value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_estimated_value_formatted(): string {
+		return wc_price( $this->get_estimated_value() );
+	}
+
+	/**
 	 * Get the Auction Start Date/Time
 	 *
 	 * @since 1.0.0
@@ -402,6 +413,55 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Bid Extension time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_bid_extension_formatted(): string {
+		$seconds = $this->get_bid_extension();
+
+		if ( is_null( $seconds ) ) {
+			return '';
+		}
+
+		if ( $seconds < MINUTE_IN_SECONDS ) {
+			return sprintf(
+				'%d %s',
+				$seconds,
+				_n( 'second', 'seconds', $seconds, 'goodbids' )
+			);
+		}
+
+		$min = floor( $seconds / MINUTE_IN_SECONDS );
+		$sec = $seconds % MINUTE_IN_SECONDS;
+
+		if ( $seconds < HOUR_IN_SECONDS ) {
+			return sprintf(
+				'%d %s and %d %s',
+				$min,
+				_n( 'minute', 'minutes', $min, 'goodbids' ),
+				$sec,
+				_n( 'second', 'seconds', $sec, 'goodbids' )
+			);
+		}
+
+		$hr  = floor( $seconds / HOUR_IN_SECONDS );
+		$min = floor( ( $seconds % HOUR_IN_SECONDS ) / MINUTE_IN_SECONDS );
+
+		return sprintf(
+			'%d %s, %d %s, and %d %s',
+			$hr,
+			_n( 'hour', 'hours', $hr, 'goodbids' ),
+			$min,
+			_n( 'minute', 'minutes', $min, 'goodbids' ),
+			$sec,
+			_n( 'second', 'seconds', $sec, 'goodbids' )
+		);
+	}
+
+	/**
 	 * Get the Auction Bid Increment amount
 	 *
 	 * @since 1.0.0
@@ -410,6 +470,17 @@ class Auction {
 	 */
 	public function get_bid_increment(): int {
 		return intval( $this->get_setting( 'bid_increment' ) );
+	}
+
+	/**
+	 * Get the Formatted Auction Bid Increment amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_bid_increment_formatted(): string {
+		return wc_price( $this->get_bid_increment() );
 	}
 
 	/**
@@ -459,6 +530,17 @@ class Auction {
 	 */
 	public function get_expected_high_bid(): int {
 		return intval( $this->get_setting( 'expected_high_bid' ) );
+	}
+
+	/**
+	 * Get the formatted Auction Expected High Bid Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_expected_high_bid_formatted(): string {
+		return wc_price( $this->get_expected_high_bid() );
 	}
 
 	/**
@@ -678,6 +760,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Total Raised
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_total_raised_formatted(): string {
+		return wc_price( $this->get_total_raised() );
+	}
+
+	/**
 	 * Alias get_bid_count method.
 	 *
 	 * @alias get_bid_count
@@ -700,6 +793,19 @@ class Auction {
 	public function get_user_total_donated( int $user_id ): float {
 		return collect( $this->get_bid_orders( -1, $user_id ) )
 			->sum( fn( $order ) => $order->get_total( 'edit' ) );
+	}
+
+	/**
+	 * Get the formatted Auction Total Donated by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return string
+	 */
+	public function get_user_total_donated_formatted( int $user_id ): string {
+		return wc_price( $this->get_user_total_donated( $user_id ) );
 	}
 
 	/**

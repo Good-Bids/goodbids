@@ -65,7 +65,7 @@ class AuctionOutbid extends Email {
 				$next  = false;
 				$order = false;
 				foreach ( $bid_orders as $bid_order ) {
-					if ( $bid_order === $order_id ) {
+					if ( $bid_order->get_id() === $order_id ) {
 						$next = true;
 						continue;
 					}
