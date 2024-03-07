@@ -13,6 +13,7 @@ use GoodBids\Frontend\Notices;
 use GoodBids\Network\Nonprofit;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
+use WP_Block;
 
 /**
  * Class for Checkout Methods
@@ -44,6 +45,9 @@ class Checkout {
 
 		// Add the Nonprofit name to the Checkout page title
 		$this->adjust_checkout_title();
+
+		// Modify the Checkout button based on the type of order.
+		$this->adjust_checkout_button();
 	}
 
 	/**
@@ -208,7 +212,7 @@ class Checkout {
 		add_filter(
 			'render_block',
 			function ( string $block_content, array $block ): string {
-				if ( empty( $block['blockName'] ) || 'woocommerce/checkout-terms-block' !== $block['blockName'] || is_main_site() ) {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'woocommerce/checkout-terms-block' !== $block['blockName'] || is_main_site() ) {
 					return $block_content;
 				}
 
@@ -256,14 +260,14 @@ class Checkout {
 		add_filter(
 			'render_block',
 			function ( string $block_content, array $block ): string {
-				if ( ! is_checkout() || empty( $block['blockName'] ) || 'core/post-title' !== $block['blockName'] || is_main_site() ) {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'core/post-title' !== $block['blockName'] || is_main_site() ) {
 					return $block_content;
 				}
 
 				$nonprofit = new Nonprofit( get_current_blog_id() );
 
 				return str_replace(
-					'Checkout',
+					'Checkout', // Not exactly supportive if i18n.
 					sprintf(
 						'%s %s',
 						$nonprofit->get_name(),
@@ -274,6 +278,34 @@ class Checkout {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Modify the Checkout button based on the type of order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_checkout_button(): void {
+		add_filter(
+			'render_block_data',
+			function ( array $block, array $source_block, ?WP_Block $parent_block ): array {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'woocommerce/checkout-actions-block' !== $block['blockName'] || is_main_site() ) {
+					return $block;
+				}
+
+				if ( goodbids()->woocommerce->cart->is_bid_order() ) {
+					$block['attrs']['placeOrderButtonLabel'] = __( 'Confirm Bid', 'goodbids' );
+				} elseif ( goodbids()->woocommerce->cart->is_reward_order() ) {
+					$block['attrs']['placeOrderButtonLabel'] = __( 'Claim Reward', 'goodbids' );
+				}
+
+				return $block;
+			},
+			10,
+			3
 		);
 	}
 }

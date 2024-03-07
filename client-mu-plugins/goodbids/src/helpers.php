@@ -35,10 +35,14 @@ if ( ! function_exists( 'dd' ) ) {
 	 *
 	 * @return void
 	 */
-	function dd( mixed $data, ?string $method = 'dump', bool $die = true ): void {
+	function dd( mixed $data, ?string $method = null, bool $die = true ): void {
 		// Disable if not in dev environment.
 		if ( ! GoodBids\Core::is_local_env() ) {
 			return;
+		}
+
+		if ( ! $method ) {
+			$method = 'dump';
 		}
 
 		ini_set( 'highlight.comment', '#969896; font-style: italic' );
@@ -58,7 +62,7 @@ if ( ! function_exists( 'dd' ) ) {
 		 *
 		 * @return ?string
 		 */
-		$do_dump = function( mixed $data, string $method = 'dump', bool $return = false ): ?string {
+		$do_dump = function( mixed $data, string $method, bool $return ): ?string {
 			if ( $return ) {
 				ob_start();
 			}
@@ -81,7 +85,7 @@ if ( ! function_exists( 'dd' ) ) {
 		};
 
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			$do_dump( $data, $method );
+			$do_dump( $data, $method, false );
 		} else {
 			echo '<div style="background-color: #1C1E21; padding: 1rem">';
 			highlight_string( "<?php\n\n" );

@@ -9,6 +9,7 @@
 namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Auctions\Bids;
+use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
 use WC_Order_Item_Product;
@@ -317,16 +318,38 @@ class Cart {
 	 * @return bool
 	 */
 	public function is_bid_order(): bool {
+		return Bids::ITEM_TYPE === $this->get_order_type();
+	}
+
+	/**
+	 * Check if the current order is a Reward Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_reward_order(): bool {
+		return Rewards::ITEM_TYPE === $this->get_order_type();
+	}
+
+	/**
+	 * Get the Cart Order Type
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_order_type(): ?string {
 		$cart = WC()->cart->get_cart_contents();
 
 		foreach ( $cart as $cart_item ) {
 			$product = $cart_item['data'];
-			if ( Bids::ITEM_TYPE === goodbids()->products->get_type( $product->get_id() ) ) {
-				return true;
+			if ( goodbids()->products->get_type( $product->get_id() ) ) {
+				return goodbids()->products->get_type( $product->get_id() );
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
