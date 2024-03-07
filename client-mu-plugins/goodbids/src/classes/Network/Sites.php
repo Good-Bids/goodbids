@@ -606,6 +606,42 @@ class Sites {
 		);
 	}
 
+
+	/**
+	 * Get the terms and conditions text for emails.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_terms_conditions_text(): string {
+		if ( ! is_multisite() ) {
+			return '';
+		}
+
+		$terms_conditions = goodbids()->sites->main(
+			function (): string {
+				$terms_conditions_link = '';
+				$terms_conditions_id   = wc_terms_and_conditions_page_id();
+
+				if ( $terms_conditions_id ) {
+					$terms_conditions_link = sprintf(
+						'%s %s',
+						get_the_title( $terms_conditions_id ),
+						get_page_link( $terms_conditions_id )
+					);
+				}
+
+				return $terms_conditions_link;
+			}
+		);
+
+		return sprintf(
+			'By activating your account, you agree to GOODBIDS\' Nonprofit %s.',
+			$terms_conditions
+		);
+	}
+
 	/**
 	 * Get the Report an issue link.
 	 *
