@@ -23,6 +23,18 @@ export function AuctionForm() {
 		setAuctionValue,
 	} = useAuctionWizardState();
 
+	const validateMinimumBid = (value: string) => {
+		const invalidDecimalValue = validateDecimal(value);
+
+		if (invalidDecimalValue) {
+			return invalidDecimalValue;
+		}
+
+		if (parseFloat(value) < 5) {
+			return __('Minimum bid is $5', 'goodbids');
+		}
+	};
+
 	const handleDebounce = useDebouncedCallback(
 		(
 			key: keyof AuctionState,
@@ -89,7 +101,7 @@ export function AuctionForm() {
 							handleDebounce(
 								'startingBid',
 								e.target.value,
-								validateDecimal,
+								validateMinimumBid,
 							)
 						}
 					/>
@@ -105,7 +117,7 @@ export function AuctionForm() {
 							handleDebounce(
 								'bidIncrement',
 								e.target.value,
-								validateDecimal,
+								validateMinimumBid,
 							)
 						}
 					/>

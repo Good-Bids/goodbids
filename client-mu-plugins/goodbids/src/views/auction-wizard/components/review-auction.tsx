@@ -69,7 +69,7 @@ export function ReviewAuction({
 					<ReviewTD>
 						{auction.startingBid.value
 							? `$${auction.startingBid.value}`
-							: __('None', 'goodbids')}
+							: `$${auction.bidIncrement.value}`}
 					</ReviewTD>
 				</tr>
 

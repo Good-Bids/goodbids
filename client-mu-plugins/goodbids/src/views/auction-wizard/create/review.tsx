@@ -168,7 +168,7 @@ export function ReviewStep({
 	return (
 		<Wrapper
 			progress={90}
-			step={1}
+			step={3}
 			title={__('Review your auction settings', 'goodbids')}
 		>
 			<div className="flex flex-col gap-8">
