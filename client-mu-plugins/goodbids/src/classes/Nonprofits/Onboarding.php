@@ -514,7 +514,18 @@ class Onboarding {
 			require_once dirname( WC_PLUGIN_FILE ) . '/src/Admin/API/OnboardingProfile.php';
 		}
 
-		return ! OnboardingProfile::needs_completion();
+		if ( ! OnboardingProfile::needs_completion() ) {
+			return false;
+		}
+
+		$profile = get_option( 'woocommerce_onboarding_profile', [] );
+
+		if ( ! isset( $profile['skipped'] ) ) {
+			$profile['skipped'] = true;
+			update_option( 'woocommerce_onboarding_profile', $profile );
+		}
+
+		return true;
 	}
 
 	/**
@@ -853,5 +864,4 @@ class Onboarding {
 		add_action( 'init', $mark_completed );
 		add_action( 'admin_init', $mark_completed );
 	}
-
 }

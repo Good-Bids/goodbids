@@ -30,6 +30,7 @@ use GoodBids\Nonprofits\Onboarding;
 use GoodBids\Nonprofits\Verification;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\EarlyHooks;
 use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
@@ -334,6 +335,9 @@ class Core {
 
 		// Init Assets.
 		new Assets();
+
+		// Run Early Hooks
+		new EarlyHooks();
 	}
 
 	/**

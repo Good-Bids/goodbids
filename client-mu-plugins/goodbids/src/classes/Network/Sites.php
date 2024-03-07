@@ -93,9 +93,6 @@ class Sites {
 
 		// Setup default Nonprofit Navigation.
 		$this->set_nonprofit_navigation();
-
-		// Prevent SVG Support Errors
-		$this->prevent_svg_support_errors();
 	}
 
 	/**
@@ -1268,25 +1265,5 @@ class Sites {
 		}
 
 		return $id;
-	}
-
-	/**
-	 * Prevent SVG Support from producing an error on init.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function prevent_svg_support_errors(): void {
-		$return_array = function( mixed $value ): array {
-			if ( ! is_array( $value ) || empty( $value ) ) {
-				return [];
-			}
-
-			return $value;
-		};
-
-		add_filter( 'option_bodhi_svgs_settings', $return_array );
-		add_filter( 'default_option_bodhi_svgs_settings', $return_array );
 	}
 }

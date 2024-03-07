@@ -799,13 +799,6 @@ class WooCommerce {
 	 */
 	private function skip_setup_tasks(): void {
 		$hide_setup_steps = function( array $lists ) {
-			$profile = get_option( 'woocommerce_onboarding_profile', [] );
-
-			if ( ! isset( $profile['skipped'] ) ) {
-				$profile['skipped'] = true;
-				update_option( 'woocommerce_onboarding_profile', $profile );
-			}
-
 			// Hide Initial Steps
 			$lists['setup']->visible = false;
 
