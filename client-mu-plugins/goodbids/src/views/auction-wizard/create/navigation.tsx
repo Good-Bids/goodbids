@@ -52,7 +52,7 @@ function NavButton(props: NavButtonProps) {
 	return (
 		<button
 			{...rest}
-			className="group flex items-center gap-2 border-none bg-transparent text-gb-lg text-gb-green-700 outline-none"
+			className="group flex cursor-pointer items-center gap-2 border-none bg-transparent text-gb-lg text-gb-green-700 outline-none"
 		>
 			{startIcon}
 			<span className="group-hover:underline group-focus:underline">

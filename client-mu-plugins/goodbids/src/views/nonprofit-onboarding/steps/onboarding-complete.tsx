@@ -24,18 +24,7 @@ export function OnboardingCompleteStep() {
 					variant="solid"
 					href={gbNonprofitOnboarding.setupGuideUrl}
 				>
-					{__('Explore Setup Guide', 'goodbids')}
-				</ButtonLink>
-
-				<ButtonLink
-					href={gbNonprofitOnboarding.onboardingCompleteUrl}
-					target="_blank"
-				>
-					{__('Go to my site', 'goodbids')}
-				</ButtonLink>
-
-				<ButtonLink href={gbNonprofitOnboarding.adminUrl}>
-					{__('Go to my Dashboard', 'goodbids')}
+					{__('Continue to site guide', 'goodbids')}
 				</ButtonLink>
 			</div>
 		</div>

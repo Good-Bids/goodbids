@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import { H3 } from '~/components/typography';
 import { ReviewStatus } from './review-status';
 import { ReviewTable, ReviewTH, ReviewTD } from './review-table';
+import { formatStringToCurrency } from '~/utils/number';
 
 type ReviewProductProps = {
 	shippingClasses: ShippingClasses;
@@ -25,7 +26,9 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 
 				<tr>
 					<ReviewTH>{__('Fair market value', 'goodbids')}</ReviewTH>
-					<ReviewTD>${product.regularPrice.value}</ReviewTD>
+					<ReviewTD>
+						{formatStringToCurrency(product.regularPrice.value)}
+					</ReviewTD>
 				</tr>
 
 				<tr>
@@ -91,7 +94,7 @@ export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 
 			<ReviewStatus
 				idleText={__('Edit reward', 'goodbids')}
-				onClick={() => setStep('auction')}
+				onClick={() => setStep('product')}
 				pendingText={__('Creating reward', 'goodbids')}
 				status={status}
 				successText={__('Reward created!', 'goodbids')}

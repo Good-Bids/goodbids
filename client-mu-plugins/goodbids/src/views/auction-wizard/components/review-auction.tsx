@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { H3 } from '~/components/typography';
 import { ReviewStatus } from './review-status';
 import { ReviewTable, ReviewTH, ReviewTD } from './review-table';
+import { formatStringToCurrency } from '~/utils/number';
 
 type ReviewAuctionProps = {
 	createStatus: 'idle' | 'pending' | 'error' | 'success';
@@ -45,6 +46,13 @@ export function ReviewAuction({
 					</tr>
 				)}
 
+				{auction.excerpt.value && (
+					<tr>
+						<ReviewTH>{__('Description', 'goodbids')}</ReviewTH>
+						<ReviewTD>{auction.excerpt.value}</ReviewTD>
+					</tr>
+				)}
+
 				<tr>
 					<ReviewTH>{__('Start', 'goodbids')}</ReviewTH>
 					<ReviewTD>
@@ -61,15 +69,17 @@ export function ReviewAuction({
 
 				<tr>
 					<ReviewTH>{__('Bid increment', 'goodbids')}</ReviewTH>
-					<ReviewTD>${auction.bidIncrement.value}</ReviewTD>
+					<ReviewTD>
+						{formatStringToCurrency(auction.bidIncrement.value)}
+					</ReviewTD>
 				</tr>
 
 				<tr>
 					<ReviewTH>{__('Starting bid', 'goodbids')}</ReviewTH>
 					<ReviewTD>
 						{auction.startingBid.value
-							? `$${auction.startingBid.value}`
-							: `$${auction.bidIncrement.value}`}
+							? `${formatStringToCurrency(auction.startingBid.value)}`
+							: `${formatStringToCurrency(auction.bidIncrement.value)}`}
 					</ReviewTD>
 				</tr>
 
@@ -86,7 +96,7 @@ export function ReviewAuction({
 						<ReviewTH>{__('Goal', 'goodbids')}</ReviewTH>
 						<ReviewTD>
 							{auction.auctionGoal.value
-								? `$${auction.auctionGoal.value}`
+								? `${formatStringToCurrency(auction.auctionGoal.value)}`
 								: __('None', 'goodbids')}
 						</ReviewTD>
 					</tr>
@@ -97,7 +107,7 @@ export function ReviewAuction({
 						<ReviewTH>{__('Exp. high bid', 'goodbids')}</ReviewTH>
 						<ReviewTD>
 							{auction.expectedHighBid.value
-								? `$${auction.expectedHighBid.value}`
+								? `${formatStringToCurrency(auction.expectedHighBid.value)}`
 								: __('None', 'goodbids')}
 						</ReviewTD>
 					</tr>
@@ -108,7 +118,7 @@ export function ReviewAuction({
 						<ReviewTH>{__('Est. value', 'goodbids')}</ReviewTH>
 						<ReviewTD>
 							{auction.estimatedRetailValue.value
-								? `$${auction.estimatedRetailValue.value}`
+								? `${formatStringToCurrency(auction.estimatedRetailValue.value)}`
 								: __('None', 'goodbids')}
 						</ReviewTD>
 					</tr>
