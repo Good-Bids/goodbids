@@ -135,7 +135,8 @@ class Sites {
 			function () {
 				?>
 				<style>
-					tr.form-field:has(#admin-email) {
+					tr.form-field:has(#admin-email),
+					tr.form-field:has(#site-admin-email){
 						display:none;
 					}
 				</style>
