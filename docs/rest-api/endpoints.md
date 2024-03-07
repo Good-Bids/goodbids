@@ -70,6 +70,7 @@ The response will contain the details shown below.
 ```json
 {
   "isLastBidder": "bool",
+  "rewardClaimed": "bool",
   "rewardUrl": "string",
   "userFreeBids": "number",
   "userTotalBids": "number", 
