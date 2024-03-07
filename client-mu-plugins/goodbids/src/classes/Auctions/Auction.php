@@ -652,6 +652,25 @@ class Auction {
 	public function get_bid_order_ids( int $limit = -1, ?int $user_id = null ): array {
 		return goodbids()->auctions->get_bid_order_ids( $this->get_id(), $limit, $user_id );
 	}
+
+	/**
+	 * Get the User's last bid on this Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return ?WC_Order
+	 */
+	public function get_user_last_bid( ?int $user_id = null ): ?WC_Order {
+		$orders = $this->get_bid_order_ids( 1, $user_id );
+		if ( ! $orders ) {
+			return null;
+		}
+
+		return wc_get_order( $orders[0] );
+	}
+
 	/**
 	 * Get Order IDs that have been placed using a Free Bid.
 	 *
