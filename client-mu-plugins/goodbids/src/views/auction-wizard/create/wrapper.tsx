@@ -1,52 +1,31 @@
-import { useAuctionWizardState } from '../store';
-import { Button } from '~/components/button';
-import { Logo } from '~/components/logo';
-import { ProgressBar, ProgressBarProps } from '~/components/progress-bar';
+import { ProgressBar, ProgressBarProps } from '../components/progress-bar';
+import { H2 } from '~/components/typography';
+import { Navigation } from './navigation';
+import { __ } from '@wordpress/i18n';
 
 type WrapperProps = ProgressBarProps & {
 	children: React.ReactNode;
+	step: 1 | 2 | 3;
+	title: string;
 };
 
-export function Wrapper({ children, progress }: WrapperProps) {
-	const { step, setStep } = useAuctionWizardState();
-
-	const handleBack = () => {
-		if (step === 'finish') {
-			return setStep('review');
-		}
-
-		if (step === 'review') {
-			return setStep('auction');
-		}
-
-		if (step === 'auction') {
-			return setStep('product');
-		}
-
-		if (step === 'product') {
-			return setStep('start');
-		}
-	};
-
+export function Wrapper({ children, progress, step, title }: WrapperProps) {
 	return (
-		<div className="flex flex-col gap-8 py-3 pr-5">
+		<>
 			<ProgressBar progress={progress} />
-			<div className="flex items-center justify-between">
-				<Logo />
-				{step !== 'start' && step !== 'finish' && (
-					<div className="flex items-center gap-4">
-						<Button onClick={handleBack}>Back</Button>
-						<Button
-							variant="warning"
-							onClick={() => setStep('start')}
-						>
-							Cancel
-						</Button>
-					</div>
-				)}
-			</div>
+			<div className="flex flex-col gap-8 px-10 pb-10 text-gb-green-900">
+				<Navigation />
 
-			{children}
-		</div>
+				<div>
+					<span className="text-gb-lg text-gb-green-700">
+						{__('Step', 'goodbids')} {step}
+						{__('/3', 'goodbids')}
+					</span>
+					<H2 as="h1">{title}</H2>
+				</div>
+
+				<div>{children}</div>
+			</div>
+		</>
 	);
 }

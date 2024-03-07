@@ -1,23 +1,26 @@
-import { ErrorWrapper } from '~/components/error';
 import { useGetProductCategories } from '../api/get-product-categories';
 import { useGetShippingClasses } from '../api/get-shipping-classes';
-import { StepType, useAuctionWizardState } from '../store';
-import { Wrapper } from './wrapper';
+import { useAuctionWizardState } from '../store';
 import { StartStep } from './start';
 import { ProductStep } from './product';
 import { AuctionStep } from './auction';
 import { ReviewStep } from './review';
 import { FinishStep } from './finish';
-
-const stepProgress: Record<StepType, number> = {
-	start: 5,
-	product: 33,
-	auction: 67,
-	review: 90,
-	finish: 100,
-};
+import { Card } from '../../../components/card';
+import { Loading } from '../components/loading';
+import { Error } from '../components/error';
 
 export function Create() {
+	return (
+		<div className="flex w-full justify-center pt-12">
+			<Card>
+				<CreateContent />
+			</Card>
+		</div>
+	);
+}
+
+export function CreateContent() {
 	const { step } = useAuctionWizardState();
 
 	const shippingClasses = useGetShippingClasses();
@@ -31,28 +34,36 @@ export function Create() {
 		shippingClasses.status === 'error' ||
 		productCategories.status === 'error';
 
-	if (error) {
-		return <ErrorWrapper>Something went wrong</ErrorWrapper>;
+	if (loading) {
+		return <Loading />;
 	}
 
-	return (
-		<Wrapper progress={stepProgress[step]}>
-			{(step === 'start' || loading) && <StartStep loading={loading} />}
+	if (error) {
+		return <Error />;
+	}
 
-			{step === 'product' && !loading && (
-				<ProductStep shippingClasses={shippingClasses.data || []} />
-			)}
+	if (step === 'start') {
+		return <StartStep />;
+	}
 
-			{step === 'auction' && !loading && <AuctionStep />}
+	if (step === 'product') {
+		return <ProductStep shippingClasses={shippingClasses.data} />;
+	}
 
-			{step === 'review' && !loading && (
-				<ReviewStep
-					shippingClasses={shippingClasses.data || []}
-					productCategories={productCategories.data || []}
-				/>
-			)}
+	if (step === 'auction') {
+		return <AuctionStep />;
+	}
 
-			{step === 'finish' && !loading && <FinishStep />}
-		</Wrapper>
-	);
+	if (step === 'review') {
+		return (
+			<ReviewStep
+				shippingClasses={shippingClasses.data}
+				productCategories={productCategories.data}
+			/>
+		);
+	}
+
+	if (step === 'finish') {
+		return <FinishStep />;
+	}
 }

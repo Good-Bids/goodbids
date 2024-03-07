@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '~/components/button';
 import { ErrorWrapper } from '~/components/error';
 import { ProductForm, ProductFormProps } from '../components/product-form';
+import { Wrapper } from './wrapper';
 
 type ProductStepProps = ProductFormProps;
 
@@ -50,16 +51,20 @@ export function ProductStep({ shippingClasses }: ProductStepProps) {
 	};
 
 	return (
-		<>
-			{error && <ErrorWrapper>{error}</ErrorWrapper>}
+		<Wrapper
+			progress={30}
+			step={1}
+			title={__('Auction reward', 'goodbids')}
+		>
+			<div className="flex flex-col gap-8">
+				{error && <ErrorWrapper>{error}</ErrorWrapper>}
 
-			<ProductForm shippingClasses={shippingClasses} />
+				<ProductForm shippingClasses={shippingClasses} />
 
-			<div className="flex w-full justify-center">
 				<Button variant="solid" onClick={handleNextPage}>
 					{__('Save and Continue', 'goodbids')}
 				</Button>
 			</div>
-		</>
+		</Wrapper>
 	);
 }
