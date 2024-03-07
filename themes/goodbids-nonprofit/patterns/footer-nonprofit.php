@@ -1,3 +1,12 @@
+<?php
+/**
+ * Title: GoodBids Footer
+ * Slug: goodbids-np/footer-nonprofit
+ *
+ * @package GoodBidsNonprofit
+ */
+
+?>
 <!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide has-background">
 	<!-- wp:group {"align":"wide","layout":{"type":"constrained"}} -->

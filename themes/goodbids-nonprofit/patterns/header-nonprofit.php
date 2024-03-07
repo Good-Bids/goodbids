@@ -1,3 +1,12 @@
+<?php
+/**
+ * Title: GoodBids Header
+ * Slug: goodbids-np/header-nonprofit
+ *
+ * @package GoodBidsNonprofit
+ */
+
+?>
 <!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"20px","bottom":"20px"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignwide has-background header-nonprofit" style="padding-top:20px;padding-bottom:20px">
 	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"}} -->

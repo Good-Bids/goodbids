@@ -134,6 +134,11 @@ class EqualizeDigital {
 					return;
 				}
 
+				// Allow users to set their own key.
+				if ( ! empty( $_POST['edacp_license_key'] ) ) { // phpcs:ignore
+					return;
+				}
+
 				$_POST['edacp_license_key'] = $this->get_license_key();
 			},
 			2

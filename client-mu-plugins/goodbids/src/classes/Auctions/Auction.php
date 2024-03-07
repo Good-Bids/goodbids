@@ -733,6 +733,10 @@ class Auction {
 			return null;
 		}
 
+		if ( ! $last_bid->get_user() ) {
+			return null;
+		}
+
 		return $last_bid->get_user();
 	}
 

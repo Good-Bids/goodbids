@@ -91,6 +91,9 @@ class Rewards {
 		$rewards_category = get_term_by( 'slug', self::ITEM_TYPE, 'product_cat' );
 
 		if ( ! $rewards_category ) {
+			// Inserting the Rewards Category throws an error with HyperDB.
+			goodbids()->utilities->disable_hyperdb_temporarily();
+
 			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
 
 			if ( is_wp_error( $rewards_category ) ) {

@@ -8,6 +8,7 @@
 
 namespace GoodBids\Network;
 
+use Automattic\WP\Cron_Control\Events_Store;
 use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
@@ -92,9 +93,6 @@ class Sites {
 
 		// Setup default Nonprofit Navigation.
 		$this->set_nonprofit_navigation();
-
-		// Prevent SVG Support Errors
-		$this->prevent_svg_support_errors();
 	}
 
 	/**
@@ -152,6 +150,10 @@ class Sites {
 
 				if ( isset( $_REQUEST['action'] ) && 'add-site' === $_REQUEST['action'] ) { // phpcs:ignore
 					$_POST['blog']['email'] = wp_get_current_user()->user_email;
+
+					if ( class_exists( 'Events_Store' ) ) {
+						remove_action( 'shutdown', [ Events_Store::instance(), 'maybe_install_during_shutdown'] );
+					}
 				}
 			}
 		);
@@ -186,7 +188,8 @@ class Sites {
 					$redirect_url = network_admin_url( Verification::PARENT_PAGE );
 					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
 					$redirect_url = add_query_arg( 'id', $new_site->blog_id, $redirect_url );
-					wp_safe_redirect( $redirect_url );
+
+					header( 'Location: ' . $redirect_url );
 					exit;
 				}
 			},
@@ -1262,25 +1265,5 @@ class Sites {
 		}
 
 		return $id;
-	}
-
-	/**
-	 * Prevent SVG Support from producing an error on init.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function prevent_svg_support_errors(): void {
-		$return_array = function( mixed $value ): array {
-			if ( ! is_array( $value ) || empty( $value ) ) {
-				return [];
-			}
-
-			return $value;
-		};
-
-		add_filter( 'option_bodhi_svgs_settings', $return_array );
-		add_filter( 'default_option_bodhi_svgs_settings', $return_array );
 	}
 }
