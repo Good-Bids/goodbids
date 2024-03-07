@@ -3,6 +3,7 @@ import { TextInput } from '~/components/text-input';
 import { AuctionState, useAuctionWizardState } from '../../store';
 import { validateDateTime } from '~/utils/datetime';
 import { __ } from '@wordpress/i18n';
+import { H3 } from '~/components/typography';
 
 export function DatePickers() {
 	const {
@@ -76,20 +77,13 @@ export function DatePickers() {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h2 className="m-0 text-admin-large text-admin-main">
-				{__('Auction Schedule', 'goodbids')}
-			</h2>
+			<H3 as="h2">{__('SCHEDULE', 'goodbids')}</H3>
 
-			<span className="text-admin-content text-admin-main">
-				When will the auction take place?
-			</span>
-
-			<div className="grid max-w-120 grid-cols-2 gap-4">
+			<div className="grid grid-cols-2 gap-4">
 				<TextInput
-					label={__('Auction Start', 'goodbids')}
+					label={__('Auction starts', 'goodbids')}
 					type="datetime-local"
 					id="auction-start"
-					required
 					defaultValue={startDate.value}
 					error={startDate.error}
 					onChange={(e) =>
@@ -102,10 +96,9 @@ export function DatePickers() {
 				/>
 
 				<TextInput
-					label={__('Auction End', 'goodbids')}
+					label={__('Auction ends', 'goodbids')}
 					type="datetime-local"
 					id="auction-end"
-					required
 					defaultValue={endDate.value}
 					error={endDate.error}
 					onChange={(e) =>

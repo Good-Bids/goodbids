@@ -1,13 +1,13 @@
 import { Image } from './image';
-import { Tooltip } from '~/components/tooltip';
 import { useAuctionWizardState } from '~/views/auction-wizard/store';
 import { __ } from '@wordpress/i18n';
+import { P } from '~/components/typography';
 
 export function ProductGallery() {
 	const {
 		addToProductGallery,
 		removeFromProductGallery,
-		product: { productGallery },
+		product: { productImage, productGallery },
 	} = useAuctionWizardState();
 
 	const mediaUploader = wp.media({
@@ -34,35 +34,58 @@ export function ProductGallery() {
 
 	return (
 		<div className="flex flex-col gap-3">
-			<div className="flex items-center gap-2">
-				<h3 className="m-0 text-admin-label font-bold">
-					{__('Product Gallery', 'goodbids')}
-				</h3>
-				<Tooltip>
-					{__(
-						'Select additional images for your product gallery.',
-						'goodbids',
-					)}
-				</Tooltip>
-			</div>
-			<div className="mx-4 grid grid-cols-1 gap-2 rounded-md bg-gray-200 p-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-				{productGallery.map((image) => (
-					<Image
-						key={image.value.id}
-						src={image.value.src}
-						onRemove={() =>
-							removeFromProductGallery(image.value.id)
-						}
-					/>
-				))}
+			<h2 className="m-0 text-gb-md font-bold text-gb-green-700">
+				{__('Gallery Images', 'goodbids')}
+			</h2>
+
+			{productGallery.length === 0 ? (
 				<button
+					className="h-25 w-full rounded-gb border border-dashed border-gb-gray-300 bg-gb-gray-100 p-3 text-gb-lg outline-none transition-colors hover:bg-gb-gray-200 focus:ring-2 focus:ring-gb-green-700 focus:ring-offset-2"
 					type="button"
 					onClick={() => mediaUploader.open()}
-					className="h-32 w-44 rounded-md border border-dashed border-gray-600 bg-none text-admin-large text-admin-main transition-colors duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-admin-main focus:ring-opacity-50"
 				>
-					{__('Click to upload multiple', 'goodbids')}
+					{__('Click to upload', 'goodbids')}
 				</button>
-			</div>
+			) : (
+				<>
+					<div className="flex flex-wrap gap-3">
+						{productGallery.map((image) => (
+							<Image
+								key={image.value.id}
+								src={image.value.src}
+								onRemove={() =>
+									removeFromProductGallery(image.value.id)
+								}
+							/>
+						))}
+						<button
+							className="rounded-gb border border-dashed border-gb-gray-300 bg-gb-gray-100 p-3 text-gb-lg outline-none transition-colors hover:bg-gb-gray-200 focus:ring-2 focus:ring-gb-green-700 focus:ring-offset-2"
+							type="button"
+							onClick={() => mediaUploader.open()}
+						>
+							{__('Upload more', 'goodbids')}
+						</button>
+					</div>
+
+					{(!productImage || productImage.value.src.length === 0) && (
+						<div className="text-gb-red-500">
+							<P>
+								{__(
+									'If you do not select a featured image, the first image in the gallery will be used as the main product image.',
+									'goodbids',
+								)}
+							</P>
+						</div>
+					)}
+				</>
+			)}
+
+			<P>
+				{__(
+					'Add additional images to the auction gallery. You can upload multiple images for your product. The "Featured Image" image will be used as the main product image.',
+					'goodbids',
+				)}
+			</P>
 		</div>
 	);
 }

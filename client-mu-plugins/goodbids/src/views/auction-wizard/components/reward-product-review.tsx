@@ -1,9 +1,9 @@
-import { ProgressIcon } from '~/components/progress-icon';
 import { useAuctionWizardState } from '../store';
 import { ShippingClasses } from '../api/get-shipping-classes';
-import { CheckIcon } from '~/components/check-icon';
 import { __ } from '@wordpress/i18n';
-import { Button } from '~/components/button';
+import { H3 } from '~/components/typography';
+import { ReviewStatus } from './review-status';
+import { ReviewTable, ReviewTH, ReviewTD } from './review-table';
 
 type ReviewProductProps = {
 	shippingClasses: ShippingClasses;
@@ -13,122 +13,89 @@ type ReviewProductProps = {
 export function ReviewProduct({ shippingClasses, status }: ReviewProductProps) {
 	const { product, setStep } = useAuctionWizardState();
 
-	if (status === 'pending') {
-		return (
-			<div className="flex flex-col items-center gap-2">
-				<ProgressIcon spin width={48} />
-				<h2 className="m-0 text-admin-large text-admin-main">
-					Saving {product.name.value}
-				</h2>
-			</div>
-		);
-	}
-
-	if (status === 'success') {
-		return (
-			<div className="flex flex-col items-center gap-2 text-admin-main">
-				<CheckIcon width={48} />
-				<h2 className="m-0 text-admin-large text-admin-main">
-					{product.name.value} saved!
-				</h2>
-			</div>
-		);
-	}
-
 	return (
-		<>
-			<h2 className="m-0 text-admin-large text-admin-main">
-				{__('Your Reward Product', 'goodbids')}
-			</h2>
-			<ul>
-				<li className="text-admin-content">
-					<b>{__('Title.', 'goodbids')}</b> {product.name.value}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Fair Market Value.', 'goodbids')}</b>{' '}
-					{`${product.regularPrice.value}`}
-				</li>
-				<li className="text-admin-content">
-					<b>{__('Product Category.', 'goodbids')}</b>{' '}
-					{product.productType.value === 'physical'
-						? __('Physical', 'goodbids')
-						: __('Digital or Experience', 'goodbids')}
-				</li>
+		<div>
+			<H3 as="h2">{__('REWARD', 'goodbids')}</H3>
+
+			<ReviewTable>
+				<tr>
+					<ReviewTH>{__('Title', 'goodbids')}</ReviewTH>
+					<ReviewTD>{product.name.value}</ReviewTD>
+				</tr>
+
+				<tr>
+					<ReviewTH>{__('Fair market value', 'goodbids')}</ReviewTH>
+					<ReviewTD>${product.regularPrice.value}</ReviewTD>
+				</tr>
+
+				<tr>
+					<ReviewTH>{__('Product category', 'goodbids')}</ReviewTH>
+					<ReviewTD>
+						{product.productType.value === 'physical'
+							? __('Physical', 'goodbids')
+							: __('Digital or Experience', 'goodbids')}
+					</ReviewTD>
+				</tr>
 
 				{product.productType.value === 'physical' ? (
 					<>
-						<li className="text-admin-content">
-							<b>{__('Weight.', 'goodbids')}</b>{' '}
-							{product.weight.value} lbs.
-						</li>
-						<li className="text-admin-content">
-							<b>{__('Length.', 'goodbids')}</b>{' '}
-							{product.length.value} in.
-						</li>
-						<li className="text-admin-content">
-							<b>{__('Width.', 'goodbids')}</b>{' '}
-							{product.width.value} in.
-						</li>
-						<li className="text-admin-content">
-							<b>{__('Height.', 'goodbids')}</b>{' '}
-							{product.height.value} in.
-						</li>
-						<li className="text-admin-content">
-							<b>{__('Shipping Class.', 'goodbids')}</b>{' '}
-							{shippingClasses.find(
-								(shippingClass) =>
-									shippingClass.slug ===
-									product.shippingClass.value,
-							)?.name || __('None', 'goodbids')}
-						</li>
+						{product.weight.value.length > 0 && (
+							<tr>
+								<ReviewTH>{__('Weight', 'goodbids')}</ReviewTH>
+								<ReviewTD>
+									{product.weight.value}{' '}
+									{__('lbs', 'goodbids')}
+								</ReviewTD>
+							</tr>
+						)}
+
+						{product.length.value.length > 0 &&
+							product.width.value.length > 0 &&
+							product.height.value.length > 0 && (
+								<tr>
+									<ReviewTH>
+										{__('Size', 'goodbids')}
+									</ReviewTH>
+									<ReviewTD>
+										{product.length.value}{' '}
+										{__('in', 'goodbids')} x{' '}
+										{product.width.value}{' '}
+										{__('in', 'goodbids')} x{' '}
+										{product.height.value}{' '}
+										{__('in', 'goodbids')}
+									</ReviewTD>
+								</tr>
+							)}
+						<tr>
+							<ReviewTH>
+								{__('Shipping class', 'goodbids')}
+							</ReviewTH>
+							<ReviewTD>
+								{shippingClasses.find(
+									(shippingClass) =>
+										shippingClass.slug ===
+										product.shippingClass.value,
+								)?.name || __('None', 'goodbids')}
+							</ReviewTD>
+						</tr>
 					</>
 				) : (
-					<li className="text-admin-content">
-						<b>{__('Redemption Details.', 'goodbids')}</b>{' '}
-						{product.purchaseNote.value}
-					</li>
+					<tr>
+						<ReviewTH>
+							{__('Redemption details', 'goodbids')}
+						</ReviewTH>
+						<ReviewTD>{product.purchaseNote.value}</ReviewTD>
+					</tr>
 				)}
-			</ul>
+			</ReviewTable>
 
-			<div className="flex flex-col gap-2">
-				<span className="text-admin-content">
-					<b>{__('Product Image', 'goodbids')}</b>
-				</span>
-
-				{product.productImage ? (
-					<img
-						src={product.productImage.value.src}
-						className="max-h-32 max-w-44"
-					/>
-				) : (
-					<span>{__('No image selected', 'goodbids')}</span>
-				)}
-			</div>
-
-			<div className="flex flex-col gap-2">
-				<span className="text-admin-content">
-					<b>{__('Product Gallery', 'goodbids')}</b>
-				</span>
-
-				{product.productGallery.length > 0 ? (
-					<ul className="flex flex-wrap gap-2 self-center">
-						{product.productGallery.map((image) => (
-							<li key={image.value.id}>
-								<img
-									src={image.value.src}
-									className="max-h-32 max-w-44"
-								/>
-							</li>
-						))}
-					</ul>
-				) : (
-					<span>{__('No images selected', 'goodbids')}</span>
-				)}
-			</div>
-
-			<Button onClick={() => setStep('product')}>
-				{__('Edit Reward Product', 'goodbids')}
-			</Button>
-		</>
+			<ReviewStatus
+				idleText={__('Edit reward', 'goodbids')}
+				onClick={() => setStep('auction')}
+				pendingText={__('Creating reward', 'goodbids')}
+				status={status}
+				successText={__('Reward created!', 'goodbids')}
+			/>
+		</div>
 	);
 }
