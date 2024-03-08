@@ -8,10 +8,7 @@ export function AccessRevenueReport() {
 			title={__('Access Revenue Report', 'goodbids')}
 			content={
 				<>
-					{__('Visit the', 'goodbids')}{' '}
-					<i>{__('WooCommerce > Analytics > Revenue', 'goodbids')}</i>{' '}
-					{__(
-						'tab to see how much you’ve raised on the GOODBIDS network. The',
+					{__('See how much you’ve raised on the GOODBIDS network! The',
 						'goodbids',
 					)}{' '}
 					<i>{__('Net Sales', 'goodbids')}</i>{' '}
@@ -31,6 +28,11 @@ export function AccessRevenueReport() {
 					{__('See Revenue Metrics', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+		    <Footnote>
+				{__('This button takes you to the')}{' '}
+				<i>{__('WooCommerce > Analytics > Revenue', 'goodbids')}</i> {__('page.')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }
