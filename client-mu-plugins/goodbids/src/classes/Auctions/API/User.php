@@ -96,6 +96,7 @@ class User extends WC_REST_Controller {
 		}
 
 		$payload_data = [
+			'rewardClaimed',
 			'rewardUrl',
 			'userFreeBids',
 			'userId',
