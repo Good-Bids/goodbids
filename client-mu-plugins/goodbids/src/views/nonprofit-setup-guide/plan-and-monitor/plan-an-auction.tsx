@@ -9,11 +9,8 @@ export function PlanAnAuction() {
 			content={
 				<>
 					{__(
-						'Create your first auction using the guided setup wizard, then build and publish the Auction page. Additional auctions can be created in the',
+						'Create a GOODBIDS auction using the guided setup wizard, then build and publish the Auction page to your site.',
 						'goodbids',
-					)}{' '}
-					<i>{__('Auctions', 'goodbids')}</i>{' '}
-					{__('section', 'goodbids')}
 				</>
 			}
 		>
@@ -26,6 +23,11 @@ export function PlanAnAuction() {
 					{__('Get Started', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('This button takes you to')}{' '}
+				<i>{__('Add New', 'goodbids')}</i> {__('in the Auctions tab.')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }
