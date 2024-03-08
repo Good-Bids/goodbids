@@ -7,13 +7,10 @@ export function PlanAnAuction() {
 	return (
 		<MultiStepHeading
 			title={__('Plan an Auction', 'goodbids')}
-			content={
-				<>
-					{__(
+			content={__(
 						'Create a GOODBIDS auction using the guided setup wizard, then build and publish the Auction page to your site.',
 						'goodbids',
-				</>
-			}
+			)}
 		>
 			<div className="w-full max-w-60">
 				<ButtonLink
