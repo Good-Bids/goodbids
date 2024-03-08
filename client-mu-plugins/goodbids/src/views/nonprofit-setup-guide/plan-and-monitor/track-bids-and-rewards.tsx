@@ -8,12 +8,7 @@ export function TrackBidsAndRewards() {
 			title={__('Track Bids and Rewards', 'goodbids')}
 			content={
 				<>
-					{__('Visit the', 'goodbids')}{' '}
-					<i>
-						{__('WooCommerce > Analytics > Categories', 'goodbids')}
-					</i>{' '}
-					{__(
-						'tab to access information about individual Bids placed on Auctions and Rewards claimed. The Bid Category shows a breakdown of Bids per Auction and total donation revenue (Net Sales). The Rewards Category reports both claimed and unclaimed Rewards for Auctions.',
+					{__('View information about individual Bids placed on Auctions and Rewards claimed. The Bid Category shows a breakdown of Bids per Auction and total donation revenue (Net Sales). The Rewards Category reports both claimed and unclaimed Rewards for Auctions.',
 						'goodbids',
 					)}
 				</>
@@ -28,6 +23,11 @@ export function TrackBidsAndRewards() {
 					{__('See Order Metrics', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('This button takes you to the')}{' '}
+				<i>{__('WooCommerce > Analytics > Categories', 'goodbids')}</i> {__('page.')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }
