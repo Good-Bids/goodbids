@@ -9,10 +9,8 @@ export function SiteAppearance() {
 			content={
 				<>
 					{__(
-						'Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout. Your style preferences can be modified in the',
-						'goodbids',
-					)}{' '}
-					<i>{__('Appearance > Editor section.', 'goodbids')}</i>
+						'Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout.',
+					    'goodbids',
 				</>
 			}
 		>
@@ -25,6 +23,11 @@ export function SiteAppearance() {
 					{__('Choose a Style', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('Your style preferences can be modified in the')}{' '}
+				<i>{__('Appearance > Editor', 'goodbids')}</i> {__('tab.')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }
