@@ -85,6 +85,14 @@ class FreeBid {
 	public ?string $details = null;
 
 	/**
+	 * ID of the Site Free Bid was Used
+	 *
+	 * @since 1.0.0
+	 * @var ?int
+	 */
+	public ?int $site_id_used = null;
+
+	/**
 	 * ID of the Auction Free Bid was Used
 	 *
 	 * @since 1.0.0
@@ -279,23 +287,27 @@ class FreeBid {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int    $auction_id
 	 * @param ?string $title
 	 *
 	 * @return void
 	 */
-	public function display_auction_link( ?int $auction_id, ?string $title = '' ): void {
-		if ( ! $auction_id ) {
+	public function display_auction_link( ?string $title = '' ): void {
+		if ( ! $this->auction_id_used || ! $this->site_id_used ) {
 			esc_html_e( 'N/A', 'goodbids' );
 			return;
 		}
 
-		printf(
-			'<a href="%s" title="%s" target="_blank" rel="nofollow noopener">%s (ID: %s)</a>',
-			esc_url( get_permalink( $auction_id ) ),
-			$title ? esc_attr( $title ) : '',
-			esc_html( get_the_title( $auction_id ) ),
-			esc_html( $auction_id )
+		goodbids()->sites->swap(
+			function () use ( $title ) {
+				printf(
+					'<a href="%s" title="%s" target="_blank" rel="nofollow noopener">%s (ID: %s)</a>',
+					esc_url( get_permalink( $this->auction_id_used ) ),
+					$title ? esc_attr( $title ) : '',
+					esc_html( get_the_title( $this->auction_id_used ) ),
+					esc_html( $this->auction_id_used )
+				);
+			},
+			$this->site_id_used
 		);
 	}
 
@@ -324,6 +336,7 @@ class FreeBid {
 		$this->used_date         = current_time( 'Y-m-d H:i:s' );
 		$this->status            = Bids::FREE_BID_STATUS_USED;
 		$this->auction_id_used   = $auction_id;
+		$this->site_id_used      = get_current_blog_id();
 		$this->order_id_redeemed = $order->get_id();
 		$this->bid_value         = $order->get_subtotal();
 
