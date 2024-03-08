@@ -35,6 +35,7 @@ class Permissions {
 	/**
 	 * Increment this number whenever changes are made to this class.
 	 *
+	 * v4: Fix for removed roles. - 3/8/2024
 	 * v3: Added Jr Admin role. - 3/8/2024
 	 * v2: Added BDP Admin role. - 2/26/2024
 	 * v1: Initial version.
@@ -43,7 +44,7 @@ class Permissions {
 	 *
 	 * @var int $version
 	 */
-	private int $version = 3;
+	private int $version = 4;
 
 	/**
 	 * Constructor
@@ -62,6 +63,9 @@ class Permissions {
 
 		// Remove some user roles.
 		$this->remove_unused_roles();
+
+		// Disable some user roles conditionally.
+		$this->disable_some_roles();
 
 		// Set the default role for new users.
 		$this->set_default_role();
@@ -395,10 +399,11 @@ class Permissions {
 		add_action(
 			'init',
 			function () {
-				if ( is_main_site() ) {
+				if ( ! $this->needs_update() ) {
 					return;
 				}
 
+				// This permanently removes the roles.
 				remove_role( 'subscriber' );
 				remove_role( 'contributor' );
 				remove_role( 'shop_manager' );
@@ -406,6 +411,29 @@ class Permissions {
 				remove_role( 'editor' );
 				remove_role( 'vip_support' );
 				remove_role( 'vip_support_inactive' );
+			}
+		);
+	}
+
+	/**
+	 * Conditionally disable some Roles for Nonprofit sites.
+	 * This hides roles without deleting them.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_some_roles(): void {
+		add_filter(
+			'editable_roles',
+			function ( array $roles ): array {
+				if ( goodbids()->utilities->network_is_main_site() ) {
+					return $roles;
+				}
+
+				unset( $roles[ self::BDP_ADMIN_ROLE ] );
+
+				return $roles;
 			}
 		);
 	}
