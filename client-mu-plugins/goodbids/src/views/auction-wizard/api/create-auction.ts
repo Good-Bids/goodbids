@@ -33,6 +33,7 @@ export function useCreateAuction(
 
 type CreateAuctionBody = {
 	title: string;
+	excerpt: string;
 	acf: {
 		auction_start: string;
 		auction_end: string;

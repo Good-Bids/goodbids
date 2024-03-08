@@ -4,5 +4,5 @@ type LinkProps = Omit<
 >;
 
 export function Link(props: LinkProps) {
-	return <a {...props} className="text-admin-content" />;
+	return <a {...props} className="text-gb-md" />;
 }

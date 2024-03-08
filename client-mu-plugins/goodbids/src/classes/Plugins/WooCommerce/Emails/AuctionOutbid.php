@@ -65,7 +65,7 @@ class AuctionOutbid extends Email {
 				$next  = false;
 				$order = false;
 				foreach ( $bid_orders as $bid_order ) {
-					if ( $bid_order === $order_id ) {
+					if ( $bid_order->get_id() === $order_id ) {
 						$next = true;
 						continue;
 					}
@@ -80,7 +80,6 @@ class AuctionOutbid extends Email {
 					return;
 				}
 
-				Log::debug( 'Triggering Outbid email for Auction: ' . $auction_id );
 				$this->trigger( $auction, $order->get_user_id() );
 			},
 			10,

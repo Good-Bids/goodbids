@@ -25,3 +25,12 @@ export function validateInteger(value: string): string | undefined {
 
 	return 'Must be a whole number';
 }
+
+export function formatStringToCurrency(value: string): string {
+	// If the value is an invalid decimal, return the value as is
+	if (validateDecimal(value)) {
+		return value;
+	}
+
+	return `$${Number(value).toLocaleString()}`;
+}

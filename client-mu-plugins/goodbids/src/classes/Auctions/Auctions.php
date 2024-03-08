@@ -99,7 +99,7 @@ class Auctions {
 		}
 
 		// Init Auction Wizard.
-		new Wizard();
+		$this->wizard = new Wizard();
 
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
@@ -933,7 +933,6 @@ class Auctions {
 					$auction = goodbids()->auctions->get( $auction_id );
 					// Skip START Action on Auctions that have ended.
 					if ( $auction->has_ended() ) {
-						Log::debug( 'Auction not started because it has already ended', compact( 'auction_id' ) );
 						continue;
 					}
 
@@ -1173,6 +1172,10 @@ class Auctions {
 		add_action(
 			'transition_post_status',
 			function ( string $new_status, string $old_status, WP_Post $post ): void {
+				if ( is_main_site() ) {
+					return;
+				}
+
 				if ( 'publish' !== $new_status ) {
 					return;
 				}

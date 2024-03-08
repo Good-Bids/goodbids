@@ -26,7 +26,7 @@ export function Driver({ auctionId }: DriverProps) {
 				<motion.div
 					layout
 					transition={{ duration: 0.2 }}
-					className="flex flex-col w-full gap-6 text-md"
+					className="flex w-full flex-col gap-6 text-md"
 				>
 					<LayoutGroup>
 						<Metrics />

@@ -72,7 +72,6 @@ class AuctionClosed extends Email {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ) {
-				Log::debug( 'Triggering Auction Close emails for Auction: ' . $auction_id );
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_watchers( $auction );
 				$this->send_to_bidders( $auction );

@@ -8,6 +8,8 @@
 
 namespace GoodBids\Admin;
 
+use GoodBids\Users\Permissions;
+
 /**
  * Admin Main Class
  *
@@ -23,6 +25,12 @@ class Admin {
 	public function __construct() {
 		// Initialize Submodules.
 		new Assets();
+
+		// Remove Nav Items for BDP Admins
+		$this->bdp_admin_nav_cleanup();
+
+		// Remove Nav Items for Jr Admins
+		$this->jr_admin_nav_cleanup();
 	}
 
 	/**
@@ -82,6 +90,22 @@ class Admin {
 			$value = $field['default'];
 		}
 
+		if ( 'callback' === $field['type'] && ! empty( $field['callback'] ) && is_callable( $field['callback'] ) ) {
+			/**
+			 * Callback Field
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array  $field
+			 * @param string $key
+			 * @param string $prefix
+			 * @param array  $data
+			 * @param bool   $wrap
+			 */
+			call_user_func( $field['callback'], $field, $key, $prefix, $data, $wrap );
+			return;
+		}
+
 		if ( in_array( $field['type'], [ 'text', 'url', 'email', 'tel', 'password', 'number' ], true ) ) {
 			$view_file = 'text';
 		} else {
@@ -95,6 +119,96 @@ class Admin {
 		goodbids()->load_view(
 			'admin/fields/' . $view_file . '.php',
 			compact( 'key', 'field', 'prefix', 'data', 'required', 'placeholder', 'field_id', 'value', 'wrap' )
+		);
+	}
+
+	/**
+	 * Hide Nav Items for BDP Admins
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function bdp_admin_nav_cleanup(): void {
+		add_action(
+			'admin_menu',
+			function () {
+				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() ) {
+					return;
+				}
+
+				// Remove Media Admin Menu item.
+				remove_menu_page( 'upload.php' );
+
+				// Remove WooCommerce Admin Menu item.
+				remove_menu_page( 'woocommerce' );
+
+				// Remove Tools
+				remove_menu_page( 'export-personal-data.php' );
+
+				// Remove Accessibility Checker Admin Menu item.
+				remove_menu_page( 'accessibility_checker' );
+			},
+			200
+		);
+
+		// Remove WooCommerce Marketing Menu Items.
+		add_filter(
+			'woocommerce_admin_features',
+			function ( array $features ): array {
+				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() ) {
+					return $features;
+				}
+
+				return array_filter(
+					$features,
+					fn( $feature ) => $feature !== 'marketing'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Hide Nav Items for Jr Admins
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function jr_admin_nav_cleanup(): void {
+		add_action(
+			'admin_menu',
+			function () {
+				if ( ! current_user_can( Permissions::JR_ADMIN_ROLE ) || is_main_site() ) {
+					return;
+				}
+
+				// Remove Media Admin Menu item.
+				remove_menu_page( 'upload.php' );
+
+				// Remove WooCommerce Admin Menu item.
+				remove_menu_page( 'woocommerce' );
+
+				// Remove Tools Admin Menu item.
+				remove_menu_page( 'tools.php' );
+				remove_menu_page( 'export-personal-data.php' );
+			},
+			200
+		);
+
+		// Remove WooCommerce Marketing Menu Items.
+		add_filter(
+			'woocommerce_admin_features',
+			function ( array $features ): array {
+				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() ) {
+					return $features;
+				}
+
+				return array_filter(
+					$features,
+					fn( $feature ) => $feature !== 'marketing'
+				);
+			}
 		);
 	}
 }

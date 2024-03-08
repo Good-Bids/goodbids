@@ -23,6 +23,9 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Orders;
+use GoodBids\Plugins\WooCommerce\Stripe;
+use GoodBids\Plugins\WooCommerce\Taxes;
+use WC_Email;
 use WC_Product;
 use WP_Error;
 
@@ -94,6 +97,12 @@ class WooCommerce {
 	public ?Checkout $checkout = null;
 
 	/**
+	 * @since 1.0.0
+	 * @var ?Taxes
+	 */
+	public ?Taxes $taxes = null;
+
+	/**
 	 * Initialize WooCommerce Functionality
 	 *
 	 * @since 1.0.0
@@ -110,6 +119,10 @@ class WooCommerce {
 		$this->orders   = new Orders();
 		$this->cart     = new Cart();
 		$this->checkout = new Checkout();
+		$this->taxes    = new Taxes();
+
+		// Some Stripe Tweaks.
+		new Stripe();
 
 		// Init API Endpoints.
 		$this->setup_api_endpoints();
@@ -143,6 +156,7 @@ class WooCommerce {
 
 		// Adjust the Login page.
 		$this->modify_login_page();
+		$this->modify_register_page();
 
 		// Add email notifications.
 		$this->setup_email_notifications();
@@ -152,6 +166,15 @@ class WooCommerce {
 
 		// Limit access to pages
 		$this->limit_access_to_pages();
+
+		// Disable New Order Emails
+		$this->disable_new_order_emails();
+
+		// Disable Processing Order Emails
+		$this->disable_processing_order_emails();
+
+		// Skip some of the Setup Tasks
+		$this->skip_setup_tasks();
 	}
 
 	/**
@@ -232,7 +255,6 @@ class WooCommerce {
 		add_filter( 'woocommerce_price_trim_zeros', '__return_true' );
 	}
 
-
 	/**
 	 * Configure WooCommerce settings for new sites.
 	 *
@@ -244,26 +266,47 @@ class WooCommerce {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				// Disable Guest Checkout.
+				// Registration Settings
 				update_option( 'woocommerce_enable_guest_checkout', 'no' );
-
-				// Enable Log in during Checkout.
 				update_option( 'woocommerce_enable_checkout_login_reminder', 'yes' );
-
-				// Enable Account Creation during Checkout.
 				update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'yes' );
-
-				// Enable Account Creation from My Account Page.
 				update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+				update_option( 'woocommerce_registration_generate_username', 'no' );
+				update_option( 'woocommerce_registration_generate_password', 'no' );
 
 				// Allow for personal data removal.
 				update_option( 'woocommerce_erasure_request_removes_order_data', 'yes' );
 				update_option( 'woocommerce_allow_bulk_remove_personal_data', 'yes' );
 
+				// Shipping and Taxes
+				update_option( 'woocommerce_calc_taxes', 'yes' );
+				update_option( 'woocommerce_weight_unit', 'lbs' );
+				update_option( 'woocommerce_dimension_unit', 'in' );
+				update_option( 'woocommerce_tax_total_display', 'single' );
+
+				// Disable Reviews
+				update_option( 'woocommerce_enable_reviews', 'no' );
+
+				// Inventory Management
+				update_option( 'woocommerce_notify_low_stock', 'no' );
+				update_option( 'woocommerce_notify_no_stock', 'no' );
+
+				// Disable Marketplace
+				update_option( 'woocommerce_show_marketplace_suggestions', 'no' );
+
+				/**
+				 * Email Settings
+				 */
+
+				// From Email
+				$from_email = sprintf( 'no-reply@%s', wp_parse_url( home_url(), PHP_URL_HOST ) );
+				update_option( 'woocommerce_email_from_name', get_bloginfo( 'name' ) );
+				update_option( 'woocommerce_email_from_address', $from_email );
+
 				// Update email base color.
 				update_option( 'woocommerce_email_base_color', '#0A3624' );
 
-				// Update email footer text.
+				// Update email footer text. TODO: Should we set up tokens for these?
 				$email_footer_text = sprintf(
 					'%s <p>GoodBids for <a href="{site_url}">{site_title}</a>  —  %s | %s</p>',
 					get_custom_logo( get_main_site_id() ),
@@ -548,6 +591,20 @@ class WooCommerce {
 			8,
 			3
 		);
+
+		add_filter(
+			'wc_get_template',
+			function ( $template, $template_name ): string {
+				$goodbids_path = GOODBIDS_PLUGIN_PATH . 'views/woocommerce/' . $template_name;
+				if ( file_exists( $goodbids_path ) ) {
+					return $goodbids_path;
+				}
+
+				return $template;
+			},
+			8,
+			2
+		);
 	}
 
 	/**
@@ -600,6 +657,37 @@ class WooCommerce {
 						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full font-extrabold">%s</p>%s</div>',
 						esc_html__( 'Or login with one of these providers', 'goodbids' ),
 						do_shortcode( '[mo_oauth_login]' ),
+					);
+					printf(
+						'<p>%s %s %s %s.<p>',
+						esc_html__( 'By clicking to continue with any of these providers, you agree to GOODBIDS\'', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+						esc_html__( 'and', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
+					);
+				}
+			}
+		);
+	}
+
+	/**
+	 * Modify register Page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_register_page(): void {
+		add_action(
+			'woocommerce_register_form_end',
+			function () {
+				if ( ! is_user_logged_in() ) {
+					printf(
+						'<p>%s %s %s %s.<p>',
+						esc_html__( 'By registering an account, you agree to GOODBIDS\'', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+						esc_html__( 'and', 'goodbids' ),
+						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
 					);
 				}
 			}
@@ -662,5 +750,79 @@ class WooCommerce {
 			10,
 			3
 		);
+	}
+
+	/**
+	 * Disable New Order Emails
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_new_order_emails(): void {
+		add_filter( 'woocommerce_email_enabled_new_order', '__return_false' );
+
+		add_filter(
+			'woocommerce_email_get_option',
+			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+				if ( 'new_order' !== $email->id || 'enabled' !== $key ) {
+					return $value;
+				}
+
+				$email->form_fields['enabled']['default'] = 'no';
+
+				return 'no';
+			},
+			10,
+			4
+		);
+	}
+
+	/**
+	 * Disable Processing Order Emails
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_processing_order_emails(): void {
+		add_filter( 'woocommerce_enabled_customer_processing_order', '__return_false' );
+
+		add_filter(
+			'woocommerce_email_get_option',
+			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+				if ( 'customer_processing_order' !== $email->id || 'enabled' !== $key ) {
+					return $value;
+				}
+
+				$email->form_fields['enabled']['default'] = 'no';
+
+				return 'no';
+			},
+			10,
+			4
+		);
+	}
+
+	/**
+	 * Skip setup tasks
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function skip_setup_tasks(): void {
+		$hide_setup_steps = function( array $lists ) {
+			// Hide Initial Steps
+			$lists['setup']->visible = false;
+
+			// Hide Things to do next.
+			$lists['extended']->visible = false;
+
+			return $lists;
+		};
+
+		add_filter( 'woocommerce_admin_experimental_onboarding_tasklists', $hide_setup_steps );
+		add_filter( 'woocommerce_admin_onboarding_tasklists', $hide_setup_steps ); // Just in case.
 	}
 }

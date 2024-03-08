@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce;
 use Exception;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
+use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 
@@ -26,7 +27,10 @@ class Orders {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {}
+	public function __construct() {
+		// Redirect a User when somebody else bids the amount currently in their cart.
+		$this->handle_duplicate_bid_ajax();
+	}
 
 	/**
 	 * Get the Auction info from the Order.
@@ -68,7 +72,6 @@ class Orders {
 		}
 
 		if ( ! $auction_id || ! $order_type ) {
-			Log::debug( 'No Auction ID or Order Type found', compact( 'order_id' ) );
 			return null;
 		}
 
@@ -219,5 +222,118 @@ class Orders {
 		];
 
 		return wc_get_orders( $args );
+	}
+
+	/**
+	 * Redirect a User when somebody else bids the amount currently in their cart.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_duplicate_bid_ajax(): void {
+		$ajax_action = 'goodbids_cart_bid_placed';
+
+		add_action(
+			'wp_footer',
+			function() use ( $ajax_action ) {
+				if ( is_admin() || ! is_checkout() ) {
+					return;
+				}
+
+				$admin_url = esc_js( admin_url( 'admin-ajax.php' ) );
+				$admin_url = str_replace( '&amp;', '&', $admin_url );
+				?>
+				<script>
+					const goodbidsCartBidHandlerInterval = 2000;
+					const goodbidsHandleCartBidPlaced = () => {
+						const xhr = new XMLHttpRequest();
+						xhr.open('POST', '<?php echo $admin_url; // phpcs:ignore ?>', true);
+						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+						xhr.onreadystatechange = function() {
+							if (xhr.readyState === 4 && xhr.status === 200) {
+								const response = JSON.parse(xhr.responseText);
+
+								if (!response || typeof response !== 'object' || !response.data) {
+									return;
+								}
+
+								// Halt the process if the user is the winning bidder.
+								if (response.data.halt) {
+									return;
+								}
+
+								// Check again in 2 seconds.
+								if (!response.data.outbid) {
+									setTimeout(goodbidsHandleCartBidPlaced, goodbidsCartBidHandlerInterval);
+									return;
+								}
+
+								// Redirect to the Auction for the error.
+								window.location.replace(response.data.auctionUrl);
+							}
+						};
+
+						xhr.send('action=<?php echo esc_js( $ajax_action ); ?>');
+					};
+
+					document.addEventListener('DOMContentLoaded', function() {
+						goodbidsHandleCartBidPlaced();
+					});
+				</script>
+				<?php
+			}
+		);
+
+		add_action(
+			'wp_ajax_' . $ajax_action,
+			function () {
+				$variation_id = false;
+				$response     = [ 'outbid' => false, 'halt' => false ];
+
+				foreach ( WC()->cart->get_cart() as $cart_item ) {
+					$product_id = $cart_item['product_id'];
+
+					if ( Bids::ITEM_TYPE !== goodbids()->products->get_type( $product_id ) ) {
+						continue;
+					}
+
+					$variation_id = $cart_item['variation_id'];
+					break;
+				}
+
+				// Bail early, no variation found.
+				if ( ! $variation_id ) {
+					wp_send_json_success( $response );
+				}
+
+				$bid_product = wc_get_product( $variation_id );
+				$quantity    = $bid_product->get_stock_quantity( 'edit' );
+
+				// Quantities are still good.
+				if ( $quantity > 0 ) {
+					wp_send_json_success( $response );
+				}
+
+				$auction_id = goodbids()->products->get_auction_id_from_product( $variation_id );
+				$auction    = goodbids()->auctions->get( $auction_id );
+
+				// Send a halt signal to the winning bidder.
+				if ( $auction->is_current_user_winning() ) {
+					$response['halt'] = true;
+					wp_send_json_success( $response );
+				}
+
+				// Looks like a different user reduced the quantity.
+				$response['outbid']     = true;
+				$response['auctionUrl'] = $auction->get_url();
+
+				$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED_CART );
+				wc_add_notice( $notice['message'], $notice['type'] );
+
+				wp_send_json_success( $response );
+			}
+		);
 	}
 }

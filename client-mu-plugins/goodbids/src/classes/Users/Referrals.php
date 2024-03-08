@@ -248,7 +248,12 @@ class Referrals {
 			)
 		);
 
-		return ! empty( $user ) ? intval( $user[0]->ID ) : false;
+		if ( empty( $user ) ) {
+			Log::warning( 'Unable to locate user by Referral Code: ' . $code );
+			return false;
+		}
+
+		return intval( $user[0]->ID );
 	}
 
 	/**

@@ -125,6 +125,12 @@ class Notices {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const BID_ALREADY_PLACED_CART = 'bid-already-placed-cart';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const ALREADY_HIGH_BIDDER = 'already-high-bidder';
 
 	/**
@@ -241,6 +247,11 @@ class Notices {
 					'type'    => 'error',
 				],
 
+				self::BID_ALREADY_PLACED_CART   => [
+					'message' => __( 'Uh-oh, someone else has already placed a bid for this amount.', 'goodbids' ),
+					'type'    => 'error',
+				],
+
 				self::ALREADY_HIGH_BIDDER       => [
 					'message' => __( 'It looks like you are already the current high bidder for this Auction.', 'goodbids' ),
 					'type'    => 'error',
@@ -264,15 +275,28 @@ class Notices {
 					return;
 				}
 
-				$notice = $this->get_notice();
-
-				if ( ! $notice ) {
-					return;
-				}
-
-				wc_add_notice( $notice['message'], $notice['type'] );
+				$this->add_notice( $this->notice_id );
 			}
 		);
+	}
+
+	/**
+	 * Adds a pre-defined WC Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return void
+	 */
+	public function add_notice( string $notice_id ) : void {
+		$notice = $this->get_notice( $notice_id );
+
+		if ( ! $notice ) {
+			return;
+		}
+
+		wc_add_notice( $notice['message'], $notice['type'] );
 	}
 
 	/**

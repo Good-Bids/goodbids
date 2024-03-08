@@ -10,8 +10,10 @@ namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Auctions\Bids;
 use GoodBids\Frontend\Notices;
+use GoodBids\Network\Nonprofit;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
+use WP_Block;
 
 /**
  * Class for Checkout Methods
@@ -37,6 +39,15 @@ class Checkout {
 
 		// Automatically mark processing orders as Complete.
 		$this->automatically_complete_orders();
+
+		// Add additional terms & conditions to the Checkout page
+		$this->adjust_terms_block();
+
+		// Add the Nonprofit name to the Checkout page title
+		$this->adjust_checkout_title();
+
+		// Modify the Checkout button based on the type of order.
+		$this->adjust_checkout_button();
 	}
 
 	/**
@@ -107,15 +118,13 @@ class Checkout {
 
 				// Make sure Auction has started.
 				if ( ! $auction->has_started() ) {
-					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_STARTED );
 					return;
 				}
 
 				// Make sure Auction has not ended.
 				if ( $auction->has_ended() ) {
-					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
 					return;
 				}
 
@@ -126,15 +135,13 @@ class Checkout {
 
 				// Make sure Free Bids are allowed.
 				if ( ! $auction->are_free_bids_allowed() ) {
-					$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
 					return;
 				}
 
 				// Make sure the current user has available Free Bids.
 				if ( ! goodbids()->users->get_available_free_bid_count() ) {
-					$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 				}
 			},
 			10,
@@ -187,6 +194,114 @@ class Checkout {
 
 				$order->update_status( 'completed' );
 			}
+		);
+	}
+
+	/**
+	 * Add terms & conditions and privacy policy text to checkout
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_terms_block(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'woocommerce/checkout-terms-block' !== $block['blockName'] || is_main_site() ) {
+					return $block_content;
+				}
+
+				$block_content = '';
+
+				if ( goodbids()->woocommerce->cart->is_bid_order() ) {
+					$bid_amount = goodbids()->woocommerce->cart->get_total();
+					if ( $bid_amount ) {
+						$nonprofit = new Nonprofit( get_current_blog_id() );
+
+						$block_content .= sprintf(
+							'<p class="mt-10 ml-10">%s $%s %s %s. %s</p>',
+							__( 'By placing this bid, you are making a donation for your full bid amount of', 'goodbids' ),
+							esc_html( $bid_amount ),
+							__( 'to', 'goodbids' ),
+							esc_html( $nonprofit->get_name() ),
+							__( 'This is a non-refundable donation.', 'goodbids' )
+						);
+					}
+				}
+
+				$block_content .= sprintf(
+					'<p class="mt-10 ml-10">%s %s %s %s.<p>',
+					esc_html__( 'By proceeding with your order, you agree to GOODBIDS\'', 'goodbids' ),
+					wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
+					esc_html__( 'and', 'goodbids' ),
+					wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
+				);
+
+				return $block_content;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Add the Nonprofit name to the Checkout page title
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_checkout_title(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'core/post-title' !== $block['blockName'] || is_main_site() ) {
+					return $block_content;
+				}
+
+				$nonprofit = new Nonprofit( get_current_blog_id() );
+
+				return str_replace(
+					'Checkout', // Not exactly supportive if i18n.
+					sprintf(
+						'%s %s',
+						$nonprofit->get_name(),
+						esc_html__( 'Checkout', 'goodbids' )
+					),
+					$block_content
+				);
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Modify the Checkout button based on the type of order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_checkout_button(): void {
+		add_filter(
+			'render_block_data',
+			function ( array $block, array $source_block, ?WP_Block $parent_block ): array {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'woocommerce/checkout-actions-block' !== $block['blockName'] || is_main_site() ) {
+					return $block;
+				}
+
+				if ( goodbids()->woocommerce->cart->is_bid_order() ) {
+					$block['attrs']['placeOrderButtonLabel'] = __( 'Confirm Bid', 'goodbids' );
+				} elseif ( goodbids()->woocommerce->cart->is_reward_order() ) {
+					$block['attrs']['placeOrderButtonLabel'] = __( 'Claim Reward', 'goodbids' );
+				}
+
+				return $block;
+			},
+			10,
+			3
 		);
 	}
 }

@@ -7,7 +7,7 @@ import { EditorParticipationNotice } from './editor-participation-notice';
 
 export function BlockEditorView() {
 	return (
-		<div className="flex flex-col w-full gap-6 text-md">
+		<div className="flex w-full flex-col gap-6 text-md">
 			<EditorMetrics />
 			<EditorCountdownTimer />
 			<EditorBidButton />

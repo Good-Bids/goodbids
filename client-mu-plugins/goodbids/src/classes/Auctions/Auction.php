@@ -251,6 +251,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Reward Estimated Value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_estimated_value_formatted(): string {
+		return wc_price( $this->get_estimated_value() );
+	}
+
+	/**
 	 * Get the Auction Start Date/Time
 	 *
 	 * @since 1.0.0
@@ -402,6 +413,55 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Bid Extension time
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_bid_extension_formatted(): string {
+		$seconds = $this->get_bid_extension();
+
+		if ( is_null( $seconds ) ) {
+			return '';
+		}
+
+		if ( $seconds < MINUTE_IN_SECONDS ) {
+			return sprintf(
+				'%d %s',
+				$seconds,
+				_n( 'second', 'seconds', $seconds, 'goodbids' )
+			);
+		}
+
+		$min = floor( $seconds / MINUTE_IN_SECONDS );
+		$sec = $seconds % MINUTE_IN_SECONDS;
+
+		if ( $seconds < HOUR_IN_SECONDS ) {
+			return sprintf(
+				'%d %s and %d %s',
+				$min,
+				_n( 'minute', 'minutes', $min, 'goodbids' ),
+				$sec,
+				_n( 'second', 'seconds', $sec, 'goodbids' )
+			);
+		}
+
+		$hr  = floor( $seconds / HOUR_IN_SECONDS );
+		$min = floor( ( $seconds % HOUR_IN_SECONDS ) / MINUTE_IN_SECONDS );
+
+		return sprintf(
+			'%d %s, %d %s, and %d %s',
+			$hr,
+			_n( 'hour', 'hours', $hr, 'goodbids' ),
+			$min,
+			_n( 'minute', 'minutes', $min, 'goodbids' ),
+			$sec,
+			_n( 'second', 'seconds', $sec, 'goodbids' )
+		);
+	}
+
+	/**
 	 * Get the Auction Bid Increment amount
 	 *
 	 * @since 1.0.0
@@ -410,6 +470,17 @@ class Auction {
 	 */
 	public function get_bid_increment(): int {
 		return intval( $this->get_setting( 'bid_increment' ) );
+	}
+
+	/**
+	 * Get the Formatted Auction Bid Increment amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_bid_increment_formatted(): string {
+		return wc_price( $this->get_bid_increment() );
 	}
 
 	/**
@@ -451,6 +522,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Goal Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_goal_formatted(): string {
+		return wc_price( $this->get_goal() );
+	}
+
+	/**
 	 * Get the Auction Expected High Bid Amount
 	 *
 	 * @since 1.0.0
@@ -459,6 +541,17 @@ class Auction {
 	 */
 	public function get_expected_high_bid(): int {
 		return intval( $this->get_setting( 'expected_high_bid' ) );
+	}
+
+	/**
+	 * Get the formatted Auction Expected High Bid Amount
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_expected_high_bid_formatted(): string {
+		return wc_price( $this->get_expected_high_bid() );
 	}
 
 	/**
@@ -559,6 +652,25 @@ class Auction {
 	public function get_bid_order_ids( int $limit = -1, ?int $user_id = null ): array {
 		return goodbids()->auctions->get_bid_order_ids( $this->get_id(), $limit, $user_id );
 	}
+
+	/**
+	 * Get the User's last bid on this Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $user_id
+	 *
+	 * @return ?WC_Order
+	 */
+	public function get_user_last_bid( ?int $user_id = null ): ?WC_Order {
+		$orders = $this->get_bid_order_ids( 1, $user_id );
+		if ( ! $orders ) {
+			return null;
+		}
+
+		return wc_get_order( $orders[0] );
+	}
+
 	/**
 	 * Get Order IDs that have been placed using a Free Bid.
 	 *
@@ -678,6 +790,17 @@ class Auction {
 	}
 
 	/**
+	 * Get the formatted Auction Total Raised
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_total_raised_formatted(): string {
+		return wc_price( $this->get_total_raised() );
+	}
+
+	/**
 	 * Alias get_bid_count method.
 	 *
 	 * @alias get_bid_count
@@ -700,6 +823,19 @@ class Auction {
 	public function get_user_total_donated( int $user_id ): float {
 		return collect( $this->get_bid_orders( -1, $user_id ) )
 			->sum( fn( $order ) => $order->get_total( 'edit' ) );
+	}
+
+	/**
+	 * Get the formatted Auction Total Donated by User
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 *
+	 * @return string
+	 */
+	public function get_user_total_donated_formatted( int $user_id ): string {
+		return wc_price( $this->get_user_total_donated( $user_id ) );
 	}
 
 	/**
@@ -728,7 +864,16 @@ class Auction {
 	 */
 	public function get_last_bidder(): ?WP_User {
 		$last_bid = $this->get_last_bid();
-		return $last_bid?->get_user();
+
+		if ( ! $last_bid ) {
+			return null;
+		}
+
+		if ( ! $last_bid->get_user() ) {
+			return null;
+		}
+
+		return $last_bid->get_user();
 	}
 
 	/**
@@ -800,14 +945,12 @@ class Auction {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function trigger_start(): void {
+	public function trigger_start(): bool {
 		if ( ! $this->has_started() || $this->start_triggered() ) {
-			return;
+			return false;
 		}
-
-		Log::debug( 'Triggering Auction Start for Auction ID: ' . $this->get_id() );
 
 		// Update the Auction meta to indicate it has started.
 		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
@@ -819,6 +962,8 @@ class Auction {
 
 		// Reset the Auction transients.
 		goodbids()->sites->clear_all_site_transients();
+
+		return true;
 	}
 
 	/**
@@ -843,8 +988,6 @@ class Auction {
 		if ( ! $this->has_ended() || $this->end_triggered() ) {
 			return;
 		}
-
-		Log::debug( 'Triggering Auction End for Auction ID: ' . $this->get_id() );
 
 		// Update the Auction meta to indicate it has closed.
 		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );

@@ -43,6 +43,7 @@ export type UserType = {
 	userFreeBids: number;
 	userTotalBids: number;
 	userTotalDonated: number;
+	rewardClaimed: boolean;
 	isLastBidder?: boolean;
 };
 

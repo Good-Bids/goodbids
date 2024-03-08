@@ -1,0 +1,3978 @@
+# Copyright (C) 2024 Viget
+# This file is distributed under the GPL-2.0+.
+msgid ""
+msgstr ""
+"Project-Id-Version: GoodBids 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/goodbids\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-03-08T22:13:25+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: goodbids\n"
+
+#. Plugin Name of the plugin
+#: goodbids.php
+#: src/classes/Frontend/Patterns.php:56
+#: src/classes/Plugins/ACF/Blocks.php:191
+msgid "GoodBids"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: goodbids.php
+msgid "https://www.goodbids.org"
+msgstr ""
+
+#. Description of the plugin
+#: goodbids.php
+msgid "Custom functionality for GoodBids.org"
+msgstr ""
+
+#. Author of the plugin
+#: goodbids.php
+msgid "Viget"
+msgstr ""
+
+#: blocks/all-auctions/block.php:211
+msgid "Opening Soon"
+msgstr ""
+
+#: blocks/all-auctions/block.php:212
+msgid "Lowest Starting Bid"
+msgstr ""
+
+#: blocks/all-auctions/block.php:217
+msgid "Most Popular"
+msgstr ""
+
+#: blocks/all-auctions/block.php:218
+msgid "Newest"
+msgstr ""
+
+#: blocks/all-auctions/block.php:219
+msgid "Ending Soon"
+msgstr ""
+
+#: blocks/all-auctions/block.php:220
+msgid "Lowest Current Bid"
+msgstr ""
+
+#: blocks/all-auctions/block.php:303
+#: src/classes/Nonprofits/Verification.php:368
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Live"
+msgstr ""
+
+#: blocks/all-auctions/block.php:308
+msgid "Coming Soon"
+msgstr ""
+
+#: blocks/all-auctions/render.php:51
+msgid "Sort Auctions"
+msgstr ""
+
+#: blocks/auction-metrics-general/render.php:20
+msgid "No stats yet."
+msgstr ""
+
+#: blocks/auction-metrics-general/render.php:31
+#: build/views/auction-wizard.js:1
+msgid "Goal"
+msgstr ""
+
+#: blocks/auction-metrics-general/render.php:46
+msgid "High Bid Goal"
+msgstr ""
+
+#: blocks/auction-metrics-general/render.php:61
+msgid "Est. Value"
+msgstr ""
+
+#: blocks/auction-watchers/render.php:20
+#: src/classes/Auctions/Watchers.php:75
+#: src/classes/Auctions/Watchers.php:80
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:519
+msgid "Watchers"
+msgstr ""
+
+#: blocks/authentication/render.php:14
+msgid "This will render the Login and Registration form if the user is currently not signed in."
+msgstr ""
+
+#: blocks/bid-now/block.php:83
+msgid "GOODBID Now"
+msgstr ""
+
+#: blocks/bid-now/block.php:92
+#: src/classes/Plugins/WooCommerce/Emails/AuctionRewardReminder.php:103
+#: src/classes/Plugins/WooCommerce/Emails/AuctionWinnerConfirmation.php:96
+#: build/blocks/bidding/view.js:1
+msgid "Claim Your Reward"
+msgstr ""
+
+#: blocks/bid-now/block.php:95
+msgid "Auction has Ended."
+msgstr ""
+
+#: blocks/bid-now/block.php:103
+msgid "Place Free Bid"
+msgstr ""
+
+#. translators: %s: Bid Price
+#: blocks/bid-now/block.php:110
+msgid "GOODBID %s Now"
+msgstr ""
+
+#: blocks/bid-now/block.php:194
+msgid "Auction has not started."
+msgstr ""
+
+#: blocks/main-footer/block.php:29
+#: src/classes/Network/Dashboard.php:54
+#: src/classes/Network/Dashboard.php:55
+msgid "GOODBIDS"
+msgstr ""
+
+#: blocks/main-footer/block.php:30
+msgid "We reimagined nonprofit auctions."
+msgstr ""
+
+#: blocks/reward-product-gallery/render.php:25
+msgid "No Auction Product selected"
+msgstr ""
+
+#: blocks/watch-auction/render.php:17
+msgid "Watch"
+msgstr ""
+
+#: blocks/watch-auction/render.php:18
+msgid "Unwatch"
+msgstr ""
+
+#: src/classes/Admin/Admin.php:51
+#: src/classes/Admin/Admin.php:59
+msgid "Separator"
+msgstr ""
+
+#: src/classes/Admin/ScreenOptions.php:179
+msgid "Display Options"
+msgstr ""
+
+#: src/classes/Admin/ScreenOptions.php:256
+msgid "Apply"
+msgstr ""
+
+#: src/classes/Auctioneer/Auctioneer.php:96
+msgid "Missing Auctioneer URL constants config."
+msgstr ""
+
+#: src/classes/Auctioneer/Auctioneer.php:104
+msgid "Missing Auctioneer URL environment variables."
+msgstr ""
+
+#: src/classes/Auctioneer/Auctioneer.php:122
+msgid "Missing Auctioneer API Key constants config."
+msgstr ""
+
+#: src/classes/Auctioneer/Auctioneer.php:130
+msgid "Missing Auctioneer API Key environment variable."
+msgstr ""
+
+#: src/classes/Auctions/API/Details.php:66
+#: src/classes/Auctions/API/End.php:66
+#: src/classes/Auctions/API/User.php:66
+msgid "Unique identifier for the resource (Auction ID)."
+msgstr ""
+
+#: src/classes/Auctions/API/Details.php:89
+#: src/classes/Auctions/API/End.php:89
+msgid "Missing valid resource ID."
+msgstr ""
+
+#: src/classes/Auctions/API/Details.php:93
+#: src/classes/Auctions/API/End.php:93
+msgid "The provided resource ID is not a valid Auction post type."
+msgstr ""
+
+#: src/classes/Auctions/API/Details.php:97
+#: src/classes/Auctions/API/End.php:97
+msgid "The provided Auction ID does not have a published status."
+msgstr ""
+
+#: src/classes/Auctions/API/End.php:103
+msgid "The provided Auction ID has not ended yet."
+msgstr ""
+
+#: src/classes/Auctions/API/User.php:89
+msgid "The required `cookie` parameter was not found."
+msgstr ""
+
+#: src/classes/Auctions/API/User.php:95
+msgid "The cookie provided was invalid."
+msgstr ""
+
+#: src/classes/Auctions/Auction.php:433
+#: src/classes/Auctions/Auction.php:446
+#: src/classes/Auctions/Auction.php:460
+msgid "second"
+msgid_plural "seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/classes/Auctions/Auction.php:444
+#: src/classes/Auctions/Auction.php:458
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/classes/Auctions/Auction.php:456
+msgid "hour"
+msgid_plural "hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/classes/Auctions/Auctions.php:108
+msgid "Once Every Minute"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:113
+msgid "Every 30 Seconds"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:118
+msgid "Every Day"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:194
+msgctxt "Post Type General Name"
+msgid "Auctions"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:195
+msgctxt "Post Type Singular Name"
+msgid "Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:196
+#: src/classes/Network/AuctionsTable.php:27
+#: src/classes/Network/Dashboard.php:85
+#: src/classes/Network/Dashboard.php:86
+#: src/classes/Plugins/WooCommerce/Account.php:97
+#: views/network/auctions.php:15
+#: views/woocommerce/myaccount/my-auctions.php:13
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Auctions"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:197
+#: src/classes/Auctions/Auctions.php:231
+#: src/classes/Auctions/Watchers.php:147
+#: src/classes/Frontend/Patterns.php:140
+#: src/classes/Network/AuctionsTable.php:26
+#: src/classes/Network/InvoicesTable.php:99
+#: src/classes/Nonprofits/Invoices.php:541
+#: views/woocommerce/myaccount/auctions-table.php:19
+#: views/woocommerce/myaccount/auctions-table.php:46
+msgid "Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:198
+msgid "Auction Archives"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:199
+msgid "Auction Attributes"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:200
+msgid "Parent Auction:"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:201
+msgid "All Auctions"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:202
+msgid "Add New Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:203
+#: src/classes/Auctions/Watchers.php:82
+#: src/classes/Auctions/Wizard.php:132
+#: src/classes/Auctions/Wizard.php:133
+#: src/classes/Nonprofits/Invoices.php:118
+#: src/classes/Partners/Partners.php:73
+#: src/classes/Users/Referrals.php:112
+msgid "Add New"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:204
+msgid "New Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:205
+msgid "Edit Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:206
+msgid "Update Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:207
+msgid "View Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:208
+msgid "View Auctions"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:209
+msgid "Search Auctions"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:210
+#: src/classes/Auctions/Watchers.php:89
+#: src/classes/Partners/Partners.php:80
+#: src/classes/Users/Referrals.php:119
+msgid "Not found"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:211
+#: src/classes/Auctions/Watchers.php:90
+#: src/classes/Partners/Partners.php:81
+#: src/classes/Users/Referrals.php:120
+msgid "Not found in Trash"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:212
+#: src/classes/Auctions/Watchers.php:91
+#: src/classes/Nonprofits/Invoices.php:127
+#: src/classes/Partners/Partners.php:82
+#: src/classes/Users/Referrals.php:121
+#: build/views/auction-wizard.js:1
+msgid "Featured Image"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:213
+#: src/classes/Auctions/Watchers.php:92
+#: src/classes/Nonprofits/Invoices.php:128
+#: src/classes/Partners/Partners.php:83
+#: src/classes/Users/Referrals.php:122
+msgid "Set featured image"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:214
+#: src/classes/Auctions/Watchers.php:93
+#: src/classes/Nonprofits/Invoices.php:129
+#: src/classes/Partners/Partners.php:84
+#: src/classes/Users/Referrals.php:123
+msgid "Remove featured image"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:215
+#: src/classes/Auctions/Watchers.php:94
+#: src/classes/Nonprofits/Invoices.php:130
+#: src/classes/Partners/Partners.php:85
+#: src/classes/Users/Referrals.php:124
+msgid "Use as featured image"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:216
+msgid "Insert into auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:217
+msgid "Uploaded to this auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:218
+msgid "Auctions list"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:219
+msgid "Auctions list navigation"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:220
+msgid "Filter auctions list"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:232
+msgid "GoodBids Auction Custom Post Type"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:474
+msgctxt "Template Name"
+msgid "Single Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:475
+msgid "Displays a single Auction post."
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:478
+msgctxt "Template Name"
+msgid "Archive: Auction"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:479
+msgid "Displays a the Auctions Archive."
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:652
+#: src/classes/Plugins/WooCommerce/Admin.php:66
+msgid "Auction Info"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:745
+#: src/classes/Network/AuctionsTable.php:100
+#: src/classes/Network/AuctionsTable.php:158
+#: src/classes/Network/InvoicesTable.php:102
+#: src/classes/Network/NonprofitsTable.php:101
+#: src/classes/Network/NonprofitsTable.php:170
+#: src/classes/Network/Sites.php:1120
+#: src/classes/Nonprofits/Invoices.php:545
+#: views/admin/auctions/details.php:41
+#: views/woocommerce/myaccount/auctions-table.php:21
+#: views/woocommerce/myaccount/auctions-table.php:52
+#: views/woocommerce/myaccount/free-bids.php:30
+#: views/woocommerce/myaccount/free-bids.php:48
+#: views/woocommerce/myaccount/my-referrals.php:27
+#: views/woocommerce/myaccount/my-referrals.php:47
+#: views/woocommerce/myaccount/my-rewards.php:41
+#: views/woocommerce/myaccount/my-rewards.php:75
+msgid "Status"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:746
+#: views/woocommerce/emails/auction-is-live-admin.php:49
+#: views/woocommerce/emails/auction-summary-admin.php:52
+#: build/views/auction-wizard.js:1
+msgid "Starting Bid"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:747
+#: views/woocommerce/emails/auction-is-live-admin.php:53
+#: views/woocommerce/emails/auction-summary-admin.php:56
+msgid "Bid Increment"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:748
+#: src/classes/Network/AuctionsTable.php:101
+#: src/classes/Network/AuctionsTable.php:164
+#: src/classes/Network/BiddersTable.php:91
+#: src/classes/Network/BiddersTable.php:155
+#: views/admin/auctions/metrics.php:21
+#: views/woocommerce/emails/auction-summary-admin.php:100
+#: views/woocommerce/emails/plain/auction-summary-admin.php:103
+#: views/woocommerce/myaccount/orders-header.php:13
+msgid "Total Bids"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:749
+#: src/classes/Network/AuctionsTable.php:102
+#: src/classes/Network/AuctionsTable.php:170
+#: src/classes/Network/NonprofitsTable.php:99
+#: src/classes/Network/NonprofitsTable.php:158
+#: views/admin/auctions/metrics.php:39
+#: views/woocommerce/emails/auction-summary-admin.php:104
+#: views/woocommerce/emails/plain/auction-summary-admin.php:108
+msgid "Total Raised"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:750
+#: views/admin/auctions/metrics.php:54
+msgid "Last Bid"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:751
+#: views/admin/auctions/metrics.php:46
+msgid "Current Bid"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:786
+msgid "Ends"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:788
+msgid "Starts"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:790
+msgid "Ended"
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:1138
+msgid "Missing nonce."
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:1142
+msgid "Invalid nonce."
+msgstr ""
+
+#: src/classes/Auctions/Auctions.php:1148
+msgid "Invalid Auction ID."
+msgstr ""
+
+#: src/classes/Auctions/Bids.php:170
+msgid "Bid for"
+msgstr ""
+
+#. translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+#: src/classes/Auctions/Bids.php:558
+msgid "Placed %1$s Paid Bid for %2$s on Auction ID %3$d."
+msgstr ""
+
+#: src/classes/Auctions/FreeBid.php:270
+#: src/classes/Auctions/FreeBid.php:289
+#: src/classes/Network/AuctionsTable.php:368
+msgid "N/A"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:73
+msgctxt "Post Type General Name"
+msgid "Watchers"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:74
+msgctxt "Post Type Singular Name"
+msgid "Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:76
+#: src/classes/Auctions/Watchers.php:103
+msgid "Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:77
+msgid "Watcher Archives"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:78
+msgid "Watcher Attributes"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:79
+msgid "Parent Watcher:"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:81
+msgid "Add New Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:83
+msgid "New Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:84
+msgid "Edit Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:85
+msgid "Update Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:86
+msgid "View Watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:87
+msgid "View Watchers"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:88
+msgid "Search Watchers"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:95
+msgid "Insert into watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:96
+msgid "Uploaded to this watcher"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:97
+msgid "Watchers list"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:98
+msgid "Watchers list navigation"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:99
+msgid "Filter watchers list"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:104
+msgid "GoodBids Watcher Custom Post Type"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:148
+#: src/classes/Users/Referrals.php:177
+#: views/admin/referrals/top-referrers.php:24
+msgid "User"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:181
+#: src/classes/Network/AuctionsTable.php:64
+#: src/classes/Network/InvoicesTable.php:373
+#: src/classes/Nonprofits/Invoices.php:575
+#: views/woocommerce/myaccount/auctions-table.php:64
+#: views/woocommerce/myaccount/auctions-table.php:65
+msgid "View"
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:521
+msgid "Missing Auction ID."
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:532
+msgid "Invalid Auction ID or User ID."
+msgstr ""
+
+#: src/classes/Auctions/Watchers.php:542
+msgid "There was a problem toggling the Watcher."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:176
+msgid "You must be logged in before checking out."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:181
+msgid "This Auction has not started yet."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:186
+msgid "This Auction has not ended."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:191
+msgid "This Auction has already ended."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:196
+msgid "You are not the winner of this auction."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:201
+msgid "There was a problem locating the associated auction."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:206
+msgid "There was a problem generating the Reward Coupon Code. Please contact support for further assistance."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:211
+msgid "There was a problem generating the Free Bid Coupon Code. Please contact support for further assistance."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:216
+msgid "There was a problem applying your Coupon Code. Please contact support for further assistance."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:221
+msgid "This Reward has already been redeemed. Please contact support if you feel this is an error."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:226
+msgid "Congratulations! You have earned a Free Bid!"
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:231
+msgid "Sorry, this Auction is currently not eligible to use Free Bids. Please try again later."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:236
+msgid "Sorry, you do not have any available free bids."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:241
+msgid "You have successfully used a free bid!"
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:246
+msgid "Uh-oh! Someone else already placed this bid. We've removed the GoodBid from your cart. Please return to the Auction to place a new GoodBid."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:251
+msgid "Uh-oh, someone else has already placed a bid for this amount."
+msgstr ""
+
+#: src/classes/Frontend/Notices.php:256
+msgid "It looks like you are already the current high bidder for this Auction."
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:63
+msgid "Archive Auction"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:72
+msgid "Goodbids Comments"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:82
+msgid "Goodbids Banner Hero"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:92
+msgid "Logo Grid"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:93
+msgctxt "Block pattern description"
+msgid "Grid of image for logos"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:103
+msgid "Nonprofit Interest Form"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:104
+msgctxt "Block pattern description"
+msgid "Nonprofit Interest Form using Jetpack forms"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:114
+msgid "Section with Sidebar and Chapters"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:115
+msgctxt "Block pattern description"
+msgid "Template for any page with sidebar and chapters"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:126
+msgid "About GoodBids"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:127
+msgctxt "Block pattern description"
+msgid "Template for About Page"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:141
+msgctxt "Block pattern description"
+msgid "Template for GoodBids Auction Page"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:152
+msgid "Terms and Conditions"
+msgstr ""
+
+#: src/classes/Frontend/Patterns.php:153
+msgctxt "Block pattern description"
+msgid "Template for GoodBids Terms and Conditions Page"
+msgstr ""
+
+#: src/classes/Network/API/Publish.php:82
+msgid "The required `site_id` parameter was not found."
+msgstr ""
+
+#: src/classes/Network/API/Publish.php:88
+msgid "The provided `site_id` does not belong to a valid site."
+msgstr ""
+
+#: src/classes/Network/API/Publish.php:93
+msgid "There was a problem adjusting the Site Status."
+msgstr ""
+
+#: src/classes/Network/Auctions.php:57
+msgid "Auctions Per Page"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:69
+#: src/classes/Network/BiddersTable.php:62
+#: views/admin/auctions/details.php:52
+msgid "Edit"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:98
+#: src/classes/Network/AuctionsTable.php:146
+#: views/woocommerce/emails/auction-is-live-admin.php:41
+#: views/woocommerce/emails/auction-summary-admin.php:44
+msgid "Auction Title"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:99
+#: src/classes/Network/NonprofitsTable.php:25
+#: views/woocommerce/myaccount/auctions-table.php:20
+#: views/woocommerce/myaccount/auctions-table.php:49
+#: views/woocommerce/myaccount/my-rewards.php:40
+#: views/woocommerce/myaccount/my-rewards.php:69
+#: views/woocommerce/myaccount/orders.php:41
+msgid "Nonprofit"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:103
+#: views/woocommerce/emails/auction-summary-admin.php:108
+#: views/woocommerce/emails/plain/auction-summary-admin.php:113
+msgid "High Bid"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:147
+msgid "Table ordered by Auction Title."
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:152
+msgid "Nonprofit Name"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:153
+msgid "Table ordered by Nonprofit Name."
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:159
+#: src/classes/Network/NonprofitsTable.php:171
+msgid "Table ordered by Status."
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:165
+#: src/classes/Network/BiddersTable.php:156
+msgid "Table ordered by Total Bids."
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:171
+#: src/classes/Network/NonprofitsTable.php:159
+msgid "Table ordered by Total Raised."
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:177
+msgctxt "auction"
+msgid "High Bid"
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:178
+msgid "Table ordered by High Bid."
+msgstr ""
+
+#: src/classes/Network/AuctionsTable.php:263
+#: src/classes/Network/InvoicesTable.php:236
+#: src/classes/Network/NonprofitsTable.php:264
+msgid "All"
+msgstr ""
+
+#: src/classes/Network/Bidders.php:57
+msgid "Bidders Per Page"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:26
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:523
+msgid "Bidder"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:27
+#: src/classes/Network/Dashboard.php:95
+#: src/classes/Network/Dashboard.php:96
+#: views/network/bidders.php:15
+msgid "Bidders"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:88
+#: src/classes/Network/BiddersTable.php:137
+msgid "Username"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:89
+#: src/classes/Network/BiddersTable.php:143
+msgid "Email"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:90
+msgid "Date Registered"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:92
+#: src/classes/Network/BiddersTable.php:161
+#: views/woocommerce/myaccount/dashboard-header.php:15
+#: views/woocommerce/myaccount/orders-header.php:18
+msgid "Total Donated"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:93
+#: src/classes/Plugins/WooCommerce/Account.php:76
+#: views/woocommerce/myaccount/dashboard-header.php:25
+#: views/woocommerce/myaccount/free-bids.php:14
+msgid "Free Bids"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:94
+#: src/classes/Network/BiddersTable.php:174
+#: src/classes/Network/Settings.php:173
+#: src/classes/Plugins/WooCommerce/Account.php:150
+#: src/classes/Users/Referrals.php:105
+#: src/classes/Users/Referrals.php:110
+#: views/admin/referrals/referrals.php:48
+#: views/woocommerce/myaccount/my-referrals.php:14
+msgid "Referrals"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:138
+msgid "Table ordered by Username."
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:144
+msgid "Table ordered by Email."
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:149
+msgid "Registered"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:150
+msgid "Table ordered by Registered Date."
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:162
+msgid "Table ordered by Total Donated."
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:168
+msgctxt "auction"
+msgid "Free Bids"
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:169
+msgid "Table ordered by Free Bids."
+msgstr ""
+
+#: src/classes/Network/BiddersTable.php:175
+msgid "Table ordered by Referrals."
+msgstr ""
+
+#: src/classes/Network/Dashboard.php:65
+#: src/classes/Network/Dashboard.php:66
+#: src/classes/Network/NonprofitsTable.php:26
+#: views/network/nonprofits.php:15
+msgid "Nonprofits"
+msgstr ""
+
+#: src/classes/Network/Dashboard.php:75
+#: src/classes/Network/Dashboard.php:76
+#: src/classes/Network/InvoicesTable.php:27
+#: src/classes/Nonprofits/Invoices.php:111
+#: views/network/invoices.php:15
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Invoices"
+msgstr ""
+
+#: src/classes/Network/Dashboard.php:107
+#: src/classes/Network/Dashboard.php:108
+msgid "Settings"
+msgstr ""
+
+#: src/classes/Network/Dashboard.php:118
+#: src/classes/Network/Dashboard.php:119
+#: views/network/logs.php:13
+msgid "Logs"
+msgstr ""
+
+#: src/classes/Network/Invoices.php:158
+msgid "Integrity Check Completed. Review logs for report."
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:26
+#: src/classes/Nonprofits/Invoices.php:112
+#: src/classes/Nonprofits/Invoices.php:139
+msgid "Invoice"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:63
+#: src/classes/Network/InvoicesTable.php:79
+msgid "Integrity Check"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:93
+msgid "Select All"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:98
+#: src/classes/Network/NonprofitsTable.php:97
+#: src/classes/Network/NonprofitsTable.php:146
+msgid "Site Name"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:100
+#: src/classes/Nonprofits/Invoices.php:542
+msgid "Amount"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:101
+msgid "Number"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:103
+#: src/classes/Nonprofits/Invoices.php:546
+msgid "Due Date"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:104
+msgid "Date Created"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:105
+#: src/classes/Nonprofits/Invoices.php:551
+msgid "Payment"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:390
+#: src/classes/Nonprofits/Invoices.php:595
+msgid "Paid on"
+msgstr ""
+
+#: src/classes/Network/InvoicesTable.php:398
+msgid "Copy URL"
+msgstr ""
+
+#: src/classes/Network/Nonprofit.php:178
+msgid "Delinquent"
+msgstr ""
+
+#: src/classes/Network/Nonprofit.php:181
+msgid "Good"
+msgstr ""
+
+#: src/classes/Network/Nonprofits.php:74
+msgid "Nonprofits Per Page"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:61
+msgid "Visit Site"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:66
+#: views/woocommerce/myaccount/dashboard.php:18
+msgid "Dashboard"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:71
+msgid "Edit Site"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:98
+#: src/classes/Network/NonprofitsTable.php:152
+#: views/woocommerce/myaccount/my-auctions-header.php:14
+msgid "Total Auctions"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:100
+#: src/classes/Network/NonprofitsTable.php:164
+msgid "Total Revenue"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:102
+#: src/classes/Network/NonprofitsTable.php:176
+#: src/classes/Network/Sites.php:1121
+msgid "Account Standing"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:103
+msgid "Age"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:147
+msgid "Table ordered by Site Name."
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:153
+msgid "Table ordered by Total Auctions."
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:165
+msgid "Table ordered by Total Revenue."
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:177
+msgid "Table ordered by Account Standing."
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:182
+msgctxt "nonprofit"
+msgid "Age"
+msgstr ""
+
+#: src/classes/Network/NonprofitsTable.php:183
+msgid "Table ordered by Age."
+msgstr ""
+
+#: src/classes/Network/Settings.php:81
+msgid "Develop"
+msgstr ""
+
+#: src/classes/Network/Settings.php:85
+msgid "Staging"
+msgstr ""
+
+#: src/classes/Network/Settings.php:95
+msgid "Local"
+msgstr ""
+
+#: src/classes/Network/Settings.php:104
+msgid "Production"
+msgstr ""
+
+#: src/classes/Network/Settings.php:117
+msgid "Warning! Environment variable is not set"
+msgstr ""
+
+#: src/classes/Network/Settings.php:125
+msgid "Environment"
+msgstr ""
+
+#: src/classes/Network/Settings.php:131
+msgid "The environment to use for the Auctioneer API. Ensure the corresponding environment variable is set, or the default environment will be used."
+msgstr ""
+
+#: src/classes/Network/Settings.php:135
+msgid "Referral Code Length"
+msgstr ""
+
+#: src/classes/Network/Settings.php:140
+msgid "The length of auto-generated referral codes."
+msgstr ""
+
+#: src/classes/Network/Settings.php:143
+msgid "Days until Expiration"
+msgstr ""
+
+#: src/classes/Network/Settings.php:148
+msgid "Days until a referral code cookie expires."
+msgstr ""
+
+#: src/classes/Network/Settings.php:151
+msgid "Logging"
+msgstr ""
+
+#: src/classes/Network/Settings.php:155
+msgid "Enables logging for this environment."
+msgstr ""
+
+#: src/classes/Network/Settings.php:158
+msgid "Debug Mode"
+msgstr ""
+
+#: src/classes/Network/Settings.php:162
+msgid "Enables a subset of features to help with debugging. Be very cautious enabling this on production!"
+msgstr ""
+
+#: src/classes/Network/Settings.php:172
+msgid "Auctioneer"
+msgstr ""
+
+#: src/classes/Network/Settings.php:174
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Advanced"
+msgstr ""
+
+#: src/classes/Network/Settings.php:258
+msgid "The config.json setting has been overridden."
+msgstr ""
+
+#: src/classes/Network/Settings.php:338
+msgid "Nonce verification failed."
+msgstr ""
+
+#: src/classes/Network/Settings.php:364
+msgid "GoodBids settings saved."
+msgstr ""
+
+#: src/classes/Network/Sites.php:452
+msgid "About GOODBIDS"
+msgstr ""
+
+#: src/classes/Network/Sites.php:493
+msgid "Explore Auctions"
+msgstr ""
+
+#: src/classes/Network/Sites.php:1119
+msgid "Verified?"
+msgstr ""
+
+#: src/classes/Network/Sites.php:1147
+#: src/classes/Network/Sites.php:1148
+#: views/woocommerce/myaccount/auctions-table.php:62
+msgid "Yes"
+msgstr ""
+
+#: src/classes/Network/Sites.php:1155
+#: src/classes/Network/Sites.php:1156
+#: src/classes/Nonprofits/Verification.php:364
+#: views/woocommerce/myaccount/my-referrals.php:38
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Pending"
+msgstr ""
+
+#: src/classes/Network/Sites.php:1273
+msgid "Navigation"
+msgstr ""
+
+#: src/classes/Nonprofits/Guide.php:63
+msgid "Nonprofit Setup Guide"
+msgstr ""
+
+#: src/classes/Nonprofits/Guide.php:64
+msgid "Setup Guide"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:109
+msgctxt "Post Type General Name"
+msgid "Invoices"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:110
+msgctxt "Post Type Singular Name"
+msgid "Invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:113
+msgid "Invoice Archives"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:114
+msgid "Invoice Attributes"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:115
+msgid "Parent Invoice:"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:116
+msgid "All Invoices"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:117
+msgid "Add New Invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:119
+msgid "New Invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:120
+msgid "View Invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:121
+msgid "Update Invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:122
+#: src/classes/Nonprofits/Invoices.php:314
+msgid "Invoice Details"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:123
+msgid "View Invoices"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:124
+msgid "Search Invoices"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:125
+msgid "No Invoices have been generated yet."
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:126
+msgid "Not Invoices found in Trash"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:131
+msgid "Insert into invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:132
+msgid "Uploaded to this invoice"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:133
+msgid "Invoices list"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:134
+msgid "Invoices list navigation"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:135
+msgid "Filter invoices list"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:140
+msgid "GoodBids Invoice Custom Post Type"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:200
+msgid "Invoices cannot be deleted."
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:332
+#: views/woocommerce/myaccount/orders.php:44
+msgid "Actions"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:342
+msgid "Back to Invoices"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:346
+#: src/classes/Nonprofits/Invoices.php:601
+msgid "Pay Now"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:543
+msgid "Invoice #"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:544
+#: views/woocommerce/myaccount/free-bids.php:29
+#: views/woocommerce/myaccount/free-bids.php:45
+msgid "Type"
+msgstr ""
+
+#. translators: %s is the Auction Title.
+#: src/classes/Nonprofits/Invoices.php:661
+msgid "Invoice for %s"
+msgstr ""
+
+#: src/classes/Nonprofits/Invoices.php:714
+msgid "There are currently delinquent invoices on this account. Please take action to restore full site functionality."
+msgstr ""
+
+#. translators: %s is the Auction Title.
+#: src/classes/Nonprofits/Invoices.php:779
+msgid "Tax Invoice for %s"
+msgstr ""
+
+#: src/classes/Nonprofits/Onboarding.php:248
+msgid "GoodBids Onboarding"
+msgstr ""
+
+#: src/classes/Nonprofits/Onboarding.php:249
+msgid "Onboarding"
+msgstr ""
+
+#: src/classes/Nonprofits/Onboarding.php:687
+msgid "Continue with Onboarding"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:101
+#: src/classes/Nonprofits/Verification.php:235
+msgid "Verification"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:101
+#: src/classes/Nonprofits/Verification.php:248
+msgid "Details"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:131
+msgid "Nonprofit Details"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:131
+msgid "Nonprofit Verification"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:294
+msgid "Verified"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:298
+msgid "Only visible to Super Admins"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:304
+msgid "Net Payment Terms"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:308
+msgid "days"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:310
+msgid "Number of days until an invoice is due."
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:313
+msgid "Stripe Details"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:335
+msgid "Nonprofit Legal Name"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:342
+msgid "Nonprofit EIN"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:349
+msgid "Nonprofit Website"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:356
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Site Status"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:361
+msgid "This determines if the site is accessible from the front-end"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:372
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Inactive"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:381
+msgid "Primary Contact Legal Name"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:388
+msgid "Primary Contact Email Address"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:396
+msgid "Primary Contact Job Title"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:403
+msgid "Impact Vertical"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:409
+msgid "Animals"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:410
+msgid "Arts & Culture"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:411
+msgid "Civic & Community"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:412
+msgid "Disaster & Emergency Services"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:413
+msgid "Diversity, Equity & Inclusion"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:414
+msgid "Education/School"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:415
+msgid "Environment & Sustainability"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:416
+msgid "Faith-based & Religious"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:417
+msgid "Food Insecurity"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:418
+msgid "Health and Wellness"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:419
+msgid "Housing & Homelessness"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:420
+msgid "Humanities/International Affairs"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:421
+msgid "Justice & Legal Services"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:422
+msgid "Reproductive Rights"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:423
+msgid "Research"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:424
+msgid "Sports and Recreation"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:425
+msgid "Technology"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:426
+msgid "Veterans Services"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:427
+msgid "Other"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:431
+msgid "Finance Contact Legal Name"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:437
+msgid "Finance Contact Email Address"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:444
+msgid "Finance Contact Job Title"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:505
+msgid "is a required field."
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:520
+msgid "Nonprofit EIN must include 9 digits. (##-#######)"
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:532
+msgid "Nonprofit Website must be a valid URL. Be sure to include \"https://\"."
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:657
+msgid "Nonprofit data has been updated."
+msgstr ""
+
+#: src/classes/Nonprofits/Verification.php:712
+msgid "This site must be verified first."
+msgstr ""
+
+#: src/classes/Partners/Partners.php:64
+msgctxt "Post Type General Name"
+msgid "Partners"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:65
+msgctxt "Post Type Singular Name"
+msgid "Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:66
+msgid "Partners"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:67
+#: src/classes/Partners/Partners.php:101
+msgid "Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:68
+msgid "Partner Archives"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:69
+msgid "Partner Attributes"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:70
+msgid "Parent Partner:"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:71
+msgid "All Partners"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:72
+msgid "Add New Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:74
+msgid "New Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:75
+msgid "Edit Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:76
+msgid "Update Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:77
+msgid "View Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:78
+msgid "View Partners"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:79
+msgid "Search Partners"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:86
+msgid "Insert into Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:87
+msgid "Uploaded to this Partner"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:88
+msgid "Partners list"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:89
+msgid "Partners list navigation"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:90
+msgid "Filter Partners list"
+msgstr ""
+
+#: src/classes/Partners/Partners.php:102
+msgid "GoodBids Partner Custom Post Type"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce.php:658
+msgid "Or login with one of these providers"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce.php:663
+msgid "By clicking to continue with any of these providers, you agree to GOODBIDS'"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce.php:665
+#: src/classes/Plugins/WooCommerce.php:689
+#: src/classes/Plugins/WooCommerce/Checkout.php:237
+msgid "and"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce.php:687
+msgid "By registering an account, you agree to GOODBIDS'"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Account.php:126
+#: views/woocommerce/myaccount/my-rewards.php:31
+msgid "Rewards"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Account.php:229
+#: views/woocommerce/myaccount/auctions-table.php:55
+#: views/woocommerce/myaccount/orders.php:30
+msgid "Bids"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Admin.php:73
+msgid "Related Auction"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Admin.php:83
+msgid "Related Reward"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Admin.php:112
+#: src/classes/Plugins/WooCommerce/Admin.php:150
+msgid "Authentication"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Admin.php:151
+msgid "Page contents: GoodBids Authentication Block."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Admin.php:195
+msgid "Authentication Page"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/API/Credentials.php:91
+msgid "Sorry, you cannot list credentials."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/API/Credentials.php:110
+msgid "Sorry, this endpoint is not supported."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/API/Credentials.php:116
+msgid "The required `domain` parameter was not found."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/API/Credentials.php:122
+msgid "The site provided was invalid."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/API/Credentials.php:129
+msgid "There was a problem revoking the previous site credentials."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/API/Credentials.php:136
+msgid "There was a problem generating the site credentials."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:224
+msgid "By placing this bid, you are making a donation for your full bid amount of"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:226
+msgid "to"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:228
+msgid "This is a non-refundable donation."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:235
+msgid "By proceeding with your order, you agree to GOODBIDS'"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:270
+msgid "Checkout"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:296
+msgid "Confirm Bid"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Checkout.php:298
+msgid "Claim Reward"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Coupons.php:91
+msgid "Autogenerated Coupon Code for Auction ID"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Coupons.php:93
+msgid "Product ID"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Coupons.php:139
+msgid "Autogenerated Free Bid Coupon Code for Auction ID"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:32
+msgid "Auction Closed"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:33
+msgid "Notification email sent to all participants when an auction closes."
+msgstr ""
+
+#. translators: %1$s: site title, %2$s: auction title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:93
+msgid "[%1$s] %2$s auction has ended"
+msgstr ""
+
+#. translators: %1$s: Site Title, %2$s: Total Raised by Auction
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:108
+msgid "You helped %1$s raise %2$s!"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:121
+msgid "See Auction Results"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:145
+msgid "Want to support another great GOODBIDS cause?"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionClosed.php:147
+msgid "View All Auctions"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLive.php:35
+msgid "Auction is Live"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLive.php:36
+msgid "Notification email sent to all Watchers when an Auction goes live."
+msgstr ""
+
+#. translators: %1$s: Site Name, %2$s: Auction Title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLive.php:72
+msgid "[%1$s] %2$s auction is live"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLive.php:85
+msgid "Ready to GOODBID?"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLive.php:95
+#: src/classes/Plugins/WooCommerce/Emails/AuctionOutbid.php:107
+msgid "Bid Now"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLiveAdmin.php:32
+msgid "Auction is Live (Admin)"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLiveAdmin.php:33
+msgid "Notification email sent to all site admins when an Auction goes live."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLiveAdmin.php:71
+msgid "Let the GOODBIDs begin!"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLiveAdmin.php:81
+msgid "Track this Auction"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLiveAdmin.php:161
+#: views/woocommerce/emails/auction-summary-admin.php:124
+msgid "Login to your site"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionIsLiveAdmin.php:162
+#: views/woocommerce/emails/auction-summary-admin.php:125
+msgid "to view additional auction information."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionOutbid.php:32
+msgid "Auction Outbid"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionOutbid.php:33
+msgid "Notification email sent to previous bidder when new bid is placed."
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionOutbid.php:97
+msgid "It’s not too late!"
+msgstr ""
+
+#. translators: %s: site title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionOutbid.php:130
+msgid "[%s] Yikes, you’ve been outbid"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionRewardReminder.php:33
+msgid "Auction Reward Reminder"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionRewardReminder.php:34
+msgid "Notification email sent to winner when reward is unclaimed."
+msgstr ""
+
+#. translators: %s: site title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionRewardReminder.php:77
+msgid "[%s] Remember to claim your reward"
+msgstr ""
+
+#. translators: %s: reward product title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionRewardReminder.php:91
+msgid "Your %s is still waiting"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionSummaryAdmin.php:33
+msgid "Auction Summary (Admin)"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionSummaryAdmin.php:34
+msgid "Notification email sent to all site admins when an Auction closes."
+msgstr ""
+
+#. translators: %1$s: site title, %2$s: auction title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionSummaryAdmin.php:70
+msgid "[%1$s] Auction summary for %2$s"
+msgstr ""
+
+#. translators: %1$s: auction total raised, %2$s: site title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionSummaryAdmin.php:85
+msgid "%1$s raised for %2$s!"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionWinnerConfirmation.php:32
+msgid "Auction Winner Confirmation"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/AuctionWinnerConfirmation.php:33
+msgid "Notification email sent to high bidder when an Auction closes."
+msgstr ""
+
+#. translators: %s: site title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionWinnerConfirmation.php:70
+msgid "[%s] Congratulations, you won!"
+msgstr ""
+
+#. translators: %s: reward product title
+#: src/classes/Plugins/WooCommerce/Emails/AuctionWinnerConfirmation.php:84
+msgid "You generosity earned a %s!"
+msgstr ""
+
+#. translators: %s: list of placeholders
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:103
+msgid "Available placeholders: %s"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:527
+msgid "Admin"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:531
+msgid "Not Set"
+msgstr ""
+
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:669
+msgid "Hi"
+msgstr ""
+
+#. translators: %s: Customer username
+#: src/classes/Plugins/WooCommerce/Emails/Email.php:712
+msgid "Hi %s,"
+msgstr ""
+
+#: src/classes/Users/Permissions.php:125
+msgid "BDP Administrator"
+msgstr ""
+
+#: src/classes/Users/Permissions.php:158
+msgid "Junior Site Admin"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:103
+msgctxt "Post Type General Name"
+msgid "Referrals"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:104
+msgctxt "Post Type Singular Name"
+msgid "Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:106
+#: src/classes/Users/Referrals.php:133
+msgid "Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:107
+msgid "Referral Archives"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:108
+msgid "Referral Attributes"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:109
+msgid "Parent Referral:"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:111
+msgid "Add New Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:113
+msgid "New Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:114
+msgid "Edit Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:115
+msgid "Update Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:116
+msgid "View Referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:117
+msgid "View Referrals"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:118
+msgid "Search Referrals"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:125
+msgid "Insert into referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:126
+msgid "Uploaded to this referral"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:127
+msgid "Referrals list"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:128
+msgid "Referrals list navigation"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:129
+msgid "Filter referrals list"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:134
+msgid "GoodBids Referral Custom Post Type"
+msgstr ""
+
+#: src/classes/Users/Referrals.php:178
+msgid "Referrer"
+msgstr ""
+
+#. translators: %1$d: User ID, %2$d: Auction ID
+#: src/classes/Users/Referrals.php:369
+msgid "Referral converted for User ID: %1$d for placing a paid bid on Auction ID: %2$d"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:123
+msgid "Submitted referral code is already in use."
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:183
+msgid "The referring user cannot be the same as he referred user."
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:195
+msgid "User already has a referrer. You might want to first delete the original referral."
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:300
+msgid "Are you sure?"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:301
+msgid "You won't be able to revert this!"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:302
+msgid "Yes, delete it!"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:303
+#: build/views/auction-wizard.js:1
+msgid "Cancel"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:304
+msgid "Something went wrong!"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:307
+msgid "Deleted!"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:308
+msgid "The referral has been deleted."
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:360
+#: src/classes/Users/Referrals/Admin.php:369
+msgid "Referred by"
+msgstr ""
+
+#: src/classes/Users/Referrals/Admin.php:361
+msgid "Referral Count"
+msgstr ""
+
+#: views/admin/auctions/details.php:12
+msgid "Auction Details"
+msgstr ""
+
+#: views/admin/auctions/details.php:30
+msgid "Extended"
+msgstr ""
+
+#: views/admin/auctions/details.php:35
+msgid "Extension Window"
+msgstr ""
+
+#: views/admin/auctions/details.php:49
+msgid "Reward Product"
+msgstr ""
+
+#: views/admin/auctions/details.php:59
+msgid "Close Date/Time"
+msgstr ""
+
+#: views/admin/auctions/details.php:63
+msgid "Force Update"
+msgstr ""
+
+#: views/admin/auctions/metrics.php:16
+msgid "Auction Metrics"
+msgstr ""
+
+#: views/admin/auctions/metrics.php:27
+msgid "Available Free Bids"
+msgstr ""
+
+#: views/admin/auctions/metrics.php:33
+msgid "Total Extensions"
+msgstr ""
+
+#: views/admin/fields/callback.php:10
+msgid "Callback was missing or not callable."
+msgstr ""
+
+#: views/admin/fields/html.php:59
+msgid "Could not render field contents."
+msgstr ""
+
+#: views/admin/fields/select.php:47
+msgid "Select One"
+msgstr ""
+
+#: views/admin/fields/unsupported.php:10
+msgid "Unsupported field type."
+msgstr ""
+
+#: views/admin/invoices/details.php:15
+msgid "Auction:"
+msgstr ""
+
+#: views/admin/invoices/details.php:21
+msgid "Total Raised:"
+msgstr ""
+
+#: views/admin/invoices/details.php:24
+msgid "Invoice Amount:"
+msgstr ""
+
+#: views/admin/invoices/details.php:27
+msgid "Please pay by:"
+msgstr ""
+
+#: views/admin/referrals/copy-link-box.php:17
+#: views/admin/referrals/copy-link-btn.php:18
+msgid "Copied!"
+msgstr ""
+
+#: views/admin/referrals/copy-link-box.php:20
+#: views/admin/referrals/copy-link-btn.php:22
+msgid "Your Custom Share Link"
+msgstr ""
+
+#: views/admin/referrals/copy-link-box.php:30
+#: views/admin/referrals/copy-link-box.php:35
+msgid "Copy Link"
+msgstr ""
+
+#: views/admin/referrals/copy-link-btn.php:31
+#: views/admin/referrals/copy-link-btn.php:36
+msgid "Share for free bids"
+msgstr ""
+
+#: views/admin/referrals/referrals.php:19
+msgid "GoodBids Referrals"
+msgstr ""
+
+#: views/admin/referrals/referrals.php:27
+msgid "Referred By"
+msgstr ""
+
+#: views/admin/referrals/referrals.php:41
+msgid "Referral Link"
+msgstr ""
+
+#: views/admin/referrals/referrals.php:51
+msgid "No referrals found."
+msgstr ""
+
+#: views/admin/referrals/referrals.php:73
+msgid "Delete"
+msgstr ""
+
+#: views/admin/referrals/referrals.php:90
+msgid "Manual Referral"
+msgstr ""
+
+#: views/admin/referrals/referrals.php:100
+msgid "Add"
+msgstr ""
+
+#: views/admin/referrals/select-user.php:13
+#: views/admin/referrals/select-user.php:17
+msgid "Search for a user"
+msgstr ""
+
+#: views/admin/referrals/select-user.php:40
+msgid "Search for a user by name or email"
+msgstr ""
+
+#: views/admin/referrals/top-referrers.php:14
+msgid "No Referrals found!"
+msgstr ""
+
+#: views/admin/referrals/top-referrers.php:25
+msgid "Count"
+msgstr ""
+
+#: views/admin/referrals/update-referral-code.php:20
+#: views/admin/referrals/update-referral-code.php:29
+msgid "Referral Code"
+msgstr ""
+
+#: views/admin/referrals/user-referrals.php:16
+msgid "You haven't referred anyone one yet!"
+msgstr ""
+
+#: views/network/dashboard.php:11
+msgid "GoodBids Dashboard"
+msgstr ""
+
+#: views/network/dashboard.php:12
+msgid "Welcome to the GoodBids Dashboard."
+msgstr ""
+
+#: views/network/edit-site-fields.php:12
+#: views/network/nonprofit-details.php:39
+msgid "GoodBids Nonprofit Verification"
+msgstr ""
+
+#: views/network/edit-site-fields.php:17
+msgid "This site has been verified."
+msgstr ""
+
+#: views/network/edit-site-fields.php:22
+msgid "This site is still pending verification."
+msgstr ""
+
+#: views/network/logs.php:36
+msgid "Download"
+msgstr ""
+
+#: views/network/logs.php:73
+msgid "Logs can be found in"
+msgstr ""
+
+#: views/network/logs.php:75
+msgid "NewRelic"
+msgstr ""
+
+#: views/network/nonprofit-details.php:37
+msgid "GoodBids Nonprofit Details"
+msgstr ""
+
+#: views/network/nonprofit-details.php:55
+msgid "Update Details"
+msgstr ""
+
+#: views/network/settings.php:14
+msgid "GoodBids Settings"
+msgstr ""
+
+#: views/network/stripe-customer-data.php:13
+msgid "No Stripe Customer Data"
+msgstr ""
+
+#: views/network/stripe-customer-data.php:18
+msgid "Customer ID:"
+msgstr ""
+
+#: views/network/stripe-customer-data.php:20
+msgid "Customer Email:"
+msgstr ""
+
+#: views/parts/auction.php:31
+msgid "Ending "
+msgstr ""
+
+#: views/parts/auction.php:53
+msgid "Coming "
+msgstr ""
+
+#: views/parts/auction.php:57
+#: views/parts/auction.php:61
+msgid "Coming in "
+msgstr ""
+
+#: views/parts/auctions-grid.php:14
+msgid "No auctions found."
+msgstr ""
+
+#: views/patterns/banner-hero.php:14
+msgid "Lorem ipsum dolor sit amet"
+msgstr ""
+
+#: views/patterns/banner-hero.php:19
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+msgstr ""
+
+#: views/patterns/banner-hero.php:26
+msgid "Lorem Ipsum"
+msgstr ""
+
+#: views/patterns/nonprofit-interest-form.php:17
+msgid "Nice to meet you!"
+msgstr ""
+
+#: views/patterns/nonprofit-interest-form.php:21
+msgid "Share your email below so we can contact you. We usually follow up within two workdays."
+msgstr ""
+
+#: views/patterns/section-sidebar-chapters.php:18
+msgid "This Section"
+msgstr ""
+
+#: views/patterns/section-sidebar-chapters.php:26
+#: views/patterns/section-sidebar-chapters.php:42
+msgid "This Chapter"
+msgstr ""
+
+#: views/patterns/section-sidebar-chapters.php:30
+#: views/patterns/template-about-page.php:66
+msgid "We’re turning charity auctions and fundraising upside down and inside out."
+msgstr ""
+
+#: views/patterns/section-sidebar-chapters.php:34
+msgid "A GOODBIDS positive auction has a great prize, and you can submit bids, but the big difference is that every bid is a non-refundable donation to a charity you care about."
+msgstr ""
+
+#: views/patterns/section-sidebar-chapters.php:38
+msgid "That means that great prizes end up going for really low bids. And charities end up raising more money at the same time."
+msgstr ""
+
+#: views/patterns/section-sidebar-chapters.php:46
+#: views/patterns/template-about-page.php:78
+msgid "All you need to do is find an auction you like and place a bid. The money goes directly to the charity and you’ll get a receipt for your tax deductible donation."
+msgstr ""
+
+#: views/patterns/template-about-page.php:40
+msgid "GOODBIDS is a new project founded by a worldwide team of ruckusmakers. We’re building a tool that connects worthy causes with people who want to have fun supporting them."
+msgstr ""
+
+#: views/patterns/template-about-page.php:44
+msgid "GOODBIDS is free for you to use–the charities pay a fee for the auctions that work, and every penny you bid is transferred directly to the cause you care about."
+msgstr ""
+
+#: views/patterns/template-about-page.php:49
+msgid "Each of us has spent our careers working with important causes, often as volunteers. When Seth Godin, our founder, invented the idea of the positive auction, we knew it was time to offer this tool to non-profits that could benefit from it. The founding team includes our head of partnerships, Anne Marie Cruz, our technical lead, Jasper Croome, and our guru of interaction, Felice Della Gatta. Avaleen Morris leads our non-profit outreach and Jennifer Myers Chua is the guru of prizes. We’re grateful for the support of Automattic, the lead developers of the WordPress universe as well as the warlocks and magicians at Viget."
+msgstr ""
+
+#: views/patterns/template-about-page.php:62
+msgid "Every bid is a donation"
+msgstr ""
+
+#: views/patterns/template-about-page.php:70
+msgid "A GOODBIDS positive auction features a fabulous reward for the winning bidder. The big difference is that EVERY bid is a non-refundable, valued donation to a charity you care about."
+msgstr ""
+
+#: views/patterns/template-about-page.php:74
+msgid "The highest bidder gets a reward, every bidder gets the satisfaction of supporting a good cause, and charities get more contributions and more donors which equals more opportunity to do more good."
+msgstr ""
+
+#: views/patterns/template-about-page.php:98
+msgid "Have questions or want to learn more about GOODBIDS?"
+msgstr ""
+
+#: views/patterns/template-about-page.php:104
+msgid "Visit goodbids.org"
+msgstr ""
+
+#: views/patterns/template-archive-auction.php:18
+msgid "Our Auctions"
+msgstr ""
+
+#: views/patterns/template-auction.php:60
+#: build/views/auction-wizard.js:1
+msgid "About the cause"
+msgstr ""
+
+#: views/patterns/template-auction.php:68
+#: build/views/auction-wizard.js:1
+msgid "Describe the mission and goals of your organization. How does this auction support your cause? Share any specific challenges or opportunities your organization is addressing. Highlight past achievements and how contributions from this auction will make a difference. If you have any videos or images that visually represent your mission, add them here to create a more compelling story."
+msgstr ""
+
+#: views/patterns/template-auction.php:80
+#: build/views/auction-wizard.js:1
+msgid "About the reward"
+msgstr ""
+
+#: views/patterns/template-auction.php:96
+#: build/views/auction-wizard.js:1
+msgid "Provide a detailed description of the auction prize as well as any additional images that might be relevant. Include any unique features, history, or value that make it desirable. If there are multiple items, consider listing each with a brief description. Mention any sponsors or donors if applicable. Help potential bidders understand why they should be excited about winning this reward."
+msgstr ""
+
+#: views/patterns/template-auction.php:104
+msgid "About the sponsor"
+msgstr ""
+
+#: views/patterns/template-auction.php:120
+#: build/views/auction-wizard.js:1
+msgid "Introduce the sponsors behind this auction. Describe their role and contributions toward making this auction possible. How do their values align with the mission of your organization? Feel free to share any relevant background information about the sponsors, including their industry, commitment to social causes, and why they chose to support your organization. If applicable, include logos or images that represent the sponsors, ensuring their contributions are visually acknowledged."
+msgstr ""
+
+#: views/patterns/template-auction.php:128
+#: build/views/auction-wizard.js:1
+msgid "Shipping and other important information"
+msgstr ""
+
+#: views/patterns/template-auction.php:136
+#: build/views/auction-wizard.js:1
+msgid "Outline the shipping process, including any geographical restrictions, estimated delivery times, and handling fees. Specify if local pickup is an option. Include any return policies, warranty information, or terms and conditions related to the auction item."
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Auction total Bids, %3$s: Auction total Raised, %4$s: Site title, %5$s: user Total Bids, %6$s: User Total Donated
+#: views/woocommerce/emails/auction-closed.php:28
+msgid "The %1$s auction has ended with %2$s bid(s) placed and %3$s raised for %4$s. You supported this auction with %5$s bid(s) for a total donation of %6$s."
+msgstr ""
+
+#: views/woocommerce/emails/auction-closed.php:43
+msgid "Check your email or"
+msgstr ""
+
+#: views/woocommerce/emails/auction-closed.php:45
+msgid "visit the auction page"
+msgstr ""
+
+#: views/woocommerce/emails/auction-closed.php:46
+msgid "to see if you won!"
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Start Date
+#: views/woocommerce/emails/auction-is-live-admin.php:29
+msgid "Just letting you know that the %1$s auction for the %2$s GOODBIDS site went live on %3$s."
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:45
+#: views/woocommerce/emails/auction-summary-admin.php:48
+msgid "Scheduled Start"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:58
+#: views/woocommerce/emails/auction-summary-admin.php:61
+msgid "Auction Goal"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:64
+#: views/woocommerce/emails/auction-summary-admin.php:67
+msgid "Expected High Bid"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:69
+#: views/woocommerce/emails/auction-summary-admin.php:72
+msgid "Scheduled End"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:73
+#: views/woocommerce/emails/auction-summary-admin.php:76
+msgid "Bid Extension"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:77
+#: views/woocommerce/emails/auction-summary-admin.php:83
+msgid "Auction Reward"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:82
+#: views/woocommerce/emails/auction-summary-admin.php:88
+msgid "Fair Market Value"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:94
+msgid "The auction will end on"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:96
+msgid "unless a bid is placed within"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:98
+msgid "of the scheduled time. Each subsequent bid will extend the auction length by"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:100
+msgid "We will send you an auction summary when the auction has closed"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:109
+msgid "Keep an eye on"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:111
+msgid "the auction page"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live-admin.php:112
+msgid "for live bidding updates!"
+msgstr ""
+
+#. translators: %1$s: Auction Title
+#: views/woocommerce/emails/auction-is-live.php:32
+msgid "The %1$s auction you are watching is now open for bidding."
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live.php:40
+msgid "Visit the auction"
+msgstr ""
+
+#. translators: %1$s: Site Title, Auction Goal, Reward Product Title
+#: views/woocommerce/emails/auction-is-live.php:45
+msgid "to support %1$s's goal of raising %2$s and place a bid for your chance to win the %3$s!"
+msgstr ""
+
+#. translators: %1$s: Auction Starting Bid
+#: views/woocommerce/emails/auction-is-live.php:59
+msgid "Bidding starts at"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live.php:61
+msgid "and the"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live.php:62
+msgid "first five paid bidders"
+msgstr ""
+
+#: views/woocommerce/emails/auction-is-live.php:63
+msgid "on this auction will earn a Free Bid."
+msgstr ""
+
+#. translators: %1$s: Site Name
+#: views/woocommerce/emails/auction-is-live.php:72
+#: views/woocommerce/emails/auction-outbid.php:40
+msgid "Every GOODBID on this auction is a donation to %1$s."
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Auction Reward, %3$s: Auction End Date
+#: views/woocommerce/emails/auction-outbid.php:28
+#: views/woocommerce/emails/plain/auction-outbid.php:20
+msgid "You’re no longer the highest bidder for the %1$s auction. Visit the auction to place a new bid for your chance to win the %2$s. The auction will end on %3$s if no additional bids are placed."
+msgstr ""
+
+#. translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Reward Claim Deadline Date
+#: views/woocommerce/emails/auction-reward-reminder.php:28
+#: views/woocommerce/emails/plain/auction-reward-reminder.php:20
+msgid "You still need to claim the %1$s you earned on the %2$s auction with %3$s. You have until %4$s to claim your reward."
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Auction end time, %3$s: Auction total Bids, %4$s: Auction total Raised, %5$s: Site name
+#: views/woocommerce/emails/auction-summary-admin.php:30
+#: views/woocommerce/emails/plain/auction-summary-admin.php:27
+msgid "The %1$s GOODBIDS auction ended on %2$s with %3$s placed and %4$s raised for %5$s. Check out the summary below for key auction metrics."
+msgstr ""
+
+#: views/woocommerce/emails/auction-summary-admin.php:96
+#: views/woocommerce/emails/plain/auction-summary-admin.php:98
+msgid "Actual End"
+msgstr ""
+
+#: views/woocommerce/emails/auction-summary-admin.php:116
+msgid "The auction has ended. The winner will be notified by email and will be notified by text. The winner has 40 days to claim their reward. We will send you a confirmation email once the reward has been claimed."
+msgstr ""
+
+#. translators: %1$s: User last bid, %2$s: Auction Title, %3$s: Auction reward title, %4$s: Site title, %5$s days to claim reward
+#: views/woocommerce/emails/auction-winner-confirmation.php:27
+#: views/woocommerce/emails/plain/auction-winner-confirmation.php:22
+msgid "Congratulations! Your %1$s bid was the highest GOODBID for the %2$s auction, and you are the winner. Please claim your %3$s with %4$s within %5$s days."
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Auction total Bids, %3$s: Auction total Raised, %4$s: Site title, %5$s: user Total Bids, %6$s: User Total Donated
+#: views/woocommerce/emails/plain/auction-closed.php:20
+msgid "The %1$s auction has ended with %2$s placed and %3$s raised for %4$s. You supported this auction with %5$s for a total donation of %6$s"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-closed.php:31
+msgid "Check your email or visit the auction page to see if you won!"
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Start Date
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:27
+msgid "Just letting you know that the %1$s auction on the %2$s GOODBIDS site went live on %3$s."
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:35
+#: views/woocommerce/emails/plain/auction-summary-admin.php:37
+msgid "Auction Title:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:40
+#: views/woocommerce/emails/plain/auction-summary-admin.php:42
+msgid "Scheduled Start:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:45
+#: views/woocommerce/emails/plain/auction-summary-admin.php:47
+msgid "Starting Bid:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:50
+#: views/woocommerce/emails/plain/auction-summary-admin.php:52
+msgid "Bid Increment:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:56
+#: views/woocommerce/emails/plain/auction-summary-admin.php:58
+msgid "Auction Goal:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:63
+#: views/woocommerce/emails/plain/auction-summary-admin.php:65
+msgid "Expected High Bid:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:69
+#: views/woocommerce/emails/plain/auction-summary-admin.php:71
+msgid "Scheduled End:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:74
+#: views/woocommerce/emails/plain/auction-summary-admin.php:76
+msgid "Bid Extension:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:79
+#: views/woocommerce/emails/plain/auction-summary-admin.php:81
+msgid "Auction Reward:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:84
+#: views/woocommerce/emails/plain/auction-summary-admin.php:86
+msgid "Reward Type:"
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:90
+#: views/woocommerce/emails/plain/auction-summary-admin.php:92
+msgid "Fair Market Value:"
+msgstr ""
+
+#. translators: %1$s: Auction Start Date/Time, %2$s: Auction Bid Extension, %3$s: Auction Bid Extension
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:98
+msgid "The auction will end on %1$s unless a bid is placed within %2$s of the scheduled time. Each subsequent bid will extend the auction length by %3$s minutes. We will send you an auction summary when the auction has closed."
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-is-live-admin.php:106
+msgid "Keep an eye on the auction page for live bidding updates!"
+msgstr ""
+
+#. translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL
+#: views/woocommerce/emails/plain/auction-is-live.php:27
+msgid "The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!"
+msgstr ""
+
+#. translators: %1$s: Auction Start Date/Time
+#: views/woocommerce/emails/plain/auction-is-live.php:38
+msgid "Bidding starts at %1$s and the first five paid bidders on this auction will earn a Free Bid."
+msgstr ""
+
+#. translators: %1$s: Site Name
+#: views/woocommerce/emails/plain/auction-is-live.php:46
+#: views/woocommerce/emails/plain/auction-outbid.php:30
+msgid "Every GoodBid on this auction is a donation to %1$s."
+msgstr ""
+
+#: views/woocommerce/emails/plain/auction-summary-admin.php:118
+msgid "The auction has ended. The auctioneer has chosen a winner. The winner will be notified by email and will be notified by text. The winner has 40 days to claim their reward. We will send you a confirmation email once the reward has been claimed."
+msgstr ""
+
+#: views/woocommerce/myaccount/auctions-table.php:22
+msgid "Your Bids"
+msgstr ""
+
+#: views/woocommerce/myaccount/auctions-table.php:23
+msgid "Your Donation"
+msgstr ""
+
+#: views/woocommerce/myaccount/auctions-table.php:24
+#: views/woocommerce/myaccount/auctions-table.php:61
+msgid "High Bidder"
+msgstr ""
+
+#: views/woocommerce/myaccount/auctions-table.php:25
+#: views/woocommerce/myaccount/my-rewards.php:43
+#: views/woocommerce/myaccount/my-rewards.php:85
+msgid "Action"
+msgstr ""
+
+#: views/woocommerce/myaccount/auctions-table.php:58
+msgid "Donated"
+msgstr ""
+
+#: views/woocommerce/myaccount/auctions-table.php:62
+msgid "No"
+msgstr ""
+
+#: views/woocommerce/myaccount/dashboard-auctions.php:17
+msgid "Get back into the action!"
+msgstr ""
+
+#: views/woocommerce/myaccount/dashboard-header.php:20
+#: views/woocommerce/myaccount/orders-header.php:23
+msgid "Nonprofits Supported"
+msgstr ""
+
+#: views/woocommerce/myaccount/dashboard-header.php:28
+msgid "Earn more"
+msgstr ""
+
+#: views/woocommerce/myaccount/dashboard.php:30
+msgid "Latest Activity"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:14
+msgid "Account Details"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:21
+msgid "First name"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:25
+msgid "Last name"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:31
+msgid "Display name"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:32
+msgid "This will be how your name will be displayed in the account section and in reviews"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:37
+msgid "Email address"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:42
+msgid "Password change"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:45
+msgid "Current password (leave blank to leave unchanged)"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:49
+msgid "New password (leave blank to leave unchanged)"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:53
+msgid "Confirm new password"
+msgstr ""
+
+#: views/woocommerce/myaccount/form-edit-account.php:63
+msgid "Save changes"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids-header.php:15
+msgid "Available"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids-header.php:20
+#: views/woocommerce/myaccount/free-bids.php:28
+#: views/woocommerce/myaccount/free-bids.php:41
+#: views/woocommerce/myaccount/my-rewards-header.php:16
+msgid "Earned"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids-header.php:25
+#: views/woocommerce/myaccount/free-bids.php:31
+#: views/woocommerce/myaccount/free-bids.php:51
+msgid "Used"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids.php:17
+msgid "You have not earned any free bids yet."
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids.php:21
+msgid "Free Bids Earned"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids.php:38
+msgid "Free Bid #"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids.php:54
+msgid "on"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids.php:65
+#: views/woocommerce/myaccount/my-referral-box.php:11
+msgid "Invite friends, bid for free!"
+msgstr ""
+
+#: views/woocommerce/myaccount/free-bids.php:66
+#: views/woocommerce/myaccount/my-referral-box.php:12
+msgid "Earn a free bid for each person who signs up and donates through your link, usable in any GOODBIDS network live auction."
+msgstr ""
+
+#: views/woocommerce/myaccount/my-auctions-header.php:19
+msgid "Live Auctions"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-auctions-header.php:24
+msgid "Auctions Won"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-auctions.php:17
+#: views/woocommerce/myaccount/orders.php:139
+msgid "You have not bid on any auctions yet."
+msgstr ""
+
+#: views/woocommerce/myaccount/my-referrals.php:19
+msgid "You have not made any referrals yet."
+msgstr ""
+
+#: views/woocommerce/myaccount/my-referrals.php:25
+msgid "Referral Username"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-referrals.php:26
+#: views/woocommerce/myaccount/my-referrals.php:44
+msgid "Referral Date"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-referrals.php:38
+msgid "Placed Bid!"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-referrals.php:41
+msgid "Referral Name"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards-header.php:21
+msgid "Claimed"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards-header.php:26
+msgid "Unclaimed"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards.php:39
+#: views/woocommerce/myaccount/my-rewards.php:55
+msgid "Reward"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards.php:42
+#: views/woocommerce/myaccount/my-rewards.php:79
+#: views/woocommerce/myaccount/orders.php:43
+msgid "Date"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards.php:142
+msgid "Check out the"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards.php:144
+msgid "Auctions page"
+msgstr ""
+
+#: views/woocommerce/myaccount/my-rewards.php:145
+msgid "to find auctions you've recently won and claim your reward!"
+msgstr ""
+
+#: views/woocommerce/myaccount/orders.php:34
+msgid "Donation History"
+msgstr ""
+
+#: views/woocommerce/myaccount/orders.php:40
+msgid "Donation"
+msgstr ""
+
+#: views/woocommerce/myaccount/orders.php:42
+msgid "Total"
+msgstr ""
+
+#: views/woocommerce/myaccount/payment-methods.php:20
+msgid "Payment Methods"
+msgstr ""
+
+#: build/blocks/bidding/index.js:1
+#: build/blocks/bidding/view.js:1
+msgid "GOODBID"
+msgstr ""
+
+#: build/blocks/bidding/view.js:1
+msgid "Now"
+msgstr ""
+
+#: build/blocks/bidding/view.js:1
+msgid "Congratulations! Your reward has been claimed."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Let’s build an auction!"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Before you begin, we advise having your auction's start and end times, bidding parameters, and fundraising goals, as well as your prize details, including descriptions, and images ready. You’ll have the opportunity to preview your page before publishing at the end."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Pick up where you left off?"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Continue creating"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Start a new auction"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Get started"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Invalid value. Must match format 0.00"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Click to upload"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Select a single image as the main image for this auction."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Gallery Images"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Upload more"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "If you do not select a featured image, the first image in the gallery will be used as the main product image."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Add additional images to the auction gallery. You can upload multiple images for your product. The \"Featured Image\" image will be used as the main product image."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Title"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "E.g. Bob Dylan’s satin 1970s tour jacket"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "This is the full name of the product or experience you're auctioning."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Fair market value"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "This is for internal purposes only and is not shown to bidders. If you'd like to share an estimated retail value for the reward, add it on the next step."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Reward type"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Physical"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Digital or Experience"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "lbs"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Weight"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "in"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Length"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Width"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Height"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Shipping class"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "If you've added optional shipping classes for heavy items, etc. you can select one here to override the base shipping cost."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "No Shipping Class"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "How to redeem"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "We will share this information with the winner when they will claim the reward."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Back"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Step"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "/3"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction reward"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Title is required"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Fair Market Value is required"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Purchase note is required for digital products and experiences"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Save and Continue"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Start date must be in the future"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Start date must be before end date"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "End date must be in the future"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "End date must be after start date"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "SCHEDULE"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction starts"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction ends"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "CONTENT"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction title"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Leave blank to default to reward title."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Description"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "This description will appear beneath the auction title on your auction page. Keep it concise; you'll be able to provide more detailed information about your item using the auction page builder before publishing."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "BIDS"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Bid increment"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "min"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Bid extension window"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "The auction will extend beyond its scheduled end time with each new bid, based on the bid extension window setting."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "FUNDRAISING INFO (OPTIONAL)"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "While these fields are optional, we encourage you to fill them out as this information will be displayed on the auction page, potentially boosting donations."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction goal"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Exp. high bid"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Estimated Retail Value"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction details"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Start date is required"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "End date is required"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Bid increment is required"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Bid extension is required"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Save and continue"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "DETAILS"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Start"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "End"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Starting bid"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Bid extension"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "minutes"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "None"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Est. value"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Edit auction"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Creating auction"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Auction created!"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "REWARD"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Product category"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Size"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Redemption details"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Edit reward"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Creating reward"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Reward created!"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Error creating product. Check your product details."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Error creating auction. Check your auction details."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Review your auction settings"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Almost there!"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Your auction is set up! You can now edit your auction page to really make it shine! Consider adding additional content to your auction page to get potential bidders interested. Once you have completed your edits, publish your auction!"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Customize auction page"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Loading..."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "We couldn't make a connection. Try again later or reach out to support if the issue persists."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Product updated!"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Your product has been updated! Continue customizing your auction page to make it your own."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Return to auction page"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Error updating your reward. Check your product details."
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Saving your changes"
+msgstr ""
+
+#: build/views/auction-wizard.js:1
+msgid "Save and Update"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Welcome to GOODBIDS!"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Thanks for joining the GOODBIDS network. We’re so happy to have you! To get started with your new Nonprofit site, we need you to complete just a few required onboarding steps. First, click the button below to automate the setup for your WooCommerce store. It’s that easy!"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Create my Store"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Set up payments"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Next, you’ll need to to create a Stripe account or connect an existing one to accept donations for auction bids. Click the button below, then click \"Create or connect an account\""
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Connect Stripe"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Activate Accessibility Checker Pro"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "All GOODBIDS Nonprofit sites must meet web accessibility guidelines. The Accessibility Checker Pro plugin is required for your site and will help you review your site and become compliant with accessibility guidelines. Click the button below to activate the Accessibility Checker Pro plugin for your Nonprofit Site. If you have a personal license for Accessibility Checker Pro, you can enter it on the page to activate the plugin. If not, don't fret, just leave the license field blank and click the Activate License button, and we'll handle it from there!"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Activate Plugin"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Onboarding complete"
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Hooray! We’ve confirmed that you set up payments. You’ve now completed the required steps for onboarding and you’re ready to start customizing your site. Click the button below to turn on the lights and see our site setup dashboard, which will walk you through all the next steps to build out and launch your site. "
+msgstr ""
+
+#: build/views/nonprofit-onboarding.js:1
+msgid "Continue to site guide"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Plan an Auction"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Create your first auction using the guided setup wizard, then build and publish the Auction page. Additional auctions can be created in the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "section"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Get Started"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Monitor Auctions"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "You can find key metrics for your Auctions, including Total Raised and High Bid, on the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "page. Note that some Auction information is uneditable after an Auction goes live and will require a GOODBIDS Admin override to update."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "See Auction Metrics"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Track Bids and Rewards"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Visit the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "WooCommerce > Analytics > Categories"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "tab to access information about individual Bids placed on Auctions and Rewards claimed. The Bid Category shows a breakdown of Bids per Auction and total donation revenue (Net Sales). The Rewards Category reports both claimed and unclaimed Rewards for Auctions."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "See Order Metrics"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Plan and Monitor"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Before you launch your site, be sure to confirm your"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "site timezone"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid ", update your"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "homepage"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid ", and review the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "site-wide accessibility report"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "If you plan to auction physical products, you will also need to configure"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Review the Nonprofit Site Guide for additional instructions."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Launch Site"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Launching your site"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Site Launched!"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Congratulations, your GOODBIDS Nonprofit Site is live!"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Return to the guide"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Error Launching Site"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Please refer to the Nonprofit Site Guide for details on managing your site, planning auctions, and getting the most out of the GOODBIDS network!"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Your site is inactive. Contact GOODBIDS support to reactivate your site."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "General Settings"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Review and update your site name, tagline, and timezone from the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Settings > General"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "page. Additional site settings were updated on your behalf to meet GOODBIDS site requirements and will not need to be reviewed."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Update Site Settings"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Manage Users"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Grant site access to additional users so they can help edit the site and build auctions. Users can be created with a Site Admin or Junior Site Admin role. New users will receive an account activation email, and will need to update their temporary password and enable two-factor authentication to access your site."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Add New Users"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Moderate Comments"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "If you choose to enable comments on your Auction pages, you can view and moderate them from the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "tab. You will also be emailed when a comment requires moderation. You can manage your comment moderation settings in the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "tab."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "See Comments"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "tab to access Auction and Tax invoices payable to GOODBIDS. Once an Invoice has been generated, you can click “Pay Now” to pay the invoice. Invoice emails will be sent to your Finance Contact, or the Primary Contact on your Nonprofit Site if a Finance Contact was not included."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "See Invoices"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Site Admin"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Manage Shipping"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "To support auctions for physical products, you will need to configure shipping for your WooCommerce store. Create shipping zones for the region(s) you’d like to ship to and shipping method(s) offered. Free shipping, flat rate, and local pickup shipping methods are available. You can also use shipping classes to customize the shipping rates for different groups of products, such as heavy items that require higher postage fees."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Note: Flat rate shipping zones must be taxable."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Add Shipping Zones"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Access Revenue Report"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "WooCommerce > Analytics > Revenue"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "tab to see how much you’ve raised on the GOODBIDS network. The"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Net Sales"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "chart reflects all donation revenue from auctions. You can also see Shipping and Taxes charges for Reward orders."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "See Revenue Metrics"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Shipping Labels"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Connect your site to WordPress.com to access automated shipping label printing for Auction rewards. Click the button below, then click “Connect” in the WooCommerce Shipping & Tax promo block."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Connect to WooCommerce"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Ecommerce"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Site Appearance"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout. Your style preferences can be modified in the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Appearance > Editor section."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Choose a Style"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Upload Logo"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Upload a logo with square dimensions no less than 48x48px by navigating to"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Design > Patterns > Template Parts > Header"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "in the Appearance Editor. Once there, click on the Header to start editing the template. Then click the Logo area to access the component. Select the \"Add a Site Logo\" upload button to the left of the site title to open the Media Library. Once you have successfully added your logo, click Save to update the template."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Modify Site Header"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Customize Homepage content"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Your homepage includes some placeholder content to get started! Customize your homepage by adding a Title, Description, Video, and additional information about your Nonprofit. Use the Block Editor by hitting the \"+\" icon within the page area to add additional content blocks as needed."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Modify Front Page "
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Advanced WordPress users can take advantage of the many opportunities to further personalize your GOODBIDS Nonprofit Site."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Add and Edit Custom Pages"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "You can create additional site pages in the"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "section to highlight your cause. Click Add New Page to get started, and choose from any of the available Patterns and Page Blocks."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Go to Pages"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Save Reusable Patterns"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Manage what patterns are available when editing content and auction pages on your site. "
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Go to Patterns"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Confirm Site Accessibility"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "All GOODBIDS Nonprofit sites are required to meet accessibility requirements. Review the site-wide accessibility report and resolve any issues flagged on your content and auction pages."
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Run Accessibility Checker"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Design and Content"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Customize Homepage"
+msgstr ""
+
+#: build/views/nonprofit-setup-guide.js:1
+msgid "Site Setup"
+msgstr ""
+
+#: blocks/all-auctions/block.json
+msgctxt "block title"
+msgid "All Auctions"
+msgstr ""
+
+#: blocks/all-auctions/block.json
+msgctxt "block description"
+msgid "Displays all GoodBids Auctions."
+msgstr ""
+
+#: blocks/all-auctions/block.json
+msgctxt "block keyword"
+msgid "all auctions"
+msgstr ""
+
+#: blocks/all-auctions/block.json
+#: blocks/featured-auctions/block.json
+msgctxt "block keyword"
+msgid "auctions"
+msgstr ""
+
+#: blocks/all-auctions/block.json
+#: blocks/featured-auctions/block.json
+msgctxt "block keyword"
+msgid "listing"
+msgstr ""
+
+#: blocks/all-auctions/block.json
+#: blocks/featured-auctions/block.json
+msgctxt "block keyword"
+msgid "archive"
+msgstr ""
+
+#: blocks/all-auctions/block.json
+#: blocks/featured-auctions/block.json
+msgctxt "block keyword"
+msgid "index"
+msgstr ""
+
+#: blocks/auction-metrics-general/block.json
+msgctxt "block title"
+msgid "Auction Metrics (General)"
+msgstr ""
+
+#: blocks/auction-metrics-general/block.json
+msgctxt "block description"
+msgid "Displays the general Auction metrics."
+msgstr ""
+
+#: blocks/auction-metrics-general/block.json
+#: blocks/authentication/block.json
+#: blocks/reward-product-gallery/block.json
+msgctxt "block keyword"
+msgid "custom"
+msgstr ""
+
+#: blocks/auction-metrics-general/block.json
+msgctxt "block keyword"
+msgid "details"
+msgstr ""
+
+#: blocks/auction-metrics-general/block.json
+msgctxt "block keyword"
+msgid "stats"
+msgstr ""
+
+#: blocks/auction-metrics-general/block.json
+#: blocks/auction-share/block.json
+#: blocks/auction-watchers/block.json
+#: blocks/reward-product-gallery/block.json
+#: blocks/watch-auction/block.json
+msgctxt "block keyword"
+msgid "auction"
+msgstr ""
+
+#: blocks/auction-share/block.json
+msgctxt "block title"
+msgid "Auction Share"
+msgstr ""
+
+#: blocks/auction-share/block.json
+msgctxt "block description"
+msgid "Share the current Auction."
+msgstr ""
+
+#: blocks/auction-share/block.json
+msgctxt "block keyword"
+msgid "free"
+msgstr ""
+
+#: blocks/auction-share/block.json
+msgctxt "block keyword"
+msgid "share"
+msgstr ""
+
+#: blocks/auction-share/block.json
+#: blocks/auction-watchers/block.json
+#: blocks/watch-auction/block.json
+msgctxt "block keyword"
+msgid "goodbids"
+msgstr ""
+
+#: blocks/auction-watchers/block.json
+msgctxt "block title"
+msgid "Auction Watchers"
+msgstr ""
+
+#: blocks/auction-watchers/block.json
+msgctxt "block description"
+msgid "Show the number of watchers for an Auction."
+msgstr ""
+
+#: blocks/auction-watchers/block.json
+#: blocks/watch-auction/block.json
+msgctxt "block keyword"
+msgid "follow"
+msgstr ""
+
+#: blocks/auction-watchers/block.json
+#: blocks/watch-auction/block.json
+msgctxt "block keyword"
+msgid "watch"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block title"
+msgid "User Authentication Form"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block description"
+msgid "Displays a user login and registration form for GoodBids."
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "sign"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "up"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "register"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "registration"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "form"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "users"
+msgstr ""
+
+#: blocks/authentication/block.json
+msgctxt "block keyword"
+msgid "authentication"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block title"
+msgid "Bid Now Button"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block description"
+msgid "Displays a bid now button for the current Auction."
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block keyword"
+msgid "bid"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block keyword"
+msgid "purchase"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block keyword"
+msgid "donate"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block keyword"
+msgid "button"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block keyword"
+msgid "submit"
+msgstr ""
+
+#: blocks/bid-now/block.json
+msgctxt "block keyword"
+msgid "cart"
+msgstr ""
+
+#: blocks/featured-auctions/block.json
+msgctxt "block title"
+msgid "Featured Auctions"
+msgstr ""
+
+#: blocks/featured-auctions/block.json
+msgctxt "block description"
+msgid "Displays the featured GoodBids Auctions."
+msgstr ""
+
+#: blocks/featured-auctions/block.json
+msgctxt "block keyword"
+msgid "featured auctions"
+msgstr ""
+
+#: blocks/featured-auctions/block.json
+msgctxt "block keyword"
+msgid "top"
+msgstr ""
+
+#: blocks/main-footer/block.json
+msgctxt "block title"
+msgid "Main Footer"
+msgstr ""
+
+#: blocks/main-footer/block.json
+msgctxt "block description"
+msgid "Displays the main site footer"
+msgstr ""
+
+#: blocks/reward-product-gallery/block.json
+msgctxt "block title"
+msgid "Reward Product Gallery"
+msgstr ""
+
+#: blocks/reward-product-gallery/block.json
+msgctxt "block description"
+msgid "Displays the reward product gallery images"
+msgstr ""
+
+#: blocks/reward-product-gallery/block.json
+msgctxt "block keyword"
+msgid "gallery"
+msgstr ""
+
+#: blocks/reward-product-gallery/block.json
+msgctxt "block keyword"
+msgid "product"
+msgstr ""
+
+#: blocks/reward-product-gallery/block.json
+msgctxt "block keyword"
+msgid "reward"
+msgstr ""
+
+#: blocks/site-directory/block.json
+msgctxt "block title"
+msgid "Site Directory"
+msgstr ""
+
+#: blocks/site-directory/block.json
+msgctxt "block description"
+msgid "Displays a list of all the Nonprofits Sites."
+msgstr ""
+
+#: blocks/site-directory/block.json
+msgctxt "block keyword"
+msgid "nonprofits"
+msgstr ""
+
+#: blocks/site-directory/block.json
+msgctxt "block keyword"
+msgid "home"
+msgstr ""
+
+#: blocks/site-directory/block.json
+msgctxt "block keyword"
+msgid "list"
+msgstr ""
+
+#: blocks/watch-auction/block.json
+msgctxt "block title"
+msgid "Watch Auction"
+msgstr ""
+
+#: blocks/watch-auction/block.json
+msgctxt "block description"
+msgid "Control for toggling watching Auctions."
+msgstr ""

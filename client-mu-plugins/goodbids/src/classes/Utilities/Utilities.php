@@ -160,4 +160,77 @@ class Utilities {
 	public function display_admin_info( string $message, bool $is_dismissible = true, bool $network = false ): void {
 		$this->display_admin_notice( $message, $is_dismissible, $network );
 	}
+
+	/**
+	 * Displays a custom Admin Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice
+	 * @param bool   $network
+	 *
+	 * @return void
+	 */
+	public function display_admin_custom( string $notice, bool $network = false ): void {
+		$hook = $network ? 'network_admin_notices' : 'admin_notices';
+		add_action(
+			$hook,
+			function() use ( $notice ) {
+				echo wp_kses_post( $notice );
+			}
+		);
+	}
+
+	/**
+	 * Disable HyperDB For the remainder of the current request.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function disable_hyperdb_temporarily(): void {
+		goodbids()->woocommerce->coupons->hyperdb_enabled = false;
+	}
+
+	/**
+	 * Helper for get_page_by_path
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $path
+	 * @param string $output
+	 * @param string $post_type
+	 *
+	 * @return mixed
+	 */
+	public function get_page_by_path( string $path, string $output = OBJECT, string $post_type = 'page' ): mixed {
+		if ( function_exists( 'wpcom_vip_get_page_by_path' ) ) {
+			return wpcom_vip_get_page_by_path( $path, $output, $post_type );
+		}
+
+		return get_page_by_path( $path, $output, $post_type ); // phpcs:ignore
+	}
+
+	/**
+	 * Check if the context inside the Network Admin is the Main site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function network_is_main_site(): bool {
+		if ( ! is_network_admin() ) {
+			return is_main_site();
+		}
+
+		if ( empty( $_GET['id'] ) ) { // phpcs:ignore
+			return false;
+		}
+
+		if ( intval( sanitize_text_field( $_GET['id'] ) ) !== get_main_site_id() ) { // phpcs:ignore
+			return false;
+		}
+
+		return true;
+	}
 }

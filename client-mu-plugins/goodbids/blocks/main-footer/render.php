@@ -11,6 +11,7 @@
 $main_footer  = new GoodBids\Blocks\MainFooter( $block );
 $terms_link   = goodbids()->sites->get_terms_conditions_link();
 $privacy_link = goodbids()->sites->get_privacy_policy_link();
+$issue_link   = goodbids()->sites->get_report_issue_link()
 ?>
 <section <?php block_attr( $block, 'wp-block-group alignwide has-background has-global-padding is-layout-constrained wp-block-group-is-layout-constrained' ); ?>>
 	<div class="wp-block-group alignwide has-global-padding is-layout-constrained wp-block-group-is-layout-constrained">
@@ -29,6 +30,12 @@ $privacy_link = goodbids()->sites->get_privacy_policy_link();
 				<?php if ( $privacy_link ) : ?>
 					<p>
 						<?php echo wp_kses_post( $privacy_link ); ?>
+					</p>
+				<?php endif; ?>
+
+				<?php if ( $issue_link ) : ?>
+					<p>
+						<?php echo wp_kses_post( $issue_link ); ?>
 					</p>
 				<?php endif; ?>
 			</div>

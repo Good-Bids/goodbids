@@ -55,10 +55,14 @@
 		"vlucas/phpdotenv": "^5.5",
 		"wpackagist-plugin/accessibility-checker": "^1.9",
 		"wpackagist-plugin/svg-support": "^2.5",
+		"wpackagist-plugin/user-role-editor": "^4.64",
 		"wpackagist-plugin/user-switching": "^1.7",
 		"wpackagist-plugin/woocommerce": "^8.6",
-		"wpackagist-plugin/woocommerce-gateway-stripe": "^7.9",
-		"wpackagist-plugin/woocommerce-services": "^2.4",
+		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.0",
+		"wpackagist-plugin/woocommerce-services": "^2.5",
+		"wpackagist-plugin/wp-mail-log": "^1.1",
+		"wpackagist-plugin/wp-mail-smtp": "^4.0",
+		"wpackagist-plugin/zapier": "^1.0",
 		"wpengine/advanced-custom-fields-pro": "^6.2"
 	},
 	"require-dev": {

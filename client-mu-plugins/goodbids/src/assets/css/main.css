@@ -34,6 +34,6 @@
 		> .wp-block-button__link:not(.has-text-color, .has-background):hover,
 	.wp-block-button.is-style-outline
 		> .wp-block-button__link:not(.has-text-color, .has-background):focus {
-		@apply bg-contrast-3 text-contrast border-contrast-3;
+		@apply border-contrast-3 bg-contrast-3 text-contrast;
 	}
 }

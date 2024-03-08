@@ -1,208 +1,69 @@
-import { Button } from '../../../components/button';
-import { useCreateAuction } from '../api/create-auction';
-import { useCreateProduct } from '../api/create-product';
-import { ProductCategories } from '../api/product-categories';
-import { ShippingClasses } from '../api/shipping-classes';
-import { useUpdateAuctionContent } from '../api/update-auction-content';
+import { useGetProductCategories } from '../api/get-product-categories';
+import { useGetShippingClasses } from '../api/get-shipping-classes';
 import { useAuctionWizardState } from '../store';
-import { Auction } from './auction';
-import { ReviewWrapper } from './review-wrapper';
-import { RewardProduct } from './reward-product';
-import { __ } from '@wordpress/i18n';
+import { StartStep } from './start';
+import { ProductStep } from './product';
+import { AuctionStep } from './auction';
+import { ReviewStep } from './review';
+import { FinishStep } from './finish';
+import { Card } from '../../../components/card';
+import { Loading } from '../components/loading';
+import { Error } from '../components/error';
 
-type CreateScreenProps = {
-	shippingClasses: ShippingClasses;
-	productCategories: ProductCategories;
-};
-
-export function CreateScreen({
-	shippingClasses,
-	productCategories,
-}: CreateScreenProps) {
-	const {
-		product,
-		auction,
-		setAuctionId,
-		setStep,
-		clearStore,
-		setAuctionError,
-		setProductError,
-	} = useAuctionWizardState();
-
-	const createProduct = useCreateProduct({
-		onSuccess: (data) => {
-			handleAuctionSubmit(data.id);
-		},
-		onError: () => {
-			setStep('product');
-			setProductError(
-				__(
-					'Error creating product. Check your product details.',
-					'goodbids',
-				),
-			);
-		},
-	});
-
-	// We need to create the auction, then, using the auction id,
-	// update the auction content with the appropriate id
-	const createAuction = useCreateAuction({
-		onSuccess: (data) => {
-			handleAuctionContentUpdate(data.id);
-		},
-		onError: () => {
-			setStep('auction');
-			setAuctionError(
-				__(
-					'Error creating auction. Check your auction details.',
-					'goodbids',
-				),
-			);
-		},
-	});
-
-	const updateAuctionContent = useUpdateAuctionContent({
-		onSuccess: (data) => {
-			completeAuctionWizard(data.id);
-		},
-		onError: () => {
-			setStep('auction');
-			setAuctionError(
-				__(
-					'Error creating auction. Check your auction details.',
-					'goodbids',
-				),
-			);
-		},
-	});
-
-	const handleSubmitStart = () => {
-		const category = productCategories?.find(
-			(category) => category.slug === 'rewards',
-		);
-
-		const images = product.productImage
-			? [{ src: product.productImage.value.src }].concat(
-					product.productGallery.map((image) => {
-						return { src: image.value.src };
-					}),
-				)
-			: product.productGallery.map((image) => {
-					return { src: image.value.src };
-				});
-
-		/* TODO: Figure out local image upload
-
-		 	Current Error:
-		 	"Error getting remote image http://turtles.goodbids.vipdev.lndo.site/wp-content/uploads/sites/3/2024/02/monkeys-6.png. Error: cURL error 7: Failed to connect to turtles.goodbids.vipdev.lndo.site port 80 after 37 ms: Connection refused"
-		*/
-		if (process.env.NODE_ENV === 'development') {
-			console.log(
-				'Images cannot be uploaded in development mode. Please use the default product creation form to add images.',
-			);
-		}
-
-		const base = {
-			name: product.name.value,
-			regular_price: product.regularPrice.value,
-			images: process.env.NODE_ENV === 'development' ? [] : images,
-			categories: [{ id: category!.id }],
-		};
-
-		if (product.productType.value === 'physical') {
-			createProduct.mutate({
-				...base,
-				type: 'physical',
-				weight: product.weight.value,
-				dimensions: {
-					length: product.length.value,
-					width: product.width.value,
-					height: product.height.value,
-				},
-				shipping_class: product.shippingClass.value,
-			});
-		} else {
-			createProduct.mutate({
-				...base,
-				type: 'non-physical',
-				purchase_note: product.purchaseNote.value,
-			});
-		}
-	};
-
-	const handleAuctionSubmit = (id: number) => {
-		createAuction.mutate({
-			title: product.name.value,
-			acf: {
-				auction_start: auction.startDate.value,
-				auction_end: auction.endDate.value,
-				bid_extension: {
-					minutes: parseInt(auction.bidExtensionMinutes.value, 10),
-					seconds: parseInt(auction.bidExtensionSeconds.value, 10),
-				},
-				auction_product: id,
-				estimated_value:
-					parseInt(auction.estimatedRetailValue.value, 10) || null,
-				bid_increment: parseInt(auction.bidIncrement.value, 10),
-				starting_bid: parseInt(auction.startingBid.value, 10),
-				auction_goal: parseInt(auction.auctionGoal.value, 10) || null,
-				expected_high_bid:
-					parseInt(auction.expectedHighBid.value, 10) || null,
-			},
-		});
-	};
-
-	const handleAuctionContentUpdate = (id: number) => {
-		updateAuctionContent.mutate(id);
-	};
-
-	const completeAuctionWizard = (id: number) => {
-		setAuctionId(id);
-		clearStore();
-		setStep('finish');
-	};
-
+export function Create() {
 	return (
-		<div className="w-full flex flex-col items-center py-10 gap-2">
-			<h1 className="text-6xl font-bold text-admin-main m-0">
-				{__('Almost there!', 'goodbids')}
-			</h1>
-
-			<div className="max-w-xl">
-				<p className="text-admin-content">
-					{__(
-						'Take a moment to review your reward product and auction!',
-						'goodbids',
-					)}
-				</p>
-			</div>
-
-			{createProduct.status === 'error' && (
-				<span className="text-error-bg text-admin-content">
-					{__('Error creating product', 'goodbids')}
-				</span>
-			)}
-
-			<div className="flex gap-4 items-start w-full justify-center">
-				<ReviewWrapper>
-					<RewardProduct
-						shippingClasses={shippingClasses}
-						status={createProduct.status}
-					/>
-				</ReviewWrapper>
-				<ReviewWrapper>
-					<Auction
-						createStatus={createAuction.status}
-						updateStatus={updateAuctionContent.status}
-					/>
-				</ReviewWrapper>
-			</div>
-
-			<div className="pt-4">
-				<Button variant="solid" onClick={handleSubmitStart}>
-					{__('Save and Complete', 'goodbids')}
-				</Button>
-			</div>
+		<div className="flex w-full justify-center pt-12">
+			<Card>
+				<CreateContent />
+			</Card>
 		</div>
 	);
+}
+
+export function CreateContent() {
+	const { step } = useAuctionWizardState();
+
+	const shippingClasses = useGetShippingClasses();
+	const productCategories = useGetProductCategories();
+
+	const loading =
+		shippingClasses.status === 'pending' ||
+		productCategories.status === 'pending';
+
+	const error =
+		shippingClasses.status === 'error' ||
+		productCategories.status === 'error';
+
+	if (loading) {
+		return <Loading />;
+	}
+
+	if (error) {
+		return <Error />;
+	}
+
+	if (step === 'start') {
+		return <StartStep />;
+	}
+
+	if (step === 'product') {
+		return <ProductStep shippingClasses={shippingClasses.data} />;
+	}
+
+	if (step === 'auction') {
+		return <AuctionStep />;
+	}
+
+	if (step === 'review') {
+		return (
+			<ReviewStep
+				shippingClasses={shippingClasses.data}
+				productCategories={productCategories.data}
+			/>
+		);
+	}
+
+	if (step === 'finish') {
+		return <FinishStep />;
+	}
 }

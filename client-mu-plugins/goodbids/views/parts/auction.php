@@ -30,13 +30,15 @@ if ( $auction->has_started() ) {
 
 	$time = __( 'Ending ', 'goodbids' ) . $auction->get_end_date_time( 'M d' );
 
-	if ( $remaining_time->h < 1 ) {
-		$time_class .= 'text-red-500';
-		$clock_svg   = true;
-		$time        = $remaining_time->format( '-%im' );
-	} elseif ( $remaining_time->d < 1 ) {
+
+	if ( $remaining_time->d < 1 && $remaining_time->h >= 1 ) {
 		$clock_svg = true;
-		$time      = $remaining_time->format( '-%hh %im' );
+		$time      = $remaining_time->format( '%hh %im' );
+	}
+	if ( $remaining_time->d < 1 && $remaining_time->h < 1 ) {
+		$time_class .= 'text-gb-red-500';
+		$clock_svg   = true;
+		$time        = $remaining_time->format( '%im' );
 	}
 } else {
 	try {
@@ -45,16 +47,18 @@ if ( $auction->has_started() ) {
 		Log::error( $e->getMessage() );
 		$start_date = $auction->get_start_date_time();
 	}
+
 	$remaining_time = $current_date->diff( $start_date );
 
 	$time = __( 'Coming ', 'goodbids' ) . $auction->get_start_date_time( 'M d' );
 
-	if ( $remaining_time->h < 1 ) {
-		$clock_svg = true;
-		$time      = __( 'Coming in ', 'goodbids' ) . $remaining_time->format( '%im' );
-	} elseif ( $remaining_time->d < 1 ) {
+	if ( $remaining_time->d < 1 && $remaining_time->h >= 1 ) {
 		$clock_svg = true;
 		$time      = __( 'Coming in ', 'goodbids' ) . $remaining_time->format( '%hh %im' );
+	}
+	if ( $remaining_time->d < 1 && $remaining_time->h < 1 ) {
+		$clock_svg = true;
+		$time      = __( 'Coming in ', 'goodbids' ) . $remaining_time->format( '%im' );
 	}
 }
 ?>

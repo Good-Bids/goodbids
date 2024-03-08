@@ -78,6 +78,9 @@ class Invoices {
 		// Make Post Title readonly.
 		$this->disable_post_title_input();
 
+		// Disable Bulk Actions.
+		$this->disable_bulk_actions();
+
 		// Add custom Admin Columns for Watchers.
 		$this->add_admin_columns();
 
@@ -152,7 +155,16 @@ class Invoices {
 					'rewrite'             => false,
 					'capability_type'     => 'manage_options',
 					'capabilities'        => [
-						'create_posts' => 'do_not_allow',
+						'read_post'          => 'manage_options',
+						'read_private_posts' => 'manage_options',
+						'create_post'        => 'do_not_allow',
+						'publish_posts'      => 'do_not_allow',
+						'create_posts'       => 'do_not_allow',
+						'edit_post'          => 'manage_options',
+						'edit_posts'         => 'manage_options',
+						'edit_others_posts'  => 'manage_options',
+						'delete_post'        => 'do_not_allow',
+						'delete_posts'       => 'do_not_allow',
 					],
 					'show_in_rest'        => false,
 				];
@@ -375,6 +387,23 @@ class Invoices {
 	}
 
 	/**
+	 * Disable Edit Bulk Action
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_bulk_actions(): void {
+		add_filter(
+			'bulk_actions-edit-' . $this->get_post_type(),
+			function ( array $actions ): array {
+				unset( $actions[ 'edit' ] );
+				return $actions;
+			}
+		);
+	}
+
+	/**
 	 * Returns the Invoice post type slug.
 	 *
 	 * @since 1.0.0
@@ -502,6 +531,7 @@ class Invoices {
 			'manage_' . $this->get_post_type() . '_posts_columns',
 			function ( array $columns ): array {
 				$new_columns = [];
+				unset( $columns['cb'] );
 
 				foreach ( $columns as $column => $label ) {
 					$new_columns[ $column ] = $label;
@@ -673,6 +703,10 @@ class Invoices {
 		add_action(
 			'admin_init',
 			function (): void {
+				if ( is_main_site() ) {
+					return;
+				}
+
 				if ( ! $this->has_overdue_invoices() ) {
 					return;
 				}
@@ -774,5 +808,23 @@ class Invoices {
 		if ( ! $invoice->get_stripe_invoice_id() ) {
 			Log::error( 'There was a problem creating the Stripe Tax Invoice.', compact( 'invoice', 'auction_id', 'order_id' ) );
 		}
+	}
+
+	/**
+	 * Get Payment Terms in Days
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_payment_terms_days(): int {
+		$payment_terms = goodbids()->get_config( 'invoices.payment-terms-days' );
+
+		// Make sure we have a valid value.
+		if ( ! $payment_terms ) {
+			$payment_terms = goodbids()->get_config( 'invoices.payment-terms-days', false );
+		}
+
+		return intval( $payment_terms );
 	}
 }

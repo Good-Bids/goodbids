@@ -49,7 +49,8 @@ use GoodBids\Auctions\FreeBid;
 							<span><?php $free_bid->display_status(); ?></span>
 						</td>
 						<td class="goodbids-free-bids-table__cell goodbids-free-bids-table__cell-used" data-title="<?php esc_attr_e( 'Used', 'goodbids' ); ?>">
-							<span><?php $free_bid->display_auction_link( $free_bid->auction_id_used ); ?></span>
+							<span><?php $free_bid->display_auction_link(); ?></span>
+
 							<?php if ( $free_bid->used_date ) : ?>
 								<?php esc_html_e( 'on', 'goodbids' ); ?>
 								<span><?php $free_bid->display_used_date(); ?></span>

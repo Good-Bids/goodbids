@@ -1,19 +1,19 @@
 import clsx from 'clsx';
 
 type ButtonProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-	variant?: 'solid' | 'outline' | 'warning';
+	variant?: 'solid' | 'outline' | 'ghost';
 };
 
 export function ButtonLink({ variant = 'outline', ...rest }: ButtonProps) {
 	const classes = clsx(
-		'py-2 px-6 cursor-pointer text-admin-content no-underline text-center block',
+		'box-border block w-full cursor-pointer rounded-full px-6 py-3 text-center text-gb-md no-underline outline-none transition-all focus:ring-2 focus:ring-offset-2 active:animate-pulse disabled:cursor-not-allowed',
 		{
-			'border-none rounded-admin-sm bg-admin-main text-white hover:bg-admin-accent hover:text-black transition-colors focus:outline-opacity-50 focus:ring-2 focus:ring-admin-main focus:ring-opacity-50 focus:text-white':
+			'border-none bg-gb-green-700 text-white hover:bg-gb-green-100 hover:text-gb-green-900 focus:text-white focus:ring-gb-green-700 hover:focus:text-gb-green-900 disabled:text-white':
 				variant === 'solid',
-			'border border-solid rounded-admin-sm border-admin-main text-admin-main':
+			'border-2 border-solid border-gb-green-700 bg-transparent text-gb-green-700 hover:bg-gb-green-100 hover:text-gb-green-900 focus:text-gb-green-700 focus:ring-gb-green-700':
 				variant === 'outline',
-			'border border-solid rounded-admin-sm border-error-bg text-error-bg':
-				variant === 'warning',
+			'border-none bg-transparent text-gb-green-700 hover:bg-gb-green-100 hover:underline focus:text-gb-green-700 focus:underline focus:ring-gb-green-700':
+				variant === 'ghost',
 		},
 	);
 

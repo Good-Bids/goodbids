@@ -49,7 +49,6 @@ class AuctionWinnerConfirmation extends Email {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ) {
-				Log::debug( 'Triggering Winner Confirmation email for Auction: ' . $auction_id );
 				$auction = goodbids()->auctions->get( $auction_id );
 				$winner  = $auction->get_winning_bidder();
 				$this->trigger( $auction, $winner->ID );

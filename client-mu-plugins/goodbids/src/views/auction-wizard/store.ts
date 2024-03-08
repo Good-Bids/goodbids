@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createTrackedSelector } from 'react-tracked';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
-export type StepType = 'start' | 'product' | 'auction' | 'finish' | 'create';
+export type StepType = 'start' | 'product' | 'auction' | 'review' | 'finish';
 
 type ValueType<T> = {
 	value: T;
@@ -46,12 +46,13 @@ const defaultProductState: AuctionWizardProductState = {
 };
 
 export type AuctionState = {
+	title: ValueType<string>;
+	excerpt: ValueType<string>;
 	startDate: ValueType<string>;
 	endDate: ValueType<string>;
 	bidIncrement: ValueType<string>;
 	startingBid: ValueType<string>;
 	bidExtensionMinutes: ValueType<string>;
-	bidExtensionSeconds: ValueType<string>;
 	auctionGoal: ValueType<string>;
 	expectedHighBid: ValueType<string>;
 	estimatedRetailValue: ValueType<string>;
@@ -59,12 +60,13 @@ export type AuctionState = {
 };
 
 const defaultAuctionState: AuctionState = {
+	title: { value: '' },
+	excerpt: { value: '' },
 	startDate: { value: '' },
 	endDate: { value: '' },
-	bidIncrement: { value: '' },
-	startingBid: { value: '' },
-	bidExtensionMinutes: { value: '' },
-	bidExtensionSeconds: { value: '' },
+	bidIncrement: { value: '10' },
+	startingBid: { value: '10' },
+	bidExtensionMinutes: { value: '60' },
 	auctionGoal: { value: '' },
 	expectedHighBid: { value: '' },
 	estimatedRetailValue: { value: '' },
@@ -97,6 +99,7 @@ type AuctionWizardStoreActions = {
 		error?: string,
 	) => void;
 	setAuctionError: (error: string) => void;
+	setProduct: (product: Omit<AuctionWizardProductState, 'error'>) => void;
 	clearStore: () => void;
 };
 
@@ -109,7 +112,10 @@ const useAuctionWizardStore = create<
 			auctionId: null,
 			product: defaultProductState,
 			auction: defaultAuctionState,
-			setStep: (step) => set({ step }),
+			setStep: (step) => {
+				window.scrollTo({ top: 0, behavior: 'instant' });
+				return set({ step });
+			},
 			setAuctionId: (id) => set({ auctionId: id }),
 			setProductImage: (image) =>
 				set((state) => ({
@@ -162,6 +168,8 @@ const useAuctionWizardStore = create<
 				})),
 			setAuctionError: (error) =>
 				set((state) => ({ auction: { ...state.auction, error } })),
+			setProduct: (product) =>
+				set((state) => ({ product: { ...state.product, ...product } })),
 			clearStore: () =>
 				set({
 					product: defaultProductState,

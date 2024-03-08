@@ -9,6 +9,7 @@
 namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Auctions\Bids;
+use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
 use WC_Order_Item_Product;
@@ -122,11 +123,8 @@ class Cart {
 					$checkout_url = wc_get_page_permalink( 'checkout' );
 					$redirect_to  = add_query_arg( 'add-to-cart', $product_id, $checkout_url );
 
-					$args     = [
-						'redirect-to' => urlencode( $redirect_to ),
-						'gb-notice'   => Notices::NOT_AUTHENTICATED,
-					];
-					$redirect = add_query_arg( $args, $auth_url );
+					goodbids()->notices->add_notice( Notices::NOT_AUTHENTICATED );
+					$redirect = add_query_arg( 'redirect-to', urlencode( $redirect_to ), $auth_url );
 
 					wp_safe_redirect( $redirect );
 					exit;
@@ -135,8 +133,8 @@ class Cart {
 				$auction_id = goodbids()->products->get_auction_id_from_product( $product_id );
 
 				if ( ! $auction_id ) {
-					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $auth_url );
-					wp_safe_redirect( $redirect );
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_FOUND );
+					wp_safe_redirect( $auth_url );
 					exit;
 				}
 
@@ -146,21 +144,21 @@ class Cart {
 
 				if ( Bids::ITEM_TYPE === goodbids()->products->get_type( $product_id ) ) {
 					if ( ! $auction->has_started() ) {
-						$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_STARTED, $auction_url );
-						wp_safe_redirect( $redirect );
+						goodbids()->notices->add_notice( Notices::AUCTION_NOT_STARTED );
+						wp_safe_redirect( $auction_url );
 						exit;
 					}
 
 					if ( $auction->has_ended() ) {
-						$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_HAS_ENDED, $auction_url );
-						wp_safe_redirect( $redirect );
+						goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
+						wp_safe_redirect( $auction_url );
 						exit;
 					}
 
 					// Make sure they aren't the current high bidder.
 					if ( $auction->is_current_user_winning() ) {
-						$redirect = add_query_arg( 'gb-notice', Notices::ALREADY_HIGH_BIDDER, $auction_url );
-						wp_safe_redirect( $redirect );
+						goodbids()->notices->add_notice( Notices::ALREADY_HIGH_BIDDER );
+						wp_safe_redirect( $auction_url );
 						exit;
 					}
 
@@ -172,20 +170,20 @@ class Cart {
 				 * Reward Items
 				 */
 				if ( ! $auction->has_ended() ) {
-					$redirect = add_query_arg( 'gb-notice', Notices::AUCTION_NOT_ENDED, $auction_url );
-					wp_safe_redirect( $redirect );
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_ENDED );
+					wp_safe_redirect( $auction_url );
 					exit;
 				}
 
 				if ( ! $auction->is_current_user_winner() ) {
-					$redirect = add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $auction_url );
-					wp_safe_redirect( $redirect );
+					goodbids()->notices->add_notice( Notices::NOT_AUCTION_WINNER );
+					wp_safe_redirect( $auction_url );
 					exit;
 				}
 
 				if ( goodbids()->rewards->is_redeemed( $auction_id ) ) {
-					$redirect = add_query_arg( 'gb-notice', Notices::REWARD_ALREADY_REDEEMED, $auction_url );
-					wp_safe_redirect( $redirect );
+					goodbids()->notices->add_notice( Notices::REWARD_ALREADY_REDEEMED );
+					wp_safe_redirect( $auction_url );
 					exit;
 				}
 
@@ -307,5 +305,58 @@ class Cart {
 				exit;
 			}
 		);
+	}
+
+	/**
+	 * Check if the current order is a Bid Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_bid_order(): bool {
+		return Bids::ITEM_TYPE === $this->get_order_type();
+	}
+
+	/**
+	 * Check if the current order is a Reward Order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_reward_order(): bool {
+		return Rewards::ITEM_TYPE === $this->get_order_type();
+	}
+
+	/**
+	 * Get the Cart Order Type
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_order_type(): ?string {
+		$cart = WC()->cart->get_cart_contents();
+
+		foreach ( $cart as $cart_item ) {
+			$product = $cart_item['data'];
+			if ( goodbids()->products->get_type( $product->get_id() ) ) {
+				return goodbids()->products->get_type( $product->get_id() );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the total amount of the current order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return float
+	 */
+	public function get_total(): float {
+		return WC()->cart->get_total( 'edit' );
 	}
 }

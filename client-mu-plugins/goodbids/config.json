@@ -5,14 +5,18 @@
     "logging": true
   },
   "active-plugins": [
-    "accessibility-checker",
     "advanced-custom-fields-pro/acf.php",
     "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
-    "svg-support",
     "user-switching",
     "woocommerce",
     "woocommerce-gateway-stripe",
-    "woocommerce-services"
+    "woocommerce-services",
+    "wp-mail-smtp/wp_mail_smtp.php"
+  ],
+  "post-install-plugins": [
+    "accessibility-checker",
+    "accessibility-checker-pro",
+    "svg-support"
   ],
   "vip-constants": {
     "auctioneer": {
@@ -73,6 +77,11 @@
     "production": {
       "domain-script": "018db277-8821-7adb-9a46-541376bb3a13",
       "script-url": "https://cookie-cdn.cookiepro.com/consent/018db277-8821-7adb-9a46-541376bb3a13/OtAutoBlock.js"
+    }
+  },
+  "taxes": {
+    "ny": {
+      "latest": "woo-ny-tax-rates-jan-2024.csv"
     }
   }
 }

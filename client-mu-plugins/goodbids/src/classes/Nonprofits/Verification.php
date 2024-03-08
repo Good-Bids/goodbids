@@ -8,6 +8,8 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
+use GoodBids\Users\Permissions;
 use GoodBids\Utilities\Log;
 
 /**
@@ -40,6 +42,12 @@ class Verification {
 	const OPTION_SLUG = 'gbnp';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const STATUS_OPTION = 'status';
+
+	/**
 	 * Nonprofit custom fields
 	 *
 	 * @since 1.0.0
@@ -51,8 +59,11 @@ class Verification {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Adjust custom Nonprofit fields.
-		$this->manipulate_custom_fields();
+		// Adjust custom Nonprofit fields for Super Admins.
+		$this->super_admin_field_adjustments();
+
+		// Adjust custom Nonprofit fields for BDP Admins.
+		$this->bdp_admin_field_adjustments();
 
 		// Add Details/Verification Site Tab
 		$this->add_custom_site_tab();
@@ -68,6 +79,9 @@ class Verification {
 
 		// Disable Admin for Unverified Sites
 		$this->disable_admin_for_unverified();
+
+		// Allow Nonprofit Site settings to override default config.
+		$this->allow_nonprofit_config_override();
 	}
 
 	/**
@@ -88,7 +102,7 @@ class Verification {
 					return $links;
 				}
 
-				$label = ! $this->is_verified( $site_id ) ? __( 'Verification', 'goodbids' ) : __( 'Details', 'goodbids' );
+				$label = ! $this->is_verified( $site_id ) ? __( 'Verification', 'goodbids' ) : __( 'Verified Details', 'goodbids' );
 
 				$links[ self::PAGE_SLUG ] = [
 					'label' => $label,
@@ -150,10 +164,14 @@ class Verification {
 		$site_name = get_blog_details( $site_id )->blogname;
 		$verified  = $this->is_verified( $site_id );
 		$disabled  = $this->form_is_disabled( $site_id );
-		$data      = $this->get_nonprofit_data( $site_id );
+		$data      = $this->get_nonprofit_data( $site_id, null, 'edit' );
 		$fields    = $this->get_custom_fields();
 		$prefix    = self::OPTION_SLUG;
 		$page_slug = self::PAGE_SLUG;
+
+		if ( ! empty( $_POST ) ) { // phpcs:ignore
+			$data = array_merge( $data, $_POST[ self::OPTION_SLUG ] ); // phpcs:ignore
+		}
 
 		if ( $disabled ) {
 			foreach ( $fields as $key => $field ) {
@@ -173,7 +191,7 @@ class Verification {
 		);
 
 		goodbids()->load_view(
-			'network/details.php',
+			'network/nonprofit-details.php',
 			$vars
 		);
 	}
@@ -209,12 +227,12 @@ class Verification {
 				// Remove Spam action.
 				unset( $actions['spam'] );
 
-				if ( ! $this->is_verified( $blog_id ) ) {
-					$page = self::PAGE_SLUG;
+				$page = self::PAGE_SLUG;
+				$url  = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
+				$url  = add_query_arg( 'id', $blog_id, $url );
 
+				if ( ! $this->is_verified( $blog_id ) ) {
 					// Adjust Edit Link.
-					$url = add_query_arg( 'page', $page, network_admin_url( self::PARENT_PAGE ) );
-					$url = add_query_arg( 'id', $blog_id, $url );
 					$actions['edit'] = sprintf(
 						'<a href="%s">%s</a>',
 						esc_url( $url ),
@@ -222,9 +240,17 @@ class Verification {
 					);
 
 					// Remove other actions until verified.
-					unset( $actions['visit'] );
-					unset( $actions['backend'] );
+					if ( ! is_super_admin() ) {
+						unset( $actions['visit'] );
+						unset( $actions['backend'] );
+					}
 				}
+
+				$actions['details'] = sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( $url ),
+					__( 'Verified Details', 'goodbids' )
+				);
 
 				return $actions;
 			},
@@ -251,39 +277,80 @@ class Verification {
 	}
 
 	/**
-	 * Disable fields and add Super Admin Fields
+	 * Field Adjustments for Super Admin
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function manipulate_custom_fields(): void {
+	private function super_admin_field_adjustments(): void {
 		add_filter(
 			'goodbids_nonprofit_custom_fields',
-			function ( $fields ): array {
-				if ( ! is_super_admin() ) {
+			function ( array $fields, string $context ): array {
+				if ( 'edit' === $context && function_exists( 'wp_get_current_user' ) && ! is_super_admin() ) {
 					return $fields;
 				}
 
-				$new_fields = [];
+				$fields['sep_invoices']                       = [
+					'type' => 'separator',
+				];
+				$fields['config:invoices.payment-terms-days'] = [
+					'label'       => __( 'Net Payment Terms', 'goodbids' ),
+					'type'        => 'number',
+					'class'       => 'small-text',
+					'default'     => '',
+					'after'       => '<span>' . __( 'days', 'goodbids' ) . '</span>',
+					'placeholder' => goodbids()->get_config( 'invoices.payment-terms-days', false ),
+					'description' => __( 'Number of days until an invoice is due.', 'goodbids' ),
+				];
+				$fields['stripe_data']                        = [
+					'label'    => __( 'Stripe Details', 'goodbids' ),
+					'type'     => 'html',
+					'callback' => [ $this, 'stripe_data_field_callback' ],
+				];
+				$fields['sep_verification']                   = [
+					'type' => 'separator',
+				];
+				$fields['verification']                       = [
+					'label'       => __( 'Verified', 'goodbids' ),
+					'type'        => 'checkbox',
+					'default'     => '',
+					'placeholder' => '',
+					'description' => __( 'Only Super Admins can verify Nonprofit Sites. Click "Update Details" below to apply your change.', 'goodbids' ),
+				];
 
-				foreach ( $fields as $key => $field ) {
-					$new_fields[ $key ] = $field;
+				return $fields;
+			},
+			10,
+			2
+		);
+	}
 
-					// Insert after Status.
-					if ( 'status' === $key ) {
-						$new_fields['verification'] = [
-							'label'       => __( 'Verified', 'goodbids' ),
-							'type'        => 'toggle',
-							'default'     => '',
-							'placeholder' => '',
-							'description' => __( 'Only visible to Super Admins', 'goodbids' ),
-						];
-					}
+	/**
+	 * Field Adjustments for BDP Admin
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function bdp_admin_field_adjustments(): void {
+		add_filter(
+			'goodbids_nonprofit_custom_fields',
+			function ( array $fields, string $context ): array {
+				if ( 'edit' !== $context ) {
+					return $fields;
 				}
 
-				return $new_fields;
-			}
+				if ( ! function_exists( 'wp_get_current_user' ) || ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || is_super_admin() ) {
+					return $fields;
+				}
+
+				unset( $fields['status'] );
+
+				return $fields;
+			},
+			10,
+			2
 		);
 	}
 
@@ -314,28 +381,28 @@ class Verification {
 				'label'       => __( 'Nonprofit Website', 'goodbids' ),
 				'type'        => 'url',
 				'default'     => '',
-				'placeholder' => 'https://',
+				'placeholder' => 'Include http:// or https:// prefix',
 				'required'    => true,
 			],
-			'status'               => [
+			self::STATUS_OPTION    => [
 				'label'       => __( 'Site Status', 'goodbids' ),
 				'type'        => 'select',
-				'default'     => 'pending',
+				'default'     => Nonprofit::STATUS_PENDING,
 				'placeholder' => '',
 				'required'    => true,
-				'description' => __( 'This determines if the site is accessible from the front-end', 'goodbids' ),
+				'description' => __( 'Site status determines if the site is accessible from the front-end. Leave status as "Pending" when creating a new site.', 'goodbids' ),
 				'options'     => [
 					[
 						'label' => __( 'Pending', 'goodbids' ),
-						'value' => 'pending',
+						'value' => Nonprofit::STATUS_PENDING,
 					],
 					[
-						'label' => __( 'Published', 'goodbids' ),
-						'value' => 'published',
+						'label' => __( 'Live', 'goodbids' ),
+						'value' => Nonprofit::STATUS_LIVE,
 					],
 					[
-						'label' => __( 'Disabled', 'goodbids' ),
-						'value' => 'disabled',
+						'label' => __( 'Inactive', 'goodbids' ),
+						'value' => Nonprofit::STATUS_INACTIVE,
 					],
 				],
 			],
@@ -355,6 +422,7 @@ class Verification {
 				'default'     => '',
 				'placeholder' => 'email@domain.com',
 				'required'    => true,
+				'on_update'   => [ $this, 'update_stripe_email' ],
 			],
 			'primary_contact_title' => [
 				'label'       => __( 'Primary Contact Job Title', 'goodbids' ),
@@ -396,21 +464,19 @@ class Verification {
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
-				'required'    => true,
 			],
 			'finance_contact_email' => [
 				'label'       => __( 'Finance Contact Email Address', 'goodbids' ),
 				'type'        => 'email',
 				'default'     => '',
 				'placeholder' => 'email@domain.com',
-				'required'    => true,
+				'on_update'   => [ $this, 'update_stripe_email' ],
 			],
 			'finance_contact_title' => [
 				'label'       => __( 'Finance Contact Job Title', 'goodbids' ),
 				'type'        => 'text',
 				'default'     => '',
 				'placeholder' => '',
-				'required'    => true,
 			],
 		];
 	}
@@ -420,14 +486,22 @@ class Verification {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param string $context The context of the fields.
+	 *
 	 * @return array
 	 */
-	public function get_custom_fields(): array {
+	public function get_custom_fields( string $context = 'edit' ): array {
 		if ( empty( $this->custom_fields ) ) {
 			$this->init_custom_fields();
 		}
 
-		return apply_filters( 'goodbids_nonprofit_custom_fields', $this->custom_fields );
+		/**
+		 * Filter the Nonprofit custom fields.
+		 * @since 1.0.0
+		 * @param array $fields The custom fields array
+		 * @param string $context Whether we're using this for editing.
+		 */
+		return apply_filters( 'goodbids_nonprofit_custom_fields', $this->custom_fields, $context );
 	}
 
 	/**
@@ -504,14 +578,19 @@ class Verification {
 	 * @since 1.0.0
 	 *
 	 * @param ?int   $site_id  Site ID.
-	 * @param string $field_id The Field ID to retrieve. Default empty.
+	 * @param ?string $field_id The Field ID to retrieve. Default empty.
+	 * @param string $context  The context for retrieving the data.
 	 *
 	 * @return mixed
 	 */
-	public function get_nonprofit_data( ?int $site_id, string $field_id = '' ): mixed {
+	public function get_nonprofit_data( ?int $site_id, ?string $field_id = '', string $context = 'read' ): mixed {
 		$data = [];
 
-		foreach ( $this->get_custom_fields() as $key => $field ) {
+		foreach ( $this->get_custom_fields( $context ) as $key => $field ) {
+			if ( 'separator' === $field['type'] ) {
+				continue;
+			}
+
 			$field_key   = self::OPTION_SLUG . '-' . $key;
 			$field_value = get_site_meta( $site_id, $field_key, true );
 
@@ -562,25 +641,39 @@ class Verification {
 					return;
 				}
 
-				Log::debug( 'Updating Nonprofit Data.' );
-
 				$data     = $_POST[ self::OPTION_SLUG ]; // phpcs:ignore
 				$verified = false;
 
-				foreach ( $this->get_custom_fields() as $key => $field ) {
-					if ( ! isset( $data[ $key ] ) ) {
-						continue;
-					}
+				foreach ( $this->get_custom_fields( 'save' ) as $key => $field ) {
+					$field['field_id'] = $key;
 
+					$value      = ! isset( $data[ $key ] ) ? '' : $data[ $key ];
 					$meta_key   = self::OPTION_SLUG . '-' . $key;
-					$meta_value = sanitize_text_field( $data[ $key ] );
+					$meta_value = sanitize_text_field( $value );
 
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
-						$verified   = true;
+						$verified   = boolval( $meta_value );
 					}
 
+					$prev_value = get_site_meta( $site_id, $meta_key, true );
+
 					update_site_meta( $site_id, $meta_key, $meta_value );
+
+					if ( ! empty( $field['on_update'] ) && is_callable( $field['on_update'] ) ) {
+						/**
+						 * Fires after a Nonprofit custom field has been updated.
+						 *
+						 * @since 1.0.0
+						 *
+						 * @param mixed $meta_value The new meta value.
+						 * @param mixed $prev_value The previous meta value.
+						 * @param string $meta_key The meta key.
+						 * @param int $site_id The site ID.
+						 * @param array $field The field data.
+						 */
+						call_user_func( $field['on_update'], $meta_value, $prev_value, $meta_key, $site_id, $field );
+					}
 				}
 
 				if ( $verified ) {
@@ -640,15 +733,104 @@ class Verification {
 				}
 
 				// Disable this feature for GoodBids Main Site.
-				if ( is_main_site() ) {
+				if ( is_main_site() || is_super_admin() ) {
 					return;
 				}
 
-
-				if ( ! is_super_admin() && ! $this->is_verified( get_current_blog_id() ) ) {
+				if ( ! $this->is_verified( get_current_blog_id() ) ) {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
 				}
 			}
+		);
+	}
+
+	/**
+	 * Fires after a Nonprofit Finance and Contact Emails have been updated.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $meta_value The new meta value.
+	 * @param mixed $prev_value The previous meta value.
+	 * @param string $meta_key The meta key.
+	 * @param int $site_id The site ID.
+	 * @param array $field The field data.
+	 */
+	public function update_stripe_email( mixed $meta_value, mixed $prev_value, string $meta_key, int $site_id, array $field ): void {
+		// Don't make any changes if the value hasn't changed.
+		if ( $meta_value === $prev_value ) {
+			return;
+		}
+
+		// Only run updates for primary and finance contact emails.
+		if ( ! in_array( $field['field_id'], [ 'primary_contact_email', 'finance_contact_email' ] ) ) {
+			return;
+		}
+
+		$nonprofit = new Nonprofit( $site_id );
+
+		// Make sure we have a value.
+		if ( ! $meta_value && 'finance_contact_email' === $field['field_id'] ) {
+			$meta_value = $nonprofit->get_primary_contact_email();
+		} elseif ( ! $meta_value && 'primary_contact_email' === $field['field_id'] ) {
+			$meta_value = $nonprofit->get_finance_contact_email();
+		}
+
+		if ( ! $meta_value ) {
+			$meta_value = $nonprofit->get_admin_email();
+		}
+
+		$nonprofit->update_stripe_email( $meta_value );
+	}
+
+	/**
+	 * Display the Stripe Customer Details for Super Admins.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function stripe_data_field_callback() : void {
+		if ( ! is_super_admin() ) {
+			return;
+		}
+
+		$nonprofit       = new Nonprofit( $this->get_site_id() );
+		$stripe_customer = $nonprofit->get_stripe_customer();
+
+		goodbids()->load_view(
+			'network/stripe-customer-data.php',
+			compact( 'stripe_customer' )
+		);
+	}
+
+	/**
+	 * Allow Nonprofit Site settings to override default config.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function allow_nonprofit_config_override(): void {
+		add_filter(
+			'goodbids_config_var',
+			function ( mixed $return, string $config_key ): mixed {
+				if ( is_main_site() ) {
+					return $return;
+				}
+
+				$override = $this->get_nonprofit_data(
+					get_current_blog_id(),
+					'config:' . $config_key
+				);
+
+				if ( ! $override ) {
+					return $return;
+				}
+
+				return $override;
+			},
+			11,
+			2
 		);
 	}
 }

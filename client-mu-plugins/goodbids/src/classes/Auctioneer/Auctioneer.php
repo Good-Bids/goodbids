@@ -242,7 +242,6 @@ class Auctioneer {
 			]
 		);
 
-		Log::debug( '[Auctioneer] Response', compact( 'response' ) );
 		$this->last_response = $response;
 
 		if ( $this->is_invalid_response( $response ) ) {
@@ -294,7 +293,6 @@ class Auctioneer {
 		}
 
 		if ( is_wp_error( $response ) ) {
-			Log::debug( '[Auctioneer] Invalid Response: ' . $response->get_error_message(), compact( 'response' ) );
 			return true;
 		}
 
@@ -304,7 +302,6 @@ class Auctioneer {
 		}
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			Log::debug( '[Auctioneer] Bad Response: ' . wp_strip_all_tags( $this->get_response_message( $response ) ), compact( 'response' ) );
 			return true;
 		}
 

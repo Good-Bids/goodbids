@@ -23,11 +23,15 @@ use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
 use GoodBids\Network\Sites;
+use GoodBids\Nonprofits\Admin as NonprofitAdmin;
+use GoodBids\Nonprofits\Guide;
 use GoodBids\Nonprofits\Invoices;
+use GoodBids\Nonprofits\Onboarding;
 use GoodBids\Nonprofits\Verification;
-use GoodBids\Nonprofits\Setup;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\EarlyHooks;
+use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Permissions;
@@ -150,11 +154,6 @@ class Core {
 	public Verification $verification;
 
 	/**
-	 * @var Setup
-	 */
-	public Setup $setup;
-
-	/**
 	 * @since 1.0.0
 	 * @var Notices
 	 */
@@ -177,6 +176,12 @@ class Core {
 	 * @var Watchers
 	 */
 	public Watchers $watchers;
+
+	/**
+	 * @since 1.0.0
+	 * @var EqualizeDigital
+	 */
+	public EqualizeDigital $accessibility;
 
 	/**
 	 * Constructor
@@ -229,11 +234,19 @@ class Core {
 			return;
 		}
 
+		// Load plugin dependencies and modules.
 		$this->load_dependencies();
 		$this->load_plugins();
 		$this->load_modules();
 		$this->init_modules();
+
+		// Load the text domain for translations.
+		$this->load_text_domain();
+
+		// Restrict REST API access.
 		$this->restrict_rest_api_access();
+
+		// Disable CSS concatenation.
 		$this->disable_css_concatenation();
 
 		$this->initialized = true;
@@ -322,6 +335,9 @@ class Core {
 
 		// Init Assets.
 		new Assets();
+
+		// Run Early Hooks
+		new EarlyHooks();
 	}
 
 	/**
@@ -380,7 +396,12 @@ class Core {
 			return;
 		}
 
-		$plugins = $this->get_config( 'active-plugins' );
+		$plugins              = $this->get_config( 'active-plugins' );
+		$post_install_plugins = $this->get_config( 'post-install-plugins' );
+
+		if ( ! is_network_admin() ) {
+			array_push( $plugins, ...$post_install_plugins );
+		}
 
 		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
 			return;
@@ -407,7 +428,7 @@ class Core {
 	}
 
 	/**
-	 * Check if a plugin is in the active plugins list.
+	 * Check if a plugin is active.
 	 *
 	 * @since 1.0.0
 	 *
@@ -416,8 +437,23 @@ class Core {
 	 * @return bool
 	 */
 	public function is_plugin_active( string $plugin ): bool {
-		$plugins = $this->get_config( 'active-plugins' );
-		return in_array( $plugin, $plugins, true );
+		$plugins              = $this->get_config( 'active-plugins' );
+		$post_install_plugins = $this->get_config( 'post-install-plugins' );
+
+		if ( ! is_network_admin() ) {
+			array_push( $plugins, ...$post_install_plugins );
+		}
+
+		if ( in_array( $plugin, $plugins, true ) ) {
+			return true;
+		}
+
+		if ( function_exists( 'is_plugin_active' ) ) {
+			$plugin_file = str_contains( $plugin, '/' ) ? $plugin : $plugin . '/' . $plugin . '.php';
+			return is_plugin_active( $plugin_file );
+		}
+
+		return false;
 	}
 
 	/**
@@ -431,24 +467,25 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->utilities    = new Utilities();
-				$this->acf          = new ACF();
-				$this->admin        = new Admin();
-				$this->auctions     = new Auctions();
-				$this->auctioneer   = new Auctioneer();
-				$this->products     = new Products();
-				$this->bids         = new Bids();
-				$this->rewards      = new Rewards();
-				$this->network      = new Network();
-				$this->sites        = new Sites();
-				$this->invoices     = new Invoices();
-				$this->verification = new Verification();
-				$this->settings     = new Settings();
-				$this->woocommerce  = new WooCommerce();
-				$this->notices      = new Notices();
-				$this->users        = new Users();
-				$this->watchers     = new Watchers();
-				$this->referrals    = new Referrals();
+				$this->utilities     = new Utilities();
+				$this->acf           = new ACF();
+				$this->admin         = new Admin();
+				$this->auctions      = new Auctions();
+				$this->auctioneer    = new Auctioneer();
+				$this->products      = new Products();
+				$this->bids          = new Bids();
+				$this->rewards       = new Rewards();
+				$this->network       = new Network();
+				$this->sites         = new Sites();
+				$this->invoices      = new Invoices();
+				$this->verification  = new Verification();
+				$this->settings      = new Settings();
+				$this->woocommerce   = new WooCommerce();
+				$this->notices       = new Notices();
+				$this->users         = new Users();
+				$this->watchers      = new Watchers();
+				$this->referrals     = new Referrals();
+				$this->accessibility = new EqualizeDigital();
 
 				// Init Modules not part of the API.
 				new Permissions();
@@ -457,7 +494,9 @@ class Core {
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
-				new Setup();
+				new Onboarding();
+				new Guide();
+				new NonprofitAdmin();
 			}
 		);
 	}
@@ -513,6 +552,42 @@ class Core {
 		extract( $_data ); // phpcs:ignore
 
 		require $_path;
+	}
+
+	/**
+	 * Get the contents of a view file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $_name
+	 * @param array $_data
+	 *
+	 * @return string
+	 */
+	public function get_view( string $_name, array $_data = [] ): string {
+		ob_start();
+		$this->load_view( $_name, $_data );
+		return ob_get_clean();
+	}
+
+	/**
+	 * Load Text Domain
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function load_text_domain(): void {
+		add_action(
+			'init',
+			function () {
+				load_plugin_textdomain(
+					'goodbids',
+					false,
+					GOODBIDS_PLUGIN_PATH . 'languages'
+				);
+			}
+		);
 	}
 
 	/**

@@ -1,3 +1,7 @@
+function pxToRem(px) {
+	return `${px / 16}rem`;
+}
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	corePlugins: {
@@ -13,11 +17,16 @@ module.exports = {
 			animation: {
 				'spin-left': 'spin-left 1.5s linear infinite',
 			},
+			backgroundImage: {
+				'select-arrow':
+					'url(\'data:image/svg+xml,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path id="Shape" d="M4.21967 8.46967C4.51256 8.17678 4.98744 8.17678 5.28033 8.46967L12 15.1893L18.7197 8.46967C19.0126 8.17678 19.4874 8.17678 19.7803 8.46967C20.0732 8.76256 20.0732 9.23744 19.7803 9.53033L12.5303 16.7803C12.2374 17.0732 11.7626 17.0732 11.4697 16.7803L4.21967 9.53033C3.92678 9.23744 3.92678 8.76256 4.21967 8.46967Z" fill="%230A3624"/></svg>\')',
+			},
 			borderRadius: {
 				xs: '0.5rem',
 				sm: '1rem',
 				DEFAULT: '2rem',
 				'admin-sm': '0.375rem',
+				gb: pxToRem(8),
 			},
 			borderWidth: {
 				DEFAULT: '1px',
@@ -49,17 +58,26 @@ module.exports = {
 					text: '#000',
 					bg: '#f87171',
 				},
-				red: {
-					500: '#c70808',
-				},
-				admin: {
-					main: '#0a3624',
-					accent: '#70ff8f',
-					secondary: '#125E3E',
-				},
-				'admin-blue': {
-					300: '#2271b1',
-					600: '#135e96',
+				gb: {
+					blue: {
+						300: '#2271b1',
+						600: '#135e96',
+					},
+					gray: {
+						100: '#f0f0f1',
+						200: '#BDBFBE',
+						300: '#A7A9A8',
+						500: '#7B7E7D',
+					},
+					green: {
+						100: '#D9FFD2',
+						500: '#125E3E',
+						700: '#0A3624',
+						900: '#232826',
+					},
+					red: {
+						500: '#c70808',
+					},
 				},
 			},
 			fontSize: {
@@ -69,11 +87,14 @@ module.exports = {
 				lg: 'var(--wp--preset--font-size--large)',
 				xl: 'var(--wp--preset--font-size--x-large)',
 				xxl: 'var(--wp--preset--font-size--xx-large)',
-				'admin-label': '0.875rem',
-				'admin-content': '1rem',
-				'admin-medium': '1.125rem',
-				'admin-large': '1.25rem',
-				'admin-extra-large': '1.5rem',
+				'gb-md': pxToRem(16),
+				'gb-lg': pxToRem(18),
+				'gb-xl': pxToRem(30),
+				'gb-2xl': pxToRem(36),
+			},
+			height: {
+				25: pxToRem(100),
+				50: pxToRem(200),
 			},
 			keyframes: {
 				'spin-left': {
@@ -86,11 +107,16 @@ module.exports = {
 				},
 			},
 			maxWidth: {
-				100: '25rem',
-				120: '30rem',
+				'1/3': '33.333333%',
+				100: pxToRem(100),
+				120: pxToRem(120),
+				584: pxToRem(584),
 			},
 			minWidth: {
-				88: '22rem',
+				88: pxToRem(88),
+			},
+			scale: {
+				102: '1.02',
 			},
 		},
 	},
@@ -109,6 +135,11 @@ module.exports = {
 				'.btn-fill': {
 					...buttonBase,
 					'@apply bg-contrast text-base-2 hover:bg-contrast-3 hover:text-contrast hover:border-transparent hover:!no-underline focus:bg-contrast-3 focus:text-contrast':
+						{},
+				},
+				'.btn-fill-gray': {
+					...buttonBase,
+					'@apply bg-contrast-5 text-contrast hover:bg-contrast-3 hover:text-contrast hover:border-transparent hover:!no-underline focus:bg-contrast-3 focus:text-contrast':
 						{},
 				},
 				'.btn-fill-secondary': {

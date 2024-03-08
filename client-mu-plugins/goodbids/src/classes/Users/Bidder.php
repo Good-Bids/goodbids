@@ -81,7 +81,7 @@ class Bidder {
 	 * @return string
 	 */
 	public function get_username(): string {
-		return $this->user->user_login;
+		return $this->user->user_login ?? '';
 	}
 
 	/**
@@ -92,7 +92,7 @@ class Bidder {
 	 * @return string
 	 */
 	public function get_email(): string {
-		return $this->user->user_email;
+		return $this->user->user_email ?? '';
 	}
 
 	/**

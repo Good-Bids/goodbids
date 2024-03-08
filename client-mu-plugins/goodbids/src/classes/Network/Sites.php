@@ -8,15 +8,18 @@
 
 namespace GoodBids\Network;
 
+use Automattic\WP\Cron_Control\Events_Store;
 use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Nonprofits\Verification;
+use GoodBids\Users\Permissions;
 use GoodBids\Utilities\Log;
 use Illuminate\Support\Collection;
 use WP_Block_Type_Registry;
 use WP_Post;
 use WP_Site;
+use WP_Query;
 
 /**
  * Network Sites Class
@@ -33,8 +36,29 @@ class Sites {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const ABOUT_OPTION = 'gb_about_page';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AUCTIONS_OPTION = 'gb_auctions_page';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const NAVIGATION_ID_OPTION = 'gb_navigation_id';
+
+	/**
+	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Add New Site Form
+		$this->default_new_site_email();
+
 		// Redirect to the Verification page after creating a new site.
 		$this->redirect_on_save_new_site();
 
@@ -58,11 +82,20 @@ class Sites {
 		// Sites Custom Columns
 		$this->customize_sites_columns();
 
+		// Restrict BDP Admin to only specific Sites
+		$this->restrict_bdp_admin_sites_table();
+
 		// Auto-register users on new sites.
 		$this->auto_register_user();
 
 		// Refresh transients when Auctions change status.
 		$this->maybe_clear_transients();
+
+		// Setup default Nonprofit Navigation.
+		$this->set_nonprofit_navigation();
+
+		// Add a cancel button on Network Admin Confirm screen.
+		$this->inject_confirm_cancel();
 	}
 
 	/**
@@ -86,6 +119,46 @@ class Sites {
 					'network/edit-site-fields.php',
 					compact( 'verified' )
 				);
+			}
+		);
+	}
+
+	/**
+	 * Default new site email addresses to the current user's email.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function default_new_site_email(): void {
+		add_action(
+			'network_site_new_form',
+			function () {
+				?>
+				<style>
+					tr.form-field:has(#admin-email),
+					tr.form-field:has(#site-admin-email){
+						display:none;
+					}
+				</style>
+				<?php
+			}
+		);
+
+		add_action(
+			'admin_init',
+			function () {
+				if ( ! is_network_admin() ) {
+					return;
+				}
+
+				if ( isset( $_REQUEST['action'] ) && 'add-site' === $_REQUEST['action'] ) { // phpcs:ignore
+					$_POST['blog']['email'] = wp_get_current_user()->user_email;
+
+					if ( class_exists( 'Events_Store' ) ) {
+						remove_action( 'shutdown', [ Events_Store::instance(), 'maybe_install_during_shutdown' ] );
+					}
+				}
 			}
 		);
 	}
@@ -119,10 +192,12 @@ class Sites {
 					$redirect_url = network_admin_url( Verification::PARENT_PAGE );
 					$redirect_url = add_query_arg( 'page', Verification::PAGE_SLUG, $redirect_url );
 					$redirect_url = add_query_arg( 'id', $new_site->blog_id, $redirect_url );
-					wp_safe_redirect( $redirect_url );
+
+					header( 'Location: ' . $redirect_url );
 					exit;
 				}
-			}
+			},
+			200 // Make sure DB tables are created.
 		);
 	}
 
@@ -143,7 +218,8 @@ class Sites {
 				if ( wp_get_theme( $stylesheet )->exists() ) {
 					switch_theme( $stylesheet );
 				}
-			}
+			},
+			80
 		);
 	}
 
@@ -259,7 +335,7 @@ class Sites {
 
 		return collect( get_sites( $site_args ) )
 			->flatMap(
-				fn( WP_Site $site ) => $this->swap(
+				fn ( WP_Site $site ) => $this->swap(
 					fn ( int $site_id ) => call_user_func( $callback, $site_id ),
 					$site->blog_id
 				)
@@ -357,7 +433,7 @@ class Sites {
 	}
 
 	/**
-	 * Create the GOODBIDS About page and sets the pattern template
+	 * Creates the GOODBIDS About page and sets the pattern template
 	 *
 	 * @since 1.0.0
 	 *
@@ -368,31 +444,32 @@ class Sites {
 			'goodbids_initialize_site',
 			function (): void {
 				$about_slug = 'about';
+				$existing   = get_option( self::ABOUT_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $this->get_page_path( $about_slug ) ) {
+				if ( $existing || goodbids()->utilities->get_page_by_path( $about_slug ) ) {
 					return;
 				}
 
-				ob_start();
+				$about_args = [
+					'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
+					'post_content' => goodbids()->get_view( 'patterns/template-about-page.php' ),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => $about_slug,
+				];
 
-				goodbids()->load_view( 'patterns/template-about-page.php' );
-
-				$about_id = wp_insert_post(
-					[
-						'post_title'   => __( 'About GOODBIDS', 'goodbids' ),
-						'post_content' => ob_get_clean(),
-						'post_type'    => 'page',
-						'post_status'  => 'publish',
-						'post_author'  => 1,
-						'post_name'    => $about_slug,
-					]
-				);
+				$about_id = wp_insert_post( $about_args );
 
 				if ( is_wp_error( $about_id ) ) {
 					Log::error( $about_id->get_error_message() );
+					return;
 				}
-			}
+
+				update_option( self::ABOUT_OPTION, $about_id );
+			},
+			100
 		);
 	}
 
@@ -408,36 +485,37 @@ class Sites {
 			'goodbids_initialize_site',
 			function (): void {
 				$auctions_slug = 'explore-auctions';
+				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $this->get_page_path( $auctions_slug ) ) {
+				if ( $existing || goodbids()->utilities->get_page_by_path( $auctions_slug ) ) {
 					return;
 				}
 
-				ob_start();
+				$auctions_args = [
+					'post_title'   => __( 'Explore Auctions', 'goodbids' ),
+					'post_content' => goodbids()->get_view( 'patterns/template-archive-auction.php' ),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => $auctions_slug,
+				];
 
-				goodbids()->load_view( 'patterns/template-archive-auction.php' );
-
-				$auctions_id = wp_insert_post(
-					[
-						'post_title'   => __( 'Explore Auctions', 'goodbids' ),
-						'post_content' => ob_get_clean(),
-						'post_type'    => 'page',
-						'post_status'  => 'publish',
-						'post_author'  => 1,
-						'post_name'    => $auctions_slug,
-					]
-				);
+				$auctions_id = wp_insert_post( $auctions_args );
 
 				if ( is_wp_error( $auctions_id ) ) {
 					Log::error( $auctions_id->get_error_message() );
+					return;
 				}
-			}
+
+				update_option( self::AUCTIONS_OPTION, $auctions_id );
+			},
+			110
 		);
 	}
 
 	/**
-	 * Delete the sample page
+	 * Attempt to delete the Sample Page
 	 *
 	 * @since 1.0.0
 	 *
@@ -447,7 +525,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$page = $this->get_page_path( 'sample-page' );
+				$page = goodbids()->utilities->get_page_by_path( 'sample-page' );
 
 				if ( ! $page ) {
 					return;
@@ -457,10 +535,14 @@ class Sites {
 					return;
 				}
 
+				// Disable third-party plugin hook.
+				remove_action( 'wp_trash_post', 'edac_delete_post' );
+
 				if ( ! wp_delete_post( $page->ID ) ) {
 					Log::warning( 'There was a problem deleting the Sample Page' );
 				}
-			}
+			},
+			120
 		);
 	}
 
@@ -520,6 +602,31 @@ class Sites {
 				}
 
 				return $terms_conditions_link;
+			}
+		);
+	}
+
+	/**
+	 * Get the Report an issue link.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_report_issue_link(): ?string {
+		return $this->main(
+			function (): string {
+				$report_issue_page = goodbids()->utilities->get_page_by_path( 'report-an-issue' );
+
+				if ( ! $report_issue_page ) {
+					return '';
+				}
+
+				return sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( get_page_link( $report_issue_page ) ),
+					esc_html( get_the_title( $report_issue_page ) ),
+				);
 			}
 		);
 	}
@@ -625,7 +732,6 @@ class Sites {
 				]
 			)
 			->all();
-
 	}
 
 	/**
@@ -639,7 +745,7 @@ class Sites {
 	 * @return array
 	 */
 	public function get_featured_auctions( array $query_args = [] ): array {
-		return collect( $this->get_all_auctions( $query_args ) )
+		return collect( $this->get_all_open_auctions( $query_args ) )
 			->slice( 0, 3 )
 			->values()
 			->all();
@@ -692,7 +798,7 @@ class Sites {
 	 */
 	public function clear_all_site_transients(): void {
 		$this->loop(
-			fn() => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
+			fn () => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
 		);
 	}
 
@@ -840,7 +946,7 @@ class Sites {
 			)
 			->groupBy( 'auction_id' )
 			->map(
-				fn( Collection $group ) => [
+				fn ( Collection $group ) => [
 					'site_id'    => $group->first()['site_id'],
 					'auction_id' => $group->first()['auction_id'],
 					'count'      => $group->count(),
@@ -864,7 +970,7 @@ class Sites {
 	public function get_user_live_participating_auctions(): array {
 		return collect( $this->get_user_participating_auctions() )
 			->filter(
-				fn( array $item ) => $this->swap(
+				fn ( array $item ) => $this->swap(
 					function () use ( &$item ) {
 						$auction = goodbids()->auctions->get( $item['auction_id'] );
 						return Auction::STATUS_LIVE === $auction->get_status();
@@ -991,7 +1097,7 @@ class Sites {
 				)
 			)
 			->sortBy(
-				fn( array $auction_data ) => goodbids()->sites->swap(
+				fn ( array $auction_data ) => goodbids()->sites->swap(
 					function () use ( $auction_data ) {
 						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 						return $auction->get_end_date_time();
@@ -1014,6 +1120,7 @@ class Sites {
 			'wpmu_blogs_columns',
 			function ( $columns ) {
 				$columns['verified'] = __( 'Verified?', 'goodbids' );
+				$columns['status']   = __( 'Status', 'goodbids' );
 				$columns['standing'] = __( 'Account Standing', 'goodbids' );
 				return $columns;
 			}
@@ -1022,7 +1129,8 @@ class Sites {
 		add_action(
 			'manage_sites_custom_column',
 			function ( string $column, string $site_id ) {
-				$nonprofit_cols = [ 'standing', 'verified' ];
+				$nonprofit_cols = [ 'verified', 'status', 'standing' ];
+
 				if ( get_main_site_id() === intval( $site_id ) && in_array( $column, $nonprofit_cols, true ) ) {
 					echo '&mdash;';
 					return;
@@ -1030,8 +1138,8 @@ class Sites {
 
 				$nonprofit = new Nonprofit( intval( $site_id ) );
 
-				if ( 'standing' === $column ) {
-					echo esc_html( $nonprofit->get_standing() );
+				if ( 'status' === $column ) {
+					echo esc_html( ucwords( $nonprofit->get_status() ) );
 					return;
 				}
 
@@ -1050,6 +1158,11 @@ class Sites {
 						esc_attr__( 'Pending', 'goodbids' ),
 						esc_html__( 'Pending', 'goodbids' )
 					);
+					return;
+				}
+
+				if ( 'standing' === $column ) {
+					echo esc_html( $nonprofit->get_standing() );
 				}
 			},
 			10,
@@ -1057,20 +1170,166 @@ class Sites {
 		);
 	}
 
+	private function restrict_bdp_admin_sites_table(): void {
+		add_filter(
+			'ms_sites_list_table_query_args',
+			function ( $args ) {
+				$roles = wp_get_current_user()->roles;
+				if ( ! in_array( Permissions::BDP_ADMIN_ROLE, $roles, true ) ) {
+					return $args;
+				}
+
+				$bdp_admin_sites = [];
+				$bdp_admin_id    = get_current_user_id();
+				$all_user_blogs  = get_blogs_of_user( $bdp_admin_id, true );
+
+				foreach ( $all_user_blogs as $blog_id => $blog ) {
+					// Check if the specified role exists for the user on this blog
+					if ( user_can( $bdp_admin_id, Permissions::BDP_ADMIN_ROLE, $blog_id ) ) {
+						$bdp_admin_sites[] = $blog_id;
+					}
+					if ( user_can( $bdp_admin_id, 'administrator', $blog_id ) ) {
+						$bdp_admin_sites[] = $blog_id;
+					}
+				}
+
+				$args['site__in'] = $bdp_admin_sites;
+
+				return $args;
+			}
+		);
+	}
+
 	/**
-	 * Get Page Path
+	 * Set the nonprofit navigation
+	 *
+	 * @return void
+	 *
+	 * @since 1.0.0
+	 */
+	private function set_nonprofit_navigation(): void {
+		add_action(
+			'goodbids_initialize_site',
+			function (): void {
+				if ( get_option( self::NAVIGATION_ID_OPTION ) ) {
+					return;
+				}
+
+				$nav_links = [
+					intval( get_option( self::ABOUT_OPTION ) ), // About Page ID.
+					intval( get_option( self::AUCTIONS_OPTION ) ), // Auctions Page ID.
+				];
+
+				if ( 2 !== count( array_filter( $nav_links ) ) ) {
+					Log::warning( 'Missing one or more Nonprofit Navigation items', compact( 'nav_links' ) );
+					return;
+				}
+
+				$wp_navigation = new WP_Query(
+					[
+						'post_type'   => 'wp_navigation',
+						'post_status' => [ 'publish' ],
+					]
+				);
+
+				if ( ! $wp_navigation->have_posts() ) {
+					$nav_id = $this->create_navigation();
+
+					if ( ! $nav_id ) {
+						Log::error( 'Unable to update Nonprofit Navigation', compact( 'wp_navigation' ) );
+						return;
+					}
+				} else {
+					$nav_id = $wp_navigation->post->ID;
+				}
+
+				// Set the navigation content
+				$nav_content = [
+					'ID'           => $nav_id,
+					'post_content' => goodbids()->get_view( 'parts/nonprofit-navigation.php', compact( 'nav_links' ) ),
+				];
+
+				// Update the navigation content
+				$update = wp_update_post( $nav_content );
+
+				if ( is_wp_error( $update ) ) {
+					Log::error( 'Error updating Nonprofit Navigation: ' . $update->get_error_message() );
+					return;
+				}
+
+				update_option( self::NAVIGATION_ID_OPTION, $nav_id );
+			},
+			200 // Higher priority than page creation.
+		);
+	}
+
+	/**
+	 * Create the Default Nonprofit Navigation.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $path
-	 *
-	 * @return ?WP_Post
+	 * @return int|null
 	 */
-	private function get_page_path( string $path ): ?WP_Post {
-		if ( function_exists( 'wpcom_vip_get_page_by_path' ) ) {
-			return wpcom_vip_get_page_by_path( $path );
+	private function create_navigation(): ?int {
+		$id = wp_insert_post(
+			[
+				'post_title'   => __( 'Navigation', 'goodbids' ),
+				'post_content' => '<!-- wp:page-list /-->',
+				'post_status'  => 'publish',
+				'post_type'    => 'wp_navigation',
+				'post_name'    => 'navigation',
+				'post_author'  => 1,
+			]
+		);
+
+		if ( is_wp_error( $id ) ) {
+			Log::error( 'Error creating Nonprofit Navigation: ' . $id->get_error_message() );
+			return null;
 		}
 
-		return get_page_by_path( $path ); // phpcs:ignore
+		return $id;
+	}
+
+	/**
+	 * Inject a cancel button on the confirm page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function inject_confirm_cancel(): void {
+		add_action(
+			'wpmuadminedit',
+			function () {
+				if ( ! is_network_admin() ) {
+					return;
+				}
+
+				if ( empty( $_GET['action'] ) || 'confirm' !== $_GET['action'] ) { // phpcs:ignore
+					return;
+				}
+
+				$referrer = wp_get_referer();
+				$referrer = esc_js( $referrer );
+				$referrer = str_replace( '&amp;', '&', $referrer );
+				?>
+				<script>
+					document.addEventListener('DOMContentLoaded', function () {
+						const submit = document.querySelector('.wrap .submit');
+						if ( ! submit ) {
+							return;
+						}
+
+						const cancel = document.createElement('a');
+						cancel.href = '<?php echo $referrer; // phpcs:ignore ?>';
+						cancel.innerText = '<?php echo esc_js( __( 'Cancel', 'goodbids' ) ); ?>';
+						cancel.className = 'button button-secondary';
+						cancel.style = 'margin-left: 0.5rem;';
+						submit.appendChild(cancel);
+					});
+				</script>
+				<?php
+			}
+		);
 	}
 }

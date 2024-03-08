@@ -1,5 +1,6 @@
 const path = require('path');
 const defaults = require('@wordpress/scripts/config/webpack.config.js');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
 	...defaults,
@@ -57,17 +58,29 @@ module.exports = {
 			),
 			filename: 'views/auction-wizard.js',
 		},
-		nonprofitSetup: {
+		nonprofitOnboarding: {
 			import: path.resolve(
 				process.cwd(),
-				'src/views/nonprofit-setup',
+				'src/views/nonprofit-onboarding',
 				'index.tsx',
 			),
-			filename: 'views/nonprofit-setup.js',
+			filename: 'views/nonprofit-onboarding.js',
+		},
+		nonprofitSetupGuide: {
+			import: path.resolve(
+				process.cwd(),
+				'src/views/nonprofit-setup-guide',
+				'index.tsx',
+			),
+			filename: 'views/nonprofit-setup-guide.js',
 		},
 	},
 	output: {
 		filename: '[name].js',
 		path: path.resolve(process.cwd(), 'build'),
+	},
+	resolve: {
+		...defaults.resolve,
+		plugins: [new TsconfigPathsPlugin()],
 	},
 };

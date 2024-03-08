@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
 use GoodBids\Nonprofits\Stripe\Webhooks;
 use GoodBids\Utilities\Log;
 use stdClass;
@@ -118,7 +119,7 @@ class Stripe {
 	}
 
 	/**
-	 * Create a Stripe Invoice
+	 * Create a Stripe Invoice for Nonprofits
 	 *
 	 * @since 1.0.0
 	 *
@@ -128,7 +129,7 @@ class Stripe {
 	 * @return ?string
 	 */
 	public function create_invoice( Invoice $invoice, bool $send_invoice = true ): ?string {
-		if ( ! $this->initialized ) {
+		if ( ! $this->initialized || is_main_site() ) {
 			return null;
 		}
 
@@ -174,16 +175,19 @@ class Stripe {
 	 *
 	 * @return ?string
 	 */
-	private function get_customer_id(): ?string {
+	public function get_customer_id(): ?string {
 		if ( $this->customer_id ) {
 			return $this->customer_id;
 		}
 
-		$context     = [ 'invoice' => $this->invoice ];
+		// If we're on the main site, there is no Stripe Customer.
+		if ( is_main_site() ) {
+			return null;
+		}
+
 		$customer_id = get_site_option( self::STRIPE_CUSTOMER_ID_OPT );
 
 		if ( ! $customer_id ) {
-			Log::debug( 'No Stripe Customer ID found.', $context );
 			return null;
 		}
 
@@ -201,20 +205,19 @@ class Stripe {
 	 * @return bool
 	 */
 	private function create_customer(): bool {
-		Log::debug( 'Creating new Stripe Customer.' );
-
-		$context = [ 'invoice' => $this->invoice ];
-		$params  = [
-			'email' => get_bloginfo( 'admin_email' ),
-			'name'  => get_bloginfo( 'name' ),
+		$nonprofit = new Nonprofit( get_current_blog_id() );
+		$params    = [
+			'email' => $nonprofit->get_email_for_stripe(),
+			'name'  => $nonprofit->get_name(),
 		];
+		$context   = [ 'invoice' => $this->invoice, 'params' => $params  ];
 
 		$customer_id = goodbids()->sites->main(
 			function() use ( $params, $context ): ?string {
 				try {
 					$response = WC_Stripe_API::request( $params, 'customers' );
 				} catch ( WC_Stripe_Exception $e ) {
-					Log::error( 'Could not create a Stripe Customer: ' . $e->getMessage(), $context);
+					Log::error( 'Could not create a Stripe Customer: ' . $e->getMessage(), $context );
 					return null;
 				}
 
@@ -239,6 +242,89 @@ class Stripe {
 	}
 
 	/**
+	 * Get the Stripe Customer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?string $customer_id
+	 *
+	 * @return ?stdClass
+	 */
+	public function get_customer( ?string $customer_id = null ): ?stdClass {
+		if ( ! $customer_id ) {
+			$customer_id = $this->get_customer_id();
+		}
+
+		$customer = goodbids()->sites->main(
+			function() use ( $customer_id ): ?stdClass {
+				try {
+					$response = WC_Stripe_API::request( [], sprintf( 'customers/%s', $customer_id ), 'GET' );
+				} catch ( WC_Stripe_Exception $e ) {
+					Log::error( 'Could not get Stripe Customer: ' . $e->getMessage(), compact( 'customer_id' ) );
+					return null;
+				}
+
+				if ( ! empty( $response->error ) ) {
+					Log::error( 'Error getting Stripe Customer: ' . $response->error->message, compact( 'customer_id' ) );
+					return null;
+				}
+
+				return $response;
+			}
+		);
+
+		if ( ! $customer ) {
+			Log::error( 'Unable to get Stripe Customer.', compact( 'customer_id' ) );
+			return null;
+		}
+
+		return $customer;
+	}
+
+	/**
+	 * Update the Stripe Customer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $params
+	 * @param ?string $customer_id
+	 *
+	 * @return bool
+	 */
+	public function update_customer( array $params, ?string $customer_id = null ): bool {
+		if ( ! $customer_id ) {
+			$customer_id = $this->get_customer_id();
+		}
+
+		$context = [ 'customer_id' => $customer_id, 'params' => $params ];
+
+		$result = goodbids()->sites->main(
+			function() use ( $customer_id, $params, $context ): ?string {
+				try {
+					$response = WC_Stripe_API::request( $params, sprintf( 'customers/%s', $customer_id ) );
+				} catch ( WC_Stripe_Exception $e ) {
+					Log::error( 'Could not update a Stripe Customer: ' . $e->getMessage(), $context );
+					return null;
+				}
+
+				if ( ! empty( $response->error ) ) {
+					Log::error( 'Error updating Stripe Customer: ' . $response->error->message, $context );
+					return null;
+				}
+
+				return $response->id;
+			}
+		);
+
+		if ( ! $result ) {
+			Log::error( 'Unable to update Stripe Customer.', $context );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Initialize a new Stripe Invoice
 	 *
 	 * @since 1.0.0
@@ -258,13 +344,11 @@ class Stripe {
 			return $this->invoice->get_stripe_invoice_id();
 		}
 
-		Log::debug( 'Creating new Stripe Invoice.', $context );
-
 		$params = [
 			'customer'          => $this->get_customer_id(),
 			'collection_method' => 'send_invoice',
 			'description'       => get_the_title( $this->invoice->get_auction_id() ),
-			'days_until_due'    => intval( goodbids()->get_config( 'invoices.payment-terms-days' ) ),
+			'days_until_due'    => goodbids()->invoices->get_payment_terms_days(),
 			'metadata'          => [
 				'gb_invoice_id' => $this->invoice->get_id(),
 				'gb_auction_id' => $this->invoice->get_auction_id(),
@@ -316,10 +400,7 @@ class Stripe {
 		}
 
 		$context = [ 'invoice' => $this->get_invoice() ];
-
-		Log::debug( 'Creating new Stripe Invoice Item.', $context );
-
-		$params = [
+		$params  = [
 			'customer' => $this->get_customer_id(),
 			'invoice'  => $this->invoice->get_stripe_invoice_id(),
 			'amount'   => $this->invoice->get_amount() * 100, // Convert to cents.
@@ -372,8 +453,6 @@ class Stripe {
 			return false;
 		}
 
-		Log::debug( 'Finalizing Stripe Invoice.', $context );
-
 		$stripe_invoice = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id, $context ): ?stdClass {
 				try {
@@ -422,8 +501,6 @@ class Stripe {
 			Log::error( 'Can\'t send Stripe Invoice. No Stripe Invoice ID found.', $context );
 			return false;
 		}
-
-		Log::debug( 'Sending Stripe Invoice.', $context );
 
 		$invoice_url = goodbids()->sites->main(
 			function() use ( $stripe_invoice_id, $context ): ?string {

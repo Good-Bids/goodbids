@@ -8,6 +8,7 @@ const userSchema = z.object({
 	userFreeBids: z.number().default(0),
 	userTotalBids: z.number().default(0),
 	userTotalDonated: z.number().default(0),
+	rewardClaimed: z.boolean().optional().default(false),
 });
 
 export type UserResponse = z.infer<typeof userSchema>;
