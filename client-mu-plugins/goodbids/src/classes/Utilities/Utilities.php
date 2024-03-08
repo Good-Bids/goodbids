@@ -210,4 +210,27 @@ class Utilities {
 
 		return get_page_by_path( $path, $output, $post_type ); // phpcs:ignore
 	}
+
+	/**
+	 * Check if the context inside the Network Admin is the Main site.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function network_is_main_site(): bool {
+		if ( ! is_network_admin() ) {
+			return is_main_site();
+		}
+
+		if ( empty( $_GET['id'] ) ) { // phpcs:ignore
+			return false;
+		}
+
+		if ( intval( sanitize_text_field( $_GET['id'] ) ) !== get_main_site_id() ) { // phpcs:ignore
+			return false;
+		}
+
+		return true;
+	}
 }
