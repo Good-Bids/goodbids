@@ -232,55 +232,62 @@ class Orders {
 	 * @return void
 	 */
 	private function handle_duplicate_bid_ajax(): void {
+		$ajax_action = 'goodbids_cart_bid_placed';
+
 		add_action(
 			'wp_footer',
-			function() {
+			function() use ( $ajax_action ) {
 				if ( is_admin() || ! is_checkout() ) {
 					return;
 				}
+
+				$admin_url = esc_js( admin_url( 'admin-ajax.php' ) );
+				$admin_url = str_replace( '&amp;', '&', $admin_url );
 				?>
 				<script>
-					( ( $ ) => {
-						function goodbidsHandleCartBidPlaced() {
-							$.ajax({
-								url: '<?php echo admin_url( 'admin-ajax.php' ); ?>',
-								type: 'POST',
-								data: {
-									action: 'goodbids_cart_bid_placed',
-								},
-								success: function( response ) {
-									if ( ! response || 'object' !== typeof response || ! response.data ) {
-										return;
-									}
+					const goodbidsCartBidHandlerInterval = 2000;
+					const goodbidsHandleCartBidPlaced = () => {
+						const xhr = new XMLHttpRequest();
+						xhr.open('POST', '<?php echo $admin_url; // phpcs:ignore ?>', true);
+						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-									// Halt the process if the user is the winning bidder.
-									if ( response.data.halt ) {
-										return;
-									}
+						xhr.onreadystatechange = function() {
+							if (xhr.readyState === 4 && xhr.status === 200) {
+								const response = JSON.parse(xhr.responseText);
 
-									// Check again in 2 seconds.
-									if ( ! response.data.outbid ) {
-										setTimeout( goodbidsHandleCartBidPlaced, 2000 );
-										return;
-									}
-
-									// Redirect to the Auction for the error.
-									window.location.replace( response.data.auctionUrl );
+								if (!response || typeof response !== 'object' || !response.data) {
+									return;
 								}
-							});
-						}
 
-						$( function() {
-							goodbidsHandleCartBidPlaced();
-						});
-					})( jQuery );
+								// Halt the process if the user is the winning bidder.
+								if (response.data.halt) {
+									return;
+								}
+
+								// Check again in 2 seconds.
+								if (!response.data.outbid) {
+									setTimeout(goodbidsHandleCartBidPlaced, goodbidsCartBidHandlerInterval);
+									return;
+								}
+
+								// Redirect to the Auction for the error.
+								window.location.replace(response.data.auctionUrl);
+							}
+						};
+
+						xhr.send('action=<?php echo esc_js( $ajax_action ); ?>');
+					};
+
+					document.addEventListener('DOMContentLoaded', function() {
+						goodbidsHandleCartBidPlaced();
+					});
 				</script>
 				<?php
 			}
 		);
 
 		add_action(
-			'wp_ajax_goodbids_cart_bid_placed',
+			'wp_ajax_' . $ajax_action,
 			function () {
 				$variation_id = false;
 				$response     = [ 'outbid' => false, 'halt' => false ];
