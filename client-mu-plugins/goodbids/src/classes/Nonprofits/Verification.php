@@ -187,7 +187,7 @@ class Verification {
 		);
 
 		goodbids()->load_view(
-			'network/details.php',
+			'network/nonprofit-details.php',
 			$vars
 		);
 	}
