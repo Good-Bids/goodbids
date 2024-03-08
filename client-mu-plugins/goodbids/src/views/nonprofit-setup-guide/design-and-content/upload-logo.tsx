@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { ButtonLink } from '../../../components/button-link';
 import { MultiStepHeading } from '../components/multi-step-heading';
+import { Footnote } from '../components/footnote';
 
 export function UploadLogo() {
 	return (
