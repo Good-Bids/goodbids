@@ -7,13 +7,10 @@ export function TrackBidsAndRewards() {
 	return (
 		<MultiStepHeading
 			title={__('Track Bids and Rewards', 'goodbids')}
-			content={
-				<>
-					{__('View information about individual Bids placed on Auctions and Rewards claimed. The Bid Category shows a breakdown of Bids per Auction and total donation revenue (Net Sales). The Rewards Category reports both claimed and unclaimed Rewards for Auctions.',
-						'goodbids',
-					)}
-				</>
-			}
+			content={__(
+				'View information about individual Bids placed on Auctions and Rewards claimed. The Bid Category shows a breakdown of Bids per Auction and total donation revenue (Net Sales). The Rewards Category reports both claimed and unclaimed Rewards for Auctions.',
+				'goodbids',
+			)}
 		>
 			<div className="w-full max-w-60">
 				<ButtonLink
@@ -26,8 +23,9 @@ export function TrackBidsAndRewards() {
 			</div>
 
 			<Footnote>
-				{__('This button takes you to the')}{' '}
-				<i>{__('WooCommerce > Analytics > Categories', 'goodbids')}</i> {__('page.')}
+				{__('This button takes you to the', 'goodbids')}{' '}
+				<i>{__('WooCommerce > Analytics > Categories', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
 			</Footnote>
 		</MultiStepHeading>
 	);

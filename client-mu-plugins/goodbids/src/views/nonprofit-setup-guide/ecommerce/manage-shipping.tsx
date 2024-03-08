@@ -33,8 +33,9 @@ export function ManageShipping() {
 			</div>
 
 			<Footnote>
-				{__('This button takes you to the')}{' '}
-				<i>{__('WooCommerce > Settings > Shipping', 'goodbids')}</i> {__('page.')}
+				{__('This button takes you to the', 'goodbids')}{' '}
+				<i>{__('WooCommerce > Settings > Shipping', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
 			</Footnote>
 		</MultiStepHeading>
 	);

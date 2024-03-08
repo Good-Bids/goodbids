@@ -9,7 +9,8 @@ export function AccessRevenueReport() {
 			title={__('Access Revenue Report', 'goodbids')}
 			content={
 				<>
-					{__('See how much you’ve raised on the GOODBIDS network! The',
+					{__(
+						'See how much you’ve raised on the GOODBIDS network! The',
 						'goodbids',
 					)}{' '}
 					<i>{__('Net Sales', 'goodbids')}</i>{' '}
@@ -30,9 +31,10 @@ export function AccessRevenueReport() {
 				</ButtonLink>
 			</div>
 
-		    <Footnote>
-				{__('This button takes you to the')}{' '}
-				<i>{__('WooCommerce > Analytics > Revenue', 'goodbids')}</i> {__('page.')}
+			<Footnote>
+				{__('This button takes you to the', 'goodbids')}{' '}
+				<i>{__('WooCommerce > Analytics > Revenue', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
 			</Footnote>
 		</MultiStepHeading>
 	);

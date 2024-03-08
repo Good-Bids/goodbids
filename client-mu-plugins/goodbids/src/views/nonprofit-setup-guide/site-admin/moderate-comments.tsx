@@ -32,8 +32,12 @@ export function ModerateComments() {
 			</div>
 
 			<Footnote>
-				{__('You can manage your comment moderation settings on the')}{' '}
-				<i>{__('Settings > Discussion', 'goodbids')}</i> {__('page.')}
+				{__(
+					'You can manage your comment moderation settings on the',
+					'goodbids',
+				)}{' '}
+				<i>{__('Settings > Discussion', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
 			</Footnote>
 		</MultiStepHeading>
 	);

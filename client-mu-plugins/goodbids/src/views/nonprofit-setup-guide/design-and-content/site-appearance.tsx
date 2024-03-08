@@ -8,8 +8,8 @@ export function SiteAppearance() {
 		<MultiStepHeading
 			title={__('Site Appearance', 'goodbids')}
 			content={__(
-						'Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout.',
-					    'goodbids',
+				'Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout.',
+				'goodbids',
 			)}
 		>
 			<div className="w-full max-w-60">
@@ -23,8 +23,12 @@ export function SiteAppearance() {
 			</div>
 
 			<Footnote>
-				{__('Your style preferences can be modified in the')}{' '}
-				<i>{__('Appearance > Editor', 'goodbids')}</i> {__('tab.')}
+				{__(
+					'Your style preferences can be modified in the',
+					'goodbids',
+				)}{' '}
+				<i>{__('Appearance > Editor', 'goodbids')}</i>{' '}
+				{__('tab.', 'goodbids')}
 			</Footnote>
 		</MultiStepHeading>
 	);

@@ -22,9 +22,10 @@ export function ShippingLabels() {
 				</ButtonLink>
 			</div>
 
-		    <Footnote>
-				{__('This button takes you to the')}{' '}
-				<i>{__('WooCommerce > Settings > Shipping', 'goodbids')}</i> {__('page.')}
+			<Footnote>
+				{__('This button takes you to the', 'goodbids')}{' '}
+				<i>{__('WooCommerce > Settings > Shipping', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
 			</Footnote>
 		</MultiStepHeading>
 	);
