@@ -10,7 +10,8 @@
     "user-switching",
     "woocommerce",
     "woocommerce-gateway-stripe",
-    "woocommerce-services"
+    "woocommerce-services",
+    "wp-mail-smtp/wp_mail_smtp.php"
   ],
   "post-install-plugins": [
     "accessibility-checker",
