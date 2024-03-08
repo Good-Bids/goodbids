@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce;
 use Exception;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
+use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
 
@@ -26,7 +27,10 @@ class Orders {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {}
+	public function __construct() {
+		// Redirect a User when somebody else bids the amount currently in their cart.
+		$this->handle_duplicate_bid_ajax();
+	}
 
 	/**
 	 * Get the Auction info from the Order.
@@ -218,5 +222,103 @@ class Orders {
 		];
 
 		return wc_get_orders( $args );
+	}
+
+	/**
+	 * Redirect a User when somebody else bids the amount currently in their cart.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_duplicate_bid_ajax(): void {
+		add_action(
+			'wp_footer',
+			function() {
+				if ( is_admin() || ! is_checkout() ) {
+					return;
+				}
+				?>
+				<script>
+					( ( $ ) => {
+						function goodbidsHandleCartBidPlaced() {
+							$.ajax({
+								url: '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+								type: 'POST',
+								data: {
+									action: 'goodbids_cart_bid_placed',
+								},
+								success: function( response ) {
+									if ( ! response || 'object' !== typeof response || ! response.data ) {
+										return;
+									}
+
+									if ( ! response.data.outbid ) {
+										setTimeout( goodbidsHandleCartBidPlaced, 2000 );
+										return;
+									}
+
+									window.location.replace( response.data.auctionUrl );
+								}
+							});
+						}
+
+						$( function() {
+							goodbidsHandleCartBidPlaced();
+						});
+					})( jQuery );
+				</script>
+				<?php
+			}
+		);
+
+		add_action(
+			'wp_ajax_goodbids_cart_bid_placed',
+			function () {
+				$variation_id = false;
+				$response     = [ 'outbid' => false ];
+
+				foreach ( WC()->cart->get_cart() as $cart_item ) {
+					$product_id = $cart_item['product_id'];
+
+					if ( Bids::ITEM_TYPE !== goodbids()->products->get_type( $product_id ) ) {
+						continue;
+					}
+
+					$variation_id = $cart_item['variation_id'];
+					break;
+				}
+
+				// Bail early, no variation found.
+				if ( ! $variation_id ) {
+					wp_send_json_success( $response );
+				}
+
+				$bid_product = wc_get_product( $variation_id );
+				$quantity    = $bid_product->get_stock_quantity( 'edit' );
+
+				// Quantities are still good.
+				if ( $quantity > 0 ) {
+					wp_send_json_success( $response );
+				}
+
+				$auction_id = goodbids()->products->get_auction_id_from_product( $variation_id );
+				$auction    = goodbids()->auctions->get( $auction_id );
+
+				// Make sure the user is not the high bidder.
+				if ( $auction->is_current_user_winning() ) {
+					wp_send_json_success( $response );
+				}
+
+				// Looks like a different user reduced the quantity.
+				$response['outbid']     = true;
+				$response['auctionUrl'] = $auction->get_url();
+
+				$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED_CART );
+				wc_add_notice( $notice['message'], $notice['type'] );
+
+				wp_send_json_success( $response );
+			}
+		);
 	}
 }
