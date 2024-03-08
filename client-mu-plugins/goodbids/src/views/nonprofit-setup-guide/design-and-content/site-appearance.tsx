@@ -12,8 +12,7 @@ export function SiteAppearance() {
 					{__(
 						'Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout.',
 					    'goodbids',
-				</>
-			}
+			)}
 		>
 			<div className="w-full max-w-60">
 				<ButtonLink
