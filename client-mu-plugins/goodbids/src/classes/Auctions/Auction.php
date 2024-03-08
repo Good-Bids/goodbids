@@ -945,11 +945,11 @@ class Auction {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function trigger_start(): void {
+	public function trigger_start(): bool {
 		if ( ! $this->has_started() || $this->start_triggered() ) {
-			return;
+			return false;
 		}
 
 		// Update the Auction meta to indicate it has started.
@@ -962,6 +962,8 @@ class Auction {
 
 		// Reset the Auction transients.
 		goodbids()->sites->clear_all_site_transients();
+
+		return true;
 	}
 
 	/**

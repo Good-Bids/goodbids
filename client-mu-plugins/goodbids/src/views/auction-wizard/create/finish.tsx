@@ -23,7 +23,7 @@ export function FinishStep() {
 
 			<ButtonLink
 				autoFocus
-				href={`${gbAuctionWizard.adminURL}/wp-admin/post.php?post=${auctionId}&action=edit`}
+				href={`${gbAuctionWizard.adminURL}/post.php?post=${auctionId}&action=edit`}
 				variant="solid"
 			>
 				{__('Customize auction page', 'goodbids')}

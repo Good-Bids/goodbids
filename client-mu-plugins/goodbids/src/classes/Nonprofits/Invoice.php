@@ -422,7 +422,7 @@ class Invoice {
 	 */
 	protected function set_due_date( ?int $due_date = null ): bool|int {
 		if ( is_null( $due_date ) ) {
-			$payment_terms = intval( goodbids()->get_config( 'invoices.payment-terms-days' ) );
+			$payment_terms = goodbids()->invoices->get_payment_terms_days();
 
 			try {
 				$due_date = current_datetime()

@@ -22,6 +22,8 @@ $page_title = sprintf( __( 'Edit Site: %s' ), $site_name );
 
 	<h1><?php echo esc_html( $page_title ); ?></h1>
 
+	<p class="edit-site-actions"><a href="<?php echo esc_url( get_home_url( $site_id, '/' ) ); ?>"><?php _e( 'Visit' ); ?></a> | <a href="<?php echo esc_url( get_admin_url( $site_id ) ); ?>"><?php _e( 'Dashboard' ); ?></a></p>
+
 	<?php
 	network_edit_site_nav(
 		array(
