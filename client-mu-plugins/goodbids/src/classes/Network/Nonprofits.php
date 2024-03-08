@@ -26,6 +26,14 @@ class Nonprofits {
 	const PAGE_SLUG = 'gb-nonprofits';
 
 	/**
+	 * Nonprofits Page Slug
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const ONBOARDED_OPTION = 'goodbids_onboarded';
+
+	/**
 	 * @since 1.0.0
 	 * @var ?ScreenOptions
 	 */
@@ -164,7 +172,7 @@ class Nonprofits {
 		}
 
 		return goodbids()->sites->swap(
-			fn () => boolval( get_option( 'goodbids_onboarded' ) ),
+			fn () => boolval( get_option( self::ONBOARDED_OPTION ) ),
 			$site_id
 		);
 	}

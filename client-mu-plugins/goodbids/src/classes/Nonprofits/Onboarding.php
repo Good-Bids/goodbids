@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile;
+use GoodBids\Network\Nonprofits;
 
 /**
  * Setup Class
@@ -91,8 +92,8 @@ class Onboarding {
 			return;
 		}
 
-		// Setup Onboarding Steps
-		$this->init_steps();
+		// Initialize Onboarding
+		$this->init();
 
 		// Tweak Admin for Onboarding.
 		$this->focused_setup();
@@ -124,7 +125,7 @@ class Onboarding {
 	 *
 	 * @return void
 	 */
-	private function init_steps(): void {
+	private function init(): void {
 		add_action(
 			'admin_init',
 			function () {
@@ -195,16 +196,19 @@ class Onboarding {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() || is_super_admin() ) {
+				if ( goodbids()->network->nonprofits->is_onboarded() ) {
 					// Setup Guide URL
 					$setup_guide_url = admin_url( 'admin.php?page=' . Guide::PAGE_SLUG );
-					$setup_guide_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $setup_guide_url );
 
 					if ( $this->is_onboarding_page() ) {
 						wp_safe_redirect( $setup_guide_url );
 						exit;
 					}
 
+					return;
+				}
+
+				if ( is_super_admin() ) {
 					return;
 				}
 
@@ -574,7 +578,11 @@ class Onboarding {
 		add_action(
 			'admin_footer',
 			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() || ! $this->is_onboarding_page() || wp_doing_ajax() || ! $this->is_last_step() ) {
+				if ( wp_doing_ajax() || goodbids()->network->nonprofits->is_onboarded() ) {
+					return;
+				}
+
+				if ( ! $this->is_onboarding_page() || ! $this->is_last_step() ) {
 					return;
 				}
 
@@ -864,7 +872,7 @@ class Onboarding {
 
 		// Make sure Onboarding isn't already marked as completed.
 		if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
-			update_option( 'goodbids_onboarded', current_time( 'mysql' ) );
+			update_option( Nonprofits::ONBOARDED_OPTION, current_time( 'mysql' ) );
 
 			/**
 			 * Action after Onboarding has completed
