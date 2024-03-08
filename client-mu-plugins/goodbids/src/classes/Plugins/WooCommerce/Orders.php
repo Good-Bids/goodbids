@@ -253,11 +253,18 @@ class Orders {
 										return;
 									}
 
+									// Halt the process if the user is the winning bidder.
+									if ( response.data.halt ) {
+										return;
+									}
+
+									// Check again in 2 seconds.
 									if ( ! response.data.outbid ) {
 										setTimeout( goodbidsHandleCartBidPlaced, 2000 );
 										return;
 									}
 
+									// Redirect to the Auction for the error.
 									window.location.replace( response.data.auctionUrl );
 								}
 							});
@@ -276,7 +283,7 @@ class Orders {
 			'wp_ajax_goodbids_cart_bid_placed',
 			function () {
 				$variation_id = false;
-				$response     = [ 'outbid' => false ];
+				$response     = [ 'outbid' => false, 'halt' => false ];
 
 				foreach ( WC()->cart->get_cart() as $cart_item ) {
 					$product_id = $cart_item['product_id'];
@@ -305,8 +312,9 @@ class Orders {
 				$auction_id = goodbids()->products->get_auction_id_from_product( $variation_id );
 				$auction    = goodbids()->auctions->get( $auction_id );
 
-				// Make sure the user is not the high bidder.
+				// Send a halt signal to the winning bidder.
 				if ( $auction->is_current_user_winning() ) {
+					$response['halt'] = true;
 					wp_send_json_success( $response );
 				}
 
