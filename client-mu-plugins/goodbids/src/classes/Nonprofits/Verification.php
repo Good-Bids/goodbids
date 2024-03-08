@@ -722,8 +722,6 @@ class Verification {
 			return;
 		}
 
-		Log::debug( 'Nonprofit Contact Email Changed' );
-
 		$nonprofit = new Nonprofit( $site_id );
 
 		// Make sure we have a value.
