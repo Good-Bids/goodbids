@@ -181,7 +181,8 @@ class Guide {
 			'revenueMetricsURL'      => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 
 			'styleURL'             => admin_url( 'site-editor.php?path=/wp_global_styles' ),
-			'customizeHomepageURL' => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
+			'uploadLogoURL' => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
+			'customizeHomepageURL' => admin_url( 'site-editor.php?postType=wp_template&postId=goodbids-nonprofit//front-page' ),
 
 			'pagesURL'    => admin_url( 'edit.php?post_type=page' ),
 			'patternsURL' => admin_url( 'site-editor.php?path=/patterns' ),
