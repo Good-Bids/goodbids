@@ -779,4 +779,22 @@ class Invoices {
 			Log::error( 'There was a problem creating the Stripe Tax Invoice.', compact( 'invoice', 'auction_id', 'order_id' ) );
 		}
 	}
+
+	/**
+	 * Get Payment Terms in Days
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_payment_terms_days(): int {
+		$payment_terms = goodbids()->get_config( 'invoices.payment-terms-days' );
+
+		// Make sure we have a valid value.
+		if ( ! $payment_terms ) {
+			$payment_terms = goodbids()->get_config( 'invoices.payment-terms-days', false );
+		}
+
+		return intval( $payment_terms );
+	}
 }

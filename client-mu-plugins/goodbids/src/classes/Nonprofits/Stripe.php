@@ -348,7 +348,7 @@ class Stripe {
 			'customer'          => $this->get_customer_id(),
 			'collection_method' => 'send_invoice',
 			'description'       => get_the_title( $this->invoice->get_auction_id() ),
-			'days_until_due'    => intval( goodbids()->get_config( 'invoices.payment-terms-days' ) ),
+			'days_until_due'    => goodbids()->invoices->get_payment_terms_days(),
 			'metadata'          => [
 				'gb_invoice_id' => $this->invoice->get_id(),
 				'gb_auction_id' => $this->invoice->get_auction_id(),
