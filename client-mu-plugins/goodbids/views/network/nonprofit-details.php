@@ -34,9 +34,9 @@ $page_title = sprintf( __( 'Edit Site: %s' ), $site_name );
 	?>
 
 	<?php if ( $verified ): ?>
-		<h2><?php esc_html_e( 'GoodBids Nonprofit Details', 'goodbids' ); ?></h2>
+		<h2><?php esc_html_e( 'GOODBIDS Nonprofit Details', 'goodbids' ); ?></h2>
 	<?php else: ?>
-		<h2><?php esc_html_e( 'GoodBids Nonprofit Verification', 'goodbids' ); ?></h2>
+		<h2><?php esc_html_e( 'GOODBIDS Nonprofit Verification', 'goodbids' ); ?></h2>
 	<?php endif; ?>
 
 	<form method="post" action="">

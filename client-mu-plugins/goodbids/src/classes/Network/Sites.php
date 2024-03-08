@@ -93,6 +93,9 @@ class Sites {
 
 		// Setup default Nonprofit Navigation.
 		$this->set_nonprofit_navigation();
+
+		// Add a cancel button on Network Admin Confirm screen.
+		$this->inject_confirm_cancel();
 	}
 
 	/**
@@ -1285,5 +1288,48 @@ class Sites {
 		}
 
 		return $id;
+	}
+
+	/**
+	 * Inject a cancel button on the confirm page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function inject_confirm_cancel(): void {
+		add_action(
+			'wpmuadminedit',
+			function () {
+				if ( ! is_network_admin() ) {
+					return;
+				}
+
+				if ( empty( $_GET['action'] ) || 'confirm' !== $_GET['action'] ) { // phpcs:ignore
+					return;
+				}
+
+				$referrer = wp_get_referer();
+				$referrer = esc_js( $referrer );
+				$referrer = str_replace( '&amp;', '&', $referrer );
+				?>
+				<script>
+					document.addEventListener('DOMContentLoaded', function () {
+						const submit = document.querySelector('.wrap .submit');
+						if ( ! submit ) {
+							return;
+						}
+
+						const cancel = document.createElement('a');
+						cancel.href = '<?php echo $referrer; // phpcs:ignore ?>';
+						cancel.innerText = '<?php echo esc_js( __( 'Cancel', 'goodbids' ) ); ?>';
+						cancel.className = 'button button-secondary';
+						cancel.style = 'margin-left: 0.5rem;';
+						submit.appendChild(cancel);
+					});
+				</script>
+				<?php
+			}
+		);
 	}
 }
