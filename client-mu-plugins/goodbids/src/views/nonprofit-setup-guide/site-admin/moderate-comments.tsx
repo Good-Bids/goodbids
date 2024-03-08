@@ -14,11 +14,9 @@ export function ModerateComments() {
 					)}{' '}
 					<i>{__('Comments')}</i>{' '}
 					{__(
-						'tab. You will also be emailed when a comment requires moderation. You can manage your comment moderation settings in the',
+						'tab. You will be emailed when a comment requires moderation.',
 						'goodbids',
-					)}{' '}
-					<i>{__('Settings > Discussion')}</i>{' '}
-					{__('tab.', 'goodbids')}
+					)}
 				</>
 			}
 		>
@@ -31,6 +29,11 @@ export function ModerateComments() {
 					{__('See Comments', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('You can manage your comment moderation settings on the')}{' '}
+				<i>{__('Settings > Discussion', 'goodbids')}</i> {__('page.')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }
