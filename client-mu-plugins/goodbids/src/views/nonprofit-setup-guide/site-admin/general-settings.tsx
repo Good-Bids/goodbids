@@ -10,12 +10,7 @@ export function GeneralSettings() {
 			content={
 				<>
 					{__(
-						'Review and update your site name, tagline, and timezone from the',
-						'goodbids',
-					)}{' '}
-					<i>{__('Settings > General', 'goodbids')}</i>{' '}
-					{__(
-						'page. Additional site settings were updated on your behalf to meet GOODBIDS site requirements and will not need to be reviewed.',
+						'Review and update your site name, tagline, and timezone. Additional site settings were updated on your behalf to meet GOODBIDS requirements.',
 						'goodbids',
 					)}
 				</>
