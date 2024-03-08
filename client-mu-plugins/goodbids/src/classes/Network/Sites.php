@@ -554,10 +554,6 @@ class Sites {
 	 * @return ?string
 	 */
 	public function get_privacy_policy_link(): ?string {
-		if ( ! is_multisite() ) {
-			return null;
-		}
-
 		return $this->main(
 			function (): string {
 				$privacy_policy_link = '';
@@ -584,10 +580,6 @@ class Sites {
 	 * @return ?string
 	 */
 	public function get_terms_conditions_link(): ?string {
-		if ( ! is_multisite() ) {
-			return null;
-		}
-
 		return $this->main(
 			function (): string {
 				$terms_conditions_link = '';
@@ -615,10 +607,6 @@ class Sites {
 	 * @return string
 	 */
 	public function get_terms_conditions_text(): string {
-		if ( ! is_multisite() ) {
-			return '';
-		}
-
 		$terms_conditions = goodbids()->sites->main(
 			function (): string {
 				$terms_conditions_link = '';
