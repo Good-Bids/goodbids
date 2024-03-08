@@ -563,11 +563,11 @@ class Bids {
 
 					if ( $auction->maybe_award_free_bid( null, $description ) ) {
 						// TODO: Let the user know they earned a free bid.
-						$redirect = add_query_arg( 'gb-notice', Notices::EARNED_FREE_BID, $redirect );
+						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
 					}
 				} else { // Reduce the Free Bid Count for the user.
 					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
-						$redirect = add_query_arg( 'gb-notice', Notices::FREE_BID_REDEEMED, $redirect );
+						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
 				}
 

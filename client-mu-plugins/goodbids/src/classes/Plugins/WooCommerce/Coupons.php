@@ -207,7 +207,8 @@ class Coupons {
 				$auction_id = goodbids()->products->get_auction_id_from_product( $product->get_id() );
 
 				if ( ! $auction_id ) {
-					return add_query_arg( 'gb-notice', Notices::AUCTION_NOT_FOUND, $url );
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_FOUND );
+					return $url;
 				}
 
 				$auction = goodbids()->auctions->get( $auction_id );
@@ -218,28 +219,33 @@ class Coupons {
 
 					if ( ! $auction->is_current_user_winner() ) {
 						WC()->cart->empty_cart();
-						return add_query_arg( 'gb-notice', Notices::NOT_AUCTION_WINNER, $url );
+						goodbids()->notices->add_notice( Notices::NOT_AUCTION_WINNER );
+						return $url;
 					}
 
 					$coupon_code = $this->get_reward_coupon_code( $auction_id, $product->get_id() );
 
 					if ( ! $coupon_code ) {
-						return add_query_arg( 'gb-notice', Notices::GET_REWARD_COUPON_ERROR, $redirect_url );
+						goodbids()->notices->add_notice( Notices::GET_REWARD_COUPON_ERROR );
+						return $redirect_url;
 					}
 				} elseif ( Bids::ITEM_TYPE === $product_type ) {
 					if ( ! empty( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
 						if ( ! $auction->are_free_bids_allowed() ) {
-							return add_query_arg( 'gb-notice', Notices::FREE_BIDS_NOT_ELIGIBLE, $url );
+							goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+							return $url;
 						}
 
 						if ( ! goodbids()->users->get_available_free_bid_count() ) {
-							return add_query_arg( 'gb-notice', Notices::NO_AVAILABLE_FREE_BIDS, $url );
+							goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+							return $url;
 						}
 
 						$coupon_code = $this->get_free_bid_coupon_code( $auction_id, $product->get_id() );
 
 						if ( ! $coupon_code ) {
-							return add_query_arg( 'gb-notice', Notices::GET_FREE_BID_COUPON_ERROR, $redirect_url );
+							goodbids()->notices->add_notice( Notices::GET_FREE_BID_COUPON_ERROR );
+							return $redirect_url;
 						}
 					}
 				}
@@ -249,7 +255,8 @@ class Coupons {
 					// Apply the Coupon.
 					if ( ! WC()->cart->add_discount( $coupon_code ) ) {
 						Log::error( 'There was a problem adding the discount coupon', compact( 'coupon_code' ) );
-						return add_query_arg( 'gb-notice', Notices::APPLY_COUPON_ERROR, $redirect_url );
+						goodbids()->notices->add_notice( Notices::APPLY_COUPON_ERROR );
+						return $redirect_url;
 					}
 				}
 

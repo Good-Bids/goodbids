@@ -110,15 +110,13 @@ class Checkout {
 
 				// Make sure Auction has started.
 				if ( ! $auction->has_started() ) {
-					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_STARTED );
 					return;
 				}
 
 				// Make sure Auction has not ended.
 				if ( $auction->has_ended() ) {
-					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
 					return;
 				}
 
@@ -129,15 +127,13 @@ class Checkout {
 
 				// Make sure Free Bids are allowed.
 				if ( ! $auction->are_free_bids_allowed() ) {
-					$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
 					return;
 				}
 
 				// Make sure the current user has available Free Bids.
 				if ( ! goodbids()->users->get_available_free_bid_count() ) {
-					$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
-					wc_add_notice( $notice['message'], $notice['type'] );
+					goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 				}
 			},
 			10,
