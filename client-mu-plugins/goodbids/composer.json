@@ -55,6 +55,7 @@
 		"vlucas/phpdotenv": "^5.5",
 		"wpackagist-plugin/accessibility-checker": "^1.9",
 		"wpackagist-plugin/svg-support": "^2.5",
+		"wpackagist-plugin/user-role-editor": "^4.64",
 		"wpackagist-plugin/user-switching": "^1.7",
 		"wpackagist-plugin/woocommerce": "^8.6",
 		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.0",
