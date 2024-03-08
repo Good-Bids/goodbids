@@ -8,6 +8,7 @@
 
 namespace GoodBids\Nonprofits;
 
+use GoodBids\Network\Nonprofit;
 use WP_Admin_Bar;
 
 /**
@@ -27,6 +28,9 @@ class Admin {
 
 		// Disable some Admin items.
 		$this->disable_items();
+
+		// Update the Stripe Email Address if the Admin Email changes.
+		$this->handle_admin_email_change();
 	}
 
 	/**
@@ -89,6 +93,33 @@ class Admin {
 				$wp_admin_bar->remove_node( 'new-shop_coupon' );
 			},
 			30
+		);
+	}
+
+	/**
+	 * Potentially update Stripe Email if Admin Email changes.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_admin_email_change(): void {
+		add_action( 'update_option',
+			function ( string $option_name, mixed $old_value, mixed $new_value ): void {
+				if ( 'admin_email' !== $option_name || $old_value === $new_value ) {
+					return;
+				}
+
+				$nonprofit = new Nonprofit( get_current_blog_id() );
+
+				if ( $nonprofit->get_finance_contact_email() || $nonprofit->get_primary_contact_email() ) {
+					return;
+				}
+
+				$nonprofit->update_stripe_email( $new_value );
+			},
+			10,
+			3
 		);
 	}
 }

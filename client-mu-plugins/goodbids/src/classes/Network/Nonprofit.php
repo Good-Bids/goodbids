@@ -11,6 +11,7 @@ namespace GoodBids\Network;
 use GoodBids\Auctions\Auction;
 use GoodBids\Nonprofits\Invoice;
 use GoodBids\Nonprofits\Verification;
+use stdClass;
 use WP_Site;
 
 /**
@@ -114,6 +115,25 @@ class Nonprofit {
 			},
 			$this->get_id()
 		);
+	}
+
+	/**
+	 * Get Nonprofit Email Address for Stripe
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_email_for_stripe(): string {
+		if ( $this->get_finance_contact_email() ) {
+			return $this->get_finance_contact_email();
+		}
+
+		if ( $this->get_primary_contact_email() ) {
+			return $this->get_primary_contact_email();
+		}
+
+		return $this->get_admin_email();
 	}
 
 	/**
@@ -247,6 +267,17 @@ class Nonprofit {
 	}
 
 	/**
+	 * Get Nonprofit Site Admin Email
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_admin_email(): string {
+		return get_site_option( 'admin_email', '', $this->get_id() );
+	}
+
+	/**
 	 * Get Nonprofit Site Age
 	 *
 	 * @since 1.0.0
@@ -279,5 +310,78 @@ class Nonprofit {
 	 */
 	public function is_verified(): bool {
 		return goodbids()->verification->is_verified( $this->get_id() );
+	}
+
+	/**
+	 * Get the primary contact email for this Nonprofit
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_primary_contact_email(): ?string {
+		return goodbids()->verification->get_nonprofit_data( $this->get_id(), 'primary_contact_email' );
+	}
+
+	/**
+	 * Get the finance contact email for this Nonprofit
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_finance_contact_email(): ?string {
+		return goodbids()->verification->get_nonprofit_data( $this->get_id(), 'finance_contact_email' );
+	}
+
+	/**
+	 * Update the Stripe Customer Email if it doesn't match the current email
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $email
+	 *
+	 * @return void
+	 */
+	public function update_stripe_email( string $email ): void {
+		$stripe_customer_id = $this->get_stripe_customer_id();
+		$stripe_customer    = $this->get_stripe_customer();
+
+		if ( ! $email || ! $stripe_customer || $stripe_customer->email === $email ) {
+			return;
+		}
+
+		goodbids()->invoices->stripe->update_customer( compact( 'email' ), $stripe_customer_id );
+	}
+
+	/**
+	 * Get the Nonprofit's Stripe Customer ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_stripe_customer_id(): ?string {
+		return goodbids()->sites->swap(
+			fn () => goodbids()->invoices->stripe->get_customer_id(),
+			$this->get_id()
+		);
+	}
+
+	/**
+	 * Get the Nonprofit's Stripe Customer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?stdClass
+	 */
+	public function get_stripe_customer(): ?stdClass {
+		$customer_id = $this->get_stripe_customer_id();
+
+		if ( ! $customer_id ) {
+			return null;
+		}
+
+		return goodbids()->invoices->stripe->get_customer( $customer_id );
 	}
 }
