@@ -7,9 +7,7 @@ export function SiteAppearance() {
 	return (
 		<MultiStepHeading
 			title={__('Site Appearance', 'goodbids')}
-			content={
-				<>
-					{__(
+			content={__(
 						'Choose a Theme Style that best fits your Nonprofit’s look and feel, then click the pencil icon to make it your own. You can change the colors, typography, and sitewide layout.',
 					    'goodbids',
 			)}
