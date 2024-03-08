@@ -275,15 +275,28 @@ class Notices {
 					return;
 				}
 
-				$notice = $this->get_notice();
-
-				if ( ! $notice ) {
-					return;
-				}
-
-				wc_add_notice( $notice['message'], $notice['type'] );
+				$this->add_notice( $this->notice_id );
 			}
 		);
+	}
+
+	/**
+	 * Adds a pre-defined WC Notice
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return void
+	 */
+	public function add_notice( string $notice_id ) : void {
+		$notice = $this->get_notice( $notice_id );
+
+		if ( ! $notice ) {
+			return;
+		}
+
+		wc_add_notice( $notice['message'], $notice['type'] );
 	}
 
 	/**
