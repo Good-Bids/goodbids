@@ -87,6 +87,7 @@ module.exports = {
 				lg: 'var(--wp--preset--font-size--large)',
 				xl: 'var(--wp--preset--font-size--x-large)',
 				xxl: 'var(--wp--preset--font-size--xx-large)',
+				'gb-sm': pxToRem(14),
 				'gb-md': pxToRem(16),
 				'gb-lg': pxToRem(18),
 				'gb-xl': pxToRem(30),

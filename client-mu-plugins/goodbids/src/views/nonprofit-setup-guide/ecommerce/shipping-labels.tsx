@@ -1,13 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import { MultiStepHeading } from '../components/multi-step-heading';
 import { ButtonLink } from '../../../components/button-link';
+import { Footnote } from '../components/footnote';
 
 export function ShippingLabels() {
 	return (
 		<MultiStepHeading
 			title={__('Shipping Labels', 'goodbids')}
 			content={__(
-				'Connect your site to WordPress.com to access automated shipping label printing for Auction rewards. Click the button below, then click “Connect” in the WooCommerce Shipping & Tax promo block.',
+				'Connect your site to WordPress.com to access automated shipping label printing for Auction rewards. Click the button below, then click “Connect” in the WooCommerce Shipping & Tax promo.',
 				'goodbids',
 			)}
 		>
@@ -15,11 +16,17 @@ export function ShippingLabels() {
 				<ButtonLink
 					target="_blank"
 					variant="solid"
-					href={gbNonprofitSetupGuide.woocommerceSettingsURL}
+					href={gbNonprofitSetupGuide.configureShippingURL}
 				>
-					{__('Connect to WooCommerce', 'goodbids')}
+					{__('Connect Site', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('This button takes you to the', 'goodbids')}{' '}
+				<i>{__('WooCommerce > Settings > Shipping', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }
