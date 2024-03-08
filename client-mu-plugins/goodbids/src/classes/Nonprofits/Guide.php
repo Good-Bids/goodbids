@@ -10,6 +10,7 @@ namespace GoodBids\Nonprofits;
 
 use GoodBids\Auctions\Wizard;
 use GoodBids\Network\Nonprofit;
+use GoodBids\Users\Permissions;
 
 /**
  * Guide Class
@@ -192,9 +193,14 @@ class Guide {
 			'auctionsURL'      => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
 			'invoicesURL'      => admin_url( 'edit.php?post_type=' . goodbids()->invoices->get_post_type() ),
 
-			'siteId'			=> $nonprofit->get_id(),
+			'siteId'            => $nonprofit->get_id(),
 			'siteStatus'        => $nonprofit->get_status(),
 			'siteStatusOptions' => goodbids()->network->nonprofits->get_site_status_options(),
+
+			// Roles/Permissions.
+			'isAdmin'    => current_user_can( 'administrator' ),
+			'isBDPAdmin' => current_user_can( Permissions::BDP_ADMIN_ROLE ),
+			'isJrAdmin'  => current_user_can( Permissions::JR_ADMIN_ROLE ),
 		];
 	}
 
