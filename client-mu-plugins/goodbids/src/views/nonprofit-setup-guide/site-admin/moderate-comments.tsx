@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { MultiStepHeading } from '../components/multi-step-heading';
 import { ButtonLink } from '../../../components/button-link';
+import { Footnote } from '../components/footnote';
 
 export function ModerateComments() {
 	return (
