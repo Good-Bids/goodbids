@@ -112,7 +112,10 @@ const useAuctionWizardStore = create<
 			auctionId: null,
 			product: defaultProductState,
 			auction: defaultAuctionState,
-			setStep: (step) => set({ step }),
+			setStep: (step) => {
+				window.scrollTo({ top: 0, behavior: 'instant' });
+				return set({ step });
+			},
 			setAuctionId: (id) => set({ auctionId: id }),
 			setProductImage: (image) =>
 				set((state) => ({
