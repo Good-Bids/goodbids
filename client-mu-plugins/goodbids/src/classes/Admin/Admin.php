@@ -87,6 +87,22 @@ class Admin {
 			$value = $field['default'];
 		}
 
+		if ( 'callback' === $field['type'] && ! empty( $field['callback'] ) && is_callable( $field['callback'] ) ) {
+			/**
+			 * Callback Field
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array  $field
+			 * @param string $key
+			 * @param string $prefix
+			 * @param array  $data
+			 * @param bool   $wrap
+			 */
+			call_user_func( $field['callback'], $field, $key, $prefix, $data, $wrap );
+			return;
+		}
+
 		if ( in_array( $field['type'], [ 'text', 'url', 'email', 'tel', 'password', 'number' ], true ) ) {
 			$view_file = 'text';
 		} else {

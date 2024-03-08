@@ -81,7 +81,10 @@ class Bidder {
 	 * @return string
 	 */
 	public function get_username(): string {
-		return $this->user->user_login;
+		if ( $this->user->user_login ) { // This can return null.
+			return $this->user->user_login;
+		}
+		return '';
 	}
 
 	/**
@@ -92,7 +95,10 @@ class Bidder {
 	 * @return string
 	 */
 	public function get_email(): string {
-		return $this->user->user_email;
+		if ( $this->user->user_email ) { // Just in case this is null (oAuth).
+			return $this->user->user_email;
+		}
+		return '';
 	}
 
 	/**

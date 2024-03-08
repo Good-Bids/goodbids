@@ -294,6 +294,11 @@ class Verification {
 					'placeholder' => '',
 					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
 				];
+				$fields['stripe_data']      = [
+					'label'    => __( 'Stripe Details', 'goodbids' ),
+					'type'     => 'html',
+					'callback' => [ $this, 'stripe_data_field_callback' ],
+				];
 
 				return $fields;
 			},
@@ -370,6 +375,7 @@ class Verification {
 				'default'     => '',
 				'placeholder' => 'email@domain.com',
 				'required'    => true,
+				'on_update'   => [ $this, 'update_stripe_email' ],
 			],
 			'primary_contact_title' => [
 				'label'       => __( 'Primary Contact Job Title', 'goodbids' ),
@@ -417,6 +423,7 @@ class Verification {
 				'type'        => 'email',
 				'default'     => '',
 				'placeholder' => 'email@domain.com',
+				'on_update'   => [ $this, 'update_stripe_email' ],
 			],
 			'finance_contact_title' => [
 				'label'       => __( 'Finance Contact Job Title', 'goodbids' ),
@@ -595,15 +602,34 @@ class Verification {
 						continue;
 					}
 
-					$meta_key   = self::OPTION_SLUG . '-' . $key;
-					$meta_value = sanitize_text_field( $data[ $key ] );
+					$field['field_id'] = $key;
+
+					$meta_key    = self::OPTION_SLUG . '-' . $key;
+					$meta_value  = sanitize_text_field( $data[ $key ] );
 
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
 						$verified   = boolval( $meta_value );
 					}
 
+					$prev_value = get_site_meta( $site_id, $meta_key, true );
+
 					update_site_meta( $site_id, $meta_key, $meta_value );
+
+					if ( ! empty( $field['on_update'] ) && is_callable( $field['on_update'] ) ) {
+						/**
+						 * Fires after a Nonprofit custom field has been updated.
+						 *
+						 * @since 1.0.0
+						 *
+						 * @param mixed $meta_value The new meta value.
+						 * @param mixed $prev_value The previous meta value.
+						 * @param string $meta_key The meta key.
+						 * @param int $site_id The site ID.
+						 * @param array $field The field data.
+						 */
+						call_user_func( $field['on_update'], $meta_value, $prev_value, $meta_key, $site_id, $field );
+					}
 				}
 
 				if ( $verified ) {
@@ -671,6 +697,67 @@ class Verification {
 					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
 				}
 			}
+		);
+	}
+
+	/**
+	 * Fires after a Nonprofit Finance and Contact Emails have been updated.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $meta_value The new meta value.
+	 * @param mixed $prev_value The previous meta value.
+	 * @param string $meta_key The meta key.
+	 * @param int $site_id The site ID.
+	 * @param array $field The field data.
+	 */
+	public function update_stripe_email( mixed $meta_value, mixed $prev_value, string $meta_key, int $site_id, array $field ): void {
+		// Don't make any changes if the value hasn't changed.
+		if ( $meta_value === $prev_value ) {
+			return;
+		}
+
+		// Only run updates for primary and finance contact emails.
+		if ( ! in_array( $field['field_id'], [ 'primary_contact_email', 'finance_contact_email' ] ) ) {
+			return;
+		}
+
+		Log::debug( 'Nonprofit Contact Email Changed' );
+
+		$nonprofit = new Nonprofit( $site_id );
+
+		// Make sure we have a value.
+		if ( ! $meta_value && 'finance_contact_email' === $field['field_id'] ) {
+			$meta_value = $nonprofit->get_primary_contact_email();
+		} elseif ( ! $meta_value && 'primary_contact_email' === $field['field_id'] ) {
+			$meta_value = $nonprofit->get_finance_contact_email();
+		}
+
+		if ( ! $meta_value ) {
+			$meta_value = $nonprofit->get_admin_email();
+		}
+
+		$nonprofit->update_stripe_email( $meta_value );
+	}
+
+	/**
+	 * Display the Stripe Customer Details for Super Admins.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function stripe_data_field_callback() : void {
+		if ( ! is_super_admin() ) {
+			return;
+		}
+
+		$nonprofit       = new Nonprofit( $this->get_site_id() );
+		$stripe_customer = $nonprofit->get_stripe_customer();
+
+		goodbids()->load_view(
+			'network/stripe-customer-data.php',
+			compact( 'stripe_customer' )
 		);
 	}
 }
