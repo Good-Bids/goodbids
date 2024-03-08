@@ -217,15 +217,16 @@ class Payload {
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid_amount(),
 			'lastBidder'        => $this->get_last_bidder(),
-			'rewardUrl'         => goodbids()->rewards->get_claim_reward_url( $this->auction_id ),
 			'requestTime'       => current_datetime()->format( 'c' ),
+			'rewardClaimed'     => $this->has_user_claimed_reward(),
+			'rewardUrl'         => goodbids()->rewards->get_claim_reward_url( $this->auction_id ),
 			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => $this->auction->get_start_date_time( 'c' ),
 			'totalBids'         => $this->auction->get_bid_count(),
 			'totalRaised'       => $this->auction->get_total_raised(),
-			'userId'            => $this->get_user_id(),
 			'userFreeBids'      => goodbids()->users->get_available_free_bid_count( $this->get_user_id() ),
+			'userId'            => $this->get_user_id(),
 			'userTotalBids'     => $this->auction->get_user_bid_count( $this->get_user_id() ),
 			'userTotalDonated'  => $this->auction->get_user_total_donated( $this->get_user_id() ),
 			default             => null,
@@ -346,5 +347,32 @@ class Payload {
 		}
 
 		return get_permalink( $auth_page_id );
+	}
+
+	/**
+	 * Checks if the user has claimed the reward for the auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function has_user_claimed_reward(): bool {
+		if ( ! $this->auction_id || ! $this->get_user_id() ) {
+			return false;
+		}
+
+		$auction = goodbids()->auctions->get( $this->auction_id );
+
+		// Make sure it's a valid Auction.
+		if ( ! $auction->has_started() || ! $auction->has_ended() ) {
+			return false;
+		}
+
+		$winner = $auction->get_winning_bidder();
+		if ( ! $winner || $winner->ID !== $this->get_user_id() ) {
+			return false;
+		}
+
+		return goodbids()->rewards->is_redeemed( $auction->get_id() );
 	}
 }

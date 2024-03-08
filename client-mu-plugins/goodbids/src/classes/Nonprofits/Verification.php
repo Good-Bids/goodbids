@@ -619,6 +619,9 @@ class Verification {
 					$meta_key   = self::OPTION_SLUG . '-' . $key;
 					$meta_value = sanitize_text_field( $value );
 
+					$meta_key    = self::OPTION_SLUG . '-' . $key;
+					$meta_value  = sanitize_text_field( $data[ $key ] );
+
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
 						$verified   = boolval( $meta_value );

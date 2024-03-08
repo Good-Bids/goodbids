@@ -153,7 +153,7 @@ class Sites {
 					$_POST['blog']['email'] = wp_get_current_user()->user_email;
 
 					if ( class_exists( 'Events_Store' ) ) {
-						remove_action( 'shutdown', [ Events_Store::instance(), 'maybe_install_during_shutdown'] );
+						remove_action( 'shutdown', [ Events_Store::instance(), 'maybe_install_during_shutdown' ] );
 					}
 				}
 			}
@@ -599,6 +599,37 @@ class Sites {
 				}
 
 				return $terms_conditions_link;
+			}
+		);
+	}
+
+	/**
+	 * Get the Report an issue link.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	public function get_report_issue_link(): ?string {
+		return $this->main(
+			function (): string {
+				$report_issue_page = get_page_by_path( 'report-an-issue' );
+				$report_issue_id   = '';
+				$report_issue_link = '';
+
+				if ( $report_issue_page ) {
+					$report_issue_id = $report_issue_page->ID;
+				}
+
+				if ( $report_issue_id ) {
+					$report_issue_link = sprintf(
+						'<a href="%s">%s</a>',
+						get_page_link( $report_issue_id ),
+						get_the_title( $report_issue_id ),
+					);
+				}
+
+				return $report_issue_link;
 			}
 		);
 	}

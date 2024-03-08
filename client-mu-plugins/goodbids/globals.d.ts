@@ -27,6 +27,7 @@ declare const gbNonprofitSetupGuide: {
 
 	styleURL: string;
 	updateLogoURL: string;
+	uploadLogoURL: string;
 	customizeHomepageURL: string;
 
 	pagesURL: string;
