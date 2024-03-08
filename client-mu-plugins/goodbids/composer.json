@@ -60,6 +60,7 @@
 		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.0",
 		"wpackagist-plugin/woocommerce-services": "^2.5",
 		"wpackagist-plugin/wp-mail-log": "^1.1",
+		"wpackagist-plugin/wp-mail-smtp": "^4.0",
 		"wpackagist-plugin/zapier": "^1.0",
 		"wpengine/advanced-custom-fields-pro": "^6.2"
 	},
