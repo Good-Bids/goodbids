@@ -152,7 +152,16 @@ class Invoices {
 					'rewrite'             => false,
 					'capability_type'     => 'manage_options',
 					'capabilities'        => [
-						'create_posts' => 'do_not_allow',
+						'read_post'          => 'manage_options',
+						'read_private_posts' => 'manage_options',
+						'create_post'        => 'do_not_allow',
+						'publish_posts'      => 'do_not_allow',
+						'create_posts'       => 'do_not_allow',
+						'edit_post'          => 'manage_options',
+						'edit_posts'         => 'manage_options',
+						'edit_others_posts'  => 'manage_options',
+						'delete_post'        => 'do_not_allow',
+						'delete_posts'       => 'do_not_allow',
 					],
 					'show_in_rest'        => false,
 				];
