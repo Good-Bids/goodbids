@@ -444,7 +444,7 @@ class Sites {
 				$existing   = get_option( self::ABOUT_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $existing || get_page_by_path( $about_slug ) ) { // phpcs:ignore
+				if ( $existing || goodbids()->utilities->get_page_by_path( $about_slug ) ) {
 					return;
 				}
 
@@ -485,7 +485,7 @@ class Sites {
 				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $existing || get_page_by_path( $auctions_slug ) ) { // phpcs:ignore
+				if ( $existing || goodbids()->utilities->get_page_by_path( $auctions_slug ) ) {
 					return;
 				}
 
@@ -522,7 +522,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$page = get_page_by_path( 'sample-page' ); // phpcs:ignore
+				$page = goodbids()->utilities->get_page_by_path( 'sample-page' );
 
 				if ( ! $page ) {
 					return;
@@ -613,23 +613,17 @@ class Sites {
 	public function get_report_issue_link(): ?string {
 		return $this->main(
 			function (): string {
-				$report_issue_page = get_page_by_path( 'report-an-issue' );
-				$report_issue_id   = '';
-				$report_issue_link = '';
+				$report_issue_page = goodbids()->utilities->get_page_by_path( 'report-an-issue' );
 
-				if ( $report_issue_page ) {
-					$report_issue_id = $report_issue_page->ID;
+				if ( ! $report_issue_page ) {
+					return '';
 				}
 
-				if ( $report_issue_id ) {
-					$report_issue_link = sprintf(
-						'<a href="%s">%s</a>',
-						get_page_link( $report_issue_id ),
-						get_the_title( $report_issue_id ),
-					);
-				}
-
-				return $report_issue_link;
+				return sprintf(
+					'<a href="%s">%s</a>',
+					esc_url( get_page_link( $report_issue_page ) ),
+					esc_html( get_the_title( $report_issue_page ) ),
+				);
 			}
 		);
 	}
