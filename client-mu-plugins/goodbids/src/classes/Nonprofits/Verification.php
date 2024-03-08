@@ -75,6 +75,9 @@ class Verification {
 
 		// Disable Admin for Unverified Sites
 		$this->disable_admin_for_unverified();
+
+		// Allow Nonprofit Site settings to override default config.
+		$this->allow_nonprofit_config_override();
 	}
 
 	/**
@@ -280,21 +283,33 @@ class Verification {
 		add_filter(
 			'goodbids_nonprofit_custom_fields',
 			function ( array $fields, string $context ): array {
-				if ( ! is_super_admin() && 'edit' === $context ) {
+				if ( 'edit' === $context && function_exists( 'wp_get_current_user' ) && ! is_super_admin() ) {
 					return $fields;
 				}
 
-				$fields['sep_verification'] = [
+				$fields['sep_verification']                   = [
 					'type' => 'separator',
 				];
-				$fields['verification']     = [
+				$fields['verification']                       = [
 					'label'       => __( 'Verified', 'goodbids' ),
 					'type'        => 'toggle',
 					'default'     => '',
 					'placeholder' => '',
 					'description' => __( 'Only visible to Super Admins', 'goodbids' ),
 				];
-				$fields['stripe_data']      = [
+				$fields['sep_invoices']                       = [
+					'type' => 'separator',
+				];
+				$fields['config:invoices.payment-terms-days'] = [
+					'label'       => __( 'Net Payment Terms', 'goodbids' ),
+					'type'        => 'number',
+					'class'       => 'small-text',
+					'default'     => '',
+					'after'       => '<span>' . __( 'days', 'goodbids' ) . '</span>',
+					'placeholder' => goodbids()->get_config( 'invoices.payment-terms-days', false ),
+					'description' => __( 'Number of days until an invoice is due.', 'goodbids' ),
+				];
+				$fields['stripe_data']                        = [
 					'label'    => __( 'Stripe Details', 'goodbids' ),
 					'type'     => 'html',
 					'callback' => [ $this, 'stripe_data_field_callback' ],
@@ -598,14 +613,11 @@ class Verification {
 				$verified = false;
 
 				foreach ( $this->get_custom_fields( 'save' ) as $key => $field ) {
-					if ( ! isset( $data[ $key ] ) ) {
-						continue;
-					}
-
 					$field['field_id'] = $key;
 
-					$meta_key    = self::OPTION_SLUG . '-' . $key;
-					$meta_value  = sanitize_text_field( $data[ $key ] );
+					$value      = ! isset( $data[ $key ] ) ? '' : $data[ $key ];
+					$meta_key   = self::OPTION_SLUG . '-' . $key;
+					$meta_value = sanitize_text_field( $value );
 
 					if ( 'verification' === $key ) {
 						$meta_value = $meta_value ? current_time( 'mysql', true ) : '';
@@ -756,6 +768,38 @@ class Verification {
 		goodbids()->load_view(
 			'network/stripe-customer-data.php',
 			compact( 'stripe_customer' )
+		);
+	}
+
+	/**
+	 * Allow Nonprofit Site settings to override default config.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function allow_nonprofit_config_override(): void {
+		add_filter(
+			'goodbids_config_var',
+			function ( mixed $return, string $config_key ): mixed {
+				if ( is_main_site() ) {
+					return $return;
+				}
+
+				$override = $this->get_nonprofit_data(
+					get_current_blog_id(),
+					'config:' . $config_key,
+					'read'
+				);
+
+				if ( ! $override ) {
+					return $return;
+				}
+
+				return $override;
+			},
+			11,
+			2
 		);
 	}
 }
