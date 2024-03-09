@@ -9,8 +9,6 @@
 
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
-$objects = $this->collection->objects;
-
 /**
  * @param DocItem[] $items
  * @param string $current
@@ -33,11 +31,12 @@ function generateApi( array $items, string $current = '' ): void {
 
 		$fullName = $current ? $current . $separator . $name : $name;
 
-		if ('property' !== $item->node || empty($item->api)) {
-			$append = 'property' === $item->node && ! count($item->api) ? ' (no API)' : '';
-			echo $fullName . $append . PHP_EOL;
+		if (!in_array($item->node, ['property', 'method'], true) || empty($item->api)) {
+			// Display the API information
+			echo $fullName . PHP_EOL;
 		}
 
+		// Recursively call the function for sub-APIs
 		if (!empty($item->api)) {
 			generateApi($item->api, $fullName);
 		}
