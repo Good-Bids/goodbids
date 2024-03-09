@@ -148,6 +148,10 @@ class WPDocsGenerator {
 		}
 	}
 
+	/**
+	 * @param DocItem $object
+	 * @return DocItem
+	 */
 	private function collectReturnTypes( DocItem $object ): DocItem
 	{
 		foreach ( $object->returnTypes as $returnType ) {
@@ -170,7 +174,6 @@ class WPDocsGenerator {
 
 	/**
 	 * @param DocItem $object
-	 * @param int $depth
 	 * @return array
 	 */
 	private function collectPropertiesAndMethods( DocItem $object ): array
