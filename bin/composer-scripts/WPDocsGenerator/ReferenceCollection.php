@@ -10,11 +10,11 @@ namespace Viget\ComposerScripts\WPDocsGenerator;
 use PhpParser\Node;
 
 /**
- * MultiplesCollection Class
+ * ReferenceCollection Class
  */
-class MultiplesCollection extends CodeCollection
+class ReferenceCollection extends CodeCollection
 {
-	public array $newCounts = [];
+	public array $references = [];
 
 	/**
 	 * @param Node $node
@@ -41,11 +41,22 @@ class MultiplesCollection extends CodeCollection
 	{
 		$reference = $this->getReference($node);
 
-		if ( array_key_exists($reference, $this->newCounts) ) {
-			$this->newCounts[$reference]++;
-		} else {
-			$this->newCounts[$reference] = 1;
+		if ( ! array_key_exists($reference, $this->references) ) {
+			$this->references[$reference] = new ReferenceItem( $reference );
 		}
+
+		$use = new ReferenceUse( $this->path, $node->getStartLine() );
+
+		// If assigned or returned, set $use->assigned = true
+		$parentNode = $node->getAttribute('parent');
+
+		if ($parentNode instanceof Node\Stmt\Return_) {
+			$use->returned = true;
+		} elseif ($parentNode instanceof Node\Expr\Assign) {
+			$use->assigned = true;
+		}
+
+		$this->references[$reference]->uses[] = $use;
 	}
 
 	private function getReference(Node\Expr\New_ $node): string

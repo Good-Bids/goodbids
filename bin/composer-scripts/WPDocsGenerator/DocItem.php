@@ -48,11 +48,6 @@ class DocItem {
 	public ?string $function = null;
 
 	/**
-	 * @var int
-	 */
-	public int $initCount = 0;
-
-	/**
 	 * @var ?string
 	 */
 	public ?string $access = null;
@@ -78,6 +73,11 @@ class DocItem {
 	public mixed $defaultValue = null;
 
 	/**
+	 * @var bool
+	 */
+	public bool $inApi = false;
+
+	/**
 	 * @var array
 	 */
 	public array $constants = [];
@@ -101,6 +101,11 @@ class DocItem {
 	 * @var array
 	 */
 	public array $parameters = [];
+
+	/**
+	 * @var ReferenceUse[]
+	 */
+	public array $references = [];
 
 	/**
 	 * @var DocItem[]

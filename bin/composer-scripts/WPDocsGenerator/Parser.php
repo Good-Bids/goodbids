@@ -8,6 +8,7 @@
 namespace Viget\ComposerScripts\WPDocsGenerator;
 
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\ParentConnectingVisitor;
 use PhpParser\ParserFactory;
 
 /**
@@ -61,6 +62,7 @@ class Parser {
 			$collection = new CodeCollection( $relative_path );
 		}
 
+		$traverser->addVisitor(new ParentConnectingVisitor() );
 		$traverser->addVisitor( $collection );
 		$traverser->traverse( $parsed );
 
@@ -96,6 +98,7 @@ class Parser {
 			$collection = new ApiCollection( $relative_path );
 		}
 
+		$traverser->addVisitor(new ParentConnectingVisitor() );
 		$traverser->addVisitor( $collection );
 		$traverser->traverse( $parsed );
 
@@ -105,10 +108,10 @@ class Parser {
 	/**
 	 * @param string $path
 	 * @param string $relative_path
-	 * @param ?MultiplesCollection $collection
-	 * @return ?MultiplesCollection
+	 * @param ?ReferenceCollection $collection
+	 * @return ?ReferenceCollection
 	 */
-	public function parseMultiples( string $path, string $relative_path, ?MultiplesCollection $collection ): ?MultiplesCollection
+	public function parseReferences( string $path, string $relative_path, ?ReferenceCollection $collection ): ?ReferenceCollection
 	{
 		if ( ! file_exists( $path ) ) {
 			throw new \InvalidArgumentException( 'File does not exist' );
@@ -128,9 +131,10 @@ class Parser {
 		if ( ! is_null( $collection ) ) {
 			$collection->setPath( $relative_path );
 		} else {
-			$collection = new MultiplesCollection( $relative_path );
+			$collection = new ReferenceCollection( $relative_path );
 		}
 
+		$traverser->addVisitor(new ParentConnectingVisitor() );
 		$traverser->addVisitor( $collection );
 		$traverser->traverse( $parsed );
 

@@ -7,16 +7,16 @@
 
 namespace Viget\ComposerScripts\WPDocsGenerator\Builders;
 
+use Viget\ComposerScripts\WPDocsGenerator\ApiCollection;
 use Viget\ComposerScripts\WPDocsGenerator\CodeCollection;
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 
 class Builder
 {
-
 	/**
-	 * @var CodeCollection
+	 * @var ApiCollection
 	 */
-	private CodeCollection $collection;
+	private ApiCollection $api;
 
 	/**
 	 * @var array
@@ -24,12 +24,17 @@ class Builder
 	private array $config;
 
 	/**
-	 * @param CodeCollection $collection
-	 * @param array $config
+	 * Constructor
 	 */
-	public function __construct( CodeCollection $collection, array $config )
+	public function __construct() {}
+
+	public function setApi( ApiCollection $api ): void
 	{
-		$this->collection = $collection;
+		$this->api = $api;
+	}
+
+	public function setConfig( array $config ): void
+	{
 		$this->config = $config;
 	}
 
@@ -43,22 +48,12 @@ class Builder
 		$this->emptyDirectory($outputDir);
 		$path = $this->getOutputPath();
 
-		// Generate Tree Dump
-		$tree      = 'tree.txt';
-		$tree_path = $path . '/' . $tree;
-
-		ob_start();
-		var_dump( $this->collection->tree ); // phpcs:ignore
-		$contents = ob_get_clean();
-
-		$this->writeToFile( $tree_path, $contents );
-
 		// Generate Objects Dump
 		$objects      = 'objects.txt';
 		$objects_path = $path . '/' . $objects;
 
 		ob_start();
-		var_dump( $this->collection->objects ); // phpcs:ignore
+		require $this->config['_basedir'] . '/templates/default/objects.php';
 		$contents = ob_get_clean();
 
 		$this->writeToFile( $objects_path, $contents );

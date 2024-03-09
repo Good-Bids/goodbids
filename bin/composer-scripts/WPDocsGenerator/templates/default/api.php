@@ -4,10 +4,15 @@
  *
  * phpcs:disable
  *
+ * @var Builder $this
+ *
  * @package WPDocsGenerator
  */
 
+use Viget\ComposerScripts\WPDocsGenerator\Builders\Builder;
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
+
+echo 'API:' . PHP_EOL . PHP_EOL;
 
 /**
  * @param DocItem[] $items
@@ -43,4 +48,4 @@ function generateApi( array $items, string $current = '' ): void {
 	}
 }
 
-generateApi( $this->collection->tree );
+generateApi( $this->api->tree );

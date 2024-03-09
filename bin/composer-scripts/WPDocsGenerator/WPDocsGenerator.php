@@ -38,9 +38,9 @@ class WPDocsGenerator {
 	private ?ApiCollection $api = null;
 
 	/**
-	 * @var ?MultiplesCollection
+	 * @var ?ReferenceCollection
 	 */
-	private ?MultiplesCollection $multiples = null;
+	private ?ReferenceCollection $references = null;
 
 	/**
 	 * @var array
@@ -86,7 +86,8 @@ class WPDocsGenerator {
 		// Parse the PHP files into objects.
 		$this->parse( $dir );
 
-		$this->importCounts();
+		// Import references.
+		$this->importReferences();
 
 		// Group objects together, starting at the root of the tree.
 		$this->collect( $this->api->tree );
@@ -127,16 +128,20 @@ class WPDocsGenerator {
 				// Build API array.
 				$api = $this->parser->parseApi( $file, $relative, $this->api );
 
-				// Build Multiples array.
-				$multiples = $this->parser->parseMultiples( $file, $relative, $this->multiples );
-
 				if ( is_null( $api ) ) {
 					$this->script::writeError( 'Parser Collection Error: ' . $this->parser->error );
-					continue;
+				} else {
+					$this->api = $api;
 				}
 
-				$this->api = $api;
-				$this->multiples = $multiples;
+				// Build References array.
+				$references = $this->parser->parseReferences( $file, $relative, $this->references );
+
+				if ( is_null( $references ) ) {
+					$this->script::writeError( 'Parser Collection Error: ' . $this->parser->error );
+				} else {
+					$this->references = $references;
+				}
 			}
 		}
 
@@ -213,6 +218,13 @@ class WPDocsGenerator {
 			$api[$property->getReference()] = $this->collectReturnTypes($property);
 		}
 
+		if (! empty($api) ) {
+			$object->inApi = true;
+			if ( array_key_exists( $object->getReference(), $this->api->objects ) ) {
+				$this->api->objects[ $object->getReference() ]->inApi = true;
+			}
+		}
+
 		return $api;
 	}
 
@@ -232,15 +244,20 @@ class WPDocsGenerator {
 	 */
 	private function getBuilder(): Builder|MarkdownBuilder|HtmlBuilder
 	{
+		$builder = new Builder();
+
 		if ( 'markdown' === $this->config['format'] ) {
-			return new MarkdownBuilder( $this->api, $this->config );
+			$builder = new MarkdownBuilder();
 		}
 
 		if ( 'html' === $this->config['format'] ) {
-			return new HtmlBuilder( $this->api, $this->config );
+			$builder = new HtmlBuilder();
 		}
 
-		return new Builder( $this->api, $this->config );
+		$builder->setApi( $this->api );
+		$builder->setConfig( $this->config );
+
+		return $builder;
 	}
 
 	/**
@@ -252,11 +269,11 @@ class WPDocsGenerator {
 		$this->script::writeInfo( 'Documentation generated successfully.' );
 	}
 
-	private function importCounts(): void
+	private function importReferences(): void
 	{
-		foreach ( $this->multiples->newCounts as $reference => $count ) {
-			if ( array_key_exists( $reference, $this->api->objects ) ) {
-				$this->api->objects[$reference]->initCount = $count;
+		foreach ( $this->references->references as $reference ) {
+			if ( array_key_exists( $reference->reference, $this->api->objects ) ) {
+				$this->api->objects[ $reference->reference ]->references = $reference->uses;
 			}
 		}
 	}
