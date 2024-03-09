@@ -38,7 +38,7 @@ class Coupons {
 	 * @since 1.0.0
 	 * @var bool
 	 */
-	public bool $hyperdb_enabled = true;
+	private bool $hyperdb_enabled = true;
 
 	/**
 	 * Initialize Coupons
@@ -301,5 +301,16 @@ class Coupons {
 				return $query;
 			}
 		);
+	}
+
+	/**
+	 * Temporarily disable HyperDB
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function disable_hyperdb(): void {
+		$this->hyperdb_enabled = false;
 	}
 }

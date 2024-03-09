@@ -92,7 +92,8 @@ class Rewards {
 
 		if ( ! $rewards_category ) {
 			// Inserting the Rewards Category throws an error with HyperDB.
-			goodbids()->utilities->disable_hyperdb_temporarily();
+			// Temporarily disable HyperDB to avoid the error.
+			goodbids()->woocommerce->coupons->disable_hyperdb();
 
 			$rewards_category = wp_insert_term( 'Rewards', 'product_cat' );
 

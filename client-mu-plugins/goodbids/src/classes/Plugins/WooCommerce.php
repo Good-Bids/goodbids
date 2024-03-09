@@ -68,12 +68,6 @@ class WooCommerce {
 
 	/**
 	 * @since 1.0.0
-	 * @var ?Admin
-	 */
-	public ?Admin $admin = null;
-
-	/**
-	 * @since 1.0.0
 	 * @var ?Coupons
 	 */
 	public ?Coupons $coupons = null;
@@ -91,18 +85,6 @@ class WooCommerce {
 	public ?Cart $cart = null;
 
 	/**
-	 * @since 1.0.0
-	 * @var ?Checkout
-	 */
-	public ?Checkout $checkout = null;
-
-	/**
-	 * @since 1.0.0
-	 * @var ?Taxes
-	 */
-	public ?Taxes $taxes = null;
-
-	/**
 	 * Initialize WooCommerce Functionality
 	 *
 	 * @since 1.0.0
@@ -113,13 +95,19 @@ class WooCommerce {
 		}
 
 		// Init Submodules.
-		$this->account  = new Account();
-		$this->admin    = new Admin();
-		$this->coupons  = new Coupons();
-		$this->orders   = new Orders();
-		$this->cart     = new Cart();
-		$this->checkout = new Checkout();
-		$this->taxes    = new Taxes();
+		$this->account = new Account();
+		$this->coupons = new Coupons();
+		$this->orders  = new Orders();
+		$this->cart    = new Cart();
+
+		// Checkout Functionality.
+		new Checkout();
+
+		// Taxes Functionality.
+		new Taxes();
+
+		// Admin Adjustments.
+		new Admin();
 
 		// Some Stripe Tweaks.
 		new Stripe();

@@ -182,17 +182,6 @@ class Utilities {
 	}
 
 	/**
-	 * Disable HyperDB For the remainder of the current request.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function disable_hyperdb_temporarily(): void {
-		goodbids()->woocommerce->coupons->hyperdb_enabled = false;
-	}
-
-	/**
 	 * Helper for get_page_by_path
 	 *
 	 * @since 1.0.0
