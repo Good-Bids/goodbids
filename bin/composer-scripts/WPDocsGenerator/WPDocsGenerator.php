@@ -155,11 +155,15 @@ class WPDocsGenerator {
 	private function collectReturnTypes( DocItem $object ): DocItem
 	{
 		foreach ( $object->returnTypes as $returnType ) {
-			if ( ! array_key_exists( $returnType, $this->collection->objects ) ) {
-				continue;
+			if ( array_key_exists( $returnType, $this->collection->useStatements ) ) {
+				$returnType = $this->collection->useStatements[$returnType];
 			}
 
-			$returnObject = $this->collection->objects[ $returnType ];
+			if ( array_key_exists( $returnType, $this->collection->objects ) ) {
+				$returnObject = $this->collection->objects[$returnType];
+			} else {
+				continue;
+			}
 
 			// Exclude circular references.
 			if ( 'class' !== $returnObject->node || $returnObject->getReference() === $object->getReference() ) {

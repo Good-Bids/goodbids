@@ -53,12 +53,12 @@ class DocItem {
 	public array $constants = [];
 
 	/**
-	 * @var array
+	 * @var DocItem[]
 	 */
 	public array $properties = [];
 
 	/**
-	 * @var array
+	 * @var DocItem[]
 	 */
 	public array $methods = [];
 
@@ -157,9 +157,11 @@ class DocItem {
 	{
 		$reference = $this->name;
 
-		if ( 'function' === $this->node ) {
+		if ( in_array( $this->node, [ 'function', 'method' ], true ) ) {
 			$reference .= '()';
-			return $reference;
+			if ( 'function' === $this->node ) {
+				return $reference;
+			}
 		}
 
 		if ( 'constant' === $this->node ) {
@@ -175,8 +177,16 @@ class DocItem {
 		}
 
 		if ( $this->class ) {
-			$separator = $this->isStatic ? '::' : '->';
-			$reference = $this->class . $separator . $reference;
+			if ( '__construct' === $this->name ) {
+				$reference = $this->class . '()';
+			} else {
+				if ( 'public' === $this->access ) {
+					$separator = $this->isStatic ? '::' : '->';
+				} else {
+					$separator = $this->isStatic ? '⁙' : '-⊁';
+				}
+				$reference = $this->class . $separator . $reference;
+			}
 		}
 
 		if ( $this->namespace ) {

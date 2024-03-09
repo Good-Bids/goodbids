@@ -274,12 +274,15 @@ class CodeCollection extends NodeVisitorAbstract
 		}
 
 		// If the type has a namespace, return it as is
-		if (str_contains($typeString, '\\') || class_exists($typeString)) {
+		if (str_contains($typeString, '\\')) {
 			return $typeString;
 		}
 
 		// Check if we're not inside a namespace or the type doesn't start with a capital letter.
 		if (!array_key_exists($typeString, $this->useStatements)) {
+			if ( $this->currentNamespace && $typeString[0] === strtoupper($typeString[0]) ) {
+				$typeString = $this->currentNamespace . '\\' . $typeString;
+			}
 			return $typeString;
 		}
 
