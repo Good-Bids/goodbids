@@ -32,22 +32,6 @@ class Network {
 	public ?Invoices $invoices = null;
 
 	/**
-	 * Invoices
-	 *
-	 * @since 1.0.0
-	 * @var ?Auctions
-	 */
-	public ?Auctions $auctions = null;
-
-	/**
-	 * Invoices
-	 *
-	 * @since 1.0.0
-	 * @var ?Bidders
-	 */
-	public ?Bidders $bidders = null;
-
-	/**
 	 * Logs
 	 *
 	 * @since 1.0.0
@@ -62,10 +46,10 @@ class Network {
 		// Init Submodules.
 		$this->nonprofits = new Nonprofits();
 		$this->invoices   = new Invoices();
-		$this->auctions   = new Auctions();
-		$this->bidders    = new Bidders();
-
 		$this->logs       = new Logs();
+
+		new Auctions();
+		new Bidders();
 
 		// Setup API Endpoints.
 		$this->setup_api_endpoints();
