@@ -99,6 +99,10 @@ class CodeCollection extends NodeVisitorAbstract
 		}
 	}
 
+	/**
+	 * @param Node $node
+	 * @return void
+	 */
 	private function collectUseStatement(Node $node): void
 	{
 		foreach ($node->uses as $use) {
