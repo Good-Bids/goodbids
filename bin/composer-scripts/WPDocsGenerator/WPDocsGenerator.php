@@ -168,14 +168,20 @@ class WPDocsGenerator {
 		return $object;
 	}
 
+	/**
+	 * @param DocItem $object
+	 * @param int $depth
+	 * @return array
+	 */
 	private function collectPropertiesAndMethods( DocItem $object ): array
 	{
 		$api = [];
+
 		foreach ( $object->methods as $method ) {
 			if ( 'public' !== $method->access || in_array( $method->name, [ '__construct', 'get_instance' ], true ) ) {
 				continue;
 			}
-;
+
 			$api[$method->getReference()] = $this->collectReturnTypes($method);
 		}
 

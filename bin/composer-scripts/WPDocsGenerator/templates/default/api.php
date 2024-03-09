@@ -12,46 +12,35 @@ use Viget\ComposerScripts\WPDocsGenerator\DocItem;
 $objects = $this->collection->objects;
 
 /**
- * @param DocItem[] $tree
+ * @param DocItem[] $items
  * @param string $current
  * @return void
  */
 function generateApi( array $items, string $current = '' ): void {
-	foreach ( $items as $item ) {
-		if ( 'public' !== $item->access ) {
+	foreach ($items as $item) {
+		if ('public' !== $item->access) {
 			continue;
 		}
 
-		if ( ! empty( $item->api ) ) {
-			$current = $item->getReference( true );
-			echo 'API: ' . $current . PHP_EOL;
-
-			generateApi( $item->api, $current );
-			$current = '';
-
-			echo PHP_EOL;
-			continue;
-		}
-
-		if ( ! $current ) {
-			continue;
-		}
-
-		// Don't add static methods to the API.
-		if ( str_ends_with( $current, '()' ) && $item->isStatic ) {
-			continue;
-		}
-
-		$name      = $item->name;
+		$name = $item->name;
 		$separator = $item->isStatic ? '::' : '->';
 
-		if ( in_array( $item->node, [ 'function', 'method' ], true ) ) {
+		if (in_array($item->node, ['function', 'method'], true)) {
 			$name .= '()';
-		} elseif ( 'property' === $item->node && $item->isStatic ) {
+		} elseif ('property' === $item->node && $item->isStatic) {
 			$name = '$' . $name;
 		}
 
-		echo $current . $separator . $name . PHP_EOL;
+		$fullName = $current ? $current . $separator . $name : $name;
+
+		if ('property' !== $item->node || empty($item->api)) {
+			$append = 'property' === $item->node && ! count($item->api) ? ' (no API)' : '';
+			echo $fullName . $append . PHP_EOL;
+		}
+
+		if (!empty($item->api)) {
+			generateApi($item->api, $fullName);
+		}
 	}
 }
 

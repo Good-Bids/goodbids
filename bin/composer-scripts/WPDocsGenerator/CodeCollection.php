@@ -43,6 +43,11 @@ class CodeCollection extends NodeVisitorAbstract
 	private ?DocItem $currentFunction = null;
 
 	/**
+	 * @var string[]
+	 */
+	public array $useStatements = [];
+
+	/**
 	 * @var string
 	 */
 	public string $path = '';
@@ -62,6 +67,10 @@ class CodeCollection extends NodeVisitorAbstract
 	public function setPath( string $path ): void
 	{
 		$this->path = $path;
+
+		// Reset vars for new file.
+		$this->useStatements = [];
+		$this->currentNamespace = '';
 	}
 
 	/**
@@ -74,6 +83,8 @@ class CodeCollection extends NodeVisitorAbstract
 			$this->resetCurrentClass();
 			$this->resetCurrentFunction();
 			$this->currentNamespace = $node->name->toString();
+		} elseif ($node instanceof Node\Stmt\Use_) {
+			$this->collectUseStatement($node);
 		} elseif ($node instanceof Node\Stmt\Class_) {
 			$this->resetCurrentClass();
 			$this->resetCurrentFunction();
@@ -85,6 +96,18 @@ class CodeCollection extends NodeVisitorAbstract
 		} elseif ($node instanceof Node\Stmt\Const_) {
 			$this->resetCurrentFunction();
 			$this->collectConst($node);
+		}
+	}
+
+	private function collectUseStatement(Node $node): void
+	{
+		foreach ($node->uses as $use) {
+			if( in_array( $use->name->toString(), $this->useStatements, true ) ) {
+				continue;
+			}
+
+			$key = $use->alias ? $use->alias->name : $use->name->getLast();
+			$this->useStatements[ $key ] = $use->name->toString();
 		}
 	}
 
@@ -227,8 +250,6 @@ class CodeCollection extends NodeVisitorAbstract
 	}
 
 	/**
-	 * TODO: See getTypesArray.
-	 *
 	 * @param $type
 	 * @return string
 	 */
@@ -258,18 +279,14 @@ class CodeCollection extends NodeVisitorAbstract
 		}
 
 		// Check if we're not inside a namespace or the type doesn't start with a capital letter.
-		if (!$this->currentNamespace || !ctype_upper($typeString[0])) {
+		if (!array_key_exists($typeString, $this->useStatements)) {
 			return $typeString;
 		}
 
-		// Prepend the current namespace.
-		return $this->currentNamespace . '\\' . $typeString;
+		return $this->useStatements[$typeString];
 	}
 
 	/**
-	 * TODO: GoodBids\Utilities\Utilities NOT \GoodBids\Utilities
-	 * TODO: Get user References.
-	 *
 	 * @param $type
 	 * @return string[]
 	 */
