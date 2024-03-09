@@ -20,27 +20,22 @@ class CodeCollection extends NodeVisitorAbstract
 	/**
 	 * @var DocItem[]
 	 */
-	public array $tree = [];
-
-	/**
-	 * @var DocItem[]
-	 */
 	public array $objects = [];
 
 	/**
 	 * @var string
 	 */
-	private string $currentNamespace = '';
+	public string $currentNamespace = '';
 
 	/**
 	 * @var ?DocItem
 	 */
-	private ?DocItem $currentClass = null;
+	public ?DocItem $currentClass = null;
 
 	/**
 	 * @var ?DocItem
 	 */
-	private ?DocItem $currentFunction = null;
+	public ?DocItem $currentFunction = null;
 
 	/**
 	 * @var string[]
@@ -103,7 +98,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node $node
 	 * @return void
 	 */
-	private function collectUseStatement(Node $node): void
+	public function collectUseStatement(Node $node): void
 	{
 		foreach ($node->uses as $use) {
 			if( in_array( $use->name->toString(), $this->useStatements, true ) ) {
@@ -119,7 +114,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Function_ $node
 	 * @return void
 	 */
-	private function collectFunction(Function_ $node): void
+	public function collectFunction(Function_ $node): void
 	{
 		$functionDocItem = $this->createDocItem($node);
 		$this->addObject($functionDocItem );
@@ -129,7 +124,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Stmt\Class_ $node
 	 * @return void
 	 */
-	private function collectClass(Node\Stmt\Class_ $node): void
+	public function collectClass(Node\Stmt\Class_ $node): void
 	{
 		$classDocItem = $this->createDocItem($node);
 		$this->currentClass = $classDocItem;
@@ -144,7 +139,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Stmt\Class_ $node
 	 * @return void
 	 */
-	private function collectClassProperties(Node\Stmt\Class_ $node): void
+	public function collectClassProperties(Node\Stmt\Class_ $node): void
 	{
 		foreach ($node->stmts as $stmt) {
 			if ($stmt instanceof Node\Stmt\Property) {
@@ -159,7 +154,7 @@ class CodeCollection extends NodeVisitorAbstract
 					$propertyDocItem->defaultValue = $this->getPropertyDefaultValue($property);
 
 					$this->currentClass->addProperty($propertyDocItem);
-					$this->addObject($propertyDocItem, false);
+					$this->addObject($propertyDocItem);
 				}
 			}
 		}
@@ -169,7 +164,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Stmt\Class_ $node
 	 * @return void
 	 */
-	private function collectClassConstants(Node\Stmt\Class_ $node): void
+	public function collectClassConstants(Node\Stmt\Class_ $node): void
 	{
 		foreach ($node->stmts as $stmt) {
 			if ($stmt instanceof Node\Stmt\ClassConst) {
@@ -181,7 +176,7 @@ class CodeCollection extends NodeVisitorAbstract
 					$constDocItem->isStatic = true;
 
 					$this->currentClass->addConstant($constDocItem);
-					$this->addObject($constDocItem, false);
+					$this->addObject($constDocItem);
 				}
 			}
 		}
@@ -191,13 +186,13 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Stmt\Class_ $node
 	 * @return void
 	 */
-	private function collectClassMethods(Node\Stmt\Class_ $node): void
+	public function collectClassMethods(Node\Stmt\Class_ $node): void
 	{
 		foreach ($node->stmts as $stmt) {
 			if ($stmt instanceof Node\Stmt\ClassMethod) {
 				$methodDocItem = $this->createDocItem($stmt);
 				$this->currentClass->addMethod($methodDocItem);
-				$this->addObject($methodDocItem, false);
+				$this->addObject($methodDocItem);
 			}
 		}
 	}
@@ -207,7 +202,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Stmt\Const_ $node
 	 * @return void
 	 */
-	private function collectConst(Node\Stmt\Const_ $node): void
+	public function collectConst(Node\Stmt\Const_ $node): void
 	{
 		foreach ($node->consts as $const) {
 			$constDocItem = $this->createDocItem( $const );
@@ -220,12 +215,12 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Param[] $parameters
 	 * @return void
 	 */
-	private function collectParameters(array $parameters): void
+	public function collectParameters(array $parameters): void
 	{
 		foreach ($parameters as $param) {
 			$parameterDocItem = $this->createDocItem($param, $param->var->name);
 			$this->currentFunction->addParameter($parameterDocItem);
-			$this->addObject($parameterDocItem, false);
+			$this->addObject($parameterDocItem);
 		}
 	}
 
@@ -233,7 +228,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param mixed $expr
 	 * @return ?string
 	 */
-	private function getPropertyDefaultValue(mixed $expr): ?string
+	public function getPropertyDefaultValue(mixed $expr): ?string
 	{
 		if ($expr instanceof Node\PropertyItem) {
 			return $this->getPropertyDefaultValue($expr->default);
@@ -257,7 +252,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param $type
 	 * @return string
 	 */
-	private function getTypeString($type): string
+	public function getTypeString($type): string
 	{
 		if ($type instanceof Node\UnionType) {
 			$typeString = implode(
@@ -297,7 +292,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param $type
 	 * @return string[]
 	 */
-	private function getTypesArray($type): array
+	public function getTypesArray($type): array
 	{
 		if ($type instanceof Node\UnionType) {
 			return array_map(
@@ -324,7 +319,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param ClassMethod $stmt
 	 * @return string
 	 */
-	private function getAccessLevel(ClassMethod $stmt): string
+	public function getAccessLevel(ClassMethod $stmt): string
 	{
 		if ($stmt->isPublic()) {
 			return 'public';
@@ -341,7 +336,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node\Stmt\Property $stmt
 	 * @return string
 	 */
-	private function getPropertyAccessLevel(Node\Stmt\Property $stmt): string
+	public function getPropertyAccessLevel(Node\Stmt\Property $stmt): string
 	{
 		if ($stmt->isPublic()) {
 			return 'public';
@@ -360,7 +355,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param ?int $startLine
 	 * @return DocItem
 	 */
-	private function createDocItem(Node $node, string $name = null, int $startLine = null): DocItem
+	public function createDocItem(Node $node, string $name = null, int $startLine = null): DocItem
 	{
 		if ( is_null( $name ) ) {
 			$name = is_string( $node->name ) ? $node->name : $node->name->toString();
@@ -423,7 +418,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param $node
 	 * @return string
 	 */
-	private function getNodeType($node): string
+	public function getNodeType($node): string
 	{
 		$class = get_class( $node );
 
@@ -442,23 +437,18 @@ class CodeCollection extends NodeVisitorAbstract
 
 	/**
 	 * @param DocItem $docItem
-	 * @param bool $addToTree
 	 * @return void
 	 */
-	private function addObject(DocItem $docItem, bool $addToTree = true): void
+	public function addObject(DocItem $docItem): void
 	{
 		$this->objects[$docItem->getReference()] = $docItem;
-
-		if ( $addToTree ) {
-			$this->tree[$docItem->getReference( true )] = $docItem;
-		}
 	}
 
 	/**
 	 * @param $type
 	 * @return bool
 	 */
-	private function isNullable($type): bool
+	public function isNullable($type): bool
 	{
 		return $type instanceof Node\NullableType;
 	}
@@ -467,7 +457,7 @@ class CodeCollection extends NodeVisitorAbstract
 	 * @param Node $node
 	 * @return string
 	 */
-	private function getDescription(Node $node): string
+	public function getDescription(Node $node): string
 	{
 		$comments = $node->getComments();
 		$description = '';
@@ -505,7 +495,7 @@ class CodeCollection extends NodeVisitorAbstract
 	/**
 	 * @return void
 	 */
-	private function resetCurrentClass(): void
+	public function resetCurrentClass(): void
 	{
 		$this->currentClass = null;
 	}
@@ -513,7 +503,7 @@ class CodeCollection extends NodeVisitorAbstract
 	/**
 	 * @return void
 	 */
-	private function resetCurrentFunction(): void
+	public function resetCurrentFunction(): void
 	{
 		$this->currentFunction = null;
 	}

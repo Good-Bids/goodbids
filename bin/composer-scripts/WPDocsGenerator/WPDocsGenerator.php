@@ -33,9 +33,14 @@ class WPDocsGenerator {
 	private ?Parser $parser = null;
 
 	/**
-	 * @var ?CodeCollection
+	 * @var ?ApiCollection
 	 */
-	private ?CodeCollection $collection = null;
+	private ?ApiCollection $api = null;
+
+	/**
+	 * @var ?MultiplesCollection
+	 */
+	private ?MultiplesCollection $multiples = null;
 
 	/**
 	 * @var array
@@ -81,8 +86,10 @@ class WPDocsGenerator {
 		// Parse the PHP files into objects.
 		$this->parse( $dir );
 
+		$this->importCounts();
+
 		// Group objects together, starting at the root of the tree.
-		$this->collect( $this->collection->tree );
+		$this->collect( $this->api->tree );
 
 		// Generate the docs.
 		$this->build();
@@ -116,14 +123,20 @@ class WPDocsGenerator {
 		if ( ! empty( $files ) ) {
 			foreach ( $files as $file ) {
 				$relative = str_replace( $this->config['source'], basename( $this->config['source'] ) . '/', $file );
-				$collection = $this->parser->parse( $file, $relative, $this->collection );
 
-				if ( is_null( $collection ) ) {
+				// Build API array.
+				$api = $this->parser->parseApi( $file, $relative, $this->api );
+
+				// Build Multiples array.
+				$multiples = $this->parser->parseMultiples( $file, $relative, $this->multiples );
+
+				if ( is_null( $api ) ) {
 					$this->script::writeError( 'Parser Collection Error: ' . $this->parser->error );
 					continue;
 				}
 
-				$this->collection = $collection;
+				$this->api = $api;
+				$this->multiples = $multiples;
 			}
 		}
 
@@ -155,12 +168,12 @@ class WPDocsGenerator {
 	private function collectReturnTypes( DocItem $object ): DocItem
 	{
 		foreach ( $object->returnTypes as $returnType ) {
-			if ( array_key_exists( $returnType, $this->collection->useStatements ) ) {
-				$returnType = $this->collection->useStatements[$returnType];
+			if ( array_key_exists( $returnType, $this->api->useStatements ) ) {
+				$returnType = $this->api->useStatements[$returnType];
 			}
 
-			if ( array_key_exists( $returnType, $this->collection->objects ) ) {
-				$returnObject = $this->collection->objects[$returnType];
+			if ( array_key_exists( $returnType, $this->api->objects ) ) {
+				$returnObject = $this->api->objects[$returnType];
 			} else {
 				continue;
 			}
@@ -220,14 +233,14 @@ class WPDocsGenerator {
 	private function getBuilder(): Builder|MarkdownBuilder|HtmlBuilder
 	{
 		if ( 'markdown' === $this->config['format'] ) {
-			return new MarkdownBuilder( $this->collection, $this->config );
+			return new MarkdownBuilder( $this->api, $this->config );
 		}
 
 		if ( 'html' === $this->config['format'] ) {
-			return new HtmlBuilder( $this->collection, $this->config );
+			return new HtmlBuilder( $this->api, $this->config );
 		}
 
-		return new Builder( $this->collection, $this->config );
+		return new Builder( $this->api, $this->config );
 	}
 
 	/**
@@ -237,5 +250,14 @@ class WPDocsGenerator {
 	private function finish(): void
 	{
 		$this->script::writeInfo( 'Documentation generated successfully.' );
+	}
+
+	private function importCounts(): void
+	{
+		foreach ( $this->multiples->newCounts as $reference => $count ) {
+			if ( array_key_exists( $reference, $this->api->objects ) ) {
+				$this->api->objects[$reference]->initCount = $count;
+			}
+		}
 	}
 }

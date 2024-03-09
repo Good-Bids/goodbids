@@ -48,19 +48,9 @@ class DocItem {
 	public ?string $function = null;
 
 	/**
-	 * @var array
+	 * @var int
 	 */
-	public array $constants = [];
-
-	/**
-	 * @var DocItem[]
-	 */
-	public array $properties = [];
-
-	/**
-	 * @var DocItem[]
-	 */
-	public array $methods = [];
+	public int $initCount = 0;
 
 	/**
 	 * @var ?string
@@ -78,16 +68,6 @@ class DocItem {
 	public bool $isNullable = false;
 
 	/**
-	 * @var array
-	 */
-	public array $returnTypes = [];
-
-	/**
-	 * @var array
-	 */
-	public array $parameters = [];
-
-	/**
 	 * @var string
 	 */
 	public string $description = '';
@@ -96,6 +76,31 @@ class DocItem {
 	 * @var mixed
 	 */
 	public mixed $defaultValue = null;
+
+	/**
+	 * @var array
+	 */
+	public array $constants = [];
+
+	/**
+	 * @var DocItem[]
+	 */
+	public array $properties = [];
+
+	/**
+	 * @var DocItem[]
+	 */
+	public array $methods = [];
+
+	/**
+	 * @var array
+	 */
+	public array $returnTypes = [];
+
+	/**
+	 * @var array
+	 */
+	public array $parameters = [];
 
 	/**
 	 * @var DocItem[]
