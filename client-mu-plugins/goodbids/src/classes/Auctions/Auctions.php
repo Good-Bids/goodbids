@@ -14,11 +14,9 @@ use GoodBids\Core;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
-use WC_Product_Variation;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
-use WP_Role;
 
 /**
  * Class for Auctions
@@ -101,6 +99,9 @@ class Auctions {
 		// Init Auction Wizard.
 		$this->wizard = new Wizard();
 
+		// Admin Actions.
+		new Admin();
+
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
 			'interval' => MINUTE_IN_SECONDS,
@@ -132,12 +133,6 @@ class Auctions {
 
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
-
-		// Add Auction Meta Box to display details and metrics.
-		$this->add_info_meta_box();
-
-		// Add custom Admin Columns for Auctions.
-		$this->add_admin_columns();
 
 		// Configure some values for new Auction posts.
 		$this->new_auction_post_init();
@@ -631,34 +626,6 @@ class Auctions {
 	}
 
 	/**
-	 * Add a meta box to show Auction metrics and other details.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_info_meta_box(): void {
-		add_action(
-			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
-
-				if ( $this->get_post_type() !== $screen->id ) {
-					return;
-				}
-
-				add_meta_box(
-					'goodbids-auction-info',
-					__( 'Auction Info', 'goodbids' ),
-					[ $this, 'info_meta_box' ],
-					$screen->id,
-					'side'
-				);
-			}
-		);
-	}
-
-	/**
 	 * Clear Metric Transients on new Bid Order.
 	 *
 	 * @since 1.0.0
@@ -703,119 +670,6 @@ class Auctions {
 		foreach ( $transients as $transient ) {
 			delete_transient( $transient );
 		}
-	}
-
-	/**
-	 * Display the Auction Metrics and other details.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function info_meta_box(): void {
-		$auction_id = $this->get_auction_id();
-
-		// Display the Auction Details.
-		goodbids()->load_view( 'admin/auctions/details.php', compact( 'auction_id' ) );
-
-		echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
-
-		// Display the Auction Metrics.
-		goodbids()->load_view( 'admin/auctions/metrics.php', compact( 'auction_id' ) );
-	}
-
-	/**
-	 * Insert custom metrics admin columns
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_admin_columns(): void {
-		add_filter(
-			'manage_' . $this->get_post_type() . '_posts_columns',
-			function ( array $columns ): array {
-				$new_columns = [];
-
-				foreach ( $columns as $column => $label ) {
-					$new_columns[ $column ] = $label;
-
-					// Insert Custom Columns after the Title column.
-					if ( 'title' === $column ) {
-						$new_columns['status']        = __( 'Status', 'goodbids' );
-						$new_columns['starting_bid']  = __( 'Starting Bid', 'goodbids' );
-						$new_columns['bid_increment'] = __( 'Bid Increment', 'goodbids' );
-						$new_columns['total_bids']    = __( 'Total Bids', 'goodbids' );
-						$new_columns['total_raised']  = __( 'Total Raised', 'goodbids' );
-						$new_columns['last_bid']      = __( 'Last Bid', 'goodbids' );
-						$new_columns['current_bid']   = __( 'Current Bid', 'goodbids' );
-					}
-				}
-
-				return $new_columns;
-			}
-		);
-
-		add_action(
-			'manage_' . $this->get_post_type() . '_posts_custom_column',
-			function ( string $column, int $post_id ) {
-				// Columns that require a "published" status.
-				$published_cols = [
-					'starting_bid',
-					'bid_increment',
-					'total_bids',
-					'total_raised',
-					'last_bid',
-					'current_bid',
-				];
-
-				// Bail early if Auction isn't published.
-				if ( in_array( $column, $published_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
-					echo '&mdash;';
-					return;
-				}
-
-				$auction = goodbids()->auctions->get( $post_id );
-
-				// Output the column values.
-				if ( 'status' === $column ) {
-					$status = $auction->get_status();
-					$title  = $status;
-
-					if ( Auction::STATUS_LIVE === $status ) {
-						$title = __( 'Ends', 'goodbids' ) . ': ' . $auction->get_end_date_time();
-					} elseif ( Auction::STATUS_UPCOMING === $status ) {
-						$title = __( 'Starts', 'goodbids' ) . ': ' . $auction->get_start_date_time();
-					} elseif ( Auction::STATUS_CLOSED === $status ) {
-						$title = __( 'Ended', 'goodbids' ) . ': ' . $auction->get_end_date_time();
-					}
-
-					printf(
-						'<span title="%s" class="goodbids-status status-%s">%s</span>',
-						esc_attr( $title ),
-						esc_attr( strtolower( $status ) ),
-						esc_html( $status )
-					);
-				} elseif ( 'starting_bid' === $column ) {
-					echo wp_kses_post( wc_price( $auction->calculate_starting_bid() ) );
-				} elseif ( 'bid_increment' === $column ) {
-					echo wp_kses_post( wc_price( $auction->get_bid_increment() ) );
-				} elseif ( 'total_bids' === $column ) {
-					echo esc_html( $auction->get_bid_count() );
-				} elseif ( 'total_raised' === $column ) {
-					echo wp_kses_post( wc_price( $auction->get_total_raised() ) );
-				} elseif ( 'last_bid' === $column ) {
-					$last_bid = $auction->get_last_bid();
-					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
-				} elseif ( 'current_bid' === $column ) {
-					/** @var WC_Product_Variation $bid_variation */
-					$bid_variation = goodbids()->bids->get_variation( $post_id );
-					echo $bid_variation ? wp_kses_post( wc_price( $bid_variation->get_price() ) ) : '';
-				}
-			},
-			10,
-			2
-		);
 	}
 
 	/**

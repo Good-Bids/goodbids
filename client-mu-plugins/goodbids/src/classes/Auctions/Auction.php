@@ -94,6 +94,14 @@ class Auction {
 	private ?int $auction_id;
 
 	/**
+	 * Use metadata or get_field()
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	private bool $use_meta = false;
+
+	/**
 	 * Initialize Auctions
 	 *
 	 * @param ?int $auction_id
@@ -234,9 +242,32 @@ class Auction {
 	 * @return mixed
 	 */
 	public function get_setting( string $meta_key ): mixed {
-		$value = get_field( $meta_key, $this->get_id() );
+		if ( $this->use_meta ) {
+			$value = get_post_meta( $this->get_id(), $meta_key, true );
+		} else {
+			$value = get_field( $meta_key, $this->get_id() );
+		}
 
 		return apply_filters( 'goodbids_auction_setting', $value, $meta_key, $this->get_id() );
+	}
+
+	/**
+	 * Get the Auction Meta
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $meta_key
+	 *
+	 * @return mixed
+	 */
+	public function get_meta( string $meta_key ): mixed {
+		$this->use_meta = true;
+
+		if ( method_exists( $this, 'get_' . $meta_key ) ) {
+			return $this->{'get_' . $meta_key}();
+		}
+
+		return $this->get_setting( $meta_key );
 	}
 
 	/**
