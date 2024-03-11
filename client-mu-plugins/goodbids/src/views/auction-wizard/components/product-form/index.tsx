@@ -87,7 +87,7 @@ export function ProductForm({ shippingClasses }: ProductFormProps) {
 				}
 				startAdornment={<MoneyIcon width={20} />}
 				supportingText={__(
-					"This is for internal purposes only and is not shown to bidders. If you'd like to share an estimated retail value for the reward, add it on the next step.",
+					'This is for internal purposes only and is not shown to bidders.',
 					'goodbids',
 				)}
 			/>
