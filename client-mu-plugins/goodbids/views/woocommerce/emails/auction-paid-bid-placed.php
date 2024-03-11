@@ -23,19 +23,24 @@ do_action( 'woocommerce_email_header', $email_heading );
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: User last bid, %2$s: Auction Title, %3$s: Auction reward title, %4$s: Site title, %5$s days to claim reward */
-		esc_html__( 'Congratulations! Your %1$s bid was the highest GOODBID for the %2$s auction, and you are the winner. Please claim your %3$s with %4$s within %5$s days.', 'goodbids' ),
-		'{user.last_bid_amount}',
+		/* translators: %1$s: Bid amount, %2$s: Auction Title, %3$s: Site title, %4$s: Bid date, %5$s: Site title %6$s: Bid amount */
+		esc_html__( 'This is confirmation of your bid for %1$s to the %2$s auction for %3$s on %4$s. You have supported %5$s on this auction with a total donation of %6$s.', 'goodbids' ),
+		'TODO{auction.bid}',
 		'{auction.title}',
-		'{reward.title}',
 		'{site_title}',
-		'{reward.days_to_claim_setting}'
+		'TODO{auction.bid.date}',
+		'{site_title}',
+		'TODO{auction.bid.amount}'
 	);
 	?>
 </p>
 
+<?php // TODO: ADD BID DETAILS TABLE HERE ?>
+
 <p>
-	{reward.purchase_note}
+	<?php
+		echo esc_html__( 'Keep an eye on the Auction page for live bidding updates. We will let you know if you are outbid before the auction closes.', 'goodbids' );
+	?>
 </p>
 
 <?php

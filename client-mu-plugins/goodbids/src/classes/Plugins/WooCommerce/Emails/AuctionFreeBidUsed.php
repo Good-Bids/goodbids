@@ -69,16 +69,16 @@ class AuctionFreeBidUsed extends Email {
 	 * @return void
 	 */
 	private function trigger_on_auction_end(): void {
-		add_action(
-			'goodbids_auction_end',
-			function ( int $auction_id ) {
-				$auction = goodbids()->auctions->get( $auction_id );
-				$this->send_to_watchers( $auction );
-				$this->send_to_bidders( $auction );
-			},
-			10,
-			2
-		);
+		// TODO: Fire Trigger
+		// add_action(
+		// 'goodbids_auction_end',
+		// function ( int $auction_id ) {
+		// $auction = goodbids()->auctions->get( $auction_id );
+		// $this->send_to_bidders( $auction );
+		// },
+		// 10,
+		// 2
+		// );
 	}
 
 	/**
@@ -90,7 +90,7 @@ class AuctionFreeBidUsed extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s auction has ended', 'goodbids' ),
+			__( '[%1$s] %2$s Confirmation', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -103,12 +103,7 @@ class AuctionFreeBidUsed extends Email {
 	 * @return string
 	 */
 	public function get_default_heading(): string {
-		return sprintf(
-			/* translators: %1$s: Site Title, %2$s: Total Raised by Auction */
-			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
-			'{site_title}',
-			'{auction.total_raised}'
-		);
+		return __( 'Thanks for using your free bid!', 'goodbids' );
 	}
 
 	/**
@@ -118,7 +113,7 @@ class AuctionFreeBidUsed extends Email {
 	 * @return string
 	 */
 	public function get_default_button_text(): string {
-		return __( 'See Auction Results', 'goodbids' );
+		return __( 'Track this Auction', 'goodbids' );
 	}
 
 	/**
