@@ -21,11 +21,35 @@ use GoodBids\Utilities\Log;
 class Users {
 
 	/**
+	 * @since 1.0.0
+	 */
+	const FREE_BID_NONCE = 'goodbids_grant_free_bid_nonce';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const FREE_BID_NONCE_ACTION = 'grant_free_bid';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const FREE_BID_REASON_FIELD = 'free_bid_reason';
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.0.0
 	 */
-	public function __construct() {}
+	public function __construct() {
+		// Add UI for Super Admins to grant free bids to users.
+		$this->free_bid_user_fields();
+
+		// Handle Free Bid via AJAX.
+		$this->grant_free_bid_ajax();
+
+		// Set up JS Vars.
+		$this->free_bid_js_vars();
+	}
 
 	/**
 	 * Get an array of all free bids for a User, filterable by status.
@@ -81,14 +105,19 @@ class Users {
 	 * @since 1.0.0
 	 *
 	 * @param int $user_id
-	 * @param int $auction_id
+	 * @param ?int $auction_id
 	 * @param string $type
 	 * @param string $details
 	 *
 	 * @return bool
 	 */
-	public function award_free_bid( int $user_id, int $auction_id, string $type = FreeBid::TYPE_PAID_BID, string $details = '' ): bool {
-		$free_bid = new FreeBid( $auction_id );
+	public function award_free_bid( int $user_id, ?int $auction_id = null, string $type = FreeBid::TYPE_PAID_BID, string $details = '' ): bool {
+		$free_bid = new FreeBid();
+
+		if ( $auction_id ) {
+			$free_bid->set_auction_id( $auction_id );
+		}
+
 		$free_bid->set_type( $type );
 		$free_bid->set_details( $details );
 
@@ -197,5 +226,131 @@ class Users {
 		}
 
 		return $emails;
+	}
+
+	/**
+	 * Display the Grant Free Bid Admin UI
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function free_bid_user_fields(): void {
+		$profile_fields = function ( \WP_User $user ): void {
+			if ( is_user_admin() || get_current_user_id() === $user->ID ) {
+				return;
+			}
+
+			$user_id = $user->ID;
+
+			goodbids()->load_view( 'admin/users/grant-free-bid.php', compact( 'user_id' ) );
+		};
+
+		add_action( 'show_user_profile', $profile_fields, 1 );
+		add_action( 'edit_user_profile', $profile_fields, 1 );
+	}
+
+	/**
+	 * Set up JS Vars
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function free_bid_js_vars(): void {
+		add_action(
+			'goodbids_enqueue_admin_scripts',
+			function ( $handle ) {
+				wp_localize_script(
+					$handle,
+					'goodbidsFreeBids',
+					[
+						'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+						'reasonFieldId'   => self::FREE_BID_REASON_FIELD,
+						'validationAlert' => [
+							'title' => __( 'Validation Error', 'goodbids' ),
+							'error' => __( 'Missing reason for granting free bid.', 'goodbids' ),
+						],
+						'errorAlert'      => [
+							'title' => __( 'Error', 'goodbids' ),
+						],
+						'confirmedAlert'  => [
+							'title' => __( 'Success!', 'goodbids' ),
+							'text'  => __( 'The free bid was successfully granted.', 'goodbids' ),
+						],
+						'grantAction'     => 'goodbids_admin_grant_free_bid',
+						'nonceGrant'      => wp_create_nonce( self::FREE_BID_NONCE_ACTION ),
+					]
+				);
+			}
+		);
+	}
+
+	/**
+	 * Handle the AJAX action to grant the free bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function grant_free_bid_ajax(): void {
+		add_action(
+			'wp_ajax_goodbids_admin_grant_free_bid',
+			function () {
+				list( $user_id, $reason ) = $this->ajax_request_validation();
+
+				if ( $user_id === get_current_user_id() ) {
+					wp_send_json_error(
+						[
+							'error' => __( 'You are not allowed to grant free bids to yourself.', 'goodbids' ),
+						],
+						200
+					);
+					wp_die();
+				}
+
+				if ( ! $reason ) {
+					wp_send_json_error(
+						[
+							'error' => __( 'Missing reason for granting free bid.', 'goodbids' ),
+						],
+						200
+					);
+					wp_die();
+				}
+
+				$this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason );
+
+				wp_send_json_success( [ 'done' ] );
+			}
+		);
+	}
+
+	/**
+	 * Validate Free Bid Grant Nonce and return user_id and details
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	private function ajax_request_validation(): array {
+		check_ajax_referer( self::FREE_BID_NONCE_ACTION, 'nonce' );
+
+		$data    = wp_unslash( $_POST );
+		$user_id = intvaL( sanitize_text_field( $data['user_ids'] ) );
+		$details = sanitize_text_field( $data['reason'] );
+
+		if ( ! is_numeric( $user_id ) || ! ( new \WP_User( $user_id ) ) ) {
+			wp_send_json_error(
+				[
+					'Invalid data',
+					$user_id,
+				],
+				422
+			);
+			wp_die();
+		}
+
+		return [ $user_id, $details ];
 	}
 }
