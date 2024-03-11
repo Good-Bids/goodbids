@@ -16,9 +16,12 @@ use GoodBids\Plugins\WooCommerce\Cart;
 use GoodBids\Plugins\WooCommerce\Checkout;
 use GoodBids\Plugins\WooCommerce\Coupons;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionFreeBidUsed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionPaidBidPlaced;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardClaimed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
@@ -508,9 +511,12 @@ class WooCommerce {
 			function ( array $email_classes ): array {
 				$goodbids_emails = [
 					'AuctionClosed'             => new AuctionClosed(),
+					'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
 					'AuctionIsLive'             => new AuctionIsLive(),
 					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
 					'AuctionOutbid'             => new AuctionOutbid(),
+					'AuctionPaidBidPlaced'      => new AuctionPaidBidPlaced(),
+					'AuctionRewardClaimed'      => new AuctionRewardClaimed(),
 					'AuctionRewardReminder'     => new AuctionRewardReminder(),
 					'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
 					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
@@ -764,7 +770,7 @@ class WooCommerce {
 
 		add_filter(
 			'woocommerce_email_get_option',
-			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+			function ( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
 				if ( 'new_order' !== $email->id || 'enabled' !== $key ) {
 					return $value;
 				}
@@ -790,7 +796,7 @@ class WooCommerce {
 
 		add_filter(
 			'woocommerce_email_get_option',
-			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+			function ( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
 				if ( 'customer_processing_order' !== $email->id || 'enabled' !== $key ) {
 					return $value;
 				}
@@ -812,7 +818,7 @@ class WooCommerce {
 	 * @return void
 	 */
 	private function skip_setup_tasks(): void {
-		$hide_setup_steps = function( array $lists ) {
+		$hide_setup_steps = function ( array $lists ) {
 			// Hide Initial Steps
 			$lists['setup']->visible = false;
 
