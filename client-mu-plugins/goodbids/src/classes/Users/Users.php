@@ -12,6 +12,7 @@ use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\FreeBid;
 use GoodBids\Plugins\WooCommerce\Coupons;
 use GoodBids\Utilities\Log;
+use WP_User;
 
 /**
  * User Class
@@ -23,12 +24,7 @@ class Users {
 	/**
 	 * @since 1.0.0
 	 */
-	const FREE_BID_NONCE = 'goodbids_grant_free_bid_nonce';
-
-	/**
-	 * @since 1.0.0
-	 */
-	const FREE_BID_NONCE_ACTION = 'grant_free_bid';
+	const FREE_BID_NONCE_ACTION = 'admin_grant_free_bid';
 
 	/**
 	 * @since 1.0.0
@@ -236,7 +232,7 @@ class Users {
 	 * @return void
 	 */
 	private function free_bid_user_fields(): void {
-		$profile_fields = function ( \WP_User $user ): void {
+		$profile_fields = function ( WP_User $user ): void {
 			if ( is_user_admin() || get_current_user_id() === $user->ID ) {
 				return;
 			}
@@ -319,7 +315,15 @@ class Users {
 					wp_die();
 				}
 
-				$this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason );
+				if ( ! $this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason ) ) {
+					wp_send_json_error(
+						[
+							'error' => __( 'There was a problem granting the free bid.', 'goodbids' ),
+						],
+						200
+					);
+					wp_die();
+				}
 
 				wp_send_json_success( [ 'done' ] );
 			}
@@ -337,20 +341,19 @@ class Users {
 		check_ajax_referer( self::FREE_BID_NONCE_ACTION, 'nonce' );
 
 		$data    = wp_unslash( $_POST );
-		$user_id = intvaL( sanitize_text_field( $data['user_ids'] ) );
-		$details = sanitize_text_field( $data['reason'] );
+		$user_id = intvaL( sanitize_text_field( $data['user_id'] ) );
+		$reason  = sanitize_text_field( $data['reason'] );
 
-		if ( ! is_numeric( $user_id ) || ! ( new \WP_User( $user_id ) ) ) {
+		if ( ! $user_id || ! ( new WP_User( $user_id ) ) ) {
 			wp_send_json_error(
 				[
-					'Invalid data',
-					$user_id,
+					'error' => __( 'Invalid data', 'goodbids' ),
 				],
-				422
+				200
 			);
 			wp_die();
 		}
 
-		return [ $user_id, $details ];
+		return [ $user_id, $reason ];
 	}
 }

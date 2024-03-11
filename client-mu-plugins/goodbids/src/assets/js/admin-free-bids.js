@@ -40,7 +40,7 @@ $(() => {
 			data: {
 				action: goodbidsFreeBids.grantAction,
 				nonce: goodbidsFreeBids.nonceGrant,
-				userid: userId,
+				user_id: userId,
 				reason,
 			},
 			success: function (response) {
@@ -52,7 +52,7 @@ $(() => {
 					Swal.fire(
 						goodbidsFreeBids.errorAlert.title,
 						response.data.error,
-						'success',
+						'error',
 					);
 					return;
 				}
