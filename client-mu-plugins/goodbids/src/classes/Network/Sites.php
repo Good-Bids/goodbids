@@ -447,7 +447,7 @@ class Sites {
 				$existing   = get_option( self::ABOUT_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $existing || goodbids()->utilities->get_page_by_path( $about_slug ) ) {
+				if ( $existing || get_page_by_path( $about_slug ) ) {
 					return;
 				}
 
@@ -488,7 +488,7 @@ class Sites {
 				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $existing || goodbids()->utilities->get_page_by_path( $auctions_slug ) ) {
+				if ( $existing || get_page_by_path( $auctions_slug ) ) {
 					return;
 				}
 
@@ -525,7 +525,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$page = goodbids()->utilities->get_page_by_path( 'sample-page' );
+				$page = get_page_by_path( 'sample-page' );
 
 				if ( ! $page ) {
 					return;
@@ -616,7 +616,7 @@ class Sites {
 	public function get_report_issue_link(): ?string {
 		return $this->main(
 			function (): string {
-				$report_issue_page = goodbids()->utilities->get_page_by_path( 'report-an-issue' );
+				$report_issue_page = get_page_by_path( 'report-an-issue' );
 
 				if ( ! $report_issue_page ) {
 					return '';
