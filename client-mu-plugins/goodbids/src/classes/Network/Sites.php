@@ -798,7 +798,7 @@ class Sites {
 	 */
 	public function clear_all_site_transients(): void {
 		$this->loop(
-			fn () => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
+			fn () => goodbids()->auctions->clear_transients(),
 		);
 	}
 
