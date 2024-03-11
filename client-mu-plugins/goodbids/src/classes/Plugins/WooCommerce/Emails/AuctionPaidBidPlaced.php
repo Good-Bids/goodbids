@@ -73,7 +73,6 @@ class AuctionPaidBidPlaced extends Email {
 			'goodbids_auction_end',
 			function ( int $auction_id ) {
 				$auction = goodbids()->auctions->get( $auction_id );
-				$this->send_to_watchers( $auction );
 				$this->send_to_bidders( $auction );
 			},
 			10,
@@ -89,10 +88,9 @@ class AuctionPaidBidPlaced extends Email {
 	 */
 	public function get_default_subject(): string {
 		return sprintf(
-			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s auction has ended', 'goodbids' ),
+			/* translators: %1$s: site title */
+			__( '[%1$s] Bid for Bike For Good Confirmation', 'goodbids' ),
 			'{site_title}',
-			'{auction.title}'
 		);
 	}
 
@@ -103,12 +101,7 @@ class AuctionPaidBidPlaced extends Email {
 	 * @return string
 	 */
 	public function get_default_heading(): string {
-		return sprintf(
-			/* translators: %1$s: Site Title, %2$s: Total Raised by Auction */
-			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
-			'{site_title}',
-			'{auction.total_raised}'
-		);
+		return __( 'Thanks for bidding!', 'goodbids' );
 	}
 
 	/**
@@ -118,7 +111,7 @@ class AuctionPaidBidPlaced extends Email {
 	 * @return string
 	 */
 	public function get_default_button_text(): string {
-		return __( 'See Auction Results', 'goodbids' );
+		return __( 'Track this Auction', 'goodbids' );
 	}
 
 	/**
