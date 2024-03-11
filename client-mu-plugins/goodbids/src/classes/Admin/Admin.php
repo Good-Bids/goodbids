@@ -133,7 +133,7 @@ class Admin {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() ) {
+				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() || is_super_admin() ) {
 					return;
 				}
 
@@ -156,7 +156,7 @@ class Admin {
 		add_filter(
 			'woocommerce_admin_features',
 			function ( array $features ): array {
-				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() ) {
+				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() || is_super_admin() ) {
 					return $features;
 				}
 
@@ -179,7 +179,7 @@ class Admin {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( ! current_user_can( Permissions::JR_ADMIN_ROLE ) || is_main_site() ) {
+				if ( ! current_user_can( Permissions::JR_ADMIN_ROLE ) || is_main_site() || is_super_admin() ) {
 					return;
 				}
 
@@ -200,7 +200,7 @@ class Admin {
 		add_filter(
 			'woocommerce_admin_features',
 			function ( array $features ): array {
-				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() ) {
+				if ( ! current_user_can( Permissions::BDP_ADMIN_ROLE ) || ! is_main_site() || is_super_admin() ) {
 					return $features;
 				}
 
