@@ -16,6 +16,7 @@ use GoodBids\Plugins\WooCommerce\Cart;
 use GoodBids\Plugins\WooCommerce\Checkout;
 use GoodBids\Plugins\WooCommerce\Coupons;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionFreeBidEarned;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionFreeBidUsed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
@@ -511,6 +512,7 @@ class WooCommerce {
 			function ( array $email_classes ): array {
 				$goodbids_emails = [
 					'AuctionClosed'             => new AuctionClosed(),
+					'AuctionFreeBidEarned'      => new AuctionFreeBidEarned(),
 					'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
 					'AuctionIsLive'             => new AuctionIsLive(),
 					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),

@@ -28,11 +28,11 @@ class AuctionRewardClaimed extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_closed';
-		$this->title          = __( 'Auction Closed', 'goodbids' );
-		$this->description    = __( 'Notification email sent to all participants when an auction closes.', 'goodbids' );
-		$this->template_html  = 'emails/auction-closed.php';
-		$this->template_plain = 'emails/plain/auction-closed.php';
+		$this->id             = 'goodbids_auction_reward_claimed';
+		$this->title          = __( 'Auction Reward Claimed', 'goodbids' );
+		$this->description    = __( 'Notification email sent to participant when a reward is claimed', 'goodbids' );
+		$this->template_html  = 'emails/auction-reward-claimed.php';
+		$this->template_plain = 'emails/plain/auction-reward-claimed.php';
 		$this->watcher_email  = true;
 		$this->bidder_email   = true;
 
