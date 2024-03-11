@@ -17,8 +17,13 @@ export function Driver() {
 			<Wrapper>
 				<div className="flex max-w-2xl flex-col items-start gap-4">
 					<H1>{__('Site Setup', 'goodbids')}</H1>
-					<SiteAdmin />
-					<Ecommerce />
+					{(gbNonprofitSetupGuide.isBDPAdmin ||
+						gbNonprofitSetupGuide.isAdmin) && (
+						<>
+							<SiteAdmin />
+							<Ecommerce />
+						</>
+					)}
 					<DesignAndContent />
 					<PlanAndMonitor />
 				</div>
