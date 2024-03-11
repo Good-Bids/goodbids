@@ -47,7 +47,6 @@ class ReferenceCollection extends CodeCollection
 
 		$use = new ReferenceUse( $this->path, $node->getStartLine() );
 
-		// If assigned or returned, set $use->assigned = true
 		$parentNode = $node->getAttribute('parent');
 
 		if ($parentNode instanceof Node\Stmt\Return_) {

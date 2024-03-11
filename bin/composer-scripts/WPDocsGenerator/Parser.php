@@ -140,4 +140,39 @@ class Parser {
 
 		return $collection;
 	}
+
+	/**
+	 * @param string $path
+	 * @param string $relative_path
+	 * @param ?HookCollection $collection
+	 * @return ?HookCollection
+	 */
+	public function parseHooks( string $path, string $relative_path, ?HookCollection $collection ): ?HookCollection
+	{
+		if ( ! file_exists( $path ) ) {
+			throw new \InvalidArgumentException( 'File does not exist' );
+		}
+
+		$source = file_get_contents( $path ); // phpcs:ignore
+
+		try {
+			$parsed = $this->parser->parse( $source );
+		} catch ( \Error $e ) {
+			$this->error = $e->getMessage();
+			return null;
+		}
+
+		$traverser = new NodeTraverser();
+
+		if ( ! is_null( $collection ) ) {
+			$collection->setPath( $relative_path );
+		} else {
+			$collection = new HookCollection( $relative_path );
+		}
+
+		$traverser->addVisitor( $collection );
+		$traverser->traverse( $parsed );
+
+		return $collection;
+	}
 }

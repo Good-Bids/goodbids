@@ -43,6 +43,11 @@ class WPDocsGenerator {
 	private ?ReferenceCollection $references = null;
 
 	/**
+	 * @var ?HookCollection
+	 */
+	private ?HookCollection $hooks = null;
+
+	/**
 	 * @var array
 	 */
 	private array $config = [];
@@ -141,6 +146,15 @@ class WPDocsGenerator {
 					$this->script::writeError( 'Parser Collection Error: ' . $this->parser->error );
 				} else {
 					$this->references = $references;
+				}
+
+				// Build Hooks array.
+				$hooks = $this->parser->parseHooks( $file, $relative, $this->hooks );
+
+				if ( is_null( $hooks ) ) {
+					$this->script::writeError( 'Parser Collection Error: ' . $this->parser->error );
+				} else {
+					$this->hooks = $hooks;
 				}
 			}
 		}
@@ -256,6 +270,7 @@ class WPDocsGenerator {
 
 		$builder->setApi( $this->api );
 		$builder->setConfig( $this->config );
+		$builder->setHooks( $this->hooks );
 
 		return $builder;
 	}

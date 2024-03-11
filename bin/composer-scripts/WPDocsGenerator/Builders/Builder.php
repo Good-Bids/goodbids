@@ -10,6 +10,7 @@ namespace Viget\ComposerScripts\WPDocsGenerator\Builders;
 use Viget\ComposerScripts\WPDocsGenerator\ApiCollection;
 use Viget\ComposerScripts\WPDocsGenerator\CodeCollection;
 use Viget\ComposerScripts\WPDocsGenerator\DocItem;
+use Viget\ComposerScripts\WPDocsGenerator\HookCollection;
 
 class Builder
 {
@@ -17,6 +18,11 @@ class Builder
 	 * @var ApiCollection
 	 */
 	private ApiCollection $api;
+
+	/**
+	 * @var HookCollection
+	 */
+	private HookCollection $hooks;
 
 	/**
 	 * @var array
@@ -38,6 +44,11 @@ class Builder
 		$this->config = $config;
 	}
 
+	public function setHooks( HookCollection $hooks ): void
+	{
+		$this->hooks = $hooks;
+	}
+
 	/**
 	 * Build the documentation
 	 * @return void
@@ -48,8 +59,8 @@ class Builder
 		$this->emptyDirectory($outputDir);
 		$path = $this->getOutputPath();
 
-		// Generate Objects Dump
-		$objects      = 'objects.txt';
+		// Dump Ojbects
+		$objects      = 'object.txt';
 		$objects_path = $path . '/' . $objects;
 
 		ob_start();
@@ -58,12 +69,32 @@ class Builder
 
 		$this->writeToFile( $objects_path, $contents );
 
-		// Generate API Dump
+		// Generate Classes Docs
+		$classes      = 'classes.txt';
+		$classes_path = $path . '/' . $classes;
+
+		ob_start();
+		require $this->config['_basedir'] . '/templates/default/classes.php';
+		$contents = ob_get_clean();
+
+		$this->writeToFile( $classes_path, $contents );
+
+		// Generate API Docs
 		$api      = 'api.txt';
 		$api_path = $path . '/' . $api;
 
 		ob_start();
 		require $this->config['_basedir'] . '/templates/default/api.php';
+		$contents = ob_get_clean();
+
+		$this->writeToFile( $api_path, $contents );
+
+		// Generate Hooks Docs
+		$api      = 'hooks.txt';
+		$api_path = $path . '/' . $api;
+
+		ob_start();
+		require $this->config['_basedir'] . '/templates/default/hooks.php';
 		$contents = ob_get_clean();
 
 		$this->writeToFile( $api_path, $contents );
@@ -96,7 +127,6 @@ class Builder
 	 */
 	public function getTemplate( DocItem $object ): string
 	{
-		$template  = 'default.php';
 		$directory = sprintf(
 			'%s/templates/%s/',
 			$this->config['_basedir'],

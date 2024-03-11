@@ -91,6 +91,8 @@ class CodeCollection extends NodeVisitorAbstract
 		} elseif ($node instanceof Node\Stmt\Const_) {
 			$this->resetCurrentFunction();
 			$this->collectConst($node);
+		} elseif ($node instanceof Node\Expr\FuncCall) {
+			$this->collectFunctionCall($node);
 		}
 	}
 
@@ -506,5 +508,14 @@ class CodeCollection extends NodeVisitorAbstract
 	public function resetCurrentFunction(): void
 	{
 		$this->currentFunction = null;
+	}
+
+	/**
+	 * @param Node\Expr\FuncCall $node
+	 * @return void
+	 */
+	public function collectFunctionCall( Node\Expr\FuncCall $node): void
+	{
+
 	}
 }

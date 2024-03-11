@@ -184,7 +184,16 @@ class Sites {
 				}
 
 				$this->swap(
-					fn () => do_action( 'goodbids_initialize_site', $new_site->blog_id ),
+					function () use ( $new_site ) {
+						/**
+						 * Called after a new site is created.
+						 *
+						 * @since 1.0.0
+						 *
+						 * @param int $site_id The ID of the new site.
+						 */
+						do_action( 'goodbids_initialize_site', $new_site->blog_id );
+					},
 					$new_site->blog_id
 				);
 

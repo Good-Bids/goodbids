@@ -1,6 +1,6 @@
 <?php
 /**
- * Objects Template
+ * Hooks Template
  *
  * phpcs:disable
  *
@@ -11,7 +11,8 @@
 
 use Viget\ComposerScripts\WPDocsGenerator\Builders\Builder;
 
-echo 'Objects:' . PHP_EOL . PHP_EOL;
+echo 'Hooks:' . PHP_EOL . PHP_EOL;
 
-var_dump( $this->api->objects );
-
+foreach ($this->hooks->objects as $object ) {
+	var_dump( $object );
+}
