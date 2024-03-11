@@ -126,6 +126,18 @@ class Invoices {
 					}
 				}
 
+				if ( 'delete' === $action && is_super_admin() ) {
+					foreach ( $ids as $id ) {
+						list( $site_id, $invoice_id ) = explode( '|', $id );
+						goodbids()->sites->swap(
+							function () use ( $invoice_id ) {
+								wp_delete_post( $invoice_id );
+							},
+							$site_id
+						);
+					}
+				}
+
 				if ( $redirect ) {
 					$redirect = remove_query_arg( [ 'action', 'invoice' ] );
 					$redirect = add_query_arg( 'done', $action, $redirect );
@@ -156,6 +168,8 @@ class Invoices {
 
 				if ( 'integrity_check' === $action ) {
 					$message = __( 'Integrity Check Completed. Review logs for report.', 'goodbids' );
+				} else if ( 'delete' === $action ) {
+					$message = __( 'Invoice(s) Deleted.', 'goodbids' );
 				}
 
 				if ( $message ) {

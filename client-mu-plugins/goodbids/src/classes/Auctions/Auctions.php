@@ -99,9 +99,6 @@ class Auctions {
 		// Init Auction Wizard.
 		$this->wizard = new Wizard();
 
-		// Admin Actions.
-		new Admin();
-
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
 			'interval' => MINUTE_IN_SECONDS,
@@ -1026,7 +1023,7 @@ class Auctions {
 		add_action(
 			'transition_post_status',
 			function ( string $new_status, string $old_status, WP_Post $post ): void {
-				if ( is_main_site() ) {
+				if ( is_main_site() || is_super_admin() ) {
 					return;
 				}
 

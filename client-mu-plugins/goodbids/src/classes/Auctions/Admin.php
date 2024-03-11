@@ -9,6 +9,7 @@
 namespace GoodBids\Auctions;
 
 use WC_Product_Variation;
+use WP_Post;
 
 /**
  * Auction Admin Class
@@ -29,6 +30,9 @@ class Admin {
 
 		// Restrict certain edits from Live Auctions
 		$this->live_auction_restrictions();
+
+		// Disable Auction functions once they have started.
+		$this->maybe_disable_auction();
 	}
 
 	/**
@@ -204,9 +208,17 @@ class Admin {
 				}
 				?>
 				<style>
-					#acf-group_6570c1fa76181 .acf-field {
+					#acf-group_6570c1fa76181 .acf-field,
+					.edit-post-post-visibility__toggle,
+					.edit-post-post-schedule__toggle,
+					.edit-post-post-template__dropdown,
+					.edit-post-post-url__dropdown {
 						pointer-events: none;
 						opacity: 0.5;
+					}
+					.editor-post-switch-to-draft,
+					.editor-post-trash {
+						display: none !important;
 					}
 				</style>
 				<?php
@@ -252,10 +264,152 @@ class Admin {
 					return $field;
 				}
 
-				$field['disabled'] = true;
+				$field['readonly'] = true;
 
 				return $field;
 			}
+		);
+	}
+
+	/**
+	 * Prevent users from deleting Auctions that have started
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_disable_auction(): void {
+		/**
+		 * @since 1.0.0
+		 *
+		 * @param mixed $delete
+		 * @param WP_Post $post
+		 *
+		 * @return mixed
+		 */
+		$prevent_delete = function ( mixed $delete, WP_Post $post ): mixed {
+			if ( is_super_admin() || goodbids()->auctions->get_post_type() !== get_post_type( $post ) ) {
+				return $delete;
+			}
+
+			$auction = goodbids()->auctions->get( $post->ID );
+
+			if ( ! in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) ) {
+				return $delete;
+			}
+
+			goodbids()->utilities->display_admin_error( __( 'Auctions cannot be deleted once they have started.', 'goodbids' ), true );
+
+			return false;
+		};
+
+		add_action(
+			'admin_init',
+			function () use ( $prevent_delete ): void {
+				add_filter( 'pre_delete_post', $prevent_delete, 10, 2 );
+				add_filter( 'pre_trash_post', $prevent_delete, 10, 2 );
+			}
+		);
+
+		add_filter(
+			'wp_insert_post_data',
+			function ( array $data, array $postarr, array $unsanitized_postarr, bool $update ): mixed {
+				if ( is_super_admin() || empty( $data['ID'] ) || ! $update || goodbids()->auctions->get_post_type() !== $data['post_type'] ) {
+					return $data;
+				}
+
+				$auction = goodbids()->auctions->get( $data['ID'] );
+
+				if ( ! in_array( $auction->get_meta( 'status' ), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) ) {
+					return $data;
+				}
+
+				$post_data       = get_post( $data['ID'], ARRAY_A );
+				$restrict_fields = [
+					'post_status',
+					'date',
+				];
+
+				$err = false;
+				foreach ( $restrict_fields as $field ) {
+					if ( $postarr[ $field ] !== $data[ $field ] ) {
+						$data[ $field ] = $post_data[ $field ];
+						$err            = true;
+					}
+				}
+
+				if ( 'publish' !== $data['post_status'] ) {
+					$data['post_status'] = 'publish';
+					$err                 = true;
+				}
+
+				if ( $err ) {
+					goodbids()->utilities->display_admin_error( __( 'Auctions cannot be modified once they have started.', 'goodbids' ) );
+				}
+
+				return $data;
+			},
+			10,
+			4
+		);
+
+		add_filter(
+			'post_row_actions',
+			function ( array $actions, $post ) {
+				if ( is_super_admin() || goodbids()->auctions->get_post_type() !== get_post_type( $post ) ) {
+					return $actions;
+				}
+
+				$auction = goodbids()->auctions->get( $post->ID );
+
+				if ( is_super_admin() || ! in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) ) {
+					return $actions;
+				}
+
+				unset( $actions['inline hide-if-no-js'] );
+				unset( $actions['inline'] );
+				unset( $actions['trash'] );
+
+				return $actions;
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'user_has_cap',
+			function ( array $all_caps, array $caps ): array {
+				if ( is_super_admin() || ! function_exists( 'get_current_screen' ) ) {
+					return $all_caps;
+				}
+
+				$auction = goodbids()->auctions->get();
+				if ( ! $auction->get_id() ) {
+					return $all_caps;
+				}
+
+				if ( ! in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) ) {
+					return $all_caps;
+				}
+
+				$screen = get_current_screen();
+
+				if ( ! $screen || $screen->base !== 'post' || goodbids()->auctions->get_post_type() !== $screen->post_type ) {
+					return $all_caps;
+				}
+
+
+				if ( ! in_array( $caps['delete_post'], $caps, true )|| ! in_array( $caps['delete_posts'], $caps, true ) ) {
+					return $all_caps;
+				}
+
+				unset( $all_caps['delete_post'] );
+				unset( $all_caps['delete_posts'] );
+
+				return $all_caps;
+			},
+			10,
+			2
 		);
 	}
 }

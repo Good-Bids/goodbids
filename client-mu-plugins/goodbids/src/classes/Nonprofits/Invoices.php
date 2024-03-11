@@ -66,7 +66,7 @@ class Invoices {
 		// Register Post Type.
 		$this->register_post_type();
 
-		// Prevent Deletion of Invoices.
+		// Prevent Deletion of Invoices by non-Super Admins.
 		$this->disable_delete();
 
 		// Disable the "Private" post state on invoices.
