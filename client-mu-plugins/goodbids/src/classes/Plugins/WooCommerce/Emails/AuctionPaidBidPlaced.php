@@ -28,11 +28,11 @@ class AuctionPaidBidPlaced extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_closed';
-		$this->title          = __( 'Auction Closed', 'goodbids' );
-		$this->description    = __( 'Notification email sent to all participants when an auction closes.', 'goodbids' );
-		$this->template_html  = 'emails/auction-closed.php';
-		$this->template_plain = 'emails/plain/auction-closed.php';
+		$this->id             = 'goodbids_auction_paid_bid_placed';
+		$this->title          = __( 'Auction Paid Bid Placed', 'goodbids' );
+		$this->description    = __( 'Notification email sent to participant when a bid is placed on an auction.', 'goodbids' );
+		$this->template_html  = 'emails/auction-paid-bid-placed.php';
+		$this->template_plain = 'emails/plain/auction-paid-bid-placed.php';
 		$this->watcher_email  = true;
 		$this->bidder_email   = true;
 
