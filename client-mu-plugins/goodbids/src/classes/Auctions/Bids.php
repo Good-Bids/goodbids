@@ -97,6 +97,9 @@ class Bids {
 
 		// Hide Bid Products from WP Admin > Products.
 		$this->filter_bid_products();
+
+		// Reduce the current Bid Product stock to 0 when the Auction ends.
+		$this->disable_bid_product_on_auction_end();
 	}
 
 	/**
@@ -609,4 +612,24 @@ class Bids {
 			}
 		);
 	}
+
+	/**
+	 * Reduce the Bid Variation stock to 0 when the Auction ends.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_bid_product_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				$bid_variation = goodbids()->bids->get_variation( $auction_id );
+				$bid_variation->set_stock_quantity( 0 );
+				$bid_variation->save();
+			},
+			11
+		);
+	}
+
 }

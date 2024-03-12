@@ -1024,7 +1024,11 @@ class Auction {
 		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
 
 		/**
-		 * @param int $auction_id
+		 * Called when an Auction has ended.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int $auction_id The Closing Auction ID.
 		 */
 		do_action( 'goodbids_auction_end', $this->get_id() );
 
@@ -1098,7 +1102,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function increase_bid(): bool {
-		$bids = goodbids()->bids;
+		$bids = goodbids()->bids; // Easier to reference.
 
 		$bid_product   = $bids->get_product( $this->get_id() );
 		$bid_variation = $bids->get_variation( $this->get_id() );
