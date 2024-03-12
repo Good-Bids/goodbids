@@ -189,8 +189,8 @@ function getContent(id: number) {
 
 				<!-- wp:comments -->
 				<div class="wp-block-comments">
-					<!-- wp:heading {"level":4,"style":{"typography":{"textTransform":"capitalize","fontStyle":"normal","fontWeight":"400"}}} -->
-					<h4 class="wp-block-heading" style="font-style:normal;font-weight:400;text-transform:capitalize">${__('Comments', 'goodbids')}</h4>
+					<!-- wp:heading {"level":3,"style":{"typography":{"textTransform":"capitalize","fontStyle":"normal","fontWeight":"400"}},"fontSize":"base"} -->
+					<h3 class="wp-block-heading has-base-font-size" style="font-style:normal;font-weight:400;text-transform:capitalize">${__('Comments', 'goodbids')}</h3>
 					<!-- /wp:heading -->
 
 					<!-- wp:comment-template -->
