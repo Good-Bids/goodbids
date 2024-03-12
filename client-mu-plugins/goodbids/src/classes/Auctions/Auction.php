@@ -654,6 +654,25 @@ class Auction {
 	}
 
 	/**
+	 * Get the IDs of all users who have placed bid orders for this Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $limit
+	 *
+	 * @return array
+	 */
+	public function get_bidder_ids( int $limit = -1 ): array {
+		$orders   = $this->get_bid_orders( $limit );
+		$user_ids = [];
+
+		foreach ( $orders as $order ) {
+			$user_ids[] = $order->get_user_id();
+		}
+
+		return array_unique( $user_ids );
+	}
+	/**
 	 * Get the User's last bid on this Auction
 	 *
 	 * @since 1.0.0

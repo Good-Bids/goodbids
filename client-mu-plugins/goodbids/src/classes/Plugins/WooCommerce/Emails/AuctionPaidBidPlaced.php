@@ -1,14 +1,12 @@
 <?php
 /**
- * Auction Paid Bid Placed: Email the users when an auction bid is placed.
+ * Auction Paid Bid Order: Email the user when they place a Paid Bid Order.
  *
  * @since 1.0.0
  * @package GoodBids
  */
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
-
-use GoodBids\Utilities\Log;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -35,18 +33,32 @@ class AuctionPaidBidPlaced extends Email {
 		$this->template_plain = 'emails/plain/auction-paid-bid-placed.php';
 		$this->bidder_email   = true;
 
-		$this->trigger_on_bid_placed();
+		$this->trigger_on_paid_bid_order();
 	}
 
 	/**
-	 * Trigger this email on bid placed.
+	 * Trigger this email when a Pid bid is placed.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function trigger_on_bid_placed(): void {
-		// TODO fire Trigger
+	private function trigger_on_paid_bid_order(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id ) {
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$order = wc_get_order( $order_id );
+				$this->trigger( $order, get_current_user_id() );
+			}
+		);
 	}
 
 	/**
@@ -93,21 +105,5 @@ class AuctionPaidBidPlaced extends Email {
 	 */
 	public function get_button_url(): string {
 		return '{auction.url}';
-	}
-
-	/**
-	 * Display Link to All Auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function all_auctions_html(): void {
-		printf(
-			'<p style="text-align:center;">%s <a href="%s">%s</a>',
-			esc_html__( 'Want to support another great GOODBIDS cause?', 'goodbids' ),
-			'{auctions_url}',
-			esc_html__( 'View All Auctions', 'goodbids' )
-		);
 	}
 }
