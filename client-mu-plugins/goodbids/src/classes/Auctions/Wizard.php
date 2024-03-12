@@ -228,7 +228,7 @@ class Wizard {
 	 *
 	 * @return void
 	 */
-	public function enqueue_scripts(): void {
+	private function enqueue_scripts(): void {
 		add_filter(
 			'goodbids_admin_script_dependencies',
 			function( array $dependencies ): array {

@@ -86,6 +86,12 @@ class Auctions {
 	public array $cron_intervals = [];
 
 	/**
+	 * @since 1.0.0
+	 * @var Wizard
+	 */
+	public Wizard $wizard;
+
+	/**
 	 * Initialize Auctions
 	 *
 	 * @since 1.0.0
@@ -98,6 +104,9 @@ class Auctions {
 
 		// Init Auction Wizard.
 		$this->wizard = new Wizard();
+
+		// Init Fundraising Fields class.
+		new FundraisingFields();
 
 		// Set up Cron Schedules.
 		$this->cron_intervals['1min']  = [
