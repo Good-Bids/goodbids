@@ -39,7 +39,7 @@ class Users {
 	public function __construct() {
 		// Update Email Content for User.
 		$this->update_user_email_content();
-		
+
         // Add UI for Super Admins to grant free bids to users.
 		$this->free_bid_user_fields();
 
@@ -104,7 +104,7 @@ class Users {
 	 * @since 1.0.0
 	 *
 	 * @param int    $user_id
-	 * @param int    $auction_id
+	 * @param ?int   $auction_id
 	 * @param string $type
 	 * @param string $details
 	 *
@@ -227,7 +227,6 @@ class Users {
 		return $emails;
 	}
 
-
 	/**
 	 * Add Terms and Conditions to User Emails
 	 *
@@ -244,6 +243,7 @@ class Users {
 			},
 			11
 		);
+
 		add_filter(
 			'wp_new_user_notification_email',
 			function ( $email ) {
