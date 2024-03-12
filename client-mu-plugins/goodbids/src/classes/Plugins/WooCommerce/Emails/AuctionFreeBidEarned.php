@@ -33,32 +33,9 @@ class AuctionFreeBidEarned extends Email {
 		$this->description    = __( 'Notification email sent to participant when free bid is earned.', 'goodbids' );
 		$this->template_html  = 'emails/auction-free-bid-earned.php';
 		$this->template_plain = 'emails/auction-free-bid-earned.php';
-		$this->watcher_email  = true;
 		$this->bidder_email   = true;
 
 		$this->trigger_on_free_bid_earned();
-	}
-
-	/**
-	 * Add a custom footer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function init_customizations(): void {
-		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
-	}
-
-	/**
-	 * Remove custom footer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function remove_customizations(): void {
-		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
 	}
 
 	/**
