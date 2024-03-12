@@ -21,7 +21,7 @@ printf(
 	'{auction.title}',
 	'TODO{auction.bid.date}',
 	'{site_title}',
-	'TODO{auction.bid.amount}'
+	'TODO{auction.total.donated}'
 );
 
 echo "\n\n----------------------------------------\n\n";
