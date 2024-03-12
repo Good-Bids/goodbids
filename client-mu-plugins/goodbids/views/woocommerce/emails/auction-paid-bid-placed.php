@@ -35,7 +35,39 @@ do_action( 'woocommerce_email_header', $email_heading );
 	?>
 </p>
 
-<?php // TODO: ADD BID DETAILS TABLE HERE ?>
+<?php // TODO may need to repalce this with a partial template? Maybe pull in class-wc-email.php -> order_details ?>
+<div style="margin-bottom: 40px;">
+	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
+		<thead>
+			<tr>
+				<th class="td" scope="col" style="text-align:left;"><?php esc_html_e( 'Auction', 'goodbids' ); ?></th>
+				<th class="td" scope="col" style="text-align:left;"><?php esc_html_e( 'Donation', 'goddbids' ); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="td" scope="col">{auction.title}</td>
+				<td class="td" scope="col">{auction.bid}</td>
+			</tr>
+			<tr>
+				<td class="td" scope="col"><b><?php esc_html_e( 'Subtotal', 'goodbids' ); ?></b></td>
+				<td class="td" scope="col">{order.subtotal}</td>
+			</tr>
+			<tr>
+				<td class="td" scope="col"><b><?php esc_html_e( 'Payment Method', 'goodbids' ); ?></b></td>
+				<td class="td" scope="col">{order.payment_method}</td>
+			</tr>
+			<tr>
+				<td class="td" scope="col"><b><?php esc_html_e( 'Payment Method', 'goodbids' ); ?></b></td>
+				<td class="td" scope="col">{order.payment_method}</td>
+			</tr>
+			<tr>
+				<td class="td" scope="col"><b><?php esc_html_e( 'Total', 'goodbids' ); ?></b></td>
+				<td class="td" scope="col">{order.total}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
 <p>
 	<?php
