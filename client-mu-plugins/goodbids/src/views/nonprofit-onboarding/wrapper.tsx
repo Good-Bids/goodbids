@@ -1,3 +1,4 @@
+import { Card } from '~/components/card';
 import {
 	ProgressBar,
 	ProgressBarProps,
@@ -9,10 +10,13 @@ type WrapperProps = ProgressBarProps & {
 
 export function Wrapper({ children, progress }: WrapperProps) {
 	return (
-		<>
-			<ProgressBar progress={progress} />
-
-			{children}
-		</>
+		<div className="flex w-full justify-center pt-12">
+			<Card>
+				<ProgressBar progress={progress} />
+				<div className="flex flex-col items-center gap-8 p-10">
+					{children}
+				</div>
+			</Card>
+		</div>
 	);
 }

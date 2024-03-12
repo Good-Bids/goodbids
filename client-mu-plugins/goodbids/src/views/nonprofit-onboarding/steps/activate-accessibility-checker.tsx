@@ -2,10 +2,11 @@ import { __ } from '@wordpress/i18n';
 import { ButtonLink } from '../../../components/button-link';
 import { H1, P } from '../../../components/typography';
 import { PuzzleManImage } from '~/components/images/puzzle-man';
+import { Wrapper } from '../wrapper';
 
 export function ActivateAccessibilityCheckerStep() {
 	return (
-		<div className="flex flex-col items-center gap-8 p-10">
+		<Wrapper progress={25}>
 			<PuzzleManImage className="aspect-auto h-50 py-10" />
 
 			<div className="flex flex-col gap-3">
@@ -24,6 +25,6 @@ export function ActivateAccessibilityCheckerStep() {
 			>
 				{__('Activate Plugin', 'goodbids')}
 			</ButtonLink>
-		</div>
+		</Wrapper>
 	);
 }
