@@ -115,6 +115,6 @@ class AuctionFreeBidEarned extends Email {
 	 */
 	public function get_button_url(): string {
 		// TODO update this the right link
-		return '{auction.url}';
+		return '{free_bids.url}';
 	}
 }

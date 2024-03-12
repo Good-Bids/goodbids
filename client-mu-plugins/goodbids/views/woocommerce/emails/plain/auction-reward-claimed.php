@@ -16,16 +16,26 @@ defined( 'ABSPATH' ) || exit;
 $instance->plain_text_header();
 
 printf(
-	/* translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Reward Claim Deadline Date */
-	esc_html__( 'You still need to claim the %1$s you earned on the %2$s auction with %3$s. You have until %4$s to claim your reward.', 'goodbids' ),
+	/* translators: %1$s: Reward title, %2$s: Site title, %3$s: Auction title, %4$s: Bid date */
+	esc_html__( 'This is confirmation that you claimed the %1$s reward for the %2$s %3$s auction on %4$s. Thanks again for your generosity.', 'goodbids' ),
 	'{reward.title}',
-	'{auction.title}',
 	'{site_title}',
-	'{reward.claim_deadline_date}'
+	'{auction.title}',
+	'TODO{auction.bid.date}',
 );
 
 echo "\n\n----------------------------------------\n\n";
 
 echo '{reward.purchase_note}';
+
+// TODO: ADD BID DETAILS HERE
+
+echo "\n\n----------------------------------------\n\n";
+
+printf(
+	__( 'You can view your bid history, see Auctions you\'ve won, modify your account information, and more from the <a href="%s">bidder dashboard.</a>', 'goodbids' ),
+	'TODO{bidder_dashboard_url}',
+);
+
 
 $instance->plain_text_footer();
