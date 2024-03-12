@@ -176,10 +176,12 @@ class Guide {
 			'akismetURL'              => admin_url( 'admin.php?page=akismet-key-config' ),
 			'accessibilityCheckerURL' => admin_url( 'admin.php?page=accessibility_checker' ),
 
-			'woocommerceSettingsURL' => admin_url( 'admin.php?page=wc-settings&tab=general' ),
-			'configureShippingURL'   => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
-			'orderMetricsURL'        => admin_url( 'admin.php?page=wc-admin&path=/analytics/categories' ),
-			'revenueMetricsURL'      => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
+			'connectStripeURL'          => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' ),
+			'woocommerceSettingsURL'    => admin_url( 'admin.php?page=wc-settings&tab=general' ),
+			'updateWoocommerceStoreURL' => admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' ),
+			'configureShippingURL'      => admin_url( 'admin.php?page=wc-settings&tab=shipping' ),
+			'orderMetricsURL'           => admin_url( 'admin.php?page=wc-admin&path=/analytics/categories' ),
+			'revenueMetricsURL'         => admin_url( 'admin.php?page=wc-admin&path=/analytics/revenue&chart=net_revenue&orderby=net_revenue' ),
 
 			'styleURL'             => admin_url( 'site-editor.php?path=/wp_global_styles' ),
 			'uploadLogoURL' => admin_url( 'site-editor.php?postType=wp_template_part&postId=goodbids-nonprofit//header&categoryId=header&categoryType=wp_template_part' ),
@@ -187,6 +189,7 @@ class Guide {
 
 			'pagesURL'    => admin_url( 'edit.php?post_type=page' ),
 			'patternsURL' => admin_url( 'site-editor.php?path=/patterns' ),
+			'usersUrl'    => admin_url( 'users.php' ),
 			'addUsersURL' => admin_url( 'user-new.php' ),
 
 			'auctionWizardURL' => admin_url( Wizard::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),

@@ -255,6 +255,10 @@ class Stripe {
 			$customer_id = $this->get_customer_id();
 		}
 
+		if ( ! $customer_id ) {
+			return null;
+		}
+
 		$customer = goodbids()->sites->main(
 			function() use ( $customer_id ): ?stdClass {
 				try {

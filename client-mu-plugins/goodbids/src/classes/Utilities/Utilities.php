@@ -193,25 +193,6 @@ class Utilities {
 	}
 
 	/**
-	 * Helper for get_page_by_path
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $path
-	 * @param string $output
-	 * @param string $post_type
-	 *
-	 * @return mixed
-	 */
-	public function get_page_by_path( string $path, string $output = OBJECT, string $post_type = 'page' ): mixed {
-		if ( function_exists( 'wpcom_vip_get_page_by_path' ) ) {
-			return wpcom_vip_get_page_by_path( $path, $output, $post_type );
-		}
-
-		return get_page_by_path( $path, $output, $post_type ); // phpcs:ignore
-	}
-
-	/**
 	 * Check if the context inside the Network Admin is the Main site.
 	 *
 	 * @since 1.0.0

@@ -30,6 +30,13 @@ class FreeBid {
 	const TYPE_REFERRAL = 'referral';
 
 	/**
+	 * Admin Granted Free Bid type.
+	 *
+	 * @since 1.0.0
+	 */
+	const TYPE_ADMIN_GRANT = 'admin_grant';
+
+	/**
 	 * Unique Identifier.
 	 *
 	 * @since 1.0.0
@@ -127,10 +134,14 @@ class FreeBid {
 	/**
 	 * Initialize Free Bid Object
 	 *
+	 * @param ?int $auction_id_earned
+	 *
 	 * @since 1.0.0
 	 */
-	public function __construct( int $auction_id_earned ) {
-		$this->auction_id_earned = $auction_id_earned;
+	public function __construct( ?int $auction_id_earned = null ) {
+		if ( $auction_id_earned ) {
+			$this->set_auction_id( $auction_id_earned );
+		}
 
 		if ( ! $this->id ) {
 			$this->id = uniqid( 'GBFB-' );
@@ -140,6 +151,20 @@ class FreeBid {
 			$this->earned_date = current_time( 'Y-m-d H:i:s' );
 		}
 
+		return $this;
+	}
+
+	/**
+	 * Set the Auction ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return FreeBid
+	 */
+	public function set_auction_id( int $auction_id ): FreeBid {
+		$this->auction_id_earned = $auction_id;
 		return $this;
 	}
 
