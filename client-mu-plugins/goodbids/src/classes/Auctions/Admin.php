@@ -28,11 +28,20 @@ class Admin {
 		// Add custom Admin Columns for Auctions.
 		$this->add_admin_columns();
 
+		// Allow admins to force update the close date to the Auction End Date.
+		$this->force_update_close_date();
+
 		// Restrict certain edits from Live Auctions
 		$this->live_auction_restrictions();
 
 		// Disable Auction functions once they have started.
 		$this->maybe_disable_auction();
+
+		// Validate Start/End Dates for Auctions.
+		$this->validate_auction_dates();
+
+		// Hide Reward Product field when Auction is published.
+		$this->disable_reward_on_published_auctions();
 	}
 
 	/**
@@ -173,6 +182,44 @@ class Admin {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Admin AJAX Action from the Auction Edit screen to force update the Auction Close Date/Time.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function force_update_close_date(): void {
+		add_action(
+			'wp_ajax_goodbids_force_auction_close_date',
+			function () {
+				if ( empty( $_REQUEST['gb_nonce'] ) ) {
+					wp_send_json_error( __( 'Missing nonce.', 'goodbids' ) );
+				}
+
+				if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['gb_nonce'] ), 'gb-force-update-close-date' ) ) {
+					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
+				}
+
+				$auction_id = isset( $_POST['auction_id'] ) ? intval( $_POST['auction_id'] ) : 0;
+
+				if ( ! $auction_id ) {
+					wp_send_json_error( __( 'Invalid Auction ID.', 'goodbids' ) );
+				}
+
+				// Get raw End Date/Time, do not use get_setting().
+				$end_date = get_field( 'auction_end', $auction_id );
+				update_post_meta( $auction_id, Auctions::AUCTION_CLOSE_META_KEY, $end_date );
+
+				wp_send_json_success(
+					[
+						'closeDate' => goodbids()->utilities->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
+					]
+				);
+			}
 		);
 	}
 
@@ -433,6 +480,79 @@ class Admin {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Run validation on Auction Start/End Dates.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function validate_auction_dates(): void {
+		add_filter(
+			'acf/validate_value',
+			function ( bool|string $valid, mixed $value, array $field ): mixed {
+				// Keys found in acf-json/group_6570c1fa76181.json
+				$end_field_key   = 'field_65822160b4398';
+				$start_field_key = 'field_6570c1fb429a8';
+
+				if ( 'auction_start' === $field['name'] ) {
+					if ( $value <= current_time( 'mysql' ) ) {
+						return __( 'Auction Start Date/Time must be in the future.', 'goodbids' );
+					}
+
+					if ( empty( $_POST['acf'][ $end_field_key ] ) ) { // phpcs:ignore
+						return $valid;
+					}
+
+					$compare_value = sanitize_text_field( $_POST['acf'][ $end_field_key ] ); // phpcs:ignore
+
+					if ( $value >= $compare_value ) {
+						return __( 'Auction Start Date/Time must be before End Date/Time.', 'goodbids' );
+					}
+				} elseif ( 'auction_end' === $field['name'] ) {
+					if ( empty( $_POST['acf'][ $start_field_key ] ) ) { // phpcs:ignore
+						return $valid;
+					}
+
+					$compare_value = sanitize_text_field( $_POST['acf'][ $start_field_key ] ); // phpcs:ignore
+
+					if ( $value <= $compare_value ) {
+						return __( 'Auction End Date/Time must be after Start Date/Time.', 'goodbids' );
+					}
+				}
+
+				return $valid;
+			},
+			10,
+			3
+		);
+	}
+
+	/**
+	 * Prevent changes to Reward Product when Auction is published.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_reward_on_published_auctions(): void {
+		add_action(
+			'current_screen',
+			function(): void {
+				if ( ! goodbids()->auctions->should_hide_reward_product() ) {
+					return;
+				}
+				?>
+				<style>
+					div.acf-field[data-name="auction_product"] {
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
 		);
 	}
 }
