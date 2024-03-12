@@ -34,6 +34,7 @@ declare const gbNonprofitSetupGuide: {
 
 	pagesURL: string;
 	patternsURL: string;
+	usersUrl: string;
 	addUsersURL: string;
 
 	auctionWizardURL: string;

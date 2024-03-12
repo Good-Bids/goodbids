@@ -189,6 +189,7 @@ class Guide {
 
 			'pagesURL'    => admin_url( 'edit.php?post_type=page' ),
 			'patternsURL' => admin_url( 'site-editor.php?path=/patterns' ),
+			'usersUrl'    => admin_url( 'users.php' ),
 			'addUsersURL' => admin_url( 'user-new.php' ),
 
 			'auctionWizardURL' => admin_url( Wizard::BASE_URL . goodbids()->auctions->get_post_type() . '&page=' . Wizard::PAGE_SLUG  ),
