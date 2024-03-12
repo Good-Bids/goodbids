@@ -181,6 +181,9 @@ class Auctions {
 
 		// Validate Start/End Dates for Auctions.
 		$this->validate_auction_dates();
+
+		// Hide Reward Product field when Auction is published.
+		$this->disable_reward_on_published_auctions();
 	}
 
 	/**
@@ -1113,6 +1116,63 @@ class Auctions {
 			},
 			10,
 			3
+		);
+	}
+
+	/**
+	 * Check if Reward Product Should be hidden.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function should_hide_reward_product(): bool {
+		if ( is_super_admin() ) {
+			return false;
+		}
+
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
+				return false;
+			}
+		}
+
+		$auction_id = goodbids()->auctions->get_auction_id();
+
+		if ( ! $auction_id ) {
+			return false;
+		}
+
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Prevent changes to Reward Product when Auction is published.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_reward_on_published_auctions(): void {
+		add_action(
+			'current_screen',
+			function(): void {
+				if ( ! $this->should_hide_reward_product() ) {
+					return;
+				}
+				?>
+				<style>
+					div.acf-field[data-name="auction_product"] {
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
 		);
 	}
 }
