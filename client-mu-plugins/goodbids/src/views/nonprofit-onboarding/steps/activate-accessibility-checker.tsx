@@ -12,7 +12,7 @@ export function ActivateAccessibilityCheckerStep() {
 				<H1>{__('Activate Accessibility Checker Pro', 'goodbids')}</H1>
 				<P>
 					{__(
-						"All GOODBIDS Nonprofit sites must meet web accessibility guidelines. The Accessibility Checker Pro plugin is required for your site and will help you review your site and become compliant with accessibility guidelines. Click the button below to activate the Accessibility Checker Pro plugin for your Nonprofit Site. If you have a personal license for Accessibility Checker Pro, you can enter it on the page to activate the plugin. If not, don't fret, just leave the license field blank and click the Activate License button, and we'll handle it from there!",
+						'All GOODBIDS Nonprofit sites must meet web accessibility guidelines. The Accessibility Checker Pro plugin is required to help you with compliance. Click the button below, then click Activate License to enable the plugin. Leave the license field blank to use the GOODBIDS license key.',
 						'goodbids',
 					)}
 				</P>

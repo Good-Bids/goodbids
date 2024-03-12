@@ -37,7 +37,10 @@ class Users {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Add UI for Super Admins to grant free bids to users.
+		// Update Email Content for User.
+		$this->update_user_email_content();
+		
+        // Add UI for Super Admins to grant free bids to users.
 		$this->free_bid_user_fields();
 
 		// Handle Free Bid via AJAX.
@@ -52,7 +55,7 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int $user_id
+	 * @param ?int   $user_id
 	 * @param string $status
 	 *
 	 * @return FreeBid[]
@@ -100,8 +103,8 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $user_id
-	 * @param ?int $auction_id
+	 * @param int    $user_id
+	 * @param int    $auction_id
 	 * @param string $type
 	 * @param string $details
 	 *
@@ -127,7 +130,7 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $user_id
+	 * @param int       $user_id
 	 * @param FreeBid[] $free_bids
 	 *
 	 * @return bool
@@ -148,8 +151,8 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
-	 * @param int $order_id
+	 * @param int  $auction_id
+	 * @param int  $order_id
 	 * @param ?int $user_id
 	 *
 	 * @return bool
@@ -222,6 +225,33 @@ class Users {
 		}
 
 		return $emails;
+	}
+
+
+	/**
+	 * Add Terms and Conditions to User Emails
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_user_email_content(): void {
+		add_filter(
+			'wpmu_signup_user_notification_email',
+			function ( $content ) {
+				$content .= "\r\n" . goodbids()->sites->get_terms_conditions_text();
+				return $content;
+			},
+			11
+		);
+		add_filter(
+			'wp_new_user_notification_email',
+			function ( $email ) {
+				$email['message'] .= "\r\n" . goodbids()->sites->get_terms_conditions_text();
+				return $email;
+			},
+			11
+		);
 	}
 
 	/**

@@ -554,10 +554,6 @@ class Sites {
 	 * @return ?string
 	 */
 	public function get_privacy_policy_link(): ?string {
-		if ( ! is_multisite() ) {
-			return null;
-		}
-
 		return $this->main(
 			function (): string {
 				$privacy_policy_link = '';
@@ -584,10 +580,6 @@ class Sites {
 	 * @return ?string
 	 */
 	public function get_terms_conditions_link(): ?string {
-		if ( ! is_multisite() ) {
-			return null;
-		}
-
 		return $this->main(
 			function (): string {
 				$terms_conditions_link = '';
@@ -603,6 +595,38 @@ class Sites {
 
 				return $terms_conditions_link;
 			}
+		);
+	}
+
+
+	/**
+	 * Get the terms and conditions text for emails.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_terms_conditions_text(): string {
+		$terms_conditions = goodbids()->sites->main(
+			function (): string {
+				$terms_conditions_link = '';
+				$terms_conditions_id   = wc_terms_and_conditions_page_id();
+
+				if ( $terms_conditions_id ) {
+					$terms_conditions_link = sprintf(
+						'%s %s',
+						get_the_title( $terms_conditions_id ),
+						get_page_link( $terms_conditions_id )
+					);
+				}
+
+				return $terms_conditions_link;
+			}
+		);
+
+		return sprintf(
+			'By activating your account, you agree to GOODBIDS\' Nonprofit %s.',
+			$terms_conditions
 		);
 	}
 
@@ -654,6 +678,19 @@ class Sites {
 						'post_id' => $post_id,
 						'site_id' => $site_id,
 					]
+				)
+				->filter(
+					fn () => goodbids()->sites->swap(
+						function () {
+							if ( is_main_site() ) {
+								return true;
+							}
+							// Skip site if status is pending
+							$nonprofit = new Nonprofit( get_current_blog_id() );
+							return Nonprofit::STATUS_PENDING !== $nonprofit->get_status();
+						},
+						$site_id
+					)
 				)
 				->all()
 		);

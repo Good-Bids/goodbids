@@ -136,42 +136,62 @@ export function AuctionForm() {
 				/>
 			</div>
 
-			<div className="flex flex-col gap-4">
-				<H3 as="h2">{__('FUNDRAISING INFO (OPTIONAL)', 'goodbids')}</H3>
+			{gbAuctionWizard.metricsEnabled && (
+				<div className="flex flex-col gap-4">
+					<H3 as="h2">
+						{__('FUNDRAISING INFO (OPTIONAL)', 'goodbids')}
+					</H3>
 
-				<P>
-					{__(
-						'While these fields are optional, we encourage you to fill them out as this information will be displayed on the auction page, potentially boosting donations.',
-						'goodbids',
-					)}
-				</P>
+					<P>
+						{__(
+							'While these fields are optional, we encourage you to fill them out as this information will be displayed on the auction page, potentially boosting donations.',
+							'goodbids',
+						)}
+					</P>
 
-				<div className="grid grid-cols-2 gap-4">
+					<div className="grid grid-cols-2 gap-4">
+						<TextInput
+							defaultValue={auctionGoal.value}
+							error={auctionGoal.error}
+							id="auction-goal"
+							inputMode="decimal"
+							label={__('Auction goal', 'goodbids')}
+							onChange={(e) =>
+								handleDebounce(
+									'auctionGoal',
+									e.target.value,
+									validateDecimal,
+								)
+							}
+							startAdornment={<MoneyIcon width={16} />}
+						/>
+
+						<TextInput
+							defaultValue={expectedHighBid.value}
+							error={expectedHighBid.error}
+							id="expected-high-bid"
+							inputMode="decimal"
+							label={__('Exp. high bid', 'goodbids')}
+							onChange={(e) =>
+								handleDebounce(
+									'expectedHighBid',
+									e.target.value,
+									validateDecimal,
+								)
+							}
+							startAdornment={<MoneyIcon width={16} />}
+						/>
+					</div>
+
 					<TextInput
-						defaultValue={auctionGoal.value}
-						error={auctionGoal.error}
-						id="auction-goal"
+						defaultValue={estimatedRetailValue.value}
+						error={estimatedRetailValue.error}
+						id="estimated-retail-value"
 						inputMode="decimal"
-						label={__('Auction goal', 'goodbids')}
+						label={__('Estimated Retail Value', 'goodbids')}
 						onChange={(e) =>
 							handleDebounce(
-								'auctionGoal',
-								e.target.value,
-								validateDecimal,
-							)
-						}
-						startAdornment={<MoneyIcon width={16} />}
-					/>
-
-					<TextInput
-						defaultValue={expectedHighBid.value}
-						error={expectedHighBid.error}
-						id="expected-high-bid"
-						inputMode="decimal"
-						label={__('Exp. high bid', 'goodbids')}
-						onChange={(e) =>
-							handleDebounce(
-								'expectedHighBid',
+								'estimatedRetailValue',
 								e.target.value,
 								validateDecimal,
 							)
@@ -179,23 +199,7 @@ export function AuctionForm() {
 						startAdornment={<MoneyIcon width={16} />}
 					/>
 				</div>
-
-				<TextInput
-					defaultValue={estimatedRetailValue.value}
-					error={estimatedRetailValue.error}
-					id="estimated-retail-value"
-					inputMode="decimal"
-					label={__('Estimated Retail Value', 'goodbids')}
-					onChange={(e) =>
-						handleDebounce(
-							'estimatedRetailValue',
-							e.target.value,
-							validateDecimal,
-						)
-					}
-					startAdornment={<MoneyIcon width={16} />}
-				/>
-			</div>
+			)}
 		</div>
 	);
 }

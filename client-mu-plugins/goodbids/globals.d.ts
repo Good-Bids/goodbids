@@ -41,6 +41,10 @@ declare const gbNonprofitSetupGuide: {
 	siteId: number;
 	siteStatus: string;
 	siteStatusOptions: ['pending', 'live', 'inactive'];
+
+	isAdmin: boolean;
+	isBDPAdmin: boolean;
+	isJrAdmin: boolean;
 };
 
 declare const gbNonprofitOnboarding: {

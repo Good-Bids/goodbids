@@ -250,6 +250,9 @@ class Wizard {
 			'auctionIdParam'  => self::AUCTION_ID_PARAM,
 			'editRewardParam' => self::REWARD_EDIT_PARAM,
 
+			// Flags.
+			'metricsEnabled' => false,
+
 			// WP/WC Variables.
 			'rewardCategorySlug' => Rewards::ITEM_TYPE,
 		];
