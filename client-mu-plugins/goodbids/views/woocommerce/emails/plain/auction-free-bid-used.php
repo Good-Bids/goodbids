@@ -21,15 +21,26 @@ printf(
 	'{auction.title}',
 	'TODO{auction.bid.date}',
 	'{site_title}',
-	'TODO{auction.total.donated}'
+	'TODO{user.total.donated}'
 );
 
 echo "\n\n----------------------------------------\n\n";
 
 // TODO: ADD BID DETAILS TABLE HERE
 
+echo '{reward.purchase_note}';
+
 echo "\n\n----------------------------------------\n\n";
 
-echo '{reward.purchase_note}';
+printf(
+	/* translators: %1$s: Free Bids, %2$s: View all Auctions */
+	esc_html__( 'You have %1$s Free Bids that can be used in any eligible auction. You can earn more by placing one of the first five paid bids in any auction, or by', 'goodbids' ),
+	'TODO {user.free_bid_count}',
+	'TODO <a href="#">referring to friend</a>',
+);
+
+echo "\n\n----------------------------------------\n\n";
+
+echo esc_html__( 'Keep an eye on the Auction page for live bidding updates. We will let you know if you are outbid before the auction closes.', 'goodbids' );
 
 $instance->plain_text_footer();

@@ -28,10 +28,17 @@ do_action( 'woocommerce_email_header', $email_heading );
 		'{reward.title}',
 		'{site_title}',
 		'{auction.title}',
-		'TODO{auction.bid.date}',
+		'TODO{reward.claimed.date}',
 	);
 	?>
 </p>
+
+<p>
+	{reward.purchase_note}
+</p>
+
+
+<?php // TODO: ADD BID DETAILS TABLE HERE ?>
 
 <p>
 	<?php
@@ -41,8 +48,6 @@ do_action( 'woocommerce_email_header', $email_heading );
 	);
 	?>
 </p>
-
-
 
 <?php
 
