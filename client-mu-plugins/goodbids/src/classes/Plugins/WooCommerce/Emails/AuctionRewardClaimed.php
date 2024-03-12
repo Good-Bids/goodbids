@@ -36,7 +36,7 @@ class AuctionRewardClaimed extends Email {
 		$this->watcher_email  = true;
 		$this->bidder_email   = true;
 
-		$this->trigger_on_auction_end();
+		$this->trigger_on_reward_claimed();
 	}
 
 	/**
@@ -62,23 +62,14 @@ class AuctionRewardClaimed extends Email {
 	}
 
 	/**
-	 * Trigger this email on Auction End.
+	 * Trigger this email when an auction reward is claimed.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function trigger_on_auction_end(): void {
-		add_action(
-			'goodbids_auction_end',
-			function ( int $auction_id ) {
-				$auction = goodbids()->auctions->get( $auction_id );
-				$this->send_to_watchers( $auction );
-				$this->send_to_bidders( $auction );
-			},
-			10,
-			2
-		);
+	private function trigger_on_reward_claimed(): void {
+		// TODO fire Trigger
 	}
 
 	/**

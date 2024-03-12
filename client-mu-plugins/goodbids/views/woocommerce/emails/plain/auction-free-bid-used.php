@@ -16,13 +16,17 @@ defined( 'ABSPATH' ) || exit;
 $instance->plain_text_header();
 
 printf(
-	/* translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Reward Claim Deadline Date */
-	esc_html__( 'You still need to claim the %1$s you earned on the %2$s auction with %3$s. You have until %4$s to claim your reward.', 'goodbids' ),
-	'{reward.title}',
+	/* translators: %1$s: Auction Title, %2$s: Auction Bid date, %3$s: Site title, %4$s: Auction Bid amount */
+	esc_html__( 'This is your confirmation of your Free Bid for the %1$s auction on %2$s. You have supported %3$s on this auction for a total donation of %3$s.', 'goodbids' ),
 	'{auction.title}',
+	'TODO{auction.bid.date}',
 	'{site_title}',
-	'{reward.claim_deadline_date}'
+	'TODO{auction.bid.amount}'
 );
+
+echo "\n\n----------------------------------------\n\n";
+
+// TODO: ADD BID DETAILS TABLE HERE
 
 echo "\n\n----------------------------------------\n\n";
 
