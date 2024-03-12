@@ -1075,6 +1075,10 @@ class Auctions {
 				$start_field_key = 'field_6570c1fb429a8';
 
 				if ( 'auction_start' === $field['name'] ) {
+					if ( $value <= current_datetime()->format( 'Y-m-d H:i:s' ) ) {
+						return __( 'Auction Start Date/Time must be in the future.', 'goodbids' );
+					}
+
 					if ( empty( $_POST['acf'][ $end_field_key ] ) ) { // phpcs:ignore
 						return $valid;
 					}
@@ -1083,10 +1087,6 @@ class Auctions {
 
 					if ( $value >= $compare_value ) {
 						return __( 'Auction Start Date/Time must be before End Date/Time.', 'goodbids' );
-					}
-
-					if ( $value <= current_datetime()->format( 'Y-m-d H:i:s' ) ) {
-						return __( 'Auction Start Date/Time must be in the future.', 'goodbids' );
 					}
 				} elseif ( 'auction_end' === $field['name'] ) {
 					if ( empty( $_POST['acf'][ $start_field_key ] ) ) { // phpcs:ignore
