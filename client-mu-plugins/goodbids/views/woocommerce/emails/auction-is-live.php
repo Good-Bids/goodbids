@@ -42,7 +42,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		// After.
 		sprintf(
 			/* translators: %1$s: Site Title, Reward Product Title */
-			esc_html__( 'to support %1$s\'s mission and place a bid for your chance to win the %3$s!', 'goodbids' ),
+			esc_html__( 'to support %1$s\'s mission and place a bid for your chance to win the %2$s!', 'goodbids' ),
 			'{site_title}',
 			'{reward.title}'
 		)
