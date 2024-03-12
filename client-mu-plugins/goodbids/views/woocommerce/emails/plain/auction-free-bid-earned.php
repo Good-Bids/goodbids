@@ -15,13 +15,21 @@ defined( 'ABSPATH' ) || exit;
 
 $instance->plain_text_header();
 
+
 printf(
-	/* translators: %1$s: Auction Reward, %2$s: Auction title, %3$s: Site Title, %4$s: Reward Claim Deadline Date */
-	esc_html__( 'You still need to claim the %1$s you earned on the %2$s auction with %3$s. You have until %4$s to claim your reward.', 'goodbids' ),
-	'{reward.title}',
-	'{auction.title}',
-	'{site_title}',
-	'{reward.claim_deadline_date}'
+	/* translators: %1$s: Last Bid Amount, %2$s: View all Auctions */
+	esc_html__( 'This is confirmation that your recent %1$s has earned you a new Free Bid. Way to go! %2$s on GOODBIDS to find your next great cause to support.', 'goodbids' ),
+	'{user.last_bid_amount}',
+	'TODO View all Auctions',
+);
+
+echo "\n\n----------------------------------------\n\n";
+
+printf(
+	/* translators: %1$s: Free Bids, %2$s: View all Auctions */
+	esc_html__( 'You have %1$s Free Bids that can be used in any eligible auction. You can earn more by placing one of the first five paid bids in any auction, or by', 'goodbids' ),
+	'TODO {user.free_bid_count}',
+	'TODO referring to friend',
 );
 
 echo "\n\n----------------------------------------\n\n";
