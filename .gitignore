@@ -60,3 +60,5 @@ client-mu-plugins/goodbids/config.local.json
 !/plugins/accessibility-checker-pro/
 !/plugins/accessibility-checker-pro/vendor/
 !/plugins/accessibility-checker-pro/build/
+!/plugins/wp-mail-smtp-pro/
+!/plugins/wp-mail-smtp-pro/vendor/
