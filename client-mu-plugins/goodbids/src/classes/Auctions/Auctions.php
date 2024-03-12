@@ -1075,7 +1075,7 @@ class Auctions {
 				$start_field_key = 'field_6570c1fb429a8';
 
 				if ( 'auction_start' === $field['name'] ) {
-					if ( $value <= current_datetime()->format( 'Y-m-d H:i:s' ) ) {
+					if ( $value <= current_time( 'mysql' ) ) {
 						return __( 'Auction Start Date/Time must be in the future.', 'goodbids' );
 					}
 
