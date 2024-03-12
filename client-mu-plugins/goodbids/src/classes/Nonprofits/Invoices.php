@@ -66,7 +66,7 @@ class Invoices {
 		// Register Post Type.
 		$this->register_post_type();
 
-		// Prevent Deletion of Invoices by non-Super Admins.
+		// Prevent Deletion of Invoices.
 		$this->disable_delete();
 
 		// Disable the "Private" post state on invoices.
@@ -183,7 +183,7 @@ class Invoices {
 	 */
 	private function disable_delete(): void {
 		/**
-		 * Prevent Non-Super Admins from deleting Invoices
+		 * Prevent anyone from deleting Invoices
 		 *
 		 * @since 1.0.0
 		 *
@@ -205,10 +205,6 @@ class Invoices {
 		add_action(
 			'admin_init',
 			function () use ( $prevent_delete ): void {
-				if ( is_super_admin() ) {
-					return;
-				}
-
 				add_filter( 'pre_delete_post', $prevent_delete, 10, 2 );
 				add_filter( 'pre_trash_post', $prevent_delete, 10, 2 );
 			}
@@ -227,11 +223,6 @@ class Invoices {
 
 				unset( $actions['inline hide-if-no-js'] );
 				unset( $actions['inline'] );
-
-				if ( is_super_admin() ) {
-					return $actions;
-				}
-
 				unset( $actions['trash'] );
 				unset( $actions['clone'] );
 
@@ -244,7 +235,7 @@ class Invoices {
 		add_filter(
 			'user_has_cap',
 			function ( array $all_caps, array $caps ): array {
-				if ( is_super_admin() || ! function_exists( 'get_current_screen' ) ) {
+				if ( ! function_exists( 'get_current_screen' ) ) {
 					return $all_caps;
 				}
 

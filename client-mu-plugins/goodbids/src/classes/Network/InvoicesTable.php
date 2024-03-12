@@ -64,15 +64,6 @@ class InvoicesTable extends WP_List_Table {
 			),
 		];
 
-		if ( is_super_admin() ) {
-			$actions['delete'] = sprintf(
-				'<a href="?page=%s&action=delete&invoice=%s">%s</a>',
-				esc_attr( $page ),
-				esc_attr( urlencode( $item['ID'] ) ),
-				esc_html__( 'Delete', 'goodbids' )
-			);
-		}
-
 		return $item['site_name'] . $this->row_actions( $actions );
 	}
 
@@ -84,15 +75,9 @@ class InvoicesTable extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_bulk_actions(): array {
-		$bulk_actions = [
+		return [
 			'integrity_check' => __( 'Integrity Check', 'goodbids' ),
 		];
-
-		if ( is_super_admin() ) {
-			$bulk_actions['delete'] = __( 'Delete', 'goodbids' );
-		}
-
-		return $bulk_actions;
 	}
 
 	/**
