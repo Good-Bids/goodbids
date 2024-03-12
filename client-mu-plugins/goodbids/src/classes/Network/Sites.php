@@ -679,6 +679,19 @@ class Sites {
 						'site_id' => $site_id,
 					]
 				)
+				->filter(
+					fn () => goodbids()->sites->swap(
+						function () {
+							if ( is_main_site() ) {
+								return true;
+							}
+							// Skip site if status is pending
+							$nonprofit = new Nonprofit( get_current_blog_id() );
+							return Nonprofit::STATUS_PENDING !== $nonprofit->get_status();
+						},
+						$site_id
+					)
+				)
 				->all()
 		);
 
