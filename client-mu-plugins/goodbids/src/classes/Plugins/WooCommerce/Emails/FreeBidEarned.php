@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction Free Bid Earned: Email the users when a free Bid is earned.
+ * Free Bid Earned: Email the users when a free Bid is earned.
  *
  * @since 1.0.0
  * @package GoodBids
@@ -8,17 +8,18 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
-use GoodBids\Utilities\Log;
+use GoodBids\Auctions\FreeBid;
+use GoodBids\Plugins\WooCommerce\Account;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Auction Free Bid Earned Email
+ * Free Bid Earned Email
  *
  * @since 1.0.0
  * @extends Email
  */
-class AuctionFreeBidEarned extends Email {
+class FreeBidEarned extends Email {
 
 	/**
 	 * Set email defaults
@@ -29,13 +30,13 @@ class AuctionFreeBidEarned extends Email {
 		parent::__construct();
 
 		$this->id             = 'goodbids_free_bid_earned';
-		$this->title          = __( 'Auction Free Bid Earned', 'goodbids' );
+		$this->title          = __( 'Free Bid Earned', 'goodbids' );
 		$this->description    = __( 'Notification email sent to participant when free bid is earned.', 'goodbids' );
-		$this->template_html  = 'emails/auction-free-bid-earned.php';
-		$this->template_plain = 'emails/auction-free-bid-earned.php';
+		$this->template_html  = 'emails/free-bid-earned.php';
+		$this->template_plain = 'emails/plain/free-bid-earned.php';
 		$this->bidder_email   = true;
 
-		$this->trigger_on_free_bid_earned();
+		$this->trigger_on_new_free_bid();
 	}
 
 	/**
@@ -45,8 +46,13 @@ class AuctionFreeBidEarned extends Email {
 	 *
 	 * @return void
 	 */
-	private function trigger_on_free_bid_earned(): void {
-		// TODO fire Trigger
+	private function trigger_on_new_free_bid(): void {
+		add_action(
+			'goodbids_award_free_bid',
+			function ( FreeBid $free_bid, int $user_id ) {
+				$this->trigger( $free_bid, $user_id );
+			}
+		);
 	}
 
 	/**
@@ -91,7 +97,6 @@ class AuctionFreeBidEarned extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		// TODO update this the right link
-		return '{free_bids.url}';
+		return wc_get_endpoint_url( Account::FREE_BIDS_SLUG );
 	}
 }

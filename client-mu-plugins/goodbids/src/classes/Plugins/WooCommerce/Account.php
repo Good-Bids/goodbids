@@ -21,6 +21,26 @@ use GoodBids\Users\Referrals\Referrer;
 class Account {
 
 	/**
+	 * @since 1.0.0
+	 */
+	const AUCTIONS_SLUG = 'my-auctions';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const FREE_BIDS_SLUG = 'free-bids';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const REWARDS_SLUG = 'my-rewards';
+
+	/**
+	 * @since 1.0.0
+	 */
+	const REFERRALS_SLUG = 'my-referrals';
+
+	/**
 	 * Initialize Account
 	 *
 	 * @since 1.0.0
@@ -63,17 +83,15 @@ class Account {
 	 * @return void
 	 */
 	private function add_free_bids_tab(): void {
-		$slug = 'free-bids';
-
 		add_filter(
-			'goodbids_account_' . $slug . '_args',
+			'goodbids_account_' . self::FREE_BIDS_SLUG . '_args',
 			function ( $args ) {
 				$args['free_bids'] = goodbids()->users->get_free_bids();
 				return $args;
 			}
 		);
 
-		$this->init_new_account_page( $slug, __( 'Free Bids', 'goodbids' ) );
+		$this->init_new_account_page( self::FREE_BIDS_SLUG, __( 'Free Bids', 'goodbids' ) );
 	}
 
 	/**
@@ -84,17 +102,15 @@ class Account {
 	 * @return void
 	 */
 	private function add_my_auctions_tab(): void {
-		$slug = 'my-auctions';
-
 		add_filter(
-			'goodbids_account_' . $slug . '_args',
+			'goodbids_account_' . self::AUCTIONS_SLUG . '_args',
 			function ( $args ) {
 				$args['auctions'] = goodbids()->sites->get_user_participating_auctions();
 				return $args;
 			}
 		);
 
-		$this->init_new_account_page( $slug, __( 'Auctions', 'goodbids' ) );
+		$this->init_new_account_page( self::AUCTIONS_SLUG, __( 'Auctions', 'goodbids' ) );
 	}
 
 	/**
@@ -107,10 +123,8 @@ class Account {
 	 * @return void
 	 */
 	private function add_rewards_tab( int $current_page = 1 ): void {
-		$slug = 'my-rewards';
-
 		add_filter(
-			'goodbids_account_' . $slug . '_args',
+			'goodbids_account_' . self::REWARDS_SLUG . '_args',
 			function ( $args ) use ( $current_page ) {
 				$reward_orders = goodbids()->sites->get_user_reward_orders();
 
@@ -123,7 +137,7 @@ class Account {
 			}
 		);
 
-		$this->init_new_account_page( $slug, __( 'Rewards', 'goodbids' ) );
+		$this->init_new_account_page( self::REWARDS_SLUG, __( 'Rewards', 'goodbids' ) );
 	}
 
 	/**
@@ -134,10 +148,8 @@ class Account {
 	 * @return void
 	 */
 	private function add_referrals_tab(): void {
-		$slug = 'my-referrals';
-
 		add_filter(
-			'goodbids_account_' . $slug . '_args',
+			'goodbids_account_' . self::REFERRALS_SLUG . '_args',
 			function ( $args ) {
 				$referrer = new Referrer();
 
@@ -147,7 +159,7 @@ class Account {
 			}
 		);
 
-		$this->init_new_account_page( $slug, __( 'Referrals', 'goodbids' ) );
+		$this->init_new_account_page( self::REFERRALS_SLUG, __( 'Referrals', 'goodbids' ) );
 	}
 
 	/**

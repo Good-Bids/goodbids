@@ -16,7 +16,6 @@ use GoodBids\Plugins\WooCommerce\Cart;
 use GoodBids\Plugins\WooCommerce\Checkout;
 use GoodBids\Plugins\WooCommerce\Coupons;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionFreeBidEarned;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionFreeBidUsed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
@@ -26,6 +25,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardClaimed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
+use GoodBids\Plugins\WooCommerce\Emails\FreeBidEarned;
 use GoodBids\Plugins\WooCommerce\Orders;
 use GoodBids\Plugins\WooCommerce\Stripe;
 use GoodBids\Plugins\WooCommerce\Taxes;
@@ -512,7 +512,6 @@ class WooCommerce {
 			function ( array $email_classes ): array {
 				$goodbids_emails = [
 					'AuctionClosed'             => new AuctionClosed(),
-					'AuctionFreeBidEarned'      => new AuctionFreeBidEarned(),
 					'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
 					'AuctionIsLive'             => new AuctionIsLive(),
 					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
@@ -522,6 +521,7 @@ class WooCommerce {
 					'AuctionRewardReminder'     => new AuctionRewardReminder(),
 					'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
 					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
+					'FreeBidEarned'             => new FreeBidEarned(),
 				];
 
 				return array_merge( $email_classes, $goodbids_emails );

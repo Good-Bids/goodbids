@@ -81,7 +81,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 			'<a href="%s">%s</a>.',
 			'{user.referral_link}',
 			esc_html__( 'referring a friend', 'goodbids' )
-		),
+		)
 	);
 	?>
 </p>

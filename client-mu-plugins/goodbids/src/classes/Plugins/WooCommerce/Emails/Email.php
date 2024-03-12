@@ -11,6 +11,7 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Auctions\FreeBid;
 use GoodBids\Users\Referrals\Referrer;
 use WC_Email;
 use WC_Order;
@@ -375,6 +376,7 @@ class Email extends WC_Email {
 		// Get Email Object
 		$auction    = $this->object instanceof Auction ? $this->object : null;
 		$order      = $this->object instanceof WC_Order ? $this->object : null;
+		$free_bid   = $this->object instanceof FreeBid ? $this->object : null;
 		$order_type = false;
 
 		if ( $order ) {
@@ -440,6 +442,9 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{order.total}', $order?->get_total() );
 		$this->add_placeholder( '{order.date}', $order_date );
 
+		// Free Bid Details
+		$this->add_placeholder( '{free_bid.type}', $free_bid?->get_type_display() );
+		$this->add_placeholder( '{free_bid.type_action}', $free_bid?->get_type_action() );
 	}
 
 	/**

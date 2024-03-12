@@ -547,7 +547,12 @@ class Bids {
 				$auction    = goodbids()->auctions->get( $auction_id );
 
 				// Do not award free bids if this order contains a free bid.
-				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					// Reduce the Free Bid Count for the user.
+					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
+					}
+				} else {
 					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
 					$remaining_free_bids = $auction->get_free_bids_available();
 					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
@@ -562,12 +567,7 @@ class Bids {
 					);
 
 					if ( $auction->maybe_award_free_bid( null, $description ) ) {
-						// TODO: Let the user know they earned a free bid.
 						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
-					}
-				} else { // Reduce the Free Bid Count for the user.
-					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
-						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
 				}
 
