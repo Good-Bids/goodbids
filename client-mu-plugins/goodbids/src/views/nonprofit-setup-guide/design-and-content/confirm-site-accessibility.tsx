@@ -7,7 +7,7 @@ export function ConfirmSiteAccessibility() {
 		<MultiStepHeading
 			title={__('Confirm Site Accessibility', 'goodbids')}
 			content={__(
-				'All GOODBIDS Nonprofit sites are required to meet accessibility requirements. Review the site-wide accessibility report and resolve any issues flagged on your content and auction pages.',
+				'All GOODBIDS Nonprofit sites are required to meet accessibility guidelines. Once your site is live, the Accessibility Checker Pro plugin will be able to scan your pages for issues. After launch, review the site-wide accessibility report and resolve any issues flagged on your content and auction pages.',
 				'goodbids',
 			)}
 		>

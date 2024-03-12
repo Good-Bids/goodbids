@@ -20,7 +20,9 @@ declare const gbNonprofitSetupGuide: {
 	akismetURL: string;
 	accessibilityCheckerURL: string;
 
+	connectStripeURL: string;
 	woocommerceSettingsURL: string;
+	updateWoocommerceStoreURL: string;
 	configureShippingURL: string;
 	orderMetricsURL: string;
 	revenueMetricsURL: string;
@@ -32,6 +34,7 @@ declare const gbNonprofitSetupGuide: {
 
 	pagesURL: string;
 	patternsURL: string;
+	usersUrl: string;
 	addUsersURL: string;
 
 	auctionWizardURL: string;
