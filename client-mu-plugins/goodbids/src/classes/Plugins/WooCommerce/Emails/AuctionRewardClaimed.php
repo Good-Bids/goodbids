@@ -33,32 +33,9 @@ class AuctionRewardClaimed extends Email {
 		$this->description    = __( 'Notification email sent to participant when a reward is claimed', 'goodbids' );
 		$this->template_html  = 'emails/auction-reward-claimed.php';
 		$this->template_plain = 'emails/plain/auction-reward-claimed.php';
-		$this->watcher_email  = true;
 		$this->bidder_email   = true;
 
 		$this->trigger_on_reward_claimed();
-	}
-
-	/**
-	 * Add a custom footer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function init_customizations(): void {
-		add_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7, 2 );
-	}
-
-	/**
-	 * Remove custom footer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	protected function remove_customizations(): void {
-		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
 	}
 
 	/**
