@@ -30,7 +30,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		'{site_title}',
 		'TODO{auction.bid.date}',
 		'{site_title}',
-		'TODO{auction.bid.amount}'
+		'TODO{auction.total.donated}'
 	);
 	?>
 </p>
