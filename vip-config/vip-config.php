@@ -71,16 +71,22 @@ if ( function_exists( 'newrelic_disable_autorum' ) ) {
  *
  * @see https://wordpress.org/support/article/debugging-in-wordpress/#wp_debug
  */
-if ( ( ! defined( 'VIP_GO_APP_ENVIRONMENT' ) || ( defined( 'VIP_GO_APP_ENVIRONMENT' ) && 'production' !== VIP_GO_APP_ENVIRONMENT ) )
-	&& ! defined( 'WP_DEBUG' ) ) {
+if ( ! defined( 'WP_DEBUG' ) ) {
+	$environment = 'local';
 
-	define( 'WP_DEBUG', true );
-
-	if ( ! defined( 'WP_DEBUG_LOG' ) ) {
-		define( 'WP_DEBUG_LOG', true );
+	if ( defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
+		$environment = VIP_GO_APP_ENVIRONMENT;
 	}
 
-	if ( ! defined( 'WP_DEBUG_DISPLAY' ) ) {
-		define( 'WP_DEBUG_DISPLAY', true );
+	if ( ! in_array( $environment, [ 'production', 'staging' ] ) ) {
+		define( 'WP_DEBUG', true );
+
+		if ( 'development' !== $environment && ! defined( 'WP_DEBUG_LOG' ) ) {
+			define( 'WP_DEBUG_LOG', true );
+		}
+
+		if ( ! defined( 'WP_DEBUG_DISPLAY' ) ) {
+			define( 'WP_DEBUG_DISPLAY', true );
+		}
 	}
 }
