@@ -81,7 +81,7 @@ class AuctionRewardClaimed extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s auction has ended', 'goodbids' ),
+			__( '[%1$s] %2$s Claim Confirmation', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);
@@ -94,12 +94,7 @@ class AuctionRewardClaimed extends Email {
 	 * @return string
 	 */
 	public function get_default_heading(): string {
-		return sprintf(
-			/* translators: %1$s: Site Title, %2$s: Total Raised by Auction */
-			__( 'You helped %1$s raise %2$s!', 'goodbids' ),
-			'{site_title}',
-			'{auction.total_raised}'
-		);
+		return __( 'Thanks for claiming your reward!', 'goodbids' );
 	}
 
 	/**
