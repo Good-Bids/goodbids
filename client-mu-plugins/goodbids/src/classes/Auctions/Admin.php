@@ -187,23 +187,7 @@ class Admin {
 		add_action(
 			'current_screen',
 			function () {
-				if ( is_super_admin() ) {
-					return;
-				}
-
-				$screen = get_current_screen();
-
-				if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
-					return;
-				}
-
-				$auction = goodbids()->auctions->get();
-
-				if ( ! $auction->get_id() ) {
-					return;
-				}
-
-				if ( ! in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ], true ) ) {
+				if ( ! $this->is_restricted() ) {
 					return;
 				}
 				?>
@@ -228,39 +212,7 @@ class Admin {
 		add_filter(
 			'acf/load_field',
 			function ( array $field ): array {
-				if ( is_super_admin() ) {
-					return $field;
-				}
-
-				if ( 'tab' === $field['type'] ) {
-					return $field;
-				}
-
-				$disabled = [
-					'auction_product',
-					'auction_start',
-					'auction_end',
-					'minutes',
-					'seconds',
-					'bid_extension',
-					'estimated_value',
-					'bid_increment',
-					'starting_bid',
-					'auction_goal',
-					'expected_high_bid',
-				];
-
-				if ( ! in_array( $field['name'], $disabled, true ) ) {
-					return $field;
-				}
-
-				$auction = goodbids()->auctions->get();
-
-				if ( ! $auction->get_id() ) {
-					return $field;
-				}
-
-				if ( ! in_array( $auction->get_meta( 'status' ), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ], true ) ) {
+				if ( ! $this->is_restricted( $field ) ) {
 					return $field;
 				}
 
@@ -269,6 +221,77 @@ class Admin {
 				return $field;
 			}
 		);
+
+		add_filter(
+			'acf/update_value',
+			function ( mixed $value, int $post_id, array $field ): mixed {
+				if ( ! $this->is_restricted( $field ) ) {
+					return $value;
+				}
+
+				// Restore original value.
+				return get_field( $field['name'], $post_id );
+			},
+			10,
+			3
+		);
+	}
+
+	/**
+	 * Check if post should be restricted from changes.
+	 *
+	 * @param array $field
+	 *
+	 * @return bool
+	 */
+	private function is_restricted( array $field = [] ): bool {
+		if ( is_super_admin() ) {
+			return false;
+		}
+
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+
+			if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
+				return false;
+			}
+		}
+
+		if ( ! empty( $field ) ) {
+			if ( 'tab' === $field['type'] ) {
+				return false;
+			}
+
+			$disabled_fields = [
+				'auction_product',
+				'auction_start',
+				'auction_end',
+				'minutes',
+				'seconds',
+				'bid_extension',
+				'estimated_value',
+				'bid_increment',
+				'starting_bid',
+				'auction_goal',
+				'expected_high_bid',
+			];
+
+			if ( ! in_array( $field['name'], $disabled_fields, true ) ) {
+				return false;
+			}
+		}
+
+		$auction = goodbids()->auctions->get();
+
+		if ( ! $auction->get_id() ) {
+			return false;
+		}
+
+		if ( ! in_array( $auction->get_meta( 'status' ), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ], true ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
