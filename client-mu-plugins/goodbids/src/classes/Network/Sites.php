@@ -447,7 +447,7 @@ class Sites {
 				$existing   = get_option( self::ABOUT_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $existing || goodbids()->utilities->get_page_by_path( $about_slug ) ) {
+				if ( $existing || get_page_by_path( $about_slug ) ) {
 					return;
 				}
 
@@ -488,7 +488,7 @@ class Sites {
 				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.
-				if ( $existing || goodbids()->utilities->get_page_by_path( $auctions_slug ) ) {
+				if ( $existing || get_page_by_path( $auctions_slug ) ) {
 					return;
 				}
 
@@ -525,7 +525,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$page = goodbids()->utilities->get_page_by_path( 'sample-page' );
+				$page = get_page_by_path( 'sample-page' );
 
 				if ( ! $page ) {
 					return;
@@ -554,10 +554,6 @@ class Sites {
 	 * @return ?string
 	 */
 	public function get_privacy_policy_link(): ?string {
-		if ( ! is_multisite() ) {
-			return null;
-		}
-
 		return $this->main(
 			function (): string {
 				$privacy_policy_link = '';
@@ -584,10 +580,6 @@ class Sites {
 	 * @return ?string
 	 */
 	public function get_terms_conditions_link(): ?string {
-		if ( ! is_multisite() ) {
-			return null;
-		}
-
 		return $this->main(
 			function (): string {
 				$terms_conditions_link = '';
@@ -606,6 +598,38 @@ class Sites {
 		);
 	}
 
+
+	/**
+	 * Get the terms and conditions text for emails.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_terms_conditions_text(): string {
+		$terms_conditions = goodbids()->sites->main(
+			function (): string {
+				$terms_conditions_link = '';
+				$terms_conditions_id   = wc_terms_and_conditions_page_id();
+
+				if ( $terms_conditions_id ) {
+					$terms_conditions_link = sprintf(
+						'%s %s',
+						get_the_title( $terms_conditions_id ),
+						get_page_link( $terms_conditions_id )
+					);
+				}
+
+				return $terms_conditions_link;
+			}
+		);
+
+		return sprintf(
+			'By activating your account, you agree to GOODBIDS\' Nonprofit %s.',
+			$terms_conditions
+		);
+	}
+
 	/**
 	 * Get the Report an issue link.
 	 *
@@ -616,7 +640,7 @@ class Sites {
 	public function get_report_issue_link(): ?string {
 		return $this->main(
 			function (): string {
-				$report_issue_page = goodbids()->utilities->get_page_by_path( 'report-an-issue' );
+				$report_issue_page = get_page_by_path( 'report-an-issue' );
 
 				if ( ! $report_issue_page ) {
 					return '';
@@ -654,6 +678,19 @@ class Sites {
 						'post_id' => $post_id,
 						'site_id' => $site_id,
 					]
+				)
+				->filter(
+					fn () => goodbids()->sites->swap(
+						function () {
+							if ( is_main_site() ) {
+								return true;
+							}
+							// Skip site if status is pending
+							$nonprofit = new Nonprofit( get_current_blog_id() );
+							return Nonprofit::STATUS_PENDING !== $nonprofit->get_status();
+						},
+						$site_id
+					)
 				)
 				->all()
 		);
