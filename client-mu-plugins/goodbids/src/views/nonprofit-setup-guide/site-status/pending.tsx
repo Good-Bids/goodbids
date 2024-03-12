@@ -30,13 +30,9 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 				<a href={gbNonprofitSetupGuide.optionsGeneralURL}>
 					{__('site timezone', 'goodbids')}
 				</a>
-				{__(', update your', 'goodbids')}{' '}
+				{__(' and update your', 'goodbids')}{' '}
 				<a href={gbNonprofitSetupGuide.customizeHomepageURL}>
 					{__('homepage', 'goodbids')}
-				</a>
-				{__(', and review the', 'goodbids')}{' '}
-				<a href={gbNonprofitSetupGuide.accessibilityCheckerURL}>
-					{__('site-wide accessibility report', 'goodbids')}
 				</a>
 				.{' '}
 				{__(
