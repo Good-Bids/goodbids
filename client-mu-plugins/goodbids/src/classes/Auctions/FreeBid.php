@@ -266,6 +266,11 @@ class FreeBid {
 			return __( 'Referral', 'goodbids' );
 		}
 
+		if ( $this->get_type() === self::TYPE_ADMIN_GRANT ) {
+			return __( 'admin grant', 'goodbids' );
+		}
+
+		// Default to Bid.
 		return __( 'Bid', 'goodbids' );
 	}
 
