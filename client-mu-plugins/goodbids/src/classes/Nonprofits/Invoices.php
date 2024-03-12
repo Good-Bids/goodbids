@@ -407,49 +407,28 @@ class Invoices {
 
 	/**
 	 * Get an Invoice by ID.
-	 * Pass Auction ID to initialize a new Invoice.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int  $post_id
-	 * @param ?int $auction_id
+	 * @param int $post_id
 	 *
-	 * @return ?Invoice
+	 * @return Invoice
 	 */
-	public function get_invoice( int $post_id, ?int $auction_id = null ): ?Invoice {
-		if ( ! is_null( $auction_id ) ) {
-			$auction = goodbids()->auctions->get( $auction_id );
-			if ( $auction->get_invoice_id() ) {
-				_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
-				return null;
-			}
-		}
-
-		return new Invoice( $post_id, $auction_id );
+	public function get_invoice( int $post_id ): Invoice {
+		return new Invoice( $post_id );
 	}
 
 	/**
 	 * Get a Tax Invoice by ID.
-	 * Pass Auction ID and Order ID to initialize a new Tax Invoice.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param int  $post_id
-	 * @param ?int $auction_id
-	 * @param ?int $order_id
 	 *
 	 * @return ?TaxInvoice
 	 */
-	public function get_tax_invoice( int $post_id, ?int $auction_id = null, ?int $order_id = null ): ?TaxInvoice {
-		if ( ! is_null( $auction_id ) && ! is_null( $order_id )	) {
-			$auction = goodbids()->auctions->get( $auction_id );
-			if ( $auction->get_tax_invoice_id() ) {
-				_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
-				return null;
-			}
-		}
-
-		return new TaxInvoice( $post_id, $auction_id, $order_id );
+	public function get_tax_invoice( int $post_id ): ?TaxInvoice {
+		return new TaxInvoice( $post_id );
 	}
 
 	/**
@@ -626,32 +605,86 @@ class Invoices {
 	 * @return void
 	 */
 	public function generate( int $auction_id ): void {
+		if ( ! $this->is_valid_auction( $auction_id ) ) {
+			return;
+		}
+
+		$title = sprintf(
+			// translators: %s is the Auction Title.
+			__( 'Invoice for %s', 'goodbids' ),
+			get_the_title( $auction_id )
+		);
+		$invoice_id = $this->create_invoice_post( $title );
+
+		if ( ! $invoice_id ) {
+			return;
+		}
+
+		// This initializes the invoice.
+		$invoice = $this->get_invoice( $invoice_id );
+		$invoice->init( $auction_id );
+
+		if ( ! $invoice->is_valid() ) {
+			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
+			return;
+		}
+
+		// Set the initial invoice values.
+		$invoice->use_default_values();
+
+		// Create the invoice in Stripe.
+		$this->stripe->create_invoice( $invoice );
+
+		if ( ! $invoice->get_stripe_invoice_id() ) {
+			Log::error( 'There was a problem creating the Stripe Invoice.', compact( 'auction_id', 'invoice' ) );
+		}
+	}
+
+	/**
+	 * Check if using a valid auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int  $auction_id
+	 * @param bool $existing_check
+	 *
+	 * @return bool
+	 */
+	public function is_valid_auction( int $auction_id, bool $existing_check = true ): bool {
 		if ( 'publish' !== get_post_status( $auction_id ) ) {
 			Log::warning( 'Auction not published yet.', compact( 'auction_id' ) );
-			return;
+			return false;
 		}
 
 		$auction = goodbids()->auctions->get( $auction_id );
 
 		// Bail early if invoice already exists.
-		if ( $auction->get_invoice_id() ) {
+		if ( $existing_check && $auction->get_invoice_id() ) {
 			Log::warning( 'Invoice already exists for Auction.', compact( 'auction_id' ) );
-			return;
+			return false;
 		}
 
 		if ( ! $auction->get_total_raised() ) {
 			Log::warning( 'No funds were raised for Auction.', compact( 'auction_id' ) );
-			return;
+			return false;
 		}
 
-		// Generate the Invoice.
+		return true;
+	}
+
+	/**
+	 * Create the invoice post
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $title
+	 *
+	 * @return ?int
+	 */
+	private function create_invoice_post( string $title ): ?int {
 		$invoice_id = wp_insert_post(
 			[
-				'post_title'  => sprintf(
-					// translators: %s is the Auction Title.
-					__( 'Invoice for %s', 'goodbids' ),
-					get_the_title( $auction_id )
-				),
+				'post_title'  => $title,
 				'post_type'   => $this->get_post_type(),
 				'post_status' => 'private',
 				'post_author' => 1,
@@ -659,28 +692,58 @@ class Invoices {
 		);
 
 		if ( is_wp_error( $invoice_id ) ) {
-			Log::error( 'Error generating invoice: ' . $invoice_id->get_error_message(), compact( 'auction_id' ) );
-			return;
+			Log::error( 'Error generating invoice: ' . $invoice_id->get_error_message(), compact( 'title' ) );
+			return null;
 		}
 
 		if ( ! $invoice_id ) {
-			Log::error( 'Unknown error generating invoice.', compact( 'auction_id' ) );
+			Log::error( 'Unknown error generating invoice.', compact( 'title' ) );
+			return null;
+		}
+
+		return $invoice_id;
+	}
+
+	/**
+	 * Regenerate the invoice.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int    $auction_id
+	 * @param string $stripe_invoice_id
+	 *
+	 * @return void
+	 */
+	public function regenerate( int $auction_id, string $stripe_invoice_id ): void {
+		if ( ! $this->is_valid_auction( $auction_id, false ) ) {
+			return;
+		}
+
+		// Generate the Invoice.
+		$title     = sprintf(
+			// translators: %s is the Auction Title.
+			__( 'Invoice for %s', 'goodbids' ),
+			get_the_title( $auction_id )
+		);
+		$invoice_id = $this->create_invoice_post( $title );
+
+		if ( ! $invoice_id ) {
 			return;
 		}
 
 		// This initializes the invoice.
-		$invoice = $this->get_invoice( $invoice_id, $auction_id );
+		$invoice = $this->get_invoice( $invoice_id );
 
-		if ( ! $invoice ) {
+		if ( ! $invoice->is_valid() ) {
 			Log::error( 'Could not initialize invoice.', compact( 'auction_id', 'invoice_id' ) );
 			return;
 		}
 
-		$this->stripe->create_invoice( $invoice );
+		// Set the initial invoice values.
+		$invoice->use_default_values();
 
-		if ( ! $invoice->get_stripe_invoice_id() ) {
-			Log::error( 'There was a problem creating the Stripe Invoice.', compact( 'auction_id', 'invoice' ) );
-		}
+		// Reset the Stripe Invoice ID.
+		$invoice->set_stripe_invoice_id( $stripe_invoice_id );
 	}
 
 	/**
@@ -744,8 +807,8 @@ class Invoices {
 	 * @return void
 	 */
 	public function generate_tax( int $auction_id, int $order_id ): void {
-		if ( 'publish' !== get_post_status( $auction_id ) ) {
-			Log::warning( 'Auction not published yet.', compact( 'auction_id' ) );
+		// Skip existing check, manually check below.
+		if ( ! $this->is_valid_auction( $auction_id, false ) ) {
 			return;
 		}
 
@@ -763,33 +826,22 @@ class Invoices {
 		}
 
 		// Generate the Invoice.
-		$invoice_id = wp_insert_post(
-			[
-				'post_title'  => sprintf(
-					// translators: %s is the Auction Title.
-					__( 'Tax Invoice for %s', 'goodbids' ),
-					get_the_title( $auction_id )
-				),
-				'post_type'   => $this->get_post_type(),
-				'post_status' => 'private',
-				'post_author' => 1,
-			]
+		$title      = sprintf(
+			// translators: %s is the Auction Title.
+			__( 'Tax Invoice for %s', 'goodbids' ),
+			get_the_title( $auction_id )
 		);
-
-		if ( is_wp_error( $invoice_id ) ) {
-			Log::error( 'Error generating tax invoice: ' . $invoice_id->get_error_message(), compact( 'auction_id', 'order_id' ) );
-			return;
-		}
+		$invoice_id = $this->create_invoice_post( $title );
 
 		if ( ! $invoice_id ) {
-			Log::error( 'Unknown error generating tax invoice.', compact( 'auction_id', 'order_id' ) );
 			return;
 		}
 
 		// This initializes the invoice.
-		$invoice = $this->get_tax_invoice( $invoice_id, $auction_id, $order_id );
+		$invoice = $this->get_tax_invoice( $invoice_id );
+		$invoice->init_tax( $auction_id, $order_id );
 
-		if ( ! $invoice ) {
+		if ( ! $invoice->is_valid() ) {
 			Log::error( 'Could not initialize tax invoice.', compact( 'invoice_id', 'auction_id', 'order_id' ) );
 			return;
 		}
@@ -817,5 +869,44 @@ class Invoices {
 		}
 
 		return intval( $payment_terms );
+	}
+
+	/**
+	 * Invoices Validation Check.
+	 * This checks Stripe for any invoices that do not exist in the database.
+	 * If an invoice does not exist, it will be recreated.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function validation_check(): void {
+		$stripe_invoices = $this->stripe->get_invoices();
+
+		foreach ( $stripe_invoices as $stripe_invoice ) {
+			$auction_id = intval( $stripe_invoice->metadata->gb_auction_id );
+			$invoice_id = intval( $stripe_invoice->metadata->gb_invoice_id );
+			$site_id    = isset( $stripe_invoice->metadata->gb_site_id ) ? intval( $stripe_invoice->metadata->gb_site_id ) : null;
+
+			if ( ! $auction_id || ! $invoice_id || ! $site_id ) {
+				continue;
+			}
+
+			goodbids()->sites->swap(
+				function () use ( $auction_id, $invoice_id, $stripe_invoice ) {
+					// Verify Invoice exists.
+					$invoice = goodbids()->invoices->get_invoice( $invoice_id );
+
+					if ( $invoice->is_valid() ) {
+						return;
+					}
+
+					// Recreate the invoice.
+					Log::info( 'Regenerating Invoice for Auction ID:' . $auction_id . ' and Stripe Invoice #' . $stripe_invoice->id );
+					goodbids()->invoices->regenerate( $auction_id, $stripe_invoice->id );
+				},
+				$site_id
+			);
+		}
 	}
 }

@@ -37,50 +37,26 @@ class TaxInvoice extends Invoice {
 	private ?int $order_id = null;
 
 	/**
-	 * Retrieve an instance of an Invoice.
-	 * Passing the Auction ID into the 2nd parameter will initialize the Invoice.
-	 * The Auction ID will be connected to the Invoice during initialization.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int  $post_id
-	 * @param ?int $auction_id
-	 * @param ?int $order_id
-	 *
-	 * @return ?self
-	 */
-	public function __construct( int $post_id, ?int $auction_id = null, ?int $order_id = null ) {
-		if ( get_post_type( $post_id ) !== Invoices::POST_TYPE ) {
-			_doing_it_wrong( __METHOD__, 'The post ID provided is not an invoice type', '1.0.0' );
-			return null;
-		}
-
-		$this->invoice_id = $post_id;
-		$this->post       = get_post( $this->invoice_id );
-
-		if ( null !== $auction_id && null !== $order_id ) {
-			if ( ! $this->init( $auction_id, $order_id ) ) {
-				Log::error( 'Could not initialize tax invoice.', [ 'invoice_id' => $this->get_id(), 'auction_id' => $auction_id, 'order_id' => $order_id ] );
-				return null;
-			}
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Initialize a New Tax Invoice. This will also connect the Auction to this Invoice.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
 	 * @param int $order_id
+	 * @param bool $check_existing
 	 *
 	 * @return bool
 	 */
-	private function init( int $auction_id, int $order_id ): bool {
+	public function init_tax( int $auction_id, int $order_id, bool $check_existing = true ): bool {
 		if ( get_post_type( $auction_id ) !== goodbids()->auctions->get_post_type() ) {
 			_doing_it_wrong( __METHOD__, 'The post ID provided is not an Auction post type.', '1.0.0' );
+			return false;
+		}
+
+		$auction = goodbids()->auctions->get( $auction_id );
+
+		if ( $check_existing && $auction->get_tax_invoice_id() ) {
+			_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
 			return false;
 		}
 
@@ -91,16 +67,21 @@ class TaxInvoice extends Invoice {
 		// Add Invoice ID to Auction.
 		update_post_meta( $this->auction_id, Invoices::TAX_INVOICE_ID_META_KEY, $this->get_id() );
 
-		// Set the invoice type.
-		$this->set_type();
-
-		// Set the invoice amount.
-		$this->set_amount();
-
-		// Set the invoice due date last.
-		$this->set_due_date();
+		// Set the Default Values.
+		$this->use_default_values();
 
 		return true;
+	}
+
+	/**
+	 * Check if the Invoice is valid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return ! is_null( $this->post ) && $this->get_auction_id() && $this->get_order_id();
 	}
 
 	/**

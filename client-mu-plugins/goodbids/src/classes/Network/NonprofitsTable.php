@@ -358,8 +358,9 @@ class NonprofitsTable extends WP_List_Table {
 
 		return match ( $column ) {
 			'site_name'  => sprintf(
-				'<a href="%s" target="_blank" rel="noopener"><strong>%s</strong></a>',
+				'<a href="%s" target="_blank" rel="noopener" title="%s"><strong>%s</strong></a>',
 				esc_html( $nonprofit->get_admin_url() ),
+				esc_attr( __( 'Site ID: ', 'goodbids' ) .  $site_id ),
 				esc_html( $nonprofit->get_name() )
 			),
 			'auctions'   => $nonprofit->get_total_auctions(),
