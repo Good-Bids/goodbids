@@ -34,7 +34,6 @@ do_action( 'woocommerce_email_header', $email_heading );
 	?>
 </p>
 
-
 <?php
 
 /* * @hooked WC_Emails::email_footer() Output the email footer */
