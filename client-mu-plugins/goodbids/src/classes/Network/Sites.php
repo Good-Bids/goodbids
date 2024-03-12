@@ -835,7 +835,7 @@ class Sites {
 	 */
 	public function clear_all_site_transients(): void {
 		$this->loop(
-			fn () => delete_transient( self::ALL_AUCTIONS_TRANSIENT ),
+			fn () => goodbids()->auctions->clear_transients(),
 		);
 	}
 
@@ -1070,27 +1070,10 @@ class Sites {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-
-		$goodbids_orders = goodbids()->sites->get_user_bid_orders();
-		$auctions        = [];
+		$auctions = [];
 
 		// Get user Bids from all sites
-		foreach ( $goodbids_orders as $goodbids_order ) {
-			$auction_id = goodbids()->sites->swap(
-				fn () => goodbids()->woocommerce->orders->get_auction_id( $goodbids_order['order_id'] ),
-				$goodbids_order['site_id']
-			);
-
-			if ( 'publish' !== get_post_status( $auction_id ) ) {
-				continue;
-			}
-
-			$bid_auction = [
-				'site_id' => $goodbids_order['site_id'],
-				'post_id' => $auction_id,
-			];
-			$auctions[]  = $bid_auction;
-		}
+		$auctions = $this->get_user_participating_auctions( $user_id );
 
 		// Get all Watchers for user from all sites
 		goodbids()->sites->loop(
@@ -1108,39 +1091,42 @@ class Sites {
 						continue;
 					}
 
-					$watched_auction = [
-						'site_id' => $site_id,
-						'post_id' => $auction_id,
+					$auctions[] = [
+						'site_id'    => $site_id,
+						'auction_id' => $auction_id,
 					];
-					$auctions[]      = $watched_auction;
 				}
 			}
 		);
 
-		// Filter by started and not ended and sort by end date
 		return collect( $auctions )
-			->unique(
-				function ( $auction_data ) {
-					return $auction_data['site_id'] . '|' . $auction_data['post_id'];
-				}
-			)
 			->filter(
-				fn ( array $auction_data ) => goodbids()->sites->swap(
-					function () use ( $auction_data ) {
-						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-						return $auction->has_started() && ! $auction->has_ended();
+				fn ( array $item ) => $this->swap(
+					function () use ( &$item ) {
+						$auction = goodbids()->auctions->get( $item['auction_id'] );
+						return Auction::STATUS_LIVE === $auction->get_status();
 					},
-					$auction_data['site_id']
+					$item['site_id']
 				)
+			)
+			->unique(
+				fn ( $auction_data ) => $auction_data['site_id'] . '|' . $auction_data['auction_id']
 			)
 			->sortBy(
 				fn ( array $auction_data ) => goodbids()->sites->swap(
 					function () use ( $auction_data ) {
-						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+						$auction = goodbids()->auctions->get( $auction_data['auction_id'] );
 						return $auction->get_end_date_time();
 					},
 					$auction_data['site_id']
 				)
+			)
+			// Using WP default post_id in view
+			->map(
+				fn ( array $auction_data ) => [
+					'post_id' => $auction_data['auction_id'],
+					'site_id' => $auction_data['site_id'],
+				]
 			)
 			->all();
 	}
