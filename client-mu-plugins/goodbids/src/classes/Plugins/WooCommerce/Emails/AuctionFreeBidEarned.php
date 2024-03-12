@@ -36,7 +36,7 @@ class AuctionFreeBidEarned extends Email {
 		$this->watcher_email  = true;
 		$this->bidder_email   = true;
 
-		$this->trigger_on_auction_end();
+		$this->trigger_on_free_bid_earned();
 	}
 
 	/**
@@ -62,22 +62,14 @@ class AuctionFreeBidEarned extends Email {
 	}
 
 	/**
-	 * Trigger this email on Auction End.
+	 * Trigger this email on free bid earned.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function trigger_on_auction_end(): void {
-		add_action(
-			'goodbids_auction_end',
-			function ( int $auction_id ) {
-				$auction = goodbids()->auctions->get( $auction_id );
-				$this->send_to_bidders( $auction );
-			},
-			10,
-			2
-		);
+	private function trigger_on_free_bid_earned(): void {
+		// TODO fire Trigger
 	}
 
 	/**
