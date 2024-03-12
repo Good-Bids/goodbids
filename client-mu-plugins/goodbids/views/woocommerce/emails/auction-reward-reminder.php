@@ -34,9 +34,6 @@ do_action( 'woocommerce_email_header', $email_heading );
 	?>
 </p>
 
-<p>
-	{reward.purchase_note}
-</p>
 
 <?php
 
