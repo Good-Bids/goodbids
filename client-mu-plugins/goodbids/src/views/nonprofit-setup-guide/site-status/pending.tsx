@@ -18,6 +18,8 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 		publishSite.mutate({ site_id: gbNonprofitSetupGuide.siteId });
 	};
 
+	const loading = publishSite.status === 'pending';
+
 	return (
 		<>
 			<H1>{__('Pending', 'goodbids')}</H1>
@@ -55,8 +57,14 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 			</P>
 
 			<div className="w-full max-w-60">
-				<Button variant="solid" onClick={handlePublishSite}>
-					{__('Launch Site', 'goodbids')}
+				<Button
+					disabled={loading}
+					variant="solid"
+					onClick={handlePublishSite}
+				>
+					{loading
+						? __('Saving', 'goodbids')
+						: __('Launch Site', 'goodbids')}
 				</Button>
 			</div>
 

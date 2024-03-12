@@ -165,6 +165,11 @@ export function ReviewStep({
 		setStep('finish');
 	};
 
+	const loading =
+		createProduct.status === 'pending' ||
+		createAuction.status === 'pending' ||
+		updateAuctionContent.status === 'pending';
+
 	return (
 		<Wrapper
 			progress={90}
@@ -182,8 +187,14 @@ export function ReviewStep({
 					updateStatus={updateAuctionContent.status}
 				/>
 
-				<Button variant="solid" onClick={handleSubmitStart}>
-					{__('Save and continue', 'goodbids')}
+				<Button
+					disabled={loading}
+					variant="solid"
+					onClick={handleSubmitStart}
+				>
+					{loading
+						? __('Saving', 'goodbids')
+						: __('Save my progress', 'goodbids')}
 				</Button>
 			</div>
 		</Wrapper>
