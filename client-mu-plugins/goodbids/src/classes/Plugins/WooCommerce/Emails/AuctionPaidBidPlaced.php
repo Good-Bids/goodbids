@@ -37,7 +37,7 @@ class AuctionPaidBidPlaced extends Email {
 	}
 
 	/**
-	 * Trigger this email when a Pid bid is placed.
+	 * Trigger this email when a Paid bid is placed.
 	 *
 	 * @since 1.0.0
 	 *

@@ -425,15 +425,16 @@ class Email extends WC_Email {
 
 		// Reward Details.
 		$this->add_placeholder( '{reward.title}', $reward?->get_title() );
-		$this->add_placeholder( '{reward.type}', 'TBD' );
+		$this->add_placeholder( '{reward.type}', 'TBD' ); // TODO: Remove me?
 		$this->add_placeholder( '{reward.purchase_note}', $reward?->get_purchase_note() );
 		$this->add_placeholder( '{reward.claim_url}', goodbids()->rewards->get_claim_reward_url( $auction?->get_id() ) );
 		$this->add_placeholder( '{reward.days_to_claim_setting}', goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
 		$this->add_placeholder( '{reward.claim_deadline_date}', goodbids()->rewards->get_claim_deadline_date( $auction?->get_id() ) );
 
-		// User Details.
+		// General User Details.
 		$referrer = new Referrer( $this->user_id );
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
+		$this->add_placeholder( '{user.account_url}', wc_get_page_permalink( 'myaccount' ) );
 		$this->add_placeholder( '{user.free_bid_count}', goodbids()->users->get_available_free_bid_count( $this->user_id ) );
 		$this->add_placeholder( '{user.referral_link}', $referrer->get_link() );
 

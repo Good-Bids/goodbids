@@ -1,12 +1,12 @@
 <?php
 /**
- * Auction Paid Pid Placed email
+ * Auction Paid Bid Placed email
  *
  * @since 1.0.0
  * @version 1.0.0
  * @package GoodBids
  *
- * @var string   $email_heading
+ * @var string $email_heading
  *
  * @var AuctionPaidBidPlaced $instance
  */

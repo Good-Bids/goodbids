@@ -41,12 +41,17 @@ class AuctionRewardClaimed extends Email {
 	/**
 	 * Trigger this email when an auction reward is claimed.
 	 *
-	 * @since 1.0.0
-	 *
+	 * @since  1.0.0
 	 * @return void
 	 */
 	private function trigger_on_reward_claimed(): void {
-		// TODO fire Trigger
+		add_action(
+			'goodbids_reward_redeemed',
+			function ( int $auction_id, int $order_id ) {
+				$order = wc_get_order( $order_id );
+				$this->trigger( $order, get_current_user_id() );
+			}
+		);
 	}
 
 	/**
@@ -67,7 +72,7 @@ class AuctionRewardClaimed extends Email {
 	/**
 	 * Get email heading.
 	 *
-	 * @since   1.0.0
+	 * @since  1.0.0
 	 * @return string
 	 */
 	public function get_default_heading(): string {
@@ -77,7 +82,7 @@ class AuctionRewardClaimed extends Email {
 	/**
 	 * Get button text
 	 *
-	 * @since   1.0.0
+	 * @since  1.0.0
 	 * @return string
 	 */
 	public function get_default_button_text(): string {
@@ -87,27 +92,10 @@ class AuctionRewardClaimed extends Email {
 	/**
 	 * Set Button URL
 	 *
-	 * @since 1.0.0
-	 *
+	 * @since  1.0.0
 	 * @return string
 	 */
 	public function get_button_url(): string {
 		return '{auction.url}';
-	}
-
-	/**
-	 * Display Link to All Auctions
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function all_auctions_html(): void {
-		printf(
-			'<p style="text-align:center;">%s <a href="%s">%s</a>',
-			esc_html__( 'Want to support another great GOODBIDS cause?', 'goodbids' ),
-			'{auctions_url}',
-			esc_html__( 'View All Auctions', 'goodbids' )
-		);
 	}
 }
