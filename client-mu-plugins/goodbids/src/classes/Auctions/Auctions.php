@@ -169,6 +169,9 @@ class Auctions {
 
 		// Restrict operations when a Nonprofit is delinquent.
 		$this->restrict_delinquent_sites();
+
+		// Validate Start/End Dates for Auctions.
+		$this->validate_auction_dates();
 	}
 
 	/**
@@ -1050,6 +1053,50 @@ class Auctions {
 						'post_status' => $old_status,
 					]
 				);
+			},
+			10,
+			3
+		);
+	}
+
+	/**
+	 * Run validation on Auction Start/End Dates.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function validate_auction_dates(): void {
+		add_filter(
+			'acf/validate_value',
+			function ( bool|string $valid, mixed $value, array $field ): mixed {
+				// Keys found in acf-json/group_6570c1fa76181.json
+				$end_field_key   = 'field_65822160b4398';
+				$start_field_key = 'field_6570c1fb429a8';
+
+				if ( 'auction_start' === $field['name'] ) {
+					if ( empty( $_POST['acf'][ $end_field_key ] ) ) { // phpcs:ignore
+						return $valid;
+					}
+
+					$compare_value = sanitize_text_field( $_POST['acf'][ $end_field_key ] ); // phpcs:ignore
+
+					if ( $value >= $compare_value ) {
+						return __( 'Auction Start Date/Time must be before End Date/Time.', 'goodbids' );
+					}
+				} elseif ( 'auction_end' === $field['name'] ) {
+					if ( empty( $_POST['acf'][ $start_field_key ] ) ) { // phpcs:ignore
+						return $valid;
+					}
+
+					$compare_value = sanitize_text_field( $_POST['acf'][ $start_field_key ] ); // phpcs:ignore
+
+					if ( $value <= $compare_value ) {
+						return __( 'Auction End Date/Time must be after Start Date/Time.', 'goodbids' );
+					}
+				}
+
+				return $valid;
 			},
 			10,
 			3
