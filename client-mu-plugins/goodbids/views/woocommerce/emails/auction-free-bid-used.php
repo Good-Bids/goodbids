@@ -28,7 +28,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		'{auction.title}',
 		'TODO{auction.bid.date}',
 		'{site_title}',
-		'TODO{auction.total.donated}'
+		'TODO{user.total.donated}'
 	);
 	?>
 </p>
@@ -42,7 +42,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		/* translators: %1$s: Free Bids, %2$s: View all Auctions */
 		esc_html__( 'You have %1$s Free Bids that can be used in any eligible auction. You can earn more by placing one of the first five paid bids in any auction, or by', 'goodbids' ),
 		'TODO {user.free_bid_count}',
-		'TODO referring to friend',
+		'TODO <a href="#">referring to friend</a>',
 	);
 	?>
 </p>
