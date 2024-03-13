@@ -15,6 +15,9 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardClaimed;
 
 defined( 'ABSPATH' ) || exit;
 
+/** @var WC_Order $reward_order */
+$reward_order = $instance->object;
+
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
@@ -28,7 +31,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 		'{reward.title}',
 		'{site_title}',
 		'{auction.title}',
-		'TODO{reward.claimed.date}',
+		'{order.date}',
 	);
 	?>
 </p>
@@ -37,14 +40,50 @@ do_action( 'woocommerce_email_header', $email_heading );
 	{reward.purchase_note}
 </p>
 
+<div style="margin-bottom: 40px;">
+	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
+		<thead>
+			<tr>
+				<th class="td" scope="col" style="text-align:left;"><?php esc_html_e( 'Auction', 'goodbids' ); ?></th>
+				<th class="td" scope="col" style="text-align:left;"><?php esc_html_e( 'Total Donated', 'goodbids' ); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="td" scope="col">{auction.title}</td>
+				<td class="td" scope="col">{auction.user.total_donated}</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<?php
+			$item_totals = $reward_order->get_order_item_totals();
 
-<?php // TODO: ADD BID DETAILS TABLE HERE ?>
+			if ( $item_totals ) {
+				$i = 0;
+				foreach ( $item_totals as $total ) {
+					$i++;
+					?>
+					<tr>
+						<th class="td" scope="row" style="text-align:left; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
+						<td class="td" style="text-align:left; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
+					</tr>
+					<?php
+				}
+			}
+			?>
+		</tfoot>
+	</table>
+</div>
 
 <p>
 	<?php
 	printf(
-		__( 'You can view your bid history, see Auctions you\'ve won, modify your account information, and more from the <a href="%s">bidder dashboard.</a>', 'goodbids' ),
-		'TODO{bidder_dashboard_url}',
+		esc_html__( 'You can view your bid history, see Auctions you\'ve won, modify your account information, and more from the %1$s.', 'goodbids' ),
+		sprintf(
+			'<a href="%s">%s</a>',
+			'{user.account_url}',
+			esc_html__( 'Bidder Dashboard', 'goodbids' )
+		)
 	);
 	?>
 </p>

@@ -24,10 +24,9 @@ $instance->plain_text_header();
 
 printf(
 	/* translators: %1$s: Auction title, %2$s: Site title, %3$s: Auction Goal, %4$s: Auction URL  */
-	esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s goal of raising %3$s and place a bid for your chance to win the %4$s!', 'goodbids' ),
+	esc_html__( 'The %1$s auction you are watching is now open for bidding. Visit the auction to support %2$s mission and place a bid for your chance to win the %3$s!', 'goodbids' ),
 	'{auction.title}',
 	esc_html( $site_name ),
-	'{auction.goal}',
 	'{auction.url}'
 );
 
