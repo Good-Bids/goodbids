@@ -122,6 +122,17 @@ class Users {
 
 		$free_bids   = $this->get_free_bids( $user_id );
 		$free_bids[] = $free_bid;
+
+		/**
+		 * Called when a Free Bid is awarded to a User
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param FreeBid $free_bid
+		 * @param int     $user_id
+		 */
+		do_action( 'goodbids_award_free_bid', $free_bid, $user_id );
+
 		return $this->save_free_bids( $user_id, $free_bids );
 	}
 

@@ -233,6 +233,17 @@ class FreeBid {
 	}
 
 	/**
+	 * Returns the type of the Free Bid for display
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type_display(): string {
+		return ucwords( str_replace( '_', ' ', $this->get_type() ) );
+	}
+
+	/**
 	 * Displays the type of the Free Bid
 	 *
 	 * @since 1.0.0
@@ -240,7 +251,27 @@ class FreeBid {
 	 * @return void
 	 */
 	public function display_type(): void {
-		echo esc_html( ucwords( str_replace( '_', ' ', $this->get_type() ) ) );
+		echo esc_html( $this->get_type_display() );
+	}
+
+	/**
+	 * Get the type action performed to be awarded free bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type_action(): string {
+		if ( $this->get_type() === self::TYPE_REFERRAL ) {
+			return __( 'Referral', 'goodbids' );
+		}
+
+		if ( $this->get_type() === self::TYPE_ADMIN_GRANT ) {
+			return __( 'admin grant', 'goodbids' );
+		}
+
+		// Default to Bid.
+		return __( 'Bid', 'goodbids' );
 	}
 
 	/**
