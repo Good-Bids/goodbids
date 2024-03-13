@@ -613,6 +613,10 @@ class Onboarding {
 			return false;
 		}
 
+		if ( ! empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
+			return false;
+		}
+
 		if ( ! empty( $_GET[ self::IS_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
 			return true;
 		}
@@ -693,17 +697,12 @@ class Onboarding {
 				$skip_step = $this->get_skip_step();
 
 				if ( ! $skip_step ) {
-					$current = $this->get_current_step();
+					$current     = $this->get_current_step();
+					$current_key = $this->get_current_step_key();
 
 					// Skip to the first incomplete step.
 					if ( $current['is_complete'] ) {
-						$next_key = $this->get_next_step_key();
-
-						if ( $next_key ) {
-							$this->set_step_transient( $next_key );
-							wp_safe_redirect( $this->get_url( $next_key ) );
-							exit;
-						}
+						$this->handle_step_completed( $current_key );
 					}
 
 					return;
@@ -739,21 +738,7 @@ class Onboarding {
 					return;
 				}
 
-				// Safe to remove skipped step.
-				$this->remove_skipped_step( $current_key );
-
-				if ( ! empty( $current_step['callback'] ) && is_callable( $current_step['callback'] ) ) {
-					call_user_func( $current_step['callback'] );
-				}
-
-				// We're done here.
-				if ( ! $this->get_next_step_key() ) {
-					return;
-				}
-
-				$redirect = $this->get_url( $this->get_next_step_key() );
-				wp_safe_redirect( $redirect );
-				exit;
+				$this->handle_step_completed( $current_key, true );
 			},
 			50
 		);
@@ -797,6 +782,37 @@ class Onboarding {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Handle the completion of a step
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $step_key
+	 * @param bool $do_callback
+	 *
+	 * @return void
+	 */
+	private function handle_step_completed( string $step_key, bool $do_callback = false ): void {
+		$steps = $this->get_steps();
+		$step  = $steps[ $step_key ];
+
+		// Safe to remove skipped step.
+		$this->remove_skipped_step( $step_key );
+
+		if ( $do_callback && ! empty( $step['callback'] ) && is_callable( $step['callback'] ) ) {
+			call_user_func( $step['callback'] );
+		}
+
+		// We're done here.
+		if ( ! $this->is_mid_onboarding() || ! $this->get_next_step_key() ) {
+			return;
+		}
+
+		$redirect = $this->get_url( $this->get_next_step_key() );
+		wp_safe_redirect( $redirect );
+		exit;
 	}
 
 	/**
@@ -1165,6 +1181,9 @@ class Onboarding {
 		delete_transient( self::INITIALIZED_TRANSIENT );
 
 		if ( $this->has_skipped_steps() ) {
+			// Reset onboarded status.
+			delete_option( Nonprofits::ONBOARDED_OPTION );
+
 			// Mark as partially onboarded.
 			update_option( Nonprofits::ONBOARDED_PARTIAL_OPTION, current_time( 'mysql' ) );
 
@@ -1180,7 +1199,7 @@ class Onboarding {
 			delete_option( self::SKIPPED_STEPS_OPTION );
 
 			// Make sure Onboarding isn't already marked as completed.
-			if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
+			if ( goodbids()->network->nonprofits->is_onboarded() ) {
 				return;
 			}
 
