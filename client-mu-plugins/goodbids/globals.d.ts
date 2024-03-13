@@ -52,7 +52,6 @@ declare const gbNonprofitSetupGuide: {
 
 declare const gbNonprofitOnboarding: {
 	appID: string;
-	baseUrl: string;
 	stepParam: string;
 	skipStepParam: string;
 	stepOptions: [
@@ -65,6 +64,7 @@ declare const gbNonprofitOnboarding: {
 	initOnboardingUrl: string;
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
+	skipSetUpPaymentsUrl: string;
 	accessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;

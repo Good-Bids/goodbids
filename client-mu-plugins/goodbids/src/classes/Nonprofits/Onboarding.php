@@ -451,6 +451,10 @@ class Onboarding {
 		$admin_url = admin_url();
 		$admin_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $admin_url );
 
+		// Skip Payments URL
+		$skip_payments_url = $this->get_url( self::STEP_SET_UP_PAYMENTS );
+		$skip_payments_url = add_query_arg( self::SKIP_STEP_PARAM, self::STEP_SET_UP_PAYMENTS, $skip_payments_url );
+
 		// Init and get Steps
 		$steps = $this->get_steps();
 
@@ -458,7 +462,6 @@ class Onboarding {
 			'appID'         => self::PAGE_SLUG,
 			'stepParam'     => self::STEP_PARAM,
 			'skipStepParam' => self::SKIP_STEP_PARAM,
-			'baseUrl'       => self::get_url(),
 
 			'stepOptions'             => array_keys( $steps ),
 			'initOnboardingUrl'       => $steps[ self::STEP_INIT_ONBOARDING ]['url'],
@@ -467,7 +470,8 @@ class Onboarding {
 			'setUpPaymentsUrl'        => $steps[ self::STEP_SET_UP_PAYMENTS ]['url'],
 			'onboardingCompleteUrl'   => $steps[ self::STEP_ONBOARDING_COMPLETE ]['url'],
 
-			'skippedSteps' => $this->get_skipped_steps(),
+			'skipSetUpPaymentsUrl' => $skip_payments_url,
+			'skippedSteps'         => $this->get_skipped_steps(),
 
 			'setupGuideUrl' => $setup_guide_url,
 			'adminUrl'      => $admin_url,

@@ -45,17 +45,7 @@ export function SetUpPaymentsStep({ setCompleteStep }: SetUpPaymentsStepProps) {
 
 				<ButtonLink
 					onClick={handleSetStep}
-					href={
-						gbNonprofitOnboarding.baseUrl +
-						'&' +
-						gbNonprofitOnboarding.stepParam +
-						'=' +
-						gbNonprofitOnboarding.stepOptions[3] +
-						'&' +
-						gbNonprofitOnboarding.skipStepParam +
-						'=' +
-						gbNonprofitOnboarding.stepOptions[3]
-					}
+					href={gbNonprofitOnboarding.skipSetUpPaymentsUrl}
 				>
 					{__('Skip for now', 'goodbids')}
 				</ButtonLink>
