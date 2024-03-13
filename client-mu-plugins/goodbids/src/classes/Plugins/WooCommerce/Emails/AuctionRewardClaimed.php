@@ -50,7 +50,9 @@ class AuctionRewardClaimed extends Email {
 			function ( int $auction_id, int $order_id ) {
 				$order = wc_get_order( $order_id );
 				$this->trigger( $order, get_current_user_id() );
-			}
+			},
+			10,
+			2
 		);
 	}
 
