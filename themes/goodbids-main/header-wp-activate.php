@@ -16,4 +16,21 @@ global $post;
 	</title>
 </head>
 <body>
-	<div id="activate-page">
+	<div id="activate-header">
+		<h1 class="text-lg header-title">Thanks for Joining <?php echo esc_html( get_option( 'blogname' ) ); ?> on GOODBIDS!</h1>
+		<h2 class="text-md">What's next?</h2>
+		<ol>
+			<li>Review the Nonprofit <?php echo wp_kses_post( goodbids()->sites->get_terms_conditions_link() ); ?></li>
+			<li>
+				Log in to GOODBIDS with your username and temporary password shown below.</br>
+				<small>Note: This information was also sent to you via email..</small>
+				<p><a href="">Login</a></p>
+			</li>
+			<li>
+				Enable Two-Factor authentication and set a new password for your account.</br>
+				<small>Note: Two-Factor authentication is required.</small>
+			</li>
+		</ol>
+	</div>
+	<hr/>
+	<div id="activate-content">

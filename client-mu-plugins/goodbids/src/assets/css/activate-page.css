@@ -1,6 +1,19 @@
 @layer components {
-	#activate-page {
-		@apply m-auto max-w-screen-md rounded-sm bg-white p-6;
+	#activate-header {
+		@apply m-auto max-w-screen-lg p-6;
+
+		h1.header-title {
+			@apply mb-12;
+		}
+
+		ol {
+			li {
+				@apply mb-3;
+			}
+		}
+	}
+	#activate-content {
+		@apply m-auto max-w-screen-lg px-6 py-12;
 
 		#submit {
 			@apply btn-fill;
