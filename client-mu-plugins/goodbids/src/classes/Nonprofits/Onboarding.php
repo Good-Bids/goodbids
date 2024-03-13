@@ -240,11 +240,12 @@ class Onboarding {
 					'skippable'    => false,
 				],
 				self::STEP_SET_UP_PAYMENTS               => [
-					'url'          => $payments_url,
-					'is_complete'  => $this->completed_payments_onboarding(),
-					'is_step_page' => $this->is_stripe_page(),
-					'callback'     => null,
-					'skippable'    => true,
+					'url'                => $payments_url,
+					'is_complete'        => $this->completed_payments_onboarding(),
+					'is_step_page'       => $this->is_stripe_page(),
+					'callback'           => null,
+					'skippable'          => true,
+					'validation_message' => __( 'Site cannot be launched until Stripe has been configured.', 'goodbids' ),
 				],
 				self::STEP_ONBOARDING_COMPLETE           => [
 					'url'          => $onboarding_complete_url,

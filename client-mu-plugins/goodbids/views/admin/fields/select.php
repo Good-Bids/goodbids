@@ -50,10 +50,12 @@
 			<?php foreach ( $field['options'] as $index => $option ) :
 				$opt_label = is_string( $option ) ? $option : $option['label'];
 				$opt_value = ! is_numeric( $index ) ? $index : ( is_string( $option ) ? $option : $option['value'] );
+				$disabled  = ! is_string( $option ) && ! empty( $option['disabled'] );
 				?>
 				<option
 					value="<?php echo esc_attr( $opt_value ); ?>"
 					<?php selected( $value, $opt_value ); ?>
+					<?php disabled( true, $disabled ); ?>
 				>
 					<?php echo esc_html( $opt_label ); ?>
 				</option>
