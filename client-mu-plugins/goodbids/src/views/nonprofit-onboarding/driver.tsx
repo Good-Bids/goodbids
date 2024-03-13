@@ -1,45 +1,62 @@
-import { Wrapper } from './wrapper';
 import { CreateStoreStep } from './steps/create-store';
 import { SetUpPaymentsStep } from './steps/set-up-payments';
 import { OnboardingCompleteStep } from './steps/onboarding-complete';
 import { z } from 'zod';
 import { ActivateAccessibilityCheckerStep } from './steps/activate-accessibility-checker';
-import { Card } from '../../components/card';
+import { WelcomeStep } from './steps/welcome';
+import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const stepSchema = z
 	.enum(gbNonprofitOnboarding.stepOptions)
-	.catch('create-store');
+	.catch('init-onboarding');
 
-const stepToProgress = {
-	'init-onboarding': 0,
-	'create-store': 10,
-	'set-up-payments': 40,
-	'activate-accessibility-checker': 70,
-	'onboarding-complete': 100,
-};
+type Step = z.infer<typeof stepSchema>;
 
-const stepToComponent = {
-	'init-onboarding': <CreateStoreStep />,
-	'create-store': <CreateStoreStep />,
-	'set-up-payments': <SetUpPaymentsStep />,
-	'activate-accessibility-checker': <ActivateAccessibilityCheckerStep />,
-	'onboarding-complete': <OnboardingCompleteStep />,
-};
-
-export function Driver() {
-	const step = stepSchema.parse(
+export function NonprofitOnboarding() {
+	const urlStep = stepSchema.parse(
 		new URLSearchParams(document.location.search).get(
 			gbNonprofitOnboarding.stepParam,
 		),
 	);
 
+	const [step, setStep] = useState<Step>(urlStep);
+
+	const setAccessibilityStep = () => {
+		setStep('activate-accessibility-checker');
+	};
+
+	const setCompleteStep = () => {
+		setStep('onboarding-complete');
+	};
+
+	if (step === 'init-onboarding') {
+		return <WelcomeStep setAccessibilityStep={setAccessibilityStep} />;
+	}
+
+	if (step === 'activate-accessibility-checker') {
+		return <ActivateAccessibilityCheckerStep />;
+	}
+
+	if (step === 'create-store') {
+		return <CreateStoreStep />;
+	}
+
+	if (step === 'set-up-payments') {
+		return <SetUpPaymentsStep setCompleteStep={setCompleteStep} />;
+	}
+
+	if (step === 'onboarding-complete') {
+		return <OnboardingCompleteStep />;
+	}
+}
+
+export function Driver() {
+	const [queryClient] = useState(() => new QueryClient());
+
 	return (
-		<div className="flex w-full justify-center pt-12">
-			<Card>
-				<Wrapper progress={stepToProgress[step]}>
-					{stepToComponent[step]}
-				</Wrapper>
-			</Card>
-		</div>
+		<QueryClientProvider client={queryClient}>
+			<NonprofitOnboarding />
+		</QueryClientProvider>
 	);
 }
