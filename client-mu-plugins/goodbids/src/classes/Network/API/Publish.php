@@ -88,6 +88,10 @@ class Publish extends WC_REST_Controller {
 			return new WP_Error( 'goodbids_invalid_site', __( 'The provided `site_id` does not belong to a valid site.', 'goodbids' ) );
 		}
 
+		if ( ! $nonprofit->is_onboarded() ) {
+			return new WP_Error( 'goodbids_onboarding_incomplete', __( 'Site cannot be launched until Onboarding has been completed.', 'goodbids' ) );
+		}
+
 		// Make it live!
 		if ( ! $nonprofit->set_status( Nonprofit::STATUS_LIVE ) ) {
 			return new WP_Error( 'goodbids_status_update_failed', __( 'There was a problem adjusting the Site Status.', 'goodbids' ) );

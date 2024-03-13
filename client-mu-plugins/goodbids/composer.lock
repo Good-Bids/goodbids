@@ -1231,15 +1231,15 @@
         },
         {
             "name": "wpackagist-plugin/accessibility-checker",
-            "version": "1.9.1",
+            "version": "1.9.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/accessibility-checker/",
-                "reference": "tags/1.9.1"
+                "reference": "tags/1.9.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.9.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.9.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"

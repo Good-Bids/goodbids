@@ -405,6 +405,14 @@ class Rewards {
 				update_post_meta( $reward_id, self::REDEEMED_META_KEY, 1 );
 				delete_post_meta( $reward_id, sprintf( Coupons::REWARD_COUPON_META_KEY, $auction_id ), true );
 
+				/**
+				 * Reward Redeemed by Auction Winner
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $auction_id
+				 * @param int $order_id
+				 */
 				do_action( 'goodbids_reward_redeemed', $auction_id, $order_id );
 
 				wp_safe_redirect( get_permalink( $auction_id ) );

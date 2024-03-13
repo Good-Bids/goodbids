@@ -5,6 +5,13 @@ declare module '*.jpg';
 
 type PHPVariables = Record<string, string>;
 
+type OnboardingStepOption =
+	| 'init-onboarding'
+	| 'activate-accessibility-checker'
+	| 'create-store'
+	| 'set-up-payments'
+	| 'onboarding-complete';
+
 // These are only defined for the auction wizard page
 declare const gbAuctionWizard: PHPVariables;
 
@@ -48,19 +55,28 @@ declare const gbNonprofitSetupGuide: {
 	isAdmin: boolean;
 	isBDPAdmin: boolean;
 	isJrAdmin: boolean;
+
+	skippedOnboardingSteps: OnboardingStepOption[];
+	isOnboardingComplete: boolean;
+	isOnboardingPartiallyComplete: boolean;
 };
 
 declare const gbNonprofitOnboarding: {
 	appID: string;
+	baseUrl: string;
 	stepParam: string;
+	skipStepParam: string;
 	stepOptions: [
+		'init-onboarding',
+		'activate-accessibility-checker',
 		'create-store',
 		'set-up-payments',
-		'activate-accessibility-checker',
 		'onboarding-complete',
 	];
+	initOnboardingUrl: string;
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
+	skipSetUpPaymentsUrl: string;
 	accessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;

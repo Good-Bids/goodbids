@@ -10,6 +10,7 @@ namespace GoodBids;
 
 use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
+use GoodBids\Auctions\Admin as AuctionsAdmin;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Products;
@@ -140,6 +141,12 @@ class Core {
 	 * @var WooCommerce
 	 */
 	public WooCommerce $woocommerce;
+
+	/**
+	 * @since 1.0.0
+	 * @var Onboarding
+	 */
+	public Onboarding $onboarding;
 
 	/**
 	 * @since 1.0.0
@@ -481,6 +488,7 @@ class Core {
 				$this->verification  = new Verification();
 				$this->settings      = new Settings();
 				$this->woocommerce   = new WooCommerce();
+				$this->onboarding    = new Onboarding();
 				$this->notices       = new Notices();
 				$this->users         = new Users();
 				$this->watchers      = new Watchers();
@@ -489,12 +497,12 @@ class Core {
 
 				// Init Modules not part of the API.
 				new Permissions();
+				new AuctionsAdmin();
 				new Patterns();
 				new Partners();
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
-				new Onboarding();
 				new Guide();
 				new NonprofitAdmin();
 			}

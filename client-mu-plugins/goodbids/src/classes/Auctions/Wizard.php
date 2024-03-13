@@ -53,6 +53,9 @@ class Wizard {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Prevent access to the wizard if the Auction is in progress.
+		$this->restrict_started_auctions();
+
 		// Remove any admin notices for this page.
 		$this->disable_admin_notices();
 
@@ -64,6 +67,43 @@ class Wizard {
 
 		// Modify the "Add New" button URL.
 		$this->adjust_add_new_url();
+	}
+
+	/**
+	 * Disable the Wizard for started Auctions.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function restrict_started_auctions(): void {
+		add_action(
+			'admin_init',
+			function(): void {
+				if ( ! $this->is_wizard_page() ) {
+					return;
+				}
+
+				if ( empty( $_GET[ self::AUCTION_ID_PARAM ] ) ) { // phpcs:ignore
+					return;
+				}
+
+				$auction_id = intval( sanitize_text_field( $_GET[ self::AUCTION_ID_PARAM ] ) ); // phpcs:ignore
+
+				$auction_id = new Auction( $auction_id );
+				if ( ! $auction_id->get_id() ) {
+					return;
+				}
+
+				if ( ! in_array( $auction_id->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ], true ) || is_super_admin() ) {
+					return;
+				}
+
+				// Redirect to Auctions page.
+				wp_safe_redirect( admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ) );
+				exit;
+			}
+		);
 	}
 
 	/**

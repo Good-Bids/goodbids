@@ -26,12 +26,20 @@ class Nonprofits {
 	const PAGE_SLUG = 'gb-nonprofits';
 
 	/**
-	 * Nonprofits Page Slug
+	 * Nonprofits Onboarded Option Key.
 	 *
 	 * @since 1.0.0
 	 * @var string
 	 */
 	const ONBOARDED_OPTION = 'goodbids_onboarded';
+
+	/**
+	 * Nonprofits Partially Onboarded Option Key.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const ONBOARDED_PARTIAL_OPTION = 'goodbids_onboarded_partial';
 
 	/**
 	 * @since 1.0.0
@@ -173,6 +181,25 @@ class Nonprofits {
 
 		return goodbids()->sites->swap(
 			fn () => boolval( get_option( self::ONBOARDED_OPTION ) ),
+			$site_id
+		);
+	}
+
+	/** Check if onboarding is partially completed (steps were skipped).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param ?int $site_id
+	 *
+	 * @return bool
+	 */
+	public function is_partially_onboarded( ?int $site_id = null ): bool {
+		if ( ! $site_id ) {
+			$site_id = get_current_blog_id();
+		}
+
+		return goodbids()->sites->swap(
+			fn () => boolval( get_option( self::ONBOARDED_PARTIAL_OPTION ) ),
 			$site_id
 		);
 	}

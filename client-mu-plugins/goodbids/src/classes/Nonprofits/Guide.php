@@ -52,7 +52,7 @@ class Guide {
 	 */
 	private function add_menu_dashboard_page(): void {
 		// Disable for the main site.
-		if ( is_main_site() || ! goodbids()->network->nonprofits->is_onboarded() ) {
+		if ( is_main_site() || ( ! goodbids()->network->nonprofits->is_onboarded() && ! goodbids()->network->nonprofits->is_partially_onboarded() ) ) {
 			return;
 		}
 
@@ -66,7 +66,7 @@ class Guide {
 					self::PAGE_SLUG,
 					[ $this, 'nonprofit_guide_page' ],
 					'dashicons-welcome-learn-more',
-					1.1
+					1.2
 				);
 			}
 		);
@@ -204,6 +204,10 @@ class Guide {
 			'isAdmin'    => current_user_can( 'administrator' ),
 			'isBDPAdmin' => current_user_can( Permissions::BDP_ADMIN_ROLE ),
 			'isJrAdmin'  => current_user_can( Permissions::JR_ADMIN_ROLE ),
+
+			'skippedOnboardingSteps'        => goodbids()->onboarding->get_skipped_steps(),
+			'isOnboardingComplete'          => goodbids()->network->nonprofits->is_onboarded(),
+			'isOnboardingPartiallyComplete' => goodbids()->network->nonprofits->is_partially_onboarded(),
 		];
 	}
 

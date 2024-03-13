@@ -107,6 +107,9 @@ class Bids {
 
 		// Hide Bid Products from WP Admin > Products.
 		$this->filter_bid_products();
+
+		// Reduce the current Bid Product stock to 0 when the Auction ends.
+		$this->disable_bid_product_on_auction_end();
 	}
 
 	/**
@@ -686,7 +689,12 @@ class Bids {
 				$auction    = goodbids()->auctions->get( $auction_id );
 
 				// Do not award free bids if this order contains a free bid.
-				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					// Reduce the Free Bid Count for the user.
+					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
+					}
+				} else {
 					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
 					$remaining_free_bids = $auction->get_free_bids_available();
 					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
@@ -701,12 +709,7 @@ class Bids {
 					);
 
 					if ( $auction->maybe_award_free_bid( null, $description ) ) {
-						// TODO: Let the user know they earned a free bid.
 						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
-					}
-				} else { // Reduce the Free Bid Count for the user.
-					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
-						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
 				}
 
@@ -748,4 +751,24 @@ class Bids {
 			}
 		);
 	}
+
+	/**
+	 * Reduce the Bid Variation stock to 0 when the Auction ends.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_bid_product_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				$bid_variation = goodbids()->bids->get_variation( $auction_id );
+				$bid_variation->set_stock_quantity( 0 );
+				$bid_variation->save();
+			},
+			11
+		);
+	}
+
 }
