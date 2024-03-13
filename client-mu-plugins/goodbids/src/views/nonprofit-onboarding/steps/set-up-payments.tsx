@@ -3,23 +3,8 @@ import { ButtonLink } from '~/components/button-link';
 import { H1, P } from '~/components/typography';
 import { CoinManImage } from '~/components/images/coin-man';
 import { Wrapper } from '../wrapper';
-import { useSetStep } from '../api/set-step';
 
-type SetUpPaymentsStepProps = {
-	setCompleteStep: () => void;
-};
-
-export function SetUpPaymentsStep({ setCompleteStep }: SetUpPaymentsStepProps) {
-	const setStep = useSetStep({
-		onSuccess: () => {
-			setCompleteStep();
-		},
-	});
-
-	const handleSetStep = () => {
-		setStep.mutate({ step: 'onboarding-complete' });
-	};
-
+export function SetUpPaymentsStep() {
 	return (
 		<Wrapper progress={75}>
 			<CoinManImage className="aspect-auto h-60 py-10" />
@@ -43,10 +28,7 @@ export function SetUpPaymentsStep({ setCompleteStep }: SetUpPaymentsStepProps) {
 					{__('Connect Stripe', 'goodbids')}
 				</ButtonLink>
 
-				<ButtonLink
-					onClick={handleSetStep}
-					href={gbNonprofitOnboarding.skipSetUpPaymentsUrl}
-				>
+				<ButtonLink href={gbNonprofitOnboarding.skipSetUpPaymentsUrl}>
 					{__('Skip for now', 'goodbids')}
 				</ButtonLink>
 			</div>

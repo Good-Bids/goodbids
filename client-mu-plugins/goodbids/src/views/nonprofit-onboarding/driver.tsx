@@ -11,27 +11,15 @@ const stepSchema = z
 	.enum(gbNonprofitOnboarding.stepOptions)
 	.catch('init-onboarding');
 
-type Step = z.infer<typeof stepSchema>;
-
 export function NonprofitOnboarding() {
-	const urlStep = stepSchema.parse(
+	const step = stepSchema.parse(
 		new URLSearchParams(document.location.search).get(
 			gbNonprofitOnboarding.stepParam,
 		),
 	);
 
-	const [step, setStep] = useState<Step>(urlStep);
-
-	const setAccessibilityStep = () => {
-		setStep('activate-accessibility-checker');
-	};
-
-	const setCompleteStep = () => {
-		setStep('onboarding-complete');
-	};
-
 	if (step === 'init-onboarding') {
-		return <WelcomeStep setAccessibilityStep={setAccessibilityStep} />;
+		return <WelcomeStep />;
 	}
 
 	if (step === 'activate-accessibility-checker') {
@@ -43,7 +31,7 @@ export function NonprofitOnboarding() {
 	}
 
 	if (step === 'set-up-payments') {
-		return <SetUpPaymentsStep setCompleteStep={setCompleteStep} />;
+		return <SetUpPaymentsStep />;
 	}
 
 	if (step === 'onboarding-complete') {

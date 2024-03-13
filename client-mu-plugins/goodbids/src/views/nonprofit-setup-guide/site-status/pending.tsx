@@ -20,6 +20,11 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 
 	const loading = publishSite.status === 'pending';
 
+	const paymentSetUpSkipped =
+		gbNonprofitSetupGuide.skippedOnboardingSteps.includes(
+			'set-up-payments',
+		);
+
 	return (
 		<>
 			<H1>{__('Pending', 'goodbids')}</H1>
@@ -54,7 +59,9 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 
 			<div className="w-full max-w-60">
 				<Button
-					disabled={loading}
+					disabled={
+						loading || !gbNonprofitSetupGuide.isOnboardingComplete
+					}
 					variant="solid"
 					onClick={handlePublishSite}
 				>
@@ -63,6 +70,19 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 						: __('Launch Site', 'goodbids')}
 				</Button>
 			</div>
+
+			{paymentSetUpSkipped && (
+				<P>
+					{__(
+						"You are not able to launch your site until you've",
+						'goodbids',
+					)}{' '}
+					<a href={gbNonprofitSetupGuide.connectStripeURL}>
+						{__('connected a Stripe account', 'goodbids')}{' '}
+					</a>{' '}
+					{__('to collect payments.', 'goodbids')}
+				</P>
+			)}
 
 			<AnimatePresence>
 				{publishSite.status !== 'idle' && (
