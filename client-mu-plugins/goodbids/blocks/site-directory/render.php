@@ -16,7 +16,7 @@ endif;
 
 ?>
 <div <?php block_attr( $block, 'my-8' ); ?>>
-	<ul class="grid grid-cols-5 gap-8 p-0 m-0 list-none">
+	<ul class="grid grid-cols-1 gap-8 p-0 m-0 list-none sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
 		<?php
 		goodbids()->sites->loop(
 			function ( $site_id ) {
