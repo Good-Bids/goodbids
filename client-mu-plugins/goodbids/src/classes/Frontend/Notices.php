@@ -320,4 +320,42 @@ class Notices {
 
 		return $this->notices[ $notice_id ];
 	}
+
+	/**
+	 * Check if a notice exists.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return bool
+	 */
+	public function notice_exists( string $notice_id ): bool {
+		$notices = WC()->session->get( 'wc_notices' );
+
+		if ( ! $notices ) {
+			return false;
+		}
+
+		Log::debug( 'WC Notices', compact( 'notices' ) );
+
+		// TODO: Check if the notice exists in the WC Notices.
+		return true;
+	}
+
+	/**
+	 * Remove a notice by ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return void
+	 */
+	public function remove_notice( string $notice_id ): void {
+		// TODO: Look up notice.
+		if ( $notice_id === self::BID_ALREADY_PLACED_CART ) {
+			wc_clear_notices();
+		}
+	}
 }

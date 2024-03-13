@@ -84,7 +84,8 @@ class Checkout {
 				 * @param int $auction_id
 				 */
 				do_action( 'goodbids_order_payment_complete', $order_id, $info['auction_id'] );
-			}
+			},
+			50
 		);
 	}
 
@@ -143,12 +144,17 @@ class Checkout {
 					}
 				}
 
-				// Perform this check last to ensure the bid being placed matches the latest bid product.
-				if ( $info['variation_id'] !== $auction->get_variation_id() ) {
+				// Perform this check last to ensure the bid hasn't already been placed.
+				if ( ! $auction->bid_allowed( $info ) ) {
 					goodbids()->notices->add_notice( Notices::BID_ALREADY_PLACED );
+					WC()->cart->empty_cart();
+					return;
 				}
+
+				// Lock the Bid.
+				$auction->lock_bid();
 			},
-			10,
+			50,
 			2
 		);
 	}

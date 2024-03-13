@@ -67,6 +67,12 @@ class Auction {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_LOCKED_META_KEY = '_goodbids_bid_locked';
+
+	/**
+	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -1222,5 +1228,60 @@ class Auction {
 	 */
 	public function get_watch_count(): int {
 		return goodbids()->watchers->get_watcher_count( $this->get_id() );
+	}
+
+	/**
+	 * Final checks to ensure bid is allowed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $order_info
+	 *
+	 * @return bool
+	 */
+	public function bid_allowed( array $order_info ): bool {
+		$product = wc_get_product( $this->get_variation_id() );
+
+		if ( $order_info['variation_id'] !== $this->get_variation_id() ) {
+			return false;
+		}
+
+		if ( $product->get_stock_quantity() <= 0 ) {
+			return false;
+		}
+
+		if ( $this->bid_locked() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if the bid is currently locked.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function bid_locked(): bool {
+		$lock = get_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, true );
+
+		if ( ! $lock ) {
+			return false;
+		}
+
+		return get_current_user_id() !== $lock;
+	}
+
+	/**
+	 * Lock the bid to prevent duplicates
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function lock_bid(): void {
+		update_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, get_current_user_id() );
 	}
 }
