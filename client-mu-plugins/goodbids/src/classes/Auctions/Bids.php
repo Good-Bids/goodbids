@@ -90,6 +90,9 @@ class Bids {
 		// Create a Bid product when an Auction is created.
 		$this->create_bid_product_for_auction();
 
+		// Process Free bids before updating the Bid Product.
+		$this->update_free_bids_on_order_complete();
+
 		// Bump Auction Bid Product Price when an Order is completed.
 		$this->update_bid_product_on_order_complete();
 
@@ -552,7 +555,7 @@ class Bids {
 					Log::error( 'There was a problem trying to increase the Bid Amount', compact( 'auction_id' ) );
 				}
 			},
-			10,
+			20,
 			2
 		);
 	}
@@ -685,8 +688,26 @@ class Bids {
 				}
 
 				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
-				$redirect   = get_permalink( $auction_id );
 				$auction    = goodbids()->auctions->get( $auction_id );
+
+				wp_safe_redirect( $auction->get_url() );
+				exit;
+			}
+		);
+	}
+
+	/**
+	 * Adjust Free Bid quantities on order complete
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_free_bids_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				$auction = goodbids()->auctions->get( $auction_id );
 
 				// Do not award free bids if this order contains a free bid.
 				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
@@ -701,7 +722,7 @@ class Bids {
 					$bid_order           = wc_get_order( $order_id );
 
 					$description = sprintf(
-					// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+						// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
 						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
 						goodbids()->utilities->get_ordinal( $nth_bid ),
 						$bid_order->get_total( 'edit' ),
@@ -712,10 +733,9 @@ class Bids {
 						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
 					}
 				}
-
-				wp_safe_redirect( $redirect );
-				exit;
-			}
+			},
+			10,
+			2
 		);
 	}
 

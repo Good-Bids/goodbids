@@ -33,7 +33,7 @@ class Coupons {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const FREE_BID_COUPON_META_KEY = '_goodbids_free_bid_%d_coupon_id';
+	const FREE_BID_COUPON_META_KEY = '_goodbids_free_bid_%d_%d_coupon_id';
 
 	/**
 	 * @since 1.0.0
@@ -124,7 +124,7 @@ class Coupons {
 			return null;
 		}
 
-		$existing = get_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), true );
+		$existing = get_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id, $bid_variation_id ), true );
 
 		if ( $existing ) {
 			// Make sure it's still valid.
@@ -143,7 +143,7 @@ class Coupons {
 
 		$this->generate( $coupon_code, $description, $bid_variation_id, $reward_price );
 
-		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), $coupon_code );
+		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id, $bid_variation_id ), $coupon_code );
 
 		return $coupon_code;
 	}

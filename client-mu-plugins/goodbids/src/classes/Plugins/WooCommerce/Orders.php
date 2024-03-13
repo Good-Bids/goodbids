@@ -396,7 +396,7 @@ class Orders {
 				$response['auctionUrl'] = $auction->get_url();
 
 				$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED_CART );
-				wc_add_notice( $notice['message'], $notice['type'] );
+				wc_add_notice( $notice['message'], $notice['type'], [ '_notice_id' => Notices::BID_ALREADY_PLACED_CART ] );
 
 				wp_send_json_success( $response );
 			}

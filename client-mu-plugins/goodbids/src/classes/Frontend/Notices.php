@@ -296,7 +296,7 @@ class Notices {
 			return;
 		}
 
-		wc_add_notice( $notice['message'], $notice['type'] );
+		wc_add_notice( $notice['message'], $notice['type'], [ '_notice_id' => $notice_id ] );
 	}
 
 	/**
@@ -331,16 +331,29 @@ class Notices {
 	 * @return bool
 	 */
 	public function notice_exists( string $notice_id ): bool {
-		$notices = WC()->session->get( 'wc_notices' );
+		if ( ! did_action( 'woocommerce_init' ) ) {
+			return false;
+		}
+
+		$notices = wc_get_notices();
 
 		if ( ! $notices ) {
 			return false;
 		}
 
-		Log::debug( 'WC Notices', compact( 'notices' ) );
+		foreach ( $notices as $type_notices ) {
+			foreach ( $type_notices as $notice ) {
+				if ( empty( $notice['data'] ) || empty( $notice['data']['_notice_id'] ) ) {
+					continue;
+				}
 
-		// TODO: Check if the notice exists in the WC Notices.
-		return true;
+				if ( $notice['data']['_notice_id'] === $notice_id ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -353,9 +366,27 @@ class Notices {
 	 * @return void
 	 */
 	public function remove_notice( string $notice_id ): void {
-		// TODO: Look up notice.
-		if ( $notice_id === self::BID_ALREADY_PLACED_CART ) {
-			wc_clear_notices();
+		if ( ! did_action( 'woocommerce_init' ) ) {
+			return;
+		}
+
+		$notices = wc_get_notices();
+
+		if ( ! $notices ) {
+			return;
+		}
+
+		foreach ( $notices as $type => $type_notices ) {
+			foreach ( $type_notices as $index => $notice ) {
+				if ( empty( $notice['data'] ) || empty( $notice['data']['_notice_id'] ) ) {
+					continue;
+				}
+
+				if ( $notice['data']['_notice_id'] === $notice_id ) {
+					unset( $notices[ $type ][ $index ] );
+					break;
+				}
+			}
 		}
 	}
 }

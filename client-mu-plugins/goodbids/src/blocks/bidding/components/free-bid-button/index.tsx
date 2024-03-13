@@ -15,7 +15,7 @@ export function FreeBidButton() {
 
 	const disabled = isLastBidder || userFreeBids < 1;
 
-	const freeBidUrl = `${bidUrl}&use-free-bid=1`;
+	const freeBidUrl = `${bidUrl}?use-free-bid=1`;
 
 	const classes = clsx('btn-fill-secondary text-center', {
 		'pointer-events-none cursor-not-allowed !text-contrast-4': disabled,

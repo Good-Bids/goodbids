@@ -200,8 +200,10 @@ class Users {
 			return false;
 		}
 
+		$auction = goodbids()->auctions->get( $auction_id );
+
 		// Clear Cached Free Bid.
-		delete_user_meta( $user_id, sprintf( Coupons::FREE_BID_COUPON_META_KEY, $auction_id ) );
+		delete_user_meta( $user_id, sprintf( Coupons::FREE_BID_COUPON_META_KEY, $auction->get_id(), $auction->get_variation_id() ) );
 
 		return $this->save_free_bids( $user_id, $all_free_bids );
 	}
