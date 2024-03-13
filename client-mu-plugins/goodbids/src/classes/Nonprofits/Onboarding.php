@@ -270,11 +270,11 @@ class Onboarding {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() ) {
+				if ( goodbids()->network->nonprofits->is_onboarded() || goodbids()->network->nonprofits->is_partially_onboarded() ) {
 					// Setup Guide URL
 					$setup_guide_url = admin_url( 'admin.php?page=' . Guide::PAGE_SLUG );
 
-					if ( $this->is_onboarding_page() ) {
+					if ( $this->is_onboarding_page() && ! goodbids()->network->nonprofits->is_partially_onboarded() ) {
 						wp_safe_redirect( $setup_guide_url );
 						exit;
 					}
