@@ -53,15 +53,18 @@ declare const gbNonprofitSetupGuide: {
 declare const gbNonprofitOnboarding: {
 	appID: string;
 	stepParam: string;
+	skipStepParam: string;
 	stepOptions: [
 		'init-onboarding',
+		'activate-accessibility-checker',
 		'create-store',
 		'set-up-payments',
-		'activate-accessibility-checker',
 		'onboarding-complete',
 	];
+	initOnboardingUrl: string;
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
+	skipSetUpPaymentsUrl: string;
 	accessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;

@@ -10,6 +10,7 @@ namespace GoodBids\Nonprofits;
 
 use Automattic\WooCommerce\Internal\Admin\Onboarding\OnboardingProfile;
 use GoodBids\Network\Nonprofits;
+use GoodBids\Utilities\Log;
 
 /**
  * Setup Class
@@ -34,6 +35,12 @@ class Onboarding {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const SKIP_STEP_PARAM = 'skip-step';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const IS_ONBOARDING_PARAM = 'gb-is-onboarding';
 
 	/**
@@ -47,6 +54,18 @@ class Onboarding {
 	 * @var string
 	 */
 	const STEP_TRANSIENT = 'gb-onboarding-step';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const INITIALIZED_TRANSIENT = 'gb-onboarding-initialized';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const WELCOME_TRANSIENT = 'gb-onboarding-welcome';
 
 	/**
 	 * @since 1.0.0
@@ -80,6 +99,11 @@ class Onboarding {
 
 	/**
 	 * @since 1.0.0
+	 */
+	const SKIPPED_STEPS_OPTION = 'goodbids_onboarding_skipped';
+
+	/**
+	 * @since 1.0.0
 	 * @var array
 	 */
 	private array $steps = [];
@@ -92,7 +116,7 @@ class Onboarding {
 			return;
 		}
 
-		// Initialize Onboarding
+		// Initialize Onboarding.
 		$this->init();
 
 		// Tweak Admin for Onboarding.
@@ -122,7 +146,7 @@ class Onboarding {
 	}
 
 	/**
-	 * Initialize the Onboarding Steps.
+	 * Redirect to the Onboarding page if not onboarded or currently onboarding.
 	 *
 	 * @since 1.0.0
 	 *
@@ -132,60 +156,107 @@ class Onboarding {
 		add_action(
 			'admin_init',
 			function () {
-				// Initialize Onboarding URL
-				$init_onboarding_url = $this->get_url();
+				if ( goodbids()->network->nonprofits->is_onboarded() || $this->is_mid_onboarding() || goodbids()->network->nonprofits->is_partially_onboarded() || $this->is_onboarding_page() || $this->initialized() ) {
+					return;
+				}
 
-				// Store Setup URL
-				$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
-				$create_store_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $create_store_url );
+				set_transient( self::INITIALIZED_TRANSIENT, 1 );
 
-				// Payments Setup URL
-				$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
-				$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
-
-				// Accessibility Checker URL
-				$accessibility_checker_url = admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' );
-				$accessibility_checker_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $accessibility_checker_url );
-
-				// Onboarding Complete URL
-				$onboarding_complete_url = home_url();
-				$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
-
-				$this->steps = [
-					self::STEP_INIT_ONBOARDING                  => [
-						'url'          => $init_onboarding_url,
-						'is_complete'  => get_transient( self::STEP_TRANSIENT ) || goodbids()->network->nonprofits->is_onboarded(),
-						'is_step_page' => $this->is_onboarding_page(),
-						'callback'     => null,
-					],
-					self::STEP_CREATE_STORE                  => [
-						'url'          => $create_store_url,
-						'is_complete'  => $this->completed_wc_onboarding(),
-						'is_step_page' => $this->is_wc_onboarding_page(),
-						'callback'     => [ $this, 'mark_wc_onboarding_skipped' ],
-					],
-					self::STEP_SET_UP_PAYMENTS               => [
-						'url'          => $payments_url,
-						'is_complete'  => $this->completed_payments_onboarding(),
-						'is_step_page' => $this->is_stripe_page(),
-						'callback'     => null,
-					],
-					self::STEP_ACCESSIBILITY_CHECKER_LICENSE => [
-						'url'          => $accessibility_checker_url,
-						'is_complete'  => $this->completed_accessibility_license(),
-						'is_step_page' => goodbids()->accessibility->is_license_page(),
-						'callback'     => null,
-					],
-					self::STEP_ONBOARDING_COMPLETE           => [
-						'url'          => $onboarding_complete_url,
-						'is_complete'  => goodbids()->network->nonprofits->is_onboarded(),
-						'is_step_page' => false,
-						'callback'     => null,
-					],
-				];
+				// Redirect to the first step on the Onboarding page.
+				$first_step_key = $this->get_first_step_key();
+				wp_safe_redirect( $this->get_url( $first_step_key ) );
+				exit;
 			},
-			8
+			25
 		);
+	}
+
+	/**
+	 * Check if initialized
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function initialized(): bool {
+		return ! empty( get_transient( self::INITIALIZED_TRANSIENT ) );
+	}
+
+	/**
+	 * Get Onboarding Steps
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array[]
+	 */
+	public function get_steps(): array {
+		if ( ! empty( $this->steps ) ) {
+			return $this->steps;
+		}
+
+		// Initialize Onboarding URL
+		$init_onboarding_url = $this->get_url();
+		$init_onboarding_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $init_onboarding_url );
+		$init_onboarding_url = add_query_arg( self::STEP_INIT_ONBOARDING, 1, $init_onboarding_url );
+
+		// Store Setup URL
+		$create_store_url = admin_url( 'admin.php?page=wc-admin&path=/setup-wizard&step=skip-guided-setup' );
+		$create_store_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $create_store_url );
+
+		// Payments Setup URL
+		$payments_url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings' );
+		$payments_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $payments_url );
+
+		// Accessibility Checker URL
+		$accessibility_checker_url = admin_url( 'admin.php?page=accessibility_checker_settings&tab=license' );
+		$accessibility_checker_url = add_query_arg( self::IS_ONBOARDING_PARAM, 1, $accessibility_checker_url );
+
+		// Onboarding Complete URL
+		$onboarding_complete_url = home_url();
+		$onboarding_complete_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $onboarding_complete_url );
+
+		$this->steps = apply_filters(
+			'goodbids_onboarding_steps',
+			[
+				self::STEP_INIT_ONBOARDING                  => [
+					'url'          => $init_onboarding_url,
+					'is_complete'  => get_transient( self::WELCOME_TRANSIENT ) || goodbids()->network->nonprofits->is_onboarded(), // phpcs:ignore
+					'is_step_page' => $this->is_get_started_url(),
+					'callback'     => null,
+					'skippable'    => false,
+				],
+				self::STEP_ACCESSIBILITY_CHECKER_LICENSE => [
+					'url'          => $accessibility_checker_url,
+					'is_complete'  => $this->completed_accessibility_license(),
+					'is_step_page' => goodbids()->accessibility->is_license_page(),
+					'callback'     => null,
+					'skippable'    => false,
+				],
+				self::STEP_CREATE_STORE                  => [
+					'url'          => $create_store_url,
+					'is_complete'  => $this->completed_wc_onboarding(),
+					'is_step_page' => $this->is_wc_onboarding_page(),
+					'callback'     => [ $this, 'mark_wc_onboarding_skipped' ],
+					'skippable'    => false,
+				],
+				self::STEP_SET_UP_PAYMENTS               => [
+					'url'          => $payments_url,
+					'is_complete'  => $this->completed_payments_onboarding(),
+					'is_step_page' => $this->is_stripe_page(),
+					'callback'     => null,
+					'skippable'    => true,
+				],
+				self::STEP_ONBOARDING_COMPLETE           => [
+					'url'          => $onboarding_complete_url,
+					'is_complete'  => goodbids()->network->nonprofits->is_onboarded(),
+					'is_step_page' => false,
+					'callback'     => null,
+					'skippable'    => false,
+				],
+			]
+		);
+
+		return $this->steps;
 	}
 
 	/**
@@ -199,11 +270,11 @@ class Onboarding {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( goodbids()->network->nonprofits->is_onboarded() ) {
+				if ( goodbids()->network->nonprofits->is_onboarded() || goodbids()->network->nonprofits->is_partially_onboarded() ) {
 					// Setup Guide URL
 					$setup_guide_url = admin_url( 'admin.php?page=' . Guide::PAGE_SLUG );
 
-					if ( $this->is_onboarding_page() ) {
+					if ( $this->is_onboarding_page() && ! goodbids()->network->nonprofits->is_partially_onboarded() ) {
 						wp_safe_redirect( $setup_guide_url );
 						exit;
 					}
@@ -243,7 +314,7 @@ class Onboarding {
 			'admin_menu',
 			function () {
 				// Disable for the main site.
-				if ( is_main_site() || goodbids()->network->nonprofits->is_onboarded() ) {
+				if ( is_main_site() || ( goodbids()->network->nonprofits->is_onboarded() && ! $this->has_skipped_steps() ) ) {
 					return;
 				}
 
@@ -380,15 +451,27 @@ class Onboarding {
 		$admin_url = admin_url();
 		$admin_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $admin_url );
 
-		return [
-			'appID'     => self::PAGE_SLUG,
-			'stepParam' => self::STEP_PARAM,
+		// Skip Payments URL
+		$skip_payments_url = $this->get_url( self::STEP_SET_UP_PAYMENTS );
+		$skip_payments_url = add_query_arg( self::SKIP_STEP_PARAM, self::STEP_SET_UP_PAYMENTS, $skip_payments_url );
 
-			'stepOptions'             => array_keys( $this->steps ),
-			'createStoreUrl'          => $this->steps[ self::STEP_CREATE_STORE ]['url'],
-			'setUpPaymentsUrl'        => $this->steps[ self::STEP_SET_UP_PAYMENTS ]['url'],
-			'accessibilityCheckerUrl' => $this->steps[ self::STEP_ACCESSIBILITY_CHECKER_LICENSE ]['url'],
-			'onboardingCompleteUrl'   => $this->steps[ self::STEP_ONBOARDING_COMPLETE ]['url'],
+		// Init and get Steps
+		$steps = $this->get_steps();
+
+		return [
+			'appID'         => self::PAGE_SLUG,
+			'stepParam'     => self::STEP_PARAM,
+			'skipStepParam' => self::SKIP_STEP_PARAM,
+
+			'stepOptions'             => array_keys( $steps ),
+			'initOnboardingUrl'       => $steps[ self::STEP_INIT_ONBOARDING ]['url'],
+			'createStoreUrl'          => $steps[ self::STEP_CREATE_STORE ]['url'],
+			'accessibilityCheckerUrl' => $steps[ self::STEP_ACCESSIBILITY_CHECKER_LICENSE ]['url'],
+			'setUpPaymentsUrl'        => $steps[ self::STEP_SET_UP_PAYMENTS ]['url'],
+			'onboardingCompleteUrl'   => $steps[ self::STEP_ONBOARDING_COMPLETE ]['url'],
+
+			'skipSetUpPaymentsUrl' => $skip_payments_url,
+			'skippedSteps'         => $this->get_skipped_steps(),
 
 			'setupGuideUrl' => $setup_guide_url,
 			'adminUrl'      => $admin_url,
@@ -420,28 +503,33 @@ class Onboarding {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param bool $set_transient
+	 *
 	 * @return string
 	 */
-	private function get_current_step_key(): string {
-		$step = false;
+	private function get_current_step_key( bool $set_transient = false ): string {
+		$step  = false;
+		$steps = $this->get_steps();
 
 		if ( ! empty( $_GET[ self::STEP_PARAM ] ) ) { // phpcs:ignore
 			$step = sanitize_text_field( wp_unslash( $_GET[ self::STEP_PARAM ] ) ); // phpcs:ignore
 		} elseif ( $this->is_onboarding_page() ) {
-			$step = array_key_first( $this->steps );
+			$step = array_key_first( $steps );
 		}
 
 		// Default to first step.
-		if ( ! $step || ! array_key_exists( $step, $this->steps ) ) {
+		if ( ! $step || ! array_key_exists( $step, $steps ) ) {
 			$step = get_transient( self::STEP_TRANSIENT );
 		}
 
 		// Fallback on first step.
 		if ( ! $step ) {
-			$step = array_key_first( $this->steps );
+			$step = array_key_first( $steps );
 		}
 
-		$this->set_step_transient( $step );
+		if ( ! get_transient( self::STEP_TRANSIENT ) || $set_transient ) {
+			$this->set_step_transient( $step );
+		}
 
 		return $step;
 	}
@@ -454,7 +542,8 @@ class Onboarding {
 	 * @return array
 	 */
 	private function get_current_step(): array {
-		return $this->steps[ $this->get_current_step_key() ];
+		$steps = $this->get_steps();
+		return $steps[ $this->get_current_step_key() ];
 	}
 
 	/**
@@ -465,10 +554,11 @@ class Onboarding {
 	 * @return ?string
 	 */
 	private function get_next_step_key(): ?string {
-		$step = $this->get_current_step_key();
-		$next = false;
+		$steps = $this->get_steps();
+		$step  = $this->get_current_step_key();
+		$next  = false;
 
-		foreach ( $this->steps as $step_id => $step_data ) {
+		foreach ( $steps as $step_id => $step_data ) {
 			if ( $step_id === $step ) {
 				$next = true;
 				continue;
@@ -490,9 +580,27 @@ class Onboarding {
 	 * @return bool
 	 */
 	private function is_last_step(): bool {
+		$steps   = $this->get_steps();
 		$current = $this->get_current_step_key();
-		$last    = array_key_last( $this->steps );
+		$last    = array_key_last( $steps );
+
+		if ( ! empty( $steps[ $last ] ) && $steps[ $last ]['skippable'] ) {
+			Log::error( 'Onboarding Error: Last step cannot be skippable.' );
+		}
+
 		return $current && $current === $last;
+	}
+
+	/**
+	 * Get the first step key.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_first_step_key(): string {
+		$steps = $this->get_steps();
+		return array_key_first( $steps );
 	}
 
 	/**
@@ -500,15 +608,17 @@ class Onboarding {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param bool $check_for_page
+	 *
 	 * @return bool
 	 */
-	private function is_mid_onboarding(): bool {
+	private function is_mid_onboarding( bool $check_for_page = false ): bool {
 		if ( ! is_admin() ) {
 			return false;
 		}
 
-		if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
-			return true;
+		if ( ! empty( $_GET[ self::DONE_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
+			return false;
 		}
 
 		if ( ! empty( $_GET[ self::IS_ONBOARDING_PARAM ] ) ) { // phpcs:ignore
@@ -516,6 +626,10 @@ class Onboarding {
 		}
 
 		if ( get_transient( self::STEP_TRANSIENT ) ) {
+			return true;
+		}
+
+		if ( $check_for_page && $this->is_onboarding_page() ) {
 			return true;
 		}
 
@@ -530,58 +644,114 @@ class Onboarding {
 	 * @return void
 	 */
 	private function onboarding_redirect(): void {
+		$auto_bail = function (): bool {
+			if ( wp_doing_ajax() ) {
+				return true;
+			}
+
+			if ( goodbids()->network->nonprofits->is_onboarded() ) {
+				return true;
+			}
+
+			return false;
+		};
+
+		// Mark Onboarding Started Step
 		add_action(
 			'admin_init',
-			function () {
-				if ( ! $this->is_onboarding_page() || wp_doing_ajax() || goodbids()->network->nonprofits->is_onboarded() ) {
+			function () use ( $auto_bail ) {
+				if ( $auto_bail() || ! $this->is_get_started_url() ) {
 					return;
 				}
 
-				$step = $this->get_current_step();
+				$this->mark_onboarding_started();
+			},
+			20
+		);
 
-				if ( $step['is_complete'] && $this->get_next_step_key() ) {
-					wp_safe_redirect( $this->get_url( $this->get_next_step_key() ) );
+		// Handle proceeding to next step.
+		// Loads when NOT on the Onboarding page.
+		add_action(
+			'admin_init',
+			function () use ( $auto_bail ) {
+				if ( $auto_bail() || $this->is_onboarding_page() || ! $this->is_mid_onboarding() ) {
+					return;
+				}
+
+				// Check if the current step is skipped or complete.
+				$next_key = $this->get_next_step_key();
+				if ( $this->should_proceed() && $next_key ) {
+					$this->set_step_transient( $next_key );
+					wp_safe_redirect( $this->get_url( $next_key ) );
 					exit;
 				}
 			},
 			30
 		);
 
-		// Perform the Redirect to the next step.
+		// Handle Skipped Steps
+		// Loads when ON the Onboarding page.
 		add_action(
 			'admin_init',
-			function () {
-				if ( wp_doing_ajax() || $this->is_onboarding_page() || ! $this->is_mid_onboarding() || goodbids()->network->nonprofits->is_onboarded() ) {
+			function () use ( $auto_bail ) {
+				if ( $auto_bail() || ! $this->is_onboarding_page() || ! $this->is_mid_onboarding( true ) ) {
+					return;
+				}
+
+				$skip_step = $this->get_skip_step();
+
+				if ( ! $skip_step ) {
+					$current     = $this->get_current_step();
+					$current_key = $this->get_current_step_key();
+
+					// Skip to the first incomplete step.
+					if ( $current['is_complete'] ) {
+						$this->handle_step_completed( $current_key );
+					}
+
+					return;
+				}
+
+				if ( $skip_step === $this->get_current_step_key() && $this->skip_step() ) {
+					$next_key = $this->get_next_step_key();
+
+					if ( $next_key ) {
+						$this->set_step_transient( $next_key );
+						wp_safe_redirect( $this->get_url( $next_key ) );
+						exit;
+					}
+				}
+			},
+			40
+		);
+
+		// Handle Completed Step callbacks and Redirect to the next step.
+		// Loads when NOT on the Onboarding page.
+		add_action(
+			'admin_init',
+			function () use ( $auto_bail ) {
+				if ( $auto_bail() || $this->is_onboarding_page() || ! $this->is_mid_onboarding() || ! $this->initialized() ) {
 					return;
 				}
 
 				// Don't redirect if we are on supported pages
 				$current_step = $this->get_current_step();
+				$current_key  = $this->get_current_step_key();
 
 				if ( $current_step['is_step_page'] && ! $current_step['is_complete'] ) {
 					return;
 				}
 
-				if ( ! empty( $current['callback'] ) && is_callable( $current['callback'] ) ) {
-					call_user_func( $current['callback'] );
-				}
-
-				// We're done here.
-				if ( ! $this->get_next_step_key() ) {
-					return;
-				}
-
-				$redirect = $this->get_url( $this->get_next_step_key() );
-				wp_safe_redirect( $redirect );
-				exit;
+				$this->handle_step_completed( $current_key, true );
 			},
 			50
 		);
 
+		// Handle wrapping up the completion of onboarding.
 		add_action(
 			'admin_footer',
-			function () {
-				if ( wp_doing_ajax() || goodbids()->network->nonprofits->is_onboarded() ) {
+			function () use ( $auto_bail ) {
+				if ( $auto_bail() ) {
 					return;
 				}
 
@@ -592,6 +762,162 @@ class Onboarding {
 				$this->mark_onboarding_completed();
 			}
 		);
+	}
+
+	/**
+	 * Check if it's OK to proceed
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function should_proceed(): bool {
+		$step_key = $this->get_current_step_key();
+		$step     = $this->get_current_step();
+
+		if ( $step['is_complete'] ) {
+			return true;
+		}
+
+		if ( $step['skippable'] ) {
+			if ( $this->is_step_skipped( $step_key ) && $this->is_onboarding_page() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Handle the completion of a step
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $step_key
+	 * @param bool $do_callback
+	 *
+	 * @return void
+	 */
+	private function handle_step_completed( string $step_key, bool $do_callback = false ): void {
+		$steps = $this->get_steps();
+		$step  = $steps[ $step_key ];
+
+		// Safe to remove skipped step.
+		$this->remove_skipped_step( $step_key );
+
+		if ( $do_callback && ! empty( $step['callback'] ) && is_callable( $step['callback'] ) ) {
+			call_user_func( $step['callback'] );
+		}
+
+		// We're done here.
+		if ( ! $this->is_mid_onboarding() || ! $this->get_next_step_key() ) {
+			return;
+		}
+
+		$redirect = $this->get_url( $this->get_next_step_key() );
+		wp_safe_redirect( $redirect );
+		exit;
+	}
+
+	/**
+	 * Check if step has been skipped
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $step
+	 *
+	 * @return bool
+	 */
+	private function is_step_skipped( string $step ): bool {
+		$skipped = $this->get_skipped_steps();
+		return in_array( $step, $skipped, true );
+	}
+
+	/**
+	 * Check if the current step is being skipped.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?string
+	 */
+	private function get_skip_step(): ?string {
+		if ( empty( $_GET[ self::SKIP_STEP_PARAM ] ) ) { // phpcs:ignore
+			return null;
+		}
+
+		return sanitize_text_field( wp_unslash( $_GET[ self::SKIP_STEP_PARAM ] ) ); // phpcs:ignore
+	}
+
+	/**
+	 * Get skipped steps.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_skipped_steps(): array {
+		return get_option( self::SKIPPED_STEPS_OPTION, [] );
+	}
+
+	/**
+	 * Mark a step as skipped.
+	 *
+	 * @param ?string $step
+	 *
+	 * @return bool
+	 */
+	private function skip_step( ?string $step = null ): bool {
+		if ( ! $step ) {
+			$step = $this->get_current_step_key();
+		}
+
+		$steps = $this->get_steps();
+
+		if ( ! $step || ! array_key_exists( $step, $steps ) ) {
+			return false;
+		}
+
+		if ( ! $steps[ $step ]['skippable'] ) {
+			return false;
+		}
+
+		$skipped = $this->get_skipped_steps();
+
+		if ( ! in_array( $step, $skipped, true ) ) {
+			$skipped[] = $step;
+			update_option( self::SKIPPED_STEPS_OPTION, $skipped );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if ANY steps have been skipped
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function has_skipped_steps(): bool {
+		return count( $this->get_skipped_steps() );
+	}
+
+	/**
+	 * Remove a skipped step that has been completed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $step
+	 *
+	 * @return void
+	 */
+	private function remove_skipped_step( string $step ): void {
+		$skipped = $this->get_skipped_steps();
+
+		if ( in_array( $step, $skipped, true ) ) {
+			$skipped = array_diff( $skipped, [ $step ] );
+			update_option( self::SKIPPED_STEPS_OPTION, $skipped );
+		}
 	}
 
 	/**
@@ -622,23 +948,6 @@ class Onboarding {
 		global $pagenow;
 
 		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-admin' === $_GET['page'] && ! empty( $_GET['path'] ) && '/setup-wizard' === $_GET['path']; // phpcs:ignore
-	}
-
-	/**
-	 * Check if we are on the WooCommerce Admin page
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool
-	 */
-	private function is_wc_admin_page(): bool {
-		if ( $this->is_wc_onboarding_page() ) {
-			return false;
-		}
-
-		global $pagenow;
-
-		return 'admin.php' === $pagenow && ! empty( $_GET['page'] ) && 'wc-admin' === $_GET['page'] && empty( $_GET['path'] ); // phpcs:ignore
 	}
 
 	/**
@@ -871,10 +1180,34 @@ class Onboarding {
 	 * @return void
 	 */
 	public function mark_onboarding_completed(): void {
+		// Clear unneeded transients.
 		delete_transient( self::STEP_TRANSIENT );
+		delete_transient( self::INITIALIZED_TRANSIENT );
 
-		// Make sure Onboarding isn't already marked as completed.
-		if ( ! goodbids()->network->nonprofits->is_onboarded() ) {
+		if ( $this->has_skipped_steps() ) {
+			// Reset onboarded status.
+			delete_option( Nonprofits::ONBOARDED_OPTION );
+
+			// Mark as partially onboarded.
+			update_option( Nonprofits::ONBOARDED_PARTIAL_OPTION, current_time( 'mysql' ) );
+
+			/**
+			 * Action after Onboarding has been partially completed
+			 * @since 1.0.0
+			 * @param int $blog_id The blog ID.
+			 */
+			do_action( 'goodbids_onboarding_partially_completed', get_current_blog_id() );
+		} else {
+			// Clean up options/transients.
+			delete_option( Nonprofits::ONBOARDED_PARTIAL_OPTION );
+			delete_option( self::SKIPPED_STEPS_OPTION );
+
+			// Make sure Onboarding isn't already marked as completed.
+			if ( goodbids()->network->nonprofits->is_onboarded() ) {
+				return;
+			}
+
+			// Mark as completely onboarded.
 			update_option( Nonprofits::ONBOARDED_OPTION, current_time( 'mysql' ) );
 
 			/**
@@ -900,5 +1233,31 @@ class Onboarding {
 				( new API\Step() )->register_routes();
 			}
 		);
+	}
+
+	/**
+	 * Check if we are on the Get Started URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function is_get_started_url(): bool {
+		if ( ! $this->is_onboarding_page() ) {
+			return false;
+		}
+
+		return ! empty( $_GET[ self::STEP_INIT_ONBOARDING ] ); // phpcs:ignore
+	}
+
+	/**
+	 * Mark Onboarding as Started
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function mark_onboarding_started(): void {
+		set_transient( self::WELCOME_TRANSIENT, current_time( 'mysql' ) );
 	}
 }
