@@ -116,6 +116,9 @@ class Onboarding {
 
 		// Flag Onboarding as Completed.
 		$this->maybe_mark_onboarding_completed();
+
+		// Setup API Endpoints.
+		$this->setup_api_endpoints();
 	}
 
 	/**
@@ -881,5 +884,21 @@ class Onboarding {
 			 */
 			do_action( 'goodbids_onboarding_completed', get_current_blog_id() );
 		}
+	}
+
+	/**
+	 * Register Auction REST API Endpoints
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function setup_api_endpoints(): void {
+		add_action(
+			'rest_api_init',
+			function () {
+				( new API\Step() )->register_routes();
+			}
+		);
 	}
 }
