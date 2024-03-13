@@ -739,6 +739,17 @@ class Verification {
 
 					$prev_value = get_site_meta( $site_id, $meta_key, true );
 
+					// Prevent sites from switching Live without completing onboarding.
+					if ( self::STATUS_OPTION === $key && $meta_value === Nonprofit::STATUS_LIVE ) {
+						if ( ! goodbids()->network->nonprofits->is_onboarded( $site_id ) ) {
+							if ( Nonprofit::STATUS_LIVE === $prev_value ) {
+								$meta_value = Nonprofit::STATUS_PENDING;
+							} else {
+								$meta_value = $prev_value;
+							}
+						}
+					}
+
 					update_site_meta( $site_id, $meta_key, $meta_value );
 
 					if ( ! empty( $field['on_update'] ) && is_callable( $field['on_update'] ) ) {
