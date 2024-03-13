@@ -29,6 +29,4 @@ printf(
 
 echo "\n\n----------------------------------------\n\n";
 
-echo '{reward.purchase_note}';
-
 $instance->plain_text_footer();
