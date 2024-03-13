@@ -23,8 +23,8 @@ global $post;
 			<li>Review the Nonprofit <?php echo wp_kses_post( goodbids()->sites->get_terms_conditions_link() ); ?></li>
 			<li>
 				Log in to GOODBIDS with your username and temporary password shown below.</br>
-				<small>Note: This information was also sent to you via email..</small>
-				<p><a href="">Login</a></p>
+				<small>Note: This information was also sent to you via email.</small>
+				<p><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( wp_login_url() ); ?>">Login</a></p>
 			</li>
 			<li>
 				Enable Two-Factor authentication and set a new password for your account.</br>
