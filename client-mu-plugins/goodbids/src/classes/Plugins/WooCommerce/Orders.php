@@ -44,6 +44,7 @@ class Orders {
 	public function get_auction_info( int $order_id ): ?array {
 		$order         = wc_get_order( $order_id );
 		$auction_id    = $this->get_auction_id( $order_id );
+		$variation_id  = $this->get_bid_product_variation_id( $order_id );
 		$order_type    = $this->get_type( $order_id );
 		$uses_free_bid = $this->is_free_bid_order( $order_id );
 
@@ -51,6 +52,7 @@ class Orders {
 		if ( $auction_id && $order_type ) {
 			return [
 				'auction_id'    => $auction_id,
+				'variation_id'  => $variation_id,
 				'order_type'    => $order_type,
 				'uses_free_bid' => $uses_free_bid,
 			];
@@ -67,6 +69,7 @@ class Orders {
 			}
 
 			if ( $auction_id && $order_type ) {
+				$variation_id = $item->get_variation_id();
 				break;
 			}
 		}
@@ -78,6 +81,7 @@ class Orders {
 		return [
 			'auction_id'    => $auction_id,
 			'order_type'    => $order_type,
+			'variation_id'  => $variation_id,
 			'uses_free_bid' => $uses_free_bid,
 		];
 	}
@@ -116,6 +120,29 @@ class Orders {
 	public function get_type( int $order_id ): ?string {
 		$order = wc_get_order( $order_id );
 		return $order->get_meta( WooCommerce::TYPE_META_KEY ) ?: null;
+	}
+
+	/**
+	 * Get the Bid Product Variation ID from an Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return ?int
+	 */
+	public function get_bid_product_variation_id( int $order_id ): ?int {
+		$order = wc_get_order( $order_id );
+
+		foreach ( $order->get_items() as $item ) {
+			$product_type = goodbids()->products->get_type( $item->get_product_id() );
+
+			if ( Bids::ITEM_TYPE === $product_type ) {
+				return $item->get_variation_id();
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -128,20 +128,24 @@ class Checkout {
 					return;
 				}
 
-				// Maybe perform Free Bids checks.
-				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
-					return;
+				// Perform Free Bids checks.
+				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
+					// Make sure Free Bids are allowed.
+					if ( ! $auction->are_free_bids_allowed() ) {
+						goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+						return;
+					}
+
+					// Make sure the current user has available Free Bids.
+					if ( ! goodbids()->users->get_available_free_bid_count() ) {
+						goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+						return;
+					}
 				}
 
-				// Make sure Free Bids are allowed.
-				if ( ! $auction->are_free_bids_allowed() ) {
-					goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-					return;
-				}
-
-				// Make sure the current user has available Free Bids.
-				if ( ! goodbids()->users->get_available_free_bid_count() ) {
-					goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+				// Perform this check last to ensure the bid being placed matches the latest bid product.
+				if ( $info['variation_id'] !== $auction->get_variation_id() ) {
+					goodbids()->notices->add_notice( Notices::BID_ALREADY_PLACED );
 				}
 			},
 			10,
