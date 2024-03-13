@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
-import { H1, P } from '../../../components/typography';
+import { H1, P } from '~/components/typography';
 import { PuzzleManImage } from '~/components/images/puzzle-man';
-import { Button } from '~/components/button';
+import { ButtonLink } from '~/components/button-link';
 import { Wrapper } from '../wrapper';
 import { useSetStep } from '../api/set-step';
 import { ProgressIcon } from '~/components/icons/progress-icon';
@@ -35,7 +35,11 @@ export function WelcomeStep({ setAccessibilityStep }: WelcomeStepProps) {
 				</P>
 			</div>
 
-			<Button variant="solid" onClick={handleSetStep}>
+			<ButtonLink
+				variant="solid"
+				href={gbNonprofitOnboarding.initOnboardingUrl}
+				onClick={handleSetStep}
+			>
 				{setStep.status === 'pending' ? (
 					<div className="flex w-full justify-center gap-2">
 						<ProgressIcon spin />
@@ -44,7 +48,7 @@ export function WelcomeStep({ setAccessibilityStep }: WelcomeStepProps) {
 				) : (
 					__('Let’s go!', 'goodbids')
 				)}
-			</Button>
+			</ButtonLink>
 		</Wrapper>
 	);
 }

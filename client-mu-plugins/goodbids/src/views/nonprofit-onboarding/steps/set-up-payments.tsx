@@ -2,7 +2,6 @@ import { __ } from '@wordpress/i18n';
 import { ButtonLink } from '~/components/button-link';
 import { H1, P } from '~/components/typography';
 import { CoinManImage } from '~/components/images/coin-man';
-import { Button } from '~/components/button';
 import { Wrapper } from '../wrapper';
 import { useSetStep } from '../api/set-step';
 
@@ -44,9 +43,22 @@ export function SetUpPaymentsStep({ setCompleteStep }: SetUpPaymentsStepProps) {
 					{__('Connect Stripe', 'goodbids')}
 				</ButtonLink>
 
-				<Button onClick={handleSetStep}>
+				<ButtonLink
+					onClick={handleSetStep}
+					href={
+						gbNonprofitOnboarding.baseUrl +
+						'&' +
+						gbNonprofitOnboarding.stepParam +
+						'=' +
+						gbNonprofitOnboarding.stepOptions[3] +
+						'&' +
+						gbNonprofitOnboarding.skipStepParam +
+						'=' +
+						gbNonprofitOnboarding.stepOptions[3]
+					}
+				>
 					{__('Skip for now', 'goodbids')}
-				</Button>
+				</ButtonLink>
 			</div>
 		</Wrapper>
 	);

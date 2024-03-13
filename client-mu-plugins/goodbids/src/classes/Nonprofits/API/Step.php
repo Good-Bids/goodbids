@@ -66,7 +66,7 @@ class Step extends WC_REST_Controller {
 	}
 
 	/**
-	 * Publishes a site.
+	 * Sets the current step.
 	 *
 	 * @since 1.0.0
 	 *
@@ -80,6 +80,10 @@ class Step extends WC_REST_Controller {
 		if ( ! $step ) {
 			return new WP_Error( 'goodbids_missing_required_parameters', __( 'The required `step` parameter was not found.', 'goodbids' ) );
 		}
+
+		$steps = goodbids()->onboarding->get_steps();
+
+		// TODO: Not sure if this is necessary.
 
 		// TODO: Check for step validity.
 		// Presently, we only allow you to set the step from initial to accessibility checker

@@ -143,6 +143,12 @@ class Core {
 
 	/**
 	 * @since 1.0.0
+	 * @var Onboarding
+	 */
+	public Onboarding $onboarding;
+
+	/**
+	 * @since 1.0.0
 	 * @var Invoices
 	 */
 	public Invoices $invoices;
@@ -481,6 +487,7 @@ class Core {
 				$this->verification  = new Verification();
 				$this->settings      = new Settings();
 				$this->woocommerce   = new WooCommerce();
+				$this->onboarding    = new Onboarding();
 				$this->notices       = new Notices();
 				$this->users         = new Users();
 				$this->watchers      = new Watchers();
@@ -494,7 +501,6 @@ class Core {
 				new Dashboard();
 				new Blocks();
 				new OneTrust();
-				new Onboarding();
 				new Guide();
 				new NonprofitAdmin();
 			}
