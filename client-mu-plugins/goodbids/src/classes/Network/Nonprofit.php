@@ -161,7 +161,14 @@ class Nonprofit {
 			return false;
 		}
 
-		return update_site_meta( $this->get_id(), Verification::STATUS_OPTION, $status );
+		// Onboarding must be complete.
+		if ( Nonprofit::STATUS_LIVE === $status && ! $this->is_onboarded() ) {
+			return false;
+		}
+
+		$meta_key = Verification::OPTION_SLUG . '-' . Verification::STATUS_OPTION;
+
+		return update_site_meta( $this->get_id(), $meta_key, $status );
 	}
 
 	/**
