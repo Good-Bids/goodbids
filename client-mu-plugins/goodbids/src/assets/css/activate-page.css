@@ -1,5 +1,6 @@
 @layer components {
-	#activate-header {
+	.activate-header,
+	.activate-footer {
 		@apply m-auto max-w-screen-lg p-6;
 
 		h1.header-title {
@@ -12,7 +13,8 @@
 			}
 		}
 	}
-	#activate-content {
+
+	.activate-content {
 		@apply m-auto max-w-screen-lg px-6 py-12;
 
 		#submit {
