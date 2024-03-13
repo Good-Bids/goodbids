@@ -49,11 +49,13 @@ $last_bid    = $auction->get_last_bid();
 	endif;
 
 	if ( $last_bid ) :
+		$last_bid_amount = $last_bid->get_total( 'edit' );
 		printf(
-			'<p><strong>%s</strong><br><a href="%s">%s</a></p>',
+			'<p><strong>%s</strong><br><a href="%s">%s%s</a></p>',
 			esc_html__( 'Last Bid', 'goodbids' ),
 			esc_url( get_edit_post_link( $last_bid->get_id() ) ),
-			wp_kses_post( wc_price( $last_bid->get_total() ) )
+			wp_kses_post( wc_price( $last_bid_amount ) ),
+			! intval( $last_bid_amount ) ? sprintf( ' (%s)', wp_kses_post( wc_price( $last_bid->get_subtotal() ) ) ) : ''
 		);
 	endif;
 	?>

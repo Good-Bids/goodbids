@@ -114,6 +114,7 @@ class Invoices {
 				if ( 'integrity_check' === $action ) {
 					foreach ( $ids as $id ) {
 						list( $site_id, $invoice_id ) = explode( '|', $id );
+
 						goodbids()->sites->swap(
 							function () use ( $invoice_id ) {
 								$invoice = goodbids()->invoices->get_invoice( $invoice_id );
@@ -124,6 +125,9 @@ class Invoices {
 							$site_id
 						);
 					}
+				} elseif ( 'validation_check' === $action ) {
+					goodbids()->invoices->validation_check();
+					$redirect = true;
 				}
 
 				if ( $redirect ) {
@@ -156,6 +160,8 @@ class Invoices {
 
 				if ( 'integrity_check' === $action ) {
 					$message = __( 'Integrity Check Completed. Review logs for report.', 'goodbids' );
+				} elseif ( 'validation_check' === $action ) {
+					$message = __( 'Validation Check Completed. Review logs for report.', 'goodbids' );
 				}
 
 				if ( $message ) {
