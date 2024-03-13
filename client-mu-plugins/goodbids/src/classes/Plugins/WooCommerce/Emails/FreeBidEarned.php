@@ -51,7 +51,9 @@ class FreeBidEarned extends Email {
 			'goodbids_award_free_bid',
 			function ( FreeBid $free_bid, int $user_id ) {
 				$this->trigger( $free_bid, $user_id );
-			}
+			},
+			10,
+			2
 		);
 	}
 
@@ -62,11 +64,7 @@ class FreeBidEarned extends Email {
 	 * @return string
 	 */
 	public function get_default_subject(): string {
-		return sprintf(
-			/* translators: %1$s: site title */
-			__( '[%1$s] Congratulations, you earned a Free Bid!', 'goodbids' ),
-			'{site_title}',
-		);
+		return __( '[GOODBIDS] Congratulations, you earned a Free Bid!', 'goodbids' );
 	}
 
 	/**

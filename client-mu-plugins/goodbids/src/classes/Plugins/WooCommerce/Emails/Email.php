@@ -425,7 +425,6 @@ class Email extends WC_Email {
 
 		// Reward Details.
 		$this->add_placeholder( '{reward.title}', $reward?->get_title() );
-		$this->add_placeholder( '{reward.type}', 'TBD' ); // TODO: Remove me?
 		$this->add_placeholder( '{reward.purchase_note}', $reward?->get_purchase_note() );
 		$this->add_placeholder( '{reward.claim_url}', goodbids()->rewards->get_claim_reward_url( $auction?->get_id() ) );
 		$this->add_placeholder( '{reward.days_to_claim_setting}', goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
