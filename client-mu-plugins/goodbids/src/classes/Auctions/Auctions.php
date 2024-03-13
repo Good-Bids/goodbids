@@ -175,6 +175,12 @@ class Auctions {
 
 		// Restrict operations when a Nonprofit is delinquent.
 		$this->restrict_delinquent_sites();
+
+		// Hide the Auction title from the editor.
+		$this->hide_auction_title();
+
+		// Remove the excerpt placeholder.
+		$this->remove_excerpt_placeholder();
 	}
 
 	/**
@@ -351,7 +357,7 @@ class Auctions {
 	 */
 	public function get_unclaimed_reward_auctions( array $query_args = [] ): array {
 		$query_args = array_merge_recursive(
-				[
+			[
 				'meta_query' => [
 					[
 						'key'     => self::AUCTION_CLOSED_META_KEY,
@@ -381,7 +387,7 @@ class Auctions {
 	 */
 	public function get_unclaimed_reward_auction_emails(): array {
 		$reminder_interval_days = intval( goodbids()->get_config( 'auctions.reward-claim-reminder-interval-days' ) );
-		$reward_days_to_claim = intval( goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
+		$reward_days_to_claim   = intval( goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
 
 		if ( $reward_days_to_claim < $reminder_interval_days ) {
 			Log::warning( 'Reminder interval is greater than allowed days to claim reward.' );
@@ -395,7 +401,7 @@ class Auctions {
 			try {
 				// Use the Current Date - X days to check for Auctions that have been closed for each interval.
 				$threshold_start = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 00:00:00' );
-				$threshold_end = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 23:59:59' );
+				$threshold_end   = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 23:59:59' );
 			} catch ( Exception $e ) {
 				Log::error( 'Error querying reminders for unclaimed reward auctions.', [ 'error' => $e->getMessage() ] );
 				return [];
@@ -422,7 +428,7 @@ class Auctions {
 				array_push( $reminder_emails, ...$unclaimed );
 			}
 
-			if( $current_interval >= $reward_days_to_claim ) {
+			if ( $current_interval >= $reward_days_to_claim ) {
 				break;
 			}
 
@@ -1054,5 +1060,60 @@ class Auctions {
 		}
 
 		return true;
+	}
+
+
+	/**
+	 * Hide the Auction title from the editor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function hide_auction_title(): void {
+		add_action(
+			'current_screen',
+			function (): void {
+				$screen = get_current_screen();
+				if ( $this->get_post_type() !== $screen->post_type ) {
+					return;
+				}
+				?>
+				<style>
+					h1.wp-block.wp-block-post-title.block-editor-block-list__block.editor-post-title.editor-post-title__input.rich-text{
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
+		);
+	}
+
+	/**
+	 * Remove the excerpt placeholder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function remove_excerpt_placeholder(): void {
+		add_action(
+			'current_screen',
+			function (): void {
+				$screen = get_current_screen();
+				if ( $this->get_post_type() !== $screen->post_type ) {
+					return;
+				}
+
+				remove_filter( 'get_the_excerpt', 'wp_trim_excerpt' );
+				?>
+				<style>
+					a.block-editor-rich-text__editable.wp-block-post-excerpt__more-link.rich-text {
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
+		);
 	}
 }

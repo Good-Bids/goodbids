@@ -12,15 +12,6 @@ $auction           = goodbids()->auctions->get();
 $goal              = $auction->get_goal();
 $estimated_value   = $auction->get_estimated_value();
 $expected_high_bid = $auction->get_expected_high_bid();
-
-// Display an Admin message to make the block easier to find.
-if ( ! $goal && ! $estimated_value && ! $expected_high_bid && is_admin() ) :
-	printf(
-		'<p style="text-align:center;">%s</p>',
-		esc_html__( 'No stats yet.', 'goodbids' )
-	);
-	return;
-endif;
 ?>
 <section <?php block_attr( $block, 'grid grid-cols-3 gap-2' ); ?>>
 	<?php

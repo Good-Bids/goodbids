@@ -180,6 +180,64 @@ function getContent(id: number) {
 			<!-- wp:spacer {"height":"30px"} -->
 			<div style="height:30px" aria-hidden="true" class="wp-block-spacer"></div>
 			<!-- /wp:spacer -->
+
+			<!-- wp:group {"className":"gb-comments","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group gb-comments">
+				<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"className":"is-style-wide"} -->
+				<hr class="wp-block-separator has-alpha-channel-opacity is-style-wide" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)" />
+				<!-- /wp:separator -->
+
+				<!-- wp:comments -->
+				<div class="wp-block-comments">
+					<!-- wp:heading {"level":3,"style":{"typography":{"textTransform":"capitalize","fontStyle":"normal","fontWeight":"400"}},"fontSize":"base"} -->
+					<h3 class="wp-block-heading has-base-font-size" style="font-style:normal;font-weight:400;text-transform:capitalize">${__('Comments', 'goodbids')}</h3>
+					<!-- /wp:heading -->
+
+					<!-- wp:comment-template -->
+					<!-- wp:columns -->
+					<div class="wp-block-columns">
+						<!-- wp:column {"width":"40px"} -->
+						<div class="wp-block-column" style="flex-basis:40px">
+							<!-- wp:avatar {"size":40,"style":{"border":{"radius":"20px"}}} /-->
+						</div>
+						<!-- /wp:column -->
+
+						<!-- wp:column -->
+						<div class="wp-block-column">
+							<!-- wp:comment-author-name {"fontSize":"small"} /-->
+
+							<!-- wp:group {"style":{"spacing":{"margin":{"top":"0px","bottom":"0px"}}},"className":"text-xs","layout":{"type":"flex"}} -->
+							<div class="text-xs wp-block-group" style="margin-top:0px;margin-bottom:0px">
+								<!-- wp:comment-date {"fontSize":"x-small"} /-->
+
+								<!-- wp:comment-edit-link {"fontSize":"x-small"} /-->
+							</div>
+							<!-- /wp:group -->
+
+							<!-- wp:comment-content /-->
+
+							<!-- wp:comment-reply-link {"fontSize":"small"} /-->
+						</div>
+						<!-- /wp:column -->
+					</div>
+					<!-- /wp:columns -->
+					<!-- /wp:comment-template -->
+
+					<!-- wp:comments-pagination -->
+					<!-- wp:comments-pagination-previous /-->
+
+					<!-- wp:comments-pagination-numbers /-->
+
+					<!-- wp:comments-pagination-next /-->
+					<!-- /wp:comments-pagination -->
+
+					<!-- wp:post-comments-form /-->
+				</div>
+				<!-- /wp:comments -->
+			</div>
+			<!-- /wp:group -->
+
+
 		</div>
 		<!-- /wp:group -->
 		`;
