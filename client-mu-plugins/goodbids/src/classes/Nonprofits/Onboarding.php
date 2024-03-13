@@ -240,11 +240,12 @@ class Onboarding {
 					'skippable'    => false,
 				],
 				self::STEP_SET_UP_PAYMENTS               => [
-					'url'          => $payments_url,
-					'is_complete'  => $this->completed_payments_onboarding(),
-					'is_step_page' => $this->is_stripe_page(),
-					'callback'     => null,
-					'skippable'    => true,
+					'url'                => $payments_url,
+					'is_complete'        => $this->completed_payments_onboarding(),
+					'is_step_page'       => $this->is_stripe_page(),
+					'callback'           => null,
+					'skippable'          => true,
+					'validation_message' => __( 'Site cannot be launched until Stripe has been configured.', 'goodbids' ),
 				],
 				self::STEP_ONBOARDING_COMPLETE           => [
 					'url'          => $onboarding_complete_url,
@@ -451,6 +452,9 @@ class Onboarding {
 		$admin_url = admin_url();
 		$admin_url = add_query_arg( self::DONE_ONBOARDING_PARAM, 1, $admin_url );
 
+		// Init and get Steps
+		$steps = $this->get_steps();
+
 		// Skip Payments URL
 		$skip_payments_url = $this->get_url( self::STEP_SET_UP_PAYMENTS );
 		$skip_payments_url = add_query_arg( self::SKIP_STEP_PARAM, self::STEP_SET_UP_PAYMENTS, $skip_payments_url );
@@ -472,6 +476,8 @@ class Onboarding {
 
 			'skipSetUpPaymentsUrl' => $skip_payments_url,
 			'skippedSteps'         => $this->get_skipped_steps(),
+			'isComplete'           => goodbids()->network->nonprofits->is_onboarded(),
+			'isPartiallyComplete'  => goodbids()->network->nonprofits->is_partially_onboarded(),
 
 			'setupGuideUrl' => $setup_guide_url,
 			'adminUrl'      => $admin_url,

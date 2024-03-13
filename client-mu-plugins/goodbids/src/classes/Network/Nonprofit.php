@@ -384,4 +384,15 @@ class Nonprofit {
 
 		return goodbids()->invoices->stripe->get_customer( $customer_id );
 	}
+
+	/**
+	 * Check if Nonprofit has completed onboarding.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_onboarded(): bool {
+		return goodbids()->network->nonprofits->is_onboarded( $this->get_id() );
+	}
 }
