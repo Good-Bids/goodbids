@@ -1,0 +1,13 @@
+@layer components {
+	#activate-page {
+		@apply m-auto max-w-screen-md rounded-sm bg-white p-6;
+
+		#submit {
+			@apply btn-fill;
+		}
+
+		#key {
+			@apply w-full;
+		}
+	}
+}
