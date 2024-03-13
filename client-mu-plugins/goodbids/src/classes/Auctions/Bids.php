@@ -34,6 +34,12 @@ class Bids {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const PLACE_BID_SLUG = 'place-bid';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const AUCTION_BID_META_KEY = 'gb_bid_product_id';
 
 	/**
@@ -77,6 +83,10 @@ class Bids {
 			return;
 		}
 
+		// Use the Place Bid slug at the end of the Auction URL to place Bid.
+		$this->add_place_bid_url_rewrite();
+		$this->handle_place_bid_endpoint();
+
 		// Create a Bid product when an Auction is created.
 		$this->create_bid_product_for_auction();
 
@@ -97,6 +107,134 @@ class Bids {
 
 		// Hide Bid Products from WP Admin > Products.
 		$this->filter_bid_products();
+	}
+
+	/**
+	 * Add custom rewrite rule to place bid for Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_place_bid_url_rewrite(): void {
+		add_filter(
+			'query_vars',
+			function ( $vars ) {
+				$vars[] = self::PLACE_BID_SLUG;
+				return $vars;
+			}
+		);
+
+		add_action(
+			'init',
+			function () {
+				$auction_slug = Auctions::SINGULAR_SLUG;
+				$post_type    = goodbids()->auctions->get_post_type();
+				$bid_slug     = self::PLACE_BID_SLUG;
+
+				add_rewrite_rule(
+					'^' . $auction_slug . '/([^/]+)/' . $bid_slug . '/?',
+					'index.php?post_type=' . $post_type . '&name=$matches[1]&' . $bid_slug . '=1',
+					'top'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Redirect to the checkout page with latest Bid Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_place_bid_endpoint(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! get_query_var( self::PLACE_BID_SLUG ) ) {
+					return;
+				}
+
+				$auction_id = get_queried_object_id();
+				$auction    = new Auction( $auction_id );
+
+				if ( ! is_user_logged_in() ) {
+					$auth_url    = wc_get_page_permalink( 'myaccount' );
+					$redirect_to = $auction->get_place_bid_url();
+
+					goodbids()->notices->add_notice( Notices::NOT_AUTHENTICATED );
+					$redirect = add_query_arg( 'redirect-to', urlencode( $redirect_to ), $auth_url );
+
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( ! $auction->has_started() ) {
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_STARTED );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				if ( $auction->has_ended() ) {
+					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				// Make sure they aren't the current high bidder.
+				if ( $auction->is_current_user_winning() ) {
+					goodbids()->notices->add_notice( Notices::ALREADY_HIGH_BIDDER );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				$product_id   = $auction->get_product_id();
+				$variation_id = $auction->get_variation_id();
+
+				if ( ! $product_id || ! $variation_id ) {
+					// TODO: Add Error Message
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				WC()->cart->empty_cart();
+
+				try {
+					WC()->cart->add_to_cart( $product_id, 1, $variation_id );
+				} catch ( \Exception $e ) {
+					Log::error( $e->getMessage() );
+
+					// TODO: Add Error Message
+					wp_safe_redirect( $auction->get_url() );
+					exit();
+				}
+
+				/**
+				 * Action to perform when a bid is placed.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $auction_id The Auction ID.
+				 * @param int $product_id The Bid Product ID.
+				 * @param int $variation_id The Bid Variation ID.
+				 */
+				do_action( 'goodbids_place_bid', $auction_id, $product_id, $variation_id );
+
+				/**
+				 * Filter the URL to redirect after placing a bid.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param string $redirect The URL to redirect to.
+				 * @param int $auction_id The Auction ID.
+				 */
+				$redirect = apply_filters( 'goodbids_place_bid_redirect', wc_get_checkout_url(), $auction_id );
+
+				wp_safe_redirect( $redirect );
+				exit();
+			}
+		);
 	}
 
 	/**
@@ -357,17 +495,18 @@ class Bids {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
+	 * @param bool $is_free_bid
 	 *
 	 * @return string
 	 */
-	public function get_place_bid_url( int $auction_id ): string {
-		$bid_variation_id = $this->get_variation_id( $auction_id );
+	public function get_place_bid_url( int $auction_id, bool $is_free_bid = false ): string {
+		$url = trailingslashit( get_permalink( $auction_id ) ) . self::PLACE_BID_SLUG . '/';
 
-		if ( ! $bid_variation_id ) {
-			return '';
+		if ( $is_free_bid ) {
+			$url = add_query_arg( 'use-free-bid', 1, $url );
 		}
 
-		return add_query_arg( 'add-to-cart', $bid_variation_id, wc_get_checkout_url() );
+		return $url;
 	}
 
 	/**

@@ -130,6 +130,19 @@ class Auction {
 	}
 
 	/**
+	 * Get the URL to place a bid on the Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool $is_free_bid
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url( bool $is_free_bid = false ): string {
+		return goodbids()->bids->get_place_bid_url( $this->get_id(), $is_free_bid );
+	}
+
+	/**
 	 * Get the Edit URL for the Auction
 	 *
 	 * @since 1.0.0
@@ -194,7 +207,29 @@ class Auction {
 	 * @return bool
 	 */
 	public function has_bid_product(): bool {
-		return boolval( goodbids()->bids->get_product_id( $this->get_id() ) );
+		return boolval( $this->get_product_id() );
+	}
+
+	/**
+	 * Get the Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_product_id(): ?int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get the Bid Product Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_variation_id(): ?int {
+		return goodbids()->bids->get_variation_id( $this->get_id() );
 	}
 
 	/**
@@ -222,6 +257,28 @@ class Auction {
 	 */
 	public function set_bid_variation_id( int $bid_variation_id ): void {
 		update_post_meta( $this->get_id(), Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
+	}
+
+	/**
+	 * Get Reward Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_reward_id(): int {
+		return goodbids()->rewards->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Claim Reward URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_claim_reward_url(): int {
+		return goodbids()->rewards->get_claim_reward_url( $this->get_id() );
 	}
 
 	/**

@@ -522,28 +522,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Retrieve the current add-to-cart product.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?WC_Product $product
-	 *
-	 * @return ?WC_Product
-	 */
-	public function get_add_to_cart_product( ?WC_Product $product = null ): ?WC_Product {
-		// Sometimes this filter does not pass a product.
-		if ( ! $product && ! empty( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
-			$product = wc_get_product( intval( sanitize_text_field( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ); // phpcs:ignore
-		}
-
-		if ( ! $product instanceof WC_Product ) {
-			return null;
-		}
-
-		return $product;
-	}
-
-	/**
 	 * Disable the Return to Cart link on the Checkout page inside the Checkout Actions block.
 	 *
 	 * @since 1.0.0
