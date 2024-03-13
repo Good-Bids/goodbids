@@ -356,6 +356,7 @@ class Stripe {
 			'metadata'          => [
 				'gb_invoice_id' => $this->invoice->get_id(),
 				'gb_auction_id' => $this->invoice->get_auction_id(),
+				'gb_site_id'    => get_current_blog_id(),
 			],
 
 			// This allows the invoice to be created without any items, even though the documentation says "exclude" is the default.
@@ -541,7 +542,7 @@ class Stripe {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array
+	 * @return stdClass[]
 	 */
 	public function get_invoices(): array {
 		$stripe_invoices = goodbids()->sites->main(

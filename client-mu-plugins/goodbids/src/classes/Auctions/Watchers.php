@@ -236,7 +236,10 @@ class Watchers {
 		}
 
 		if ( ! $auction_id || ! $user_id ) {
-			_doing_it_wrong( __METHOD__, 'Unable to determine Auction ID or User ID.', '6.4.2' );
+			// Suppress when editing Auction.
+			if ( ! is_admin() ) {
+				_doing_it_wrong( __METHOD__, 'Unable to determine Auction ID or User ID.', '6.4.2' );
+			}
 			return null;
 		}
 
@@ -442,7 +445,10 @@ class Watchers {
 		}
 
 		if ( ! $auction_id ) {
-			_doing_it_wrong( __METHOD__, 'Unable to determine Auction ID.', '6.4.2' );
+			// Suppress error when editing Auction.
+			if ( ! is_admin() ) {
+				_doing_it_wrong( __METHOD__, 'Unable to determine Auction ID.', '6.4.2' );
+			}
 			return [];
 		}
 

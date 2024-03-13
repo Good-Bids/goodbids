@@ -23,7 +23,7 @@ use GoodBids\Auctions\Bids;
 
 		<li class="w-full p-4 text-base rounded-sm sm:w-auto bg-contrast">
 			<p class="m-0 font-thin uppercase has-x-small-font-size"><?php esc_html_e( 'Free Bids', 'goodbids' ); ?></p>
-			<div class="flex items-center justify-between">
+			<div class="flex flex-wrap items-center justify-between gap-3">
 				<p class="mt-2 mb-0 text-lg font-bold"><?php echo esc_html( count( goodbids()->users->get_free_bids( null, Bids::FREE_BID_STATUS_UNUSED ) ) ); ?></p>
 				<a class="px-3 py-1 btn-fill-secondary" href="<?php echo esc_url( wc_get_account_endpoint_url( 'dashboard' ) . 'my-referrals/' ); ?>"><?php esc_html_e( 'Earn more', 'goodbids' ); ?></a>
 			</div>
