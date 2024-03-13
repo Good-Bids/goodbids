@@ -204,6 +204,10 @@ class Guide {
 			'isAdmin'    => current_user_can( 'administrator' ),
 			'isBDPAdmin' => current_user_can( Permissions::BDP_ADMIN_ROLE ),
 			'isJrAdmin'  => current_user_can( Permissions::JR_ADMIN_ROLE ),
+
+			'skippedOnboardingSteps'        => goodbids()->onboarding->get_skipped_steps(),
+			'isOnboardingComplete'          => goodbids()->network->nonprofits->is_onboarded(),
+			'isOnboardingPartiallyComplete' => goodbids()->network->nonprofits->is_partially_onboarded(),
 		];
 	}
 

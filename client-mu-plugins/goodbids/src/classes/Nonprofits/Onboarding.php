@@ -467,7 +467,9 @@ class Onboarding {
 			'setUpPaymentsUrl'        => $steps[ self::STEP_SET_UP_PAYMENTS ]['url'],
 			'onboardingCompleteUrl'   => $steps[ self::STEP_ONBOARDING_COMPLETE ]['url'],
 
-			'skippedSteps' => $this->get_skipped_steps(),
+			'skippedSteps'        => $this->get_skipped_steps(),
+			'isComplete'          => goodbids()->network->nonprofits->is_onboarded(),
+			'isPartiallyComplete' => goodbids()->network->nonprofits->is_partially_onboarded(),
 
 			'setupGuideUrl' => $setup_guide_url,
 			'adminUrl'      => $admin_url,
