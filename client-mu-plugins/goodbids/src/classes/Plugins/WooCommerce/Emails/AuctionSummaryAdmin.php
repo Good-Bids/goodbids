@@ -52,9 +52,7 @@ class AuctionSummaryAdmin extends Email {
 			function ( int $auction_id ) {
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_admins( $auction );
-			},
-			10,
-			2
+			}
 		);
 	}
 
