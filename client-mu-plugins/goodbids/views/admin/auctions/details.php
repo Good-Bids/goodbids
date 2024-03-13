@@ -8,6 +8,8 @@
  * @package GoodBids
  */
 
+use GoodBids\Auctions\Auction;
+
 ?>
 <h3><?php esc_html_e( 'Auction Details', 'goodbids' ); ?></h3>
 
@@ -44,23 +46,39 @@ printf(
 );
 
 if ( $reward_product ) {
-	printf(
-		'<p><strong>%s</strong><br>%s<b> (<a href="%s">%s</a>)</p>',
-		esc_html__( 'Reward Product', 'goodbids' ),
-		esc_html( $reward_product->get_name() ),
-		esc_html( goodbids()->auctions->wizard->get_wizard_url( $auction_id, $reward_product->get_id() ) ),
-		esc_html__( 'Edit', 'goodbids' ),
-	);
+	if ( in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) && ! is_super_admin() ) {
+		printf(
+			'<p><strong>%s</strong><br>%s</p>',
+			esc_html__( 'Reward Product', 'goodbids' ),
+			esc_html( $reward_product->get_name() )
+		);
+	} else {
+		printf(
+			'<p><strong>%s</strong><br>%s (<a href="%s">%s</a>)</p>',
+			esc_html__( 'Reward Product', 'goodbids' ),
+			esc_html( $reward_product->get_name() ),
+			esc_html( goodbids()->auctions->wizard->get_wizard_url( $auction_id, $reward_product->get_id() ) ),
+			esc_html__( 'Edit', 'goodbids' )
+		);
+	}
 }
 
 if ( 'publish' === get_post_status( $auction_id ) ) {
-	printf(
-		'<p><strong>%s</strong> <a href="%s" data-auction-id="%s" data-nonce="%s">%s</a><br><span id="gb-close-date">%s</span></p>',
-		esc_html__( 'Close Date/Time', 'goodbids' ),
-		'#gb-force-update-close-date',
-		esc_attr( $auction_id ),
-		esc_attr( wp_create_nonce( 'gb-force-update-close-date' ) ),
-		esc_html__( 'Force Update', 'goodbids' ),
-		esc_html( $auction->get_end_date_time( 'n/j/Y g:i:s a' ) )
-	);
+	if ( in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) && ! is_super_admin() ) {
+		printf(
+			'<p><strong>%s</strong><br>%s</p>',
+			esc_html__( 'Close Date/Time', 'goodbids' ),
+			esc_html( $auction->get_end_date_time( 'n/j/Y g:i:s a' ) )
+		);
+	} else {
+		printf(
+			'<p><strong>%s</strong> <a href="%s" data-auction-id="%s" data-nonce="%s">%s</a><br><span id="gb-close-date">%s</span></p>',
+			esc_html__( 'Close Date/Time', 'goodbids' ),
+			'#gb-force-update-close-date',
+			esc_attr( $auction_id ),
+			esc_attr( wp_create_nonce( 'gb-force-update-close-date' ) ),
+			esc_html__( 'Force Update', 'goodbids' ),
+			esc_html( $auction->get_end_date_time( 'n/j/Y g:i:s a' ) )
+		);
+	}
 }

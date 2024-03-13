@@ -117,7 +117,7 @@ class Invoice {
 	 * @since 1.0.0
 	 * @var ?WP_Post
 	 */
-	protected ?WP_Post $post;
+	protected ?WP_Post $post = null;
 
 	/**
 	 * @since 1.0.0
@@ -181,43 +181,29 @@ class Invoice {
 
 	/**
 	 * Retrieve an instance of an Invoice.
-	 * Passing the Auction ID into the 2nd parameter will initialize the Invoice.
-	 * The Auction ID will be connected to the Invoice during initialization.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int  $post_id
-	 * @param ?int $auction_id
-	 *
-	 * @return ?self
+	 * @param int $post_id
 	 */
-	public function __construct( int $post_id, ?int $auction_id = null ) {
+	public function __construct( int $post_id ) {
 		if ( get_post_type( $post_id ) !== Invoices::POST_TYPE ) {
 			_doing_it_wrong( __METHOD__, 'The post ID provided is not an invoice type', '1.0.0' );
-			return null;
+			return;
 		}
 
 		$this->invoice_id = $post_id;
 		$this->post       = get_post( $this->invoice_id );
-
-		if ( null !== $auction_id ) {
-			if ( ! $this->init( $auction_id ) ) {
-				Log::error( 'Could not initialize invoice.', [ 'invoice_id' => $this->get_id(), 'auction_id' => $auction_id ] );
-				return null;
-			}
-		}
-
-		return $this;
 	}
 
 	/**
-	 * Get the Post Object for an Invoice
+	 * Get the Post Object for this Invoice
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return WP_Post
+	 * @return ?WP_Post
 	 */
-	public function get_post(): WP_Post {
+	public function get_post(): ?WP_Post {
 		return $this->post;
 	}
 
@@ -233,27 +219,57 @@ class Invoice {
 	}
 
 	/**
-	 * Initialize a New Invoice. This will also connect the Auction to this Invoice.
+	 * Check if an Invoice is valid
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $auction_id
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return ! is_null( $this->post ) && $this->get_auction_id();
+	}
+
+	/**
+	 * Initialize a New Invoice. This will connect the Auction to this Invoice.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int  $auction_id
+	 * @param bool $check_existing
 	 *
 	 * @return bool
 	 */
-	private function init( int $auction_id ): bool {
+	public function init( int $auction_id, bool $check_existing = true ): bool {
 		if ( get_post_type( $auction_id ) !== goodbids()->auctions->get_post_type() ) {
 			_doing_it_wrong( __METHOD__, 'The post ID provided is not an Auction post type.', '1.0.0' );
 			return false;
 		}
 
-		// Set the Auction ID.
+		$auction = goodbids()->auctions->get( $auction_id );
+
+		if ( $check_existing && $auction->get_invoice_id() ) {
+			_doing_it_wrong( __METHOD__, 'Invoice already exists for Auction.', '1.0.0' );
+			return false;
+		}
+
+		// Set the Auction ID and connect with Invoice ID.
 		$this->set_auction_id( $auction_id );
 
 		// Add Invoice ID to Auction.
 		update_post_meta( $this->auction_id, Invoices::INVOICE_ID_META_KEY, $this->get_id() );
 
-		// Set the invoice type.
+		return true;
+	}
+
+	/**
+	 * Use the values from the associated Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function use_default_values(): void {
+		// Set the Type.
 		$this->set_type();
 
 		// Set the invoice amount.
@@ -261,8 +277,6 @@ class Invoice {
 
 		// Set the invoice due date last.
 		$this->set_due_date();
-
-		return true;
 	}
 
 	/**

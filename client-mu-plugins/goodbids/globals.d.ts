@@ -65,6 +65,7 @@ declare const gbNonprofitOnboarding: {
 	initOnboardingUrl: string;
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
+	skipSetUpPaymentsUrl: string;
 	accessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;

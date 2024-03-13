@@ -76,7 +76,7 @@ if ( $auction->has_started() ) {
 	<a href="<?php echo esc_url( get_site_url() ); ?>" class="flex items-center gap-4 py-4 no-underline border-t-0 border-b border-solid border-b-contrast-2 border-x-0 hover:underline">
 		<?php if ( $site_logo ) : ?>
 			<div class="w-10 h-10 overflow-hidden rounded-full shrink-0">
-				<img class="object-contain w-10 h-10" src="<?php echo esc_url( $site_logo[0] ); ?>" width="<?php echo esc_attr( $site_logo[1] ); ?>" height="<?php echo esc_attr( $site_logo[2] ); ?>" />
+				<img class="object-contain w-10 h-10" src="<?php echo esc_url( $site_logo[0] ); ?>" width="<?php echo esc_attr( $site_logo[1] ); ?>" height="<?php echo esc_attr( $site_logo[2] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'title' ) ); ?> logo" />
 			</div>
 		<?php endif; ?>
 		<p class="text-sm font-bold line-clamp-1 my-1.5 mx-0">
