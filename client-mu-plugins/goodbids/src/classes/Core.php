@@ -10,6 +10,7 @@ namespace GoodBids;
 
 use GoodBids\Admin\Admin;
 use GoodBids\Auctioneer\Auctioneer;
+use GoodBids\Auctions\Admin as AuctionsAdmin;
 use GoodBids\Auctions\Auctions;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Products;
@@ -496,6 +497,7 @@ class Core {
 
 				// Init Modules not part of the API.
 				new Permissions();
+				new AuctionsAdmin();
 				new Patterns();
 				new Partners();
 				new Dashboard();

@@ -8,16 +8,20 @@
 	}
 
 	.woocommerce-account {
-		main .woocommerce {
-			@apply !max-w-full;
-		}
-
 		.woocommerce-MyAccount-navigation {
-			@apply w-1/4;
+			@apply w-full border-b-2 border-solid border-x-transparent border-b-contrast border-t-transparent sm:!w-1/4 sm:border-none;
+
+			ul {
+				@apply flex flex-wrap gap-x-8 gap-y-2 text-sm sm:block sm:text-md;
+			}
 
 			.woocommerce-MyAccount-navigation-link {
-				@apply py-2;
+				@apply !py-2;
 			}
+		}
+
+		main .woocommerce {
+			@apply !max-w-full;
 		}
 
 		.woocommerce-MyAccount-content {

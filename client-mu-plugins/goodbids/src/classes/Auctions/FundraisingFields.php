@@ -21,6 +21,9 @@ class FundraisingFields {
 	public function __construct() {
 		// Removes some ACF fields from the Admin UI.
 		$this->disable_fundraising_fields();
+
+		// Temporarily disable the Reward Tab.
+		$this->maybe_disable_reward_tab();
 	}
 
 	/**
@@ -59,4 +62,29 @@ class FundraisingFields {
 		);
 	}
 
+	/**
+	 * Temporarily Disable the Reward Tab if the Auction is published
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function maybe_disable_reward_tab(): void {
+		add_action(
+			'current_screen',
+			function(): void {
+				if ( ! goodbids()->auctions->should_hide_reward_product() ) {
+					return;
+				}
+
+				?>
+				<style>
+					.acf-tab-group li:has(a[data-key="field_65859ba03eb29"]) {
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
+		);
+	}
 }

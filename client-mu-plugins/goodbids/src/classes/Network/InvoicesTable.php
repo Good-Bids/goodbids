@@ -193,17 +193,16 @@ class InvoicesTable extends WP_List_Table {
 		}
 		?>
 		<div class="tablenav <?php echo esc_attr( $which ); ?>">
-			<?php
-			if ( $this->has_items() ) :
-				?>
-				<div class="alignleft actions bulkactions">
-					<?php $this->bulk_actions( $which ); ?>
-				</div>
+			<div class="alignleft actions bulkactions" style="margin-top: 0;">
 				<?php
-			endif;
+				if ( $this->has_items() ) :
+					$this->bulk_actions( $which );
+				endif;
 
-			$this->pagination( $which );
-			?>
+				$this->validation_button();
+				?>
+			</div>
+			<?php $this->pagination( $which ); ?>
 
 			<br class="clear" />
 		</div>
@@ -213,6 +212,33 @@ class InvoicesTable extends WP_List_Table {
 			$this->extra_tablenav( $which );
 			echo '</form>';
 		}
+	}
+
+	/**
+	 * Display Validation Check
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function validation_button(): void {
+		$validation_url = add_query_arg( 'action', 'validation_check', $this->base_url() );
+		printf(
+			'<a href="%s" class="button button-secondary">%s</a>',
+			esc_url( $validation_url ),
+			esc_html__( 'Validation Check', 'goodbids' )
+		);
+	}
+
+	/**
+	 * Get the base URL for the page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function base_url(): string {
+		return network_admin_url( 'admin.php?page=' . Invoices::PAGE_SLUG );
 	}
 
 	/**
@@ -248,7 +274,7 @@ class InvoicesTable extends WP_List_Table {
 			$filters[] = sprintf(
 				'<li class="%s"><a href="%s"%s>%s <span class="count">(%d)</span></a>%s</li>',
 				esc_attr( strtolower( $key ) ),
-				esc_url( add_query_arg( 'status', $key ) ),
+				esc_url( add_query_arg( 'status', $key, $this->base_url() ) ),
 				$key === $status ? ' class="current" aria-current="page"' : '',
 				esc_html( $label ),
 				$counts[ $key ],
