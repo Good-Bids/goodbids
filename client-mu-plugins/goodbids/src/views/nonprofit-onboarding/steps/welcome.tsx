@@ -3,24 +3,8 @@ import { H1, P } from '~/components/typography';
 import { PuzzleManImage } from '~/components/images/puzzle-man';
 import { ButtonLink } from '~/components/button-link';
 import { Wrapper } from '../wrapper';
-import { useSetStep } from '../api/set-step';
-import { ProgressIcon } from '~/components/icons/progress-icon';
 
-type WelcomeStepProps = {
-	setAccessibilityStep: () => void;
-};
-
-export function WelcomeStep({ setAccessibilityStep }: WelcomeStepProps) {
-	const setStep = useSetStep({
-		onSuccess: () => {
-			setAccessibilityStep();
-		},
-	});
-
-	const handleSetStep = () => {
-		setStep.mutate({ step: 'activate-accessibility-checker' });
-	};
-
+export function WelcomeStep() {
 	return (
 		<Wrapper progress={0}>
 			<PuzzleManImage className="aspect-auto h-50 py-10" />
@@ -38,16 +22,8 @@ export function WelcomeStep({ setAccessibilityStep }: WelcomeStepProps) {
 			<ButtonLink
 				variant="solid"
 				href={gbNonprofitOnboarding.initOnboardingUrl}
-				onClick={handleSetStep}
 			>
-				{setStep.status === 'pending' ? (
-					<div className="flex w-full justify-center gap-2">
-						<ProgressIcon spin />
-						{__('Setting up!', 'goodbids')}
-					</div>
-				) : (
-					__('Let’s go!', 'goodbids')
-				)}
+				{__('Let’s go!', 'goodbids')}
 			</ButtonLink>
 		</Wrapper>
 	);
