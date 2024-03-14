@@ -35,6 +35,9 @@ class Admin {
 
 		// Display Custom Page Post States.
 		$this->display_post_states();
+
+		// Remove WooCommerce Features on Main site
+		$this->main_site_cleanup();
 	}
 
 	/**
@@ -199,6 +202,107 @@ class Admin {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Remove Unneeded WooCommerce Features on the Main Site
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function main_site_cleanup(): void {
+		add_action(
+			'admin_menu',
+			function () {
+				if ( ! is_main_site() ) {
+					return;
+				}
+
+				// Remove Products Menu
+				remove_menu_page( 'edit.php?post_type=product' );
+
+				// Remove WooCommerce Submenus
+				remove_submenu_page( 'woocommerce', 'wc-orders' );
+				remove_submenu_page( 'woocommerce', 'edit.php?post_type=shop_coupon' );
+				remove_submenu_page( 'woocommerce', 'wc-reports' );
+			},
+			200
+		);
+
+		// Remove WooCommerce Marketing Menu.
+		add_filter(
+			'woocommerce_admin_features',
+			function ( array $features ): array {
+				if ( ! is_main_site() ) {
+					return $features;
+				}
+
+				$keep = [
+					'homescreen',
+					'navigation',
+					'activity-panels',
+					'store-alerts',
+					'remote-inbox-notifications',
+					'woo-mobile-welcome',
+					'store-alert',
+				];
+
+				return array_filter(
+					$features,
+					fn( $feature ) => in_array( $feature, $keep, true )
+				);
+			}
+		);
+
+		// Remove WooCommerce Analytics Menu.
+		add_filter(
+			'option_woocommerce_analytics_enabled',
+			function ( string $enabled ): string {
+				if ( ! is_main_site() ) {
+					return $enabled;
+				}
+
+				return 'no';
+			}
+		);
+
+		// Disable WooCommerce Order Attribution
+		add_filter(
+			'option_woocommerce_feature_order_attribution_enabled',
+			function ( string $enabled ): string {
+				if ( ! is_main_site() ) {
+					return $enabled;
+				}
+
+				return 'no';
+			}
+		);
+
+		// Disable WooCommerce Marketplace Suggestions
+		add_filter(
+			'option_woocommerce_show_marketplace_suggestions',
+			function ( string $enabled ): string {
+				if ( ! is_main_site() ) {
+					return $enabled;
+				}
+
+				return 'no';
+			}
+		);
+
+		// Remove some of the Settings Tabs.
+		add_filter(
+			'woocommerce_settings_tabs_array',
+			function ( array $tabs ): array {
+				unset( $tabs['products'] );
+				unset( $tabs['tax'] );
+				unset( $tabs['shipping'] );
+				unset( $tabs['integration'] );
+				return $tabs;
+			},
+			100
 		);
 	}
 }

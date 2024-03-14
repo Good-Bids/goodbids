@@ -8,11 +8,14 @@
     "advanced-custom-fields-pro/acf.php",
     "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
     "user-switching",
+    "wp-mail-smtp-pro/wp_mail_smtp.php",
     "woocommerce",
-    "woocommerce-gateway-stripe",
-    "woocommerce-services",
-    "wp-mail-smtp-pro/wp_mail_smtp.php"
+    "woocommerce-gateway-stripe"
   ],
+  "nonprofit-active-plugins": [
+    "woocommerce-services"
+  ],
+  "main-active-plugins": [],
   "post-install-plugins": [
     "accessibility-checker",
     "accessibility-checker-pro",
