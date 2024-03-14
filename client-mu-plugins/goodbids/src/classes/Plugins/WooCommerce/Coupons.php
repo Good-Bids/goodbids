@@ -191,7 +191,7 @@ class Coupons {
 		add_action(
 			'goodbids_place_bid',
 			function ( int $auction_id, int $product_id, int $variation_id ): void {
-				if ( empty( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
+				if ( empty( $_REQUEST[ Bids::USE_FREE_BID_PARAM ] ) ) { // phpcs:ignore
 					return;
 				}
 

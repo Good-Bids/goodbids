@@ -73,6 +73,12 @@ class Bids {
 	const FREE_BID_STATUS_USED = 'used';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const USE_FREE_BID_PARAM = 'use-free-bid';
+
+	/**
 	 * Initialize Bids
 	 *
 	 * @since 1.0.0
@@ -509,7 +515,7 @@ class Bids {
 		$url = trailingslashit( get_permalink( $auction_id ) ) . self::PLACE_BID_SLUG . '/';
 
 		if ( $is_free_bid ) {
-			$url = add_query_arg( 'use-free-bid', 1, $url );
+			$url = add_query_arg( self::USE_FREE_BID_PARAM, 1, $url );
 		}
 
 		return $url;

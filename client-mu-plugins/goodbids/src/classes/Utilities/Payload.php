@@ -9,6 +9,7 @@
 namespace GoodBids\Utilities;
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Auctions\Bids;
 use WC_Order;
 use WC_Product;
 use WP_User;
@@ -225,6 +226,7 @@ class Payload {
 			'startTime'         => $this->auction->get_start_date_time( 'c' ),
 			'totalBids'         => $this->auction->get_bid_count(),
 			'totalRaised'       => $this->auction->get_total_raised(),
+			'useFreeBidParam'   => Bids::USE_FREE_BID_PARAM,
 			'userFreeBids'      => goodbids()->users->get_available_free_bid_count( $this->get_user_id() ),
 			'userId'            => $this->get_user_id(),
 			'userTotalBids'     => $this->auction->get_user_bid_count( $this->get_user_id() ),
