@@ -50,7 +50,6 @@ class AuctionIsLiveAdmin extends Email {
 		add_action(
 			'goodbids_auction_start',
 			function ( int $auction_id ) {
-				Log::debug( 'AuctionIsLiveAdmin triggered.' );
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_admins( $auction );
 			}

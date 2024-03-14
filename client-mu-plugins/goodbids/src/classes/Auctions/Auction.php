@@ -1099,11 +1099,12 @@ class Auction {
 	 */
 	public function trigger_start(): bool {
 		if ( ! $this->has_started() || $this->start_triggered() ) {
-			Log::debug( 'Start not triggered' );
 			return false;
 		}
 
-		Log::debug( 'Auction has started', [ 'id' => $this->get_id() ] );
+		// Update the Auction meta to indicate it has started.
+		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
+
 		/**
 		 * Called when an Auction has started.
 		 *
@@ -1112,10 +1113,6 @@ class Auction {
 		 * @param int $auction_id
 		 */
 		do_action( 'goodbids_auction_start', $this->get_id() );
-		Log::debug( 'Auction start triggered', [ 'id' => $this->get_id() ] );
-
-		// Update the Auction meta to indicate it has started.
-		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
 
 		// Reset the Auction transients.
 		goodbids()->sites->clear_all_site_transients();
@@ -1143,11 +1140,12 @@ class Auction {
 	 */
 	public function trigger_close(): void {
 		if ( ! $this->has_ended() || $this->end_triggered() ) {
-			Log::debug( 'Close not triggered' );
 			return;
 		}
 
-		Log::debug( 'Auction has ended', [ 'id' => $this->get_id() ] );
+		// Update the Auction meta to indicate it has closed.
+		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
+
 		/**
 		 * Called when an Auction has ended.
 		 *
@@ -1156,10 +1154,6 @@ class Auction {
 		 * @param int $auction_id The Closing Auction ID.
 		 */
 		do_action( 'goodbids_auction_end', $this->get_id() );
-		Log::debug( 'Auction end triggered', [ 'id' => $this->get_id() ] );
-
-		// Update the Auction meta to indicate it has closed.
-		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
 
 		// Reset the Auction transients.
 		goodbids()->sites->clear_all_site_transients();

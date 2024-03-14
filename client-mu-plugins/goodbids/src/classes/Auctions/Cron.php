@@ -346,12 +346,10 @@ class Cron {
 				// TODO: Move to background process.
 
 				if ( $auction->has_started() ) {
-					Log::debug( 'Triggering Start' );
 					$auction->trigger_start();
 				}
 
 				if ( $auction->has_ended() ) {
-					Log::debug( 'Triggering close' );
 					$auction->trigger_close();
 				}
 			}

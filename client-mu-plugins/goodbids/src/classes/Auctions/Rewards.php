@@ -432,12 +432,9 @@ class Rewards {
 	 * @return void
 	 */
 	private function set_price_on_auction_end(): void {
-		Log::debug( 'Adding Reward Product price action.' );
 		add_action(
 			'goodbids_auction_end',
-			function ( int $auction_id ): void {
-				$this->update_price_to_auction_bid( $auction_id );
-			}
+			fn ( int $auction_id ) => $this->update_price_to_auction_bid( $auction_id )
 		);
 	}
 
