@@ -304,7 +304,7 @@ class Verification {
 					'default'     => '',
 					'after'       => '<span>' . __( 'days', 'goodbids' ) . '</span>',
 					'placeholder' => goodbids()->get_config( 'invoices.payment-terms-days', false ),
-					'description' => __( 'Number of days until an invoice is due.', 'goodbids' ),
+					'description' => __( 'Number of days until an invoice is due. Only Super Admins can update Net Payment Terms.', 'goodbids' ),
 				];
 				$fields['stripe_data']                        = [
 					'label'    => __( 'Stripe Details', 'goodbids' ),
