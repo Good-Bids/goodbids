@@ -66,24 +66,60 @@ class Emails {
 	 * @return void
 	 */
 	private function init_custom_emails(): void {
-		add_action(
-			'init',
-			function () {
-				$this->email_classes = [
-					'AuctionClosed'             => new AuctionClosed(),
-					'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
-					'AuctionIsLive'             => new AuctionIsLive(),
-					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
-					'AuctionOutbid'             => new AuctionOutbid(),
-					'AuctionPaidBidPlaced'      => new AuctionPaidBidPlaced(),
-					'AuctionRewardClaimed'      => new AuctionRewardClaimed(),
-					'AuctionRewardReminder'     => new AuctionRewardReminder(),
-					'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
-					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
-					'FreeBidEarned'             => new FreeBidEarned(),
-				];
+		add_action( 'init', [ $this, 'load_email_classes' ] );
+		add_action( 'template_redirect', [ $this, 'load_email_classes' ], 5 );
+	}
+
+	/**
+	 * Load the custom email classes
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function load_email_classes(): void {
+		if ( ! empty( $this->email_classes ) ) {
+			return;
+		}
+
+		if ( ! $this->load_wc_email_class() ) {
+			return;
+		}
+
+		$this->email_classes = [
+			'AuctionClosed'             => new AuctionClosed(),
+			'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
+			'AuctionIsLive'             => new AuctionIsLive(),
+			'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
+			'AuctionOutbid'             => new AuctionOutbid(),
+			'AuctionPaidBidPlaced'      => new AuctionPaidBidPlaced(),
+			'AuctionRewardClaimed'      => new AuctionRewardClaimed(),
+			'AuctionRewardReminder'     => new AuctionRewardReminder(),
+			'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
+			'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
+			'FreeBidEarned'             => new FreeBidEarned(),
+		];
+	}
+
+	/**
+	 * Loads the WC Email Class
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function load_wc_email_class(): bool {
+		if ( ! class_exists( 'WC_Email' ) ) {
+			$wc_email_path = dirname( WC_PLUGIN_FILE ) . '/includes/emails/class-wc-email.php';
+
+			if ( ! file_exists( $wc_email_path ) ) {
+				return false;
 			}
-		);
+
+			require_once $wc_email_path;
+		}
+
+		return true;
 	}
 
 	/**
@@ -96,7 +132,13 @@ class Emails {
 	private function register_custom_emails(): void {
 		add_filter(
 			'woocommerce_email_classes',
-			fn ( array $email_classes ): array => array_merge( $email_classes, $this->email_classes )
+			function ( array $email_classes ): array {
+				if ( empty( $this->email_classes ) ) {
+					$this->load_email_classes();
+				}
+
+				return array_merge( $email_classes, $this->email_classes );
+			}
 		);
 	}
 
