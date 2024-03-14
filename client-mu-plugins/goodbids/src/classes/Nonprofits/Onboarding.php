@@ -706,26 +706,28 @@ class Onboarding {
 
 				$skip_step = $this->get_skip_step();
 
-				if ( ! $skip_step ) {
-					$current     = $this->get_current_step();
-					$current_key = $this->get_current_step_key();
+				// Handle Skipped Steps.
+				if ( $skip_step ) {
+					if ( $skip_step === $this->get_current_step_key() && $this->skip_step() ) {
+						$next_key = $this->get_next_step_key();
 
-					// Skip to the first incomplete step.
-					if ( $current['is_complete'] ) {
-						$this->handle_step_completed( $current_key );
+						if ( $next_key ) {
+							$this->set_step_transient( $next_key );
+							wp_safe_redirect( $this->get_url( $next_key ) );
+							exit;
+						}
 					}
 
 					return;
 				}
 
-				if ( $skip_step === $this->get_current_step_key() && $this->skip_step() ) {
-					$next_key = $this->get_next_step_key();
+				// Move to the next step if the current step is complete.
+				$current     = $this->get_current_step();
+				$current_key = $this->get_current_step_key();
 
-					if ( $next_key ) {
-						$this->set_step_transient( $next_key );
-						wp_safe_redirect( $this->get_url( $next_key ) );
-						exit;
-					}
+				// Skip to the first incomplete step.
+				if ( $current['is_complete'] ) {
+					$this->handle_step_completed( $current_key );
 				}
 			},
 			40
@@ -820,7 +822,9 @@ class Onboarding {
 			return;
 		}
 
-		$redirect = $this->get_url( $this->get_next_step_key() );
+		$next_key = $this->get_next_step_key();
+		$redirect = $this->get_url( $next_key );
+		$this->set_step_transient( $next_key );
 		wp_safe_redirect( $redirect );
 		exit;
 	}

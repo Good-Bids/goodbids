@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { ButtonLink } from '../../../components/button-link';
-import { H1, P } from '../../../components/typography';
+import { ButtonLink } from '~/components/button-link';
+import { H1, P } from '~/components/typography';
 import { PuzzleManImage } from '~/components/images/puzzle-man';
 import { Wrapper } from '../wrapper';
 
