@@ -107,7 +107,7 @@ class Auction {
 	 * @since 1.0.0
 	 * @var ?WP_Post
 	 */
-	private ?WP_Post $post;
+	private ?WP_Post $post = null;
 
 	/**
 	 * Use metadata or get_field()
