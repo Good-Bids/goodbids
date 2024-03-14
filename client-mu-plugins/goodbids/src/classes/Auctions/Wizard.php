@@ -283,12 +283,15 @@ class Wizard {
 	private function get_js_vars(): array {
 		return [
 			// General.
-			'baseURL'         => $this->get_wizard_url(),
-			'appID'           => self::PAGE_SLUG,
-			'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
-			'adminURL'        => admin_url(),
+			'baseURL'  => $this->get_wizard_url(),
+			'appID'    => self::PAGE_SLUG,
+			'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+			'adminURL' => admin_url(),
+
+			// URL Params
 			'auctionIdParam'  => self::AUCTION_ID_PARAM,
 			'editRewardParam' => self::REWARD_EDIT_PARAM,
+			'useFreeBidParam' => Bids::USE_FREE_BID_PARAM,
 
 			// Flags.
 			'metricsEnabled' => false,

@@ -8,9 +8,6 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
-use GoodBids\Auctions\Auction;
-use GoodBids\Utilities\Log;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -94,12 +91,6 @@ class AuctionSummaryAdmin extends Email {
 	 * @return void
 	 */
 	public function init_vars(): void {
-		$auction = $this->object instanceof Auction ? $this->object : null;
-		$this->add_email_var( 'auction_estimated_value', $auction?->get_estimated_value() );
-		$this->add_email_var( 'auction_estimated_value_formatted', $auction?->get_estimated_value_formatted() );
-		$this->add_email_var( 'auction_goal', $auction?->get_goal() );
-		$this->add_email_var( 'auction_goal_formatted', $auction?->get_goal_formatted() );
-		$this->add_email_var( 'auction_expected_high_bid', $auction?->get_expected_high_bid() );
-		$this->add_email_var( 'auction_expected_high_bid_formatted', $auction?->get_expected_high_bid_formatted() );
+		$this->set_admin_vars();
 	}
 }

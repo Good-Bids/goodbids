@@ -37,7 +37,7 @@ export type ProductType = 'physical' | 'non-physical';
 type BaseProductBody = {
 	name: string;
 	regular_price: string;
-	images: { src: string }[];
+	images: { id: number }[];
 	categories: { id: number }[];
 };
 

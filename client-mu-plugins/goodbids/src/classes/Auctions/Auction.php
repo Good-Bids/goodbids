@@ -14,6 +14,8 @@ use Exception;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
 use WC_Order;
+use WC_Product;
+use WP_Post;
 use WP_User;
 
 /**
@@ -97,7 +99,15 @@ class Auction {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id;
+	private ?int $auction_id = null;
+
+	/**
+	 * The Auction ID.
+	 *
+	 * @since 1.0.0
+	 * @var ?WP_Post
+	 */
+	private ?WP_Post $post;
 
 	/**
 	 * Use metadata or get_field()
@@ -119,7 +129,12 @@ class Auction {
 			$auction_id = goodbids()->auctions->get_auction_id();
 		}
 
+		if ( ! $auction_id ) {
+			return;
+		}
+
 		$this->auction_id = $auction_id;
+		$this->post       = get_post( $this->auction_id );
 	}
 
 	/**
@@ -130,6 +145,17 @@ class Auction {
 	 */
 	public function get_id(): ?int {
 		return $this->auction_id;
+	}
+
+	/**
+	 * Check if Auction is Valid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return is_null( $this->post );
 	}
 
 	/**
@@ -282,6 +308,17 @@ class Auction {
 	 */
 	public function get_reward_id(): int {
 		return goodbids()->rewards->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Reward Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_reward(): ?WC_Product {
+		return goodbids()->rewards->get_product( $this->get_id() );
 	}
 
 	/**
@@ -1069,6 +1106,10 @@ class Auction {
 		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
 
 		/**
+		 * Called when an Auction has started.
+		 *
+		 * @since 1.0.0
+		 *
 		 * @param int $auction_id
 		 */
 		do_action( 'goodbids_auction_start', $this->get_id() );

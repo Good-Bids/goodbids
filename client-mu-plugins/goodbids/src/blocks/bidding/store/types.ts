@@ -33,6 +33,7 @@ export type BidsType = {
 	currentBid: number;
 	lastBid: number;
 	lastBidder?: number | null;
+	useFreeBidParam: 'use-free-bid';
 	freeBidsAvailable: number;
 	freeBidsAllowed: boolean;
 };
