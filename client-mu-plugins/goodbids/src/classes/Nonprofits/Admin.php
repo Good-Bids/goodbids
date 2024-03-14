@@ -9,6 +9,7 @@
 namespace GoodBids\Nonprofits;
 
 use GoodBids\Network\Nonprofit;
+use GoodBids\Users\Permissions;
 use WP_Admin_Bar;
 
 /**
@@ -44,9 +45,11 @@ class Admin {
 		add_action(
 			'admin_menu',
 			function () {
-				if ( is_main_site() || is_super_admin() ) {
+				if ( is_main_site() ) {
 					return;
 				}
+
+				global $submenu;
 
 				// Remove WP VIP Admin Menu item
 				remove_menu_page( 'vip-dashboard' );
@@ -56,6 +59,14 @@ class Admin {
 
 				// Remove Products Admin Menu item
 				remove_menu_page( 'edit.php?post_type=product' );
+
+				if ( is_super_admin() || current_user_can( Permissions::BDP_ADMIN_ROLE ) ) {
+					return;
+				}
+
+				// Remove My Sites under Dashboard
+				remove_menu_page(  'my-sites.php' );
+				unset( $submenu['index.php'][5] );
 			},
 			200
 		);
@@ -78,12 +89,18 @@ class Admin {
 		add_action(
 			'wp_before_admin_bar_render',
 			function(): void {
-				if ( is_main_site() || is_super_admin() ) {
+				if ( is_main_site() ) {
 					return;
 				}
 
 				/**	@var WP_Admin_Bar $wp_admin_bar */
 				global $wp_admin_bar;
+
+				$wp_admin_bar->remove_node( 'wp-logo' );
+
+				if ( ! is_front_page() ) {
+					$wp_admin_bar->remove_node( 'site-editor' );
+				}
 
 				// Remove items from +New
 				$wp_admin_bar->remove_node( 'new-post' );
@@ -91,6 +108,19 @@ class Admin {
 				$wp_admin_bar->remove_node( 'new-product' );
 				$wp_admin_bar->remove_node( 'new-shop_order' );
 				$wp_admin_bar->remove_node( 'new-shop_coupon' );
+
+				// Remove Main Admin Bar Items
+				$wp_admin_bar->remove_node( 'view-store' );
+				$wp_admin_bar->remove_node( 'edit-site' );
+				$wp_admin_bar->remove_node( 'view-site' );
+				$wp_admin_bar->remove_node( 'dashboard' );
+				$wp_admin_bar->remove_node( 'appearance' );
+
+				if ( is_super_admin() || current_user_can( Permissions::BDP_ADMIN_ROLE ) ) {
+					return;
+				}
+
+				$wp_admin_bar->remove_node( 'my-sites' );
 			},
 			30
 		);
