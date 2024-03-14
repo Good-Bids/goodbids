@@ -73,6 +73,7 @@ class Sites {
 		$this->create_about_page();
 		$this->create_all_auctions_page();
 		$this->delete_sample_page();
+		$this->delete_sample_post();
 		$this->set_default_posts_per_page();
 
 		// Lock down the block editor.
@@ -540,6 +541,39 @@ class Sites {
 
 				if ( ! wp_delete_post( $page->ID ) ) {
 					Log::warning( 'There was a problem deleting the Sample Page' );
+				}
+			},
+			120
+		);
+	}
+
+
+	/**
+	 * Attempt to delete the Hello world post
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function delete_sample_post(): void {
+		add_action(
+			'goodbids_initialize_site',
+			function (): void {
+				$post = get_page_by_path( 'hello-world' );
+
+				if ( ! $post ) {
+					return;
+				}
+
+				if ( intval( get_option( 'page_on_front' ) ) === $post->ID ) {
+					return;
+				}
+
+				// Disable third-party plugin hook.
+				remove_action( 'wp_trash_post', 'edac_delete_post' );
+
+				if ( ! wp_delete_post( $post->ID ) ) {
+					Log::warning( 'There was a problem deleting the Hello World post' );
 				}
 			},
 			120
