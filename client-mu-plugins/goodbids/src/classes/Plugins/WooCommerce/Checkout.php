@@ -220,12 +220,12 @@ class Checkout {
 						$nonprofit = new Nonprofit( get_current_blog_id() );
 
 						$block_content .= sprintf(
-							'<p class="mt-10 ml-10">%s $%s %s %s. %s</p>',
+							'<p class="mt-10 ml-10 font-bold">%s $%s %s %s. %s</p>',
 							__( 'By placing this bid, you are making a donation for your full bid amount of', 'goodbids' ),
 							esc_html( $bid_amount ),
 							__( 'to', 'goodbids' ),
 							esc_html( $nonprofit->get_name() ),
-							__( 'This is a non-refundable donation.', 'goodbids' )
+							__( 'This is a non-refundable donation, and is in addition to any previous donations you\'ve made in this auction.', 'goodbids' )
 						);
 					}
 				}
