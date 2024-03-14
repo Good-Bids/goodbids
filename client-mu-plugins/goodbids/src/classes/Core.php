@@ -33,6 +33,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\EarlyHooks;
 use GoodBids\Plugins\EqualizeDigital;
+use GoodBids\Plugins\MiniOrange;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Permissions;
@@ -288,6 +289,10 @@ class Core {
 		if ( file_exists( $local_json ) ) {
 			$local = json_decode( file_get_contents( $local_json ), true ); // phpcs:ignore
 			if ( is_array( $local ) ) {
+				if ( empty( $local['version'] ) || version_compare( $json['version'], $local['version'], '!=' ) ) {
+					Log::warning( 'Local config file version mismatch.' );
+				}
+
 				$json = array_merge_recursive( $json, $local );
 			}
 		}
@@ -521,6 +526,7 @@ class Core {
 				new OneTrust();
 				new Guide();
 				new NonprofitAdmin();
+				new MiniOrange();
 			}
 		);
 	}
