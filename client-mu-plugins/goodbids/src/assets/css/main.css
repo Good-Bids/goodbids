@@ -3,6 +3,7 @@
 
 @import 'global-forms.css';
 @import 'pagination.css';
+@import 'activate-page.css';
 
 /* Patterns */
 @import 'patterns/comments.css';

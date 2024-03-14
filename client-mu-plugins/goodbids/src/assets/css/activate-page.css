@@ -1,0 +1,28 @@
+@layer components {
+	.activate-header,
+	.activate-footer {
+		@apply m-auto max-w-screen-lg p-6;
+
+		h1.header-title {
+			@apply mb-12;
+		}
+
+		ol {
+			li {
+				@apply mb-3;
+			}
+		}
+	}
+
+	.activate-content {
+		@apply m-auto max-w-screen-lg px-6 py-12;
+
+		#submit {
+			@apply btn-fill;
+		}
+
+		#key {
+			@apply w-full;
+		}
+	}
+}
