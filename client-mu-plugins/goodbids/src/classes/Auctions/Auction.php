@@ -14,6 +14,7 @@ use Exception;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
 use WC_Order;
+use WC_Product;
 use WP_User;
 
 /**
@@ -282,6 +283,17 @@ class Auction {
 	 */
 	public function get_reward_id(): int {
 		return goodbids()->rewards->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Reward Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_reward(): ?WC_Product {
+		return goodbids()->rewards->get_product( $this->get_id() );
 	}
 
 	/**

@@ -165,6 +165,9 @@ class Rewards {
 					exit;
 				}
 
+				// Make sure the price has been updated.
+				$this->update_price_to_auction_bid( $auction_id );
+
 				if ( $this->is_redeemed( $auction_id ) ) {
 					goodbids()->notices->add_notice( Notices::REWARD_ALREADY_REDEEMED );
 					wp_safe_redirect( $auction->get_url() );
@@ -433,29 +436,37 @@ class Rewards {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ): void {
-				Log::debug( 'Setting Reward Product price.' );
-				$reward_id = $this->get_product_id( $auction_id );
-
-				if ( ! $reward_id ) {
-					Log::error( 'Auction missing Reward Product.', compact( 'auction_id' ) );
-					return;
-				}
-
-				$reward = $this->get_product( $auction_id );
-
-				if ( ! $reward ) {
-					Log::error( 'Reward Product not found.', compact( 'auction_id' ) );
-					return;
-				}
-
-				$auction     = goodbids()->auctions->get( $auction_id );
-				$winning_bid = $auction->get_last_bid();
-
-				$reward->set_regular_price( $winning_bid->get_subtotal() );
-				$reward->set_price( $winning_bid->get_subtotal() );
-				$reward->save();
-				Log::debug( 'Reward Product price set.' );
+				$this->update_price_to_auction_bid( $auction_id );
 			}
 		);
+	}
+
+	/**
+	 * Update the Reward product price to the last bid amount.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return void
+	 */
+	public function update_price_to_auction_bid( int $auction_id ): void {
+		$auction = goodbids()->auctions->get( $auction_id );
+		$reward  = $auction?->get_reward();
+
+		if ( ! $reward ) {
+			Log::error( 'Auction or Reward not found.', compact( 'auction_id' ) );
+			return;
+		}
+
+		$winning_bid = $auction->get_last_bid();
+
+		if ( floatval( $reward->get_price( 'edit' ) ) === $winning_bid->get_subtotal() ) {
+			return;
+		}
+
+		$reward->set_regular_price( $winning_bid->get_subtotal() );
+		$reward->set_price( $winning_bid->get_subtotal() );
+		$reward->save();
 	}
 }
