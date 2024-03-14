@@ -8,9 +8,6 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
-use GoodBids\Auctions\Auction;
-use GoodBids\Utilities\Log;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
