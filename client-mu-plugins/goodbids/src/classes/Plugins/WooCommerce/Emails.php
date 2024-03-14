@@ -21,7 +21,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Emails\FreeBidEarned;
 
 /**
- * Class for Email Methods
+ * Class for Email functions
  *
  * @since 1.0.0
  */
