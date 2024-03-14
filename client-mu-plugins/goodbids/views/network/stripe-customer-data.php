@@ -10,7 +10,7 @@
  */
 
 if ( ! $stripe_customer ) {
-	esc_html_e('No Stripe Customer Data', 'goodbids');
+	esc_html_e( 'Stripe customer data for this Nonprofit will display after the first invoice is generated.', 'goodbids' );
 	return;
 }
 ?>

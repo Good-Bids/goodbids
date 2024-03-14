@@ -204,14 +204,27 @@ class Utilities {
 			return is_main_site();
 		}
 
-		if ( empty( $_GET['id'] ) ) { // phpcs:ignore
-			return false;
+		$site_id = $this->network_get_current_blog_id();
+
+		if ( ! $site_id ) {
+			return is_main_site();
 		}
 
-		if ( intval( sanitize_text_field( $_GET['id'] ) ) !== get_main_site_id() ) { // phpcs:ignore
-			return false;
+		return $site_id === get_main_site_id();
+	}
+
+	/**
+	 * Gets the current Site ID in the context of the Network Admin.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function network_get_current_blog_id(): int {
+		if ( ! is_network_admin() || empty( $_GET['id'] ) ) { // phpcs:ignore
+			return get_current_blog_id();
 		}
 
-		return true;
+		return intval( sanitize_text_field( $_GET['id'] ) ); // phpcs:ignore
 	}
 }
