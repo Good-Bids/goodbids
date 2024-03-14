@@ -71,25 +71,14 @@ export function UpdateStep({
 		);
 
 		const images = product.productImage
-			? [{ src: product.productImage.value.src }].concat(
+			? [{ id: product.productImage.value.id }].concat(
 					product.productGallery.map((image) => {
-						return { src: image.value.src };
+						return { id: image.value.id };
 					}),
 				)
 			: product.productGallery.map((image) => {
-					return { src: image.value.src };
+					return { id: image.value.id };
 				});
-
-		/* TODO: Figure out local image upload
-
-		 	Current Error:
-		 	"Error getting remote image http://turtles.goodbids.vipdev.lndo.site/wp-content/uploads/sites/3/2024/02/monkeys-6.png. Error: cURL error 7: Failed to connect to turtles.goodbids.vipdev.lndo.site port 80 after 37 ms: Connection refused"
-		*/
-		if (process.env.NODE_ENV === 'development') {
-			console.log(
-				'Images cannot be uploaded in development mode. Please use the default product creation form to add images.',
-			);
-		}
 
 		const base = {
 			name: product.name.value,

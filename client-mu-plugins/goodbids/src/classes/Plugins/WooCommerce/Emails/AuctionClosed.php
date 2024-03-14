@@ -40,6 +40,26 @@ class AuctionClosed extends Email {
 	}
 
 	/**
+	 * Trigger this email on Auction End.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function trigger_on_auction_end(): void {
+		Log::debug( 'AuctionClosed action added.' );
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				Log::debug( 'AuctionClosed triggered.' );
+				$auction = goodbids()->auctions->get( $auction_id );
+				$this->send_to_watchers( $auction );
+				$this->send_to_bidders( $auction );
+			}
+		);
+	}
+
+	/**
 	 * Add a custom footer.
 	 *
 	 * @since 1.0.0
@@ -59,24 +79,6 @@ class AuctionClosed extends Email {
 	 */
 	protected function remove_customizations(): void {
 		remove_action( 'woocommerce_email_footer', [ $this, 'all_auctions_html' ], 7 );
-	}
-
-	/**
-	 * Trigger this email on Auction End.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function trigger_on_auction_end(): void {
-		add_action(
-			'goodbids_auction_end',
-			function ( int $auction_id ) {
-				$auction = goodbids()->auctions->get( $auction_id );
-				$this->send_to_watchers( $auction );
-				$this->send_to_bidders( $auction );
-			}
-		);
 	}
 
 	/**

@@ -49,9 +49,11 @@ class AuctionIsLive extends Email {
 	 * @return void
 	 */
 	private function trigger_on_auction_start(): void {
+		Log::debug( 'AuctionIsLive action added.' );
 		add_action(
 			'goodbids_auction_start',
 			function ( int $auction_id ) {
+				Log::debug( 'AuctionIsLive triggered.' );
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_watchers( $auction );
 			}
@@ -102,23 +104,5 @@ class AuctionIsLive extends Email {
 	 */
 	public function get_button_url(): string {
 		return '{auction.url}';
-	}
-
-	/**
-	 * Trigger the Email
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param mixed $object
-	 * @param ?int  $user_id
-	 *
-	 * @return void
-	 */
-	public function trigger( mixed $object = null, ?int $user_id = null ): void{
-		if ( ! $object instanceof Auction ) {
-			return;
-		}
-
-		parent::trigger( $object, $user_id );
 	}
 }

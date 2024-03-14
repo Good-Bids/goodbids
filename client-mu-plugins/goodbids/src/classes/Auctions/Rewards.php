@@ -429,9 +429,11 @@ class Rewards {
 	 * @return void
 	 */
 	private function set_price_on_auction_end(): void {
+		Log::debug( 'Adding Reward Product price action.' );
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ): void {
+				Log::debug( 'Setting Reward Product price.' );
 				$reward_id = $this->get_product_id( $auction_id );
 
 				if ( ! $reward_id ) {
@@ -452,6 +454,7 @@ class Rewards {
 				$reward->set_regular_price( $winning_bid->get_subtotal() );
 				$reward->set_price( $winning_bid->get_subtotal() );
 				$reward->save();
+				Log::debug( 'Reward Product price set.' );
 			}
 		);
 	}
