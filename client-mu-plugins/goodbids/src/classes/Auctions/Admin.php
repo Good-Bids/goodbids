@@ -299,7 +299,7 @@ class Admin {
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
 
-			if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
+			if ( $screen && goodbids()->auctions->get_post_type() !== $screen->id ) {
 				return false;
 			}
 		}
