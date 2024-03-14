@@ -10,7 +10,10 @@ export function validateDecimal(value: string): string | undefined {
 		return;
 	}
 
-	return __('Invalid value. Must match format 0.00', 'goodbids');
+	return __(
+		'Invalid value. Please remove any commas or currency symbols. Must match format 0.00.',
+		'goodbids',
+	);
 }
 
 export function validateInteger(value: string): string | undefined {
