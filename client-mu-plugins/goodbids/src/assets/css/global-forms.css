@@ -43,7 +43,22 @@
 		&.login,
 		&.register,
 		&.lost_reset_password {
-			@apply rounded border-0 bg-contrast text-base-2;
+			@apply !rounded-sm !border-0 bg-contrast text-base-2;
+
+			p.lost_password {
+				@apply text-sm;
+			}
+
+			.form-row {
+				label {
+					@apply text-sm;
+				}
+
+				textarea,
+				input.input-text {
+					@apply rounded border-solid border-base bg-white/10 text-white;
+				}
+			}
 
 			.wp-element-button {
 				@apply btn-fill-secondary;

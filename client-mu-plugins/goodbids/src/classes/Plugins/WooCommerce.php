@@ -560,13 +560,13 @@ class WooCommerce {
 			function () {
 				if ( ! is_user_logged_in() ) {
 					printf(
-						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full font-extrabold">%s</p>%s</div>',
-						esc_html__( 'Or login with one of these providers', 'goodbids' ),
+						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full text-sm text-center">%s</p>%s</div>',
+						esc_html__( 'Or continue with', 'goodbids' ),
 						do_shortcode( '[mo_oauth_login]' ),
 					);
 					printf(
-						'<p>%s %s %s %s.<p>',
-						esc_html__( 'By clicking to continue with any of these providers, you agree to GOODBIDS\'', 'goodbids' ),
+						'<p class="w-full text-sm text-center">%s %s %s %s.<p>',
+						esc_html__( 'By logging in, you agree to GOODBIDS\'', 'goodbids' ),
 						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
 						esc_html__( 'and', 'goodbids' ),
 						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
@@ -589,7 +589,7 @@ class WooCommerce {
 			function () {
 				if ( ! is_user_logged_in() ) {
 					printf(
-						'<p>%s %s %s %s.<p>',
+						'<p class="w-full text-sm text-center">%s %s %s %s.<p>',
 						esc_html__( 'By registering an account, you agree to GOODBIDS\'', 'goodbids' ),
 						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
 						esc_html__( 'and', 'goodbids' ),

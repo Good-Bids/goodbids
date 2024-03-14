@@ -1,4 +1,9 @@
 @layer components {
+	.woocommerce-checkout {
+		h1.wp-block-post-title {
+			@apply mb-12;
+		}
+	}
 	.wc-block-components-totals-discount__coupon-list-item
 		.wc-block-components-chip__text {
 		@apply overflow-hidden text-ellipsis uppercase;
