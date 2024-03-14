@@ -25,4 +25,11 @@
 	.woocommerce-product-gallery.woocommerce-product-gallery--with-images.woocommerce-product-gallery--columns-4.images {
 		@apply !opacity-100;
 	}
+
+	.woocommerce
+		div.product
+		div.images
+		.woocommerce-product-gallery__image--placeholder {
+		@apply !border-transparent;
+	}
 }
