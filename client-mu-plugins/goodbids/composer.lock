@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0632a885b85981fd1d022bbda8057010",
+    "content-hash": "6013997330168edde73d24036a8d9cd2",
     "packages": [
         {
             "name": "composer/installers",
@@ -1264,6 +1264,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/svg-support/"
+        },
+        {
+            "name": "wpackagist-plugin/tidio-live-chat",
+            "version": "6.0.16",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/tidio-live-chat/",
+                "reference": "tags/6.0.16"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.16.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/tidio-live-chat/"
         },
         {
             "name": "wpackagist-plugin/user-role-editor",
