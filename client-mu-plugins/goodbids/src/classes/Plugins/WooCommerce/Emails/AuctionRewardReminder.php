@@ -36,7 +36,7 @@ class AuctionRewardReminder extends Email {
 		$this->template_plain = 'emails/plain/auction-reward-reminder.php';
 		$this->customer_email = true;
 
-		$this->check_for_unclaimed_rewards();
+		$this->cron_check_for_unclaimed_rewards();
 	}
 
 	/**
@@ -46,7 +46,7 @@ class AuctionRewardReminder extends Email {
 	 *
 	 * @return void
 	 */
-	private function check_for_unclaimed_rewards(): void {
+	private function cron_check_for_unclaimed_rewards(): void {
 		add_action(
 			Rewards::CRON_UNCLAIMED_REMINDER_HOOK,
 			function (): void {

@@ -53,18 +53,6 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const CRON_AUCTION_START_HOOK = 'goodbids_auction_start_event';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const CRON_AUCTION_CLOSE_HOOK = 'goodbids_auction_close_event';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
 	const AUCTION_STARTED_META_KEY = '_auction_started';
 
 	/**
@@ -81,12 +69,6 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var array
-	 */
-	public array $cron_intervals = [];
-
-	/**
-	 * @since 1.0.0
 	 * @var Wizard
 	 */
 	public Wizard $wizard;
@@ -97,7 +79,7 @@ class Auctions {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Disable Auctions on Main Site.
+		// Disable Auctions on Main Site, but not locally for debugging.
 		if ( is_main_site() && ! Core::is_local_env() ) {
 			return;
 		}
@@ -105,25 +87,11 @@ class Auctions {
 		// Init Auction Wizard.
 		$this->wizard = new Wizard();
 
+		// Init Cron functions.
+		new Cron();
+
 		// Init Fundraising Fields class.
 		new FundraisingFields();
-
-		// Set up Cron Schedules.
-		$this->cron_intervals['1min']  = [
-			'interval' => MINUTE_IN_SECONDS,
-			'name'     => '1min',
-			'display'  => __( 'Once Every Minute', 'goodbids' ),
-		];
-		$this->cron_intervals['30sec'] = [
-			'interval' => 30,
-			'name'     => '30sec',
-			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
-		];
-		$this->cron_intervals['daily'] = [
-			'interval' => DAY_IN_SECONDS,
-			'name'     => 'Daily',
-			'display'  => __( 'Every Day', 'goodbids' ),
-		];
 
 		// Register Post Type.
 		$this->register_post_type();
@@ -133,9 +101,6 @@ class Auctions {
 
 		// Reduce the REST API cache time for Auction Requests.
 		$this->adjust_rest_timeout();
-
-		// Attempt to trigger events for opened/closed auctions.
-		$this->maybe_trigger_events();
 
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
@@ -148,24 +113,6 @@ class Auctions {
 
 		// Override End Date/Time.
 		$this->override_end_date_time();
-
-		// Set up 1min Cron Job Schedule.
-		$this->add_one_min_cron_schedule();
-
-		// Schedule a cron job to trigger the start of auctions.
-		$this->schedule_auction_start_cron();
-
-		// Schedule a cron job to trigger the close of auctions.
-		$this->schedule_auction_close_cron();
-
-		// Schedule a cron job to remind users to claim their rewards.
-		$this->schedule_reward_claim_reminder();
-
-		// Use cron action to start auctions.
-		$this->check_for_starting_auctions();
-
-		// Use cron action to close auctions.
-		$this->check_for_closing_auctions();
 
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
@@ -679,258 +626,6 @@ class Auctions {
 		foreach ( $transients as $transient ) {
 			delete_transient( $transient );
 		}
-	}
-
-	/**
-	 * Add a 1min Cron Job Schedule.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_one_min_cron_schedule(): void {
-		add_filter(
-			'cron_schedules', // phpcs:ignore
-			function ( array $schedules ): array {
-				foreach ( $this->cron_intervals as $id => $props ) {
-					// If one is already set, confirm it matches our schedule.
-					if ( ! empty( $schedules[ $props['name'] ] ) ) {
-						if ( MINUTE_IN_SECONDS === $schedules[ $props['name'] ] ) {
-							continue;
-						}
-
-						$this->cron_intervals[ $id ]['name'] .= '_goodbids';
-					}
-
-					// Adds every minute cron schedule.
-					$schedules[ $this->cron_intervals[ $id ]['name'] ] = [
-						'interval' => $this->cron_intervals[ $id ]['interval'],
-						'display'  => $this->cron_intervals[ $id ]['display'],
-					];
-				}
-
-				return $schedules;
-			}
-		);
-	}
-
-	/**
-	 * Schedule a cron job that runs every minute to trigger auctions to start.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function schedule_auction_start_cron(): void {
-		add_action(
-			'init',
-			function (): void {
-				if ( wp_next_scheduled( self::CRON_AUCTION_START_HOOK ) ) {
-					return;
-				}
-
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['1min']['name'], self::CRON_AUCTION_START_HOOK );
-			}
-		);
-	}
-
-	/**
-	 * Schedule a cron job that runs every half minute to trigger auctions to close.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function schedule_auction_close_cron(): void {
-		add_action(
-			'init',
-			function (): void {
-				if ( wp_next_scheduled( self::CRON_AUCTION_CLOSE_HOOK ) ) {
-					return;
-				}
-
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['30sec']['name'], self::CRON_AUCTION_CLOSE_HOOK );
-			}
-		);
-	}
-
-	/**
-	 * Schedule a cron job that runs every day to trigger unclaimed rewards reminder
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function schedule_reward_claim_reminder(): void {
-		add_action(
-			'init',
-			function (): void {
-				if ( wp_next_scheduled( Rewards::CRON_UNCLAIMED_REMINDER_HOOK ) ) {
-					return;
-				}
-
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['daily']['name'], Rewards::CRON_UNCLAIMED_REMINDER_HOOK );
-			}
-		);
-	}
-
-	/**
-	 * Check for Auctions that are starting during cron hook.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function check_for_starting_auctions(): void {
-		add_action(
-			self::CRON_AUCTION_START_HOOK,
-			function (): void {
-				$auctions = $this->get_starting_auctions();
-				$starts   = 0;
-
-				if ( ! $auctions->have_posts() ) {
-					return;
-				}
-
-				foreach ( $auctions->posts as $auction_id ) {
-					$auction = goodbids()->auctions->get( $auction_id );
-					// Skip START Action on Auctions that have ended.
-					if ( $auction->has_ended() ) {
-						continue;
-					}
-
-					if ( $auction->trigger_start() ) {
-						$starts++;
-					}
-				}
-
-				$count = count( $auctions->posts );
-
-				if ( $count !== $starts ) {
-					Log::warning(
-						'Not all Auctions were started',
-						[
-							'starts'   => $starts,
-							'expected' => $count,
-							'posts'    => $auctions->posts,
-						]
-					);
-				}
-			}
-		);
-	}
-
-	/**
-	 * Check for Auctions that have closed during cron hook.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function check_for_closing_auctions(): void {
-		add_action(
-			self::CRON_AUCTION_CLOSE_HOOK,
-			function (): void {
-				$auctions = $this->get_closing_auctions();
-
-				if ( ! $auctions->have_posts() ) {
-					return;
-				}
-
-				foreach ( $auctions->posts as $auction_id ) {
-					$auction = goodbids()->auctions->get( $auction_id );
-					$auction->trigger_close();
-				}
-			}
-		);
-	}
-
-	/**
-	 * Get Auctions that are starting.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return WP_Query
-	 */
-	private function get_starting_auctions(): WP_Query {
-		// Use the current time + 1min to get Auctions about to start.
-		$auction_start = current_datetime()->add( new DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
-		$query_args    = [
-			'meta_query' => [
-				[
-					'key'     => 'auction_start',
-					'value'   => $auction_start,
-					'compare' => '<=',
-				],
-				[
-					'key'   => self::AUCTION_STARTED_META_KEY,
-					'value' => 0,
-				],
-			],
-		];
-
-		return $this->get_all( $query_args );
-	}
-
-	/**
-	 * Get Auctions that are closing.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return WP_Query
-	 */
-	private function get_closing_auctions(): WP_Query {
-		$current_time = current_datetime()->format( 'Y-m-d H:i:s' );
-		$query_args   = [
-			'meta_query' => [
-				[
-					'key'     => self::AUCTION_CLOSE_META_KEY,
-					'value'   => $current_time,
-					'compare' => '<=',
-				],
-				[
-					'key'   => self::AUCTION_CLOSED_META_KEY,
-					'value' => 0,
-				],
-			],
-		];
-
-		return $this->get_all( $query_args );
-	}
-
-	/**
-	 * Additional attempt to trigger Auction events.
-	 * Useful when Cron Jobs are slow or not firing.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function maybe_trigger_events(): void {
-		add_action(
-			'template_redirect',
-			function (): void {
-				$auction_id = $this->get_auction_id();
-
-				if ( ! $auction_id ) {
-					return;
-				}
-
-				$auction = goodbids()->auctions->get( $auction_id );
-
-				// TODO: Move to background process.
-
-				if ( $auction->has_started() ) {
-					Log::debug( 'Triggering Start' );
-					$auction->trigger_start();
-				}
-
-				if ( $auction->has_ended() ) {
-					Log::debug( 'Triggering close' );
-					$auction->trigger_close();
-				}
-			}
-		);
 	}
 
 	/**

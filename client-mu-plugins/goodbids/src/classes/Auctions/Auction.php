@@ -15,6 +15,7 @@ use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
 use WC_Order;
 use WC_Product;
+use WP_Post;
 use WP_User;
 
 /**
@@ -98,7 +99,15 @@ class Auction {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id;
+	private ?int $auction_id = null;
+
+	/**
+	 * The Auction ID.
+	 *
+	 * @since 1.0.0
+	 * @var ?WP_Post
+	 */
+	private ?WP_Post $post;
 
 	/**
 	 * Use metadata or get_field()
@@ -120,7 +129,12 @@ class Auction {
 			$auction_id = goodbids()->auctions->get_auction_id();
 		}
 
+		if ( ! $auction_id ) {
+			return;
+		}
+
 		$this->auction_id = $auction_id;
+		$this->post       = get_post( $this->auction_id );
 	}
 
 	/**
@@ -131,6 +145,17 @@ class Auction {
 	 */
 	public function get_id(): ?int {
 		return $this->auction_id;
+	}
+
+	/**
+	 * Check if Auction is Valid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return is_null( $this->post );
 	}
 
 	/**
@@ -1078,9 +1103,6 @@ class Auction {
 			return false;
 		}
 
-		// Update the Auction meta to indicate it has started.
-		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
-
 		Log::debug( 'Auction has started', [ 'id' => $this->get_id() ] );
 		/**
 		 * Called when an Auction has started.
@@ -1091,6 +1113,9 @@ class Auction {
 		 */
 		do_action( 'goodbids_auction_start', $this->get_id() );
 		Log::debug( 'Auction start triggered', [ 'id' => $this->get_id() ] );
+
+		// Update the Auction meta to indicate it has started.
+		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
 
 		// Reset the Auction transients.
 		goodbids()->sites->clear_all_site_transients();
@@ -1122,9 +1147,6 @@ class Auction {
 			return;
 		}
 
-		// Update the Auction meta to indicate it has closed.
-		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
-
 		Log::debug( 'Auction has ended', [ 'id' => $this->get_id() ] );
 		/**
 		 * Called when an Auction has ended.
@@ -1134,8 +1156,10 @@ class Auction {
 		 * @param int $auction_id The Closing Auction ID.
 		 */
 		do_action( 'goodbids_auction_end', $this->get_id() );
-
 		Log::debug( 'Auction end triggered', [ 'id' => $this->get_id() ] );
+
+		// Update the Auction meta to indicate it has closed.
+		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
 
 		// Reset the Auction transients.
 		goodbids()->sites->clear_all_site_transients();
