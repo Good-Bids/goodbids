@@ -84,7 +84,8 @@ class Checkout {
 				 * @param int $auction_id
 				 */
 				do_action( 'goodbids_order_payment_complete', $order_id, $info['auction_id'] );
-			}
+			},
+			50
 		);
 	}
 
@@ -128,23 +129,32 @@ class Checkout {
 					return;
 				}
 
-				// Maybe perform Free Bids checks.
-				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
+				// Perform Free Bids checks.
+				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
+					// Make sure Free Bids are allowed.
+					if ( ! $auction->are_free_bids_allowed() ) {
+						goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+						return;
+					}
+
+					// Make sure the current user has available Free Bids.
+					if ( ! goodbids()->users->get_available_free_bid_count() ) {
+						goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+						return;
+					}
+				}
+
+				// Perform this check last to ensure the bid hasn't already been placed.
+				if ( ! $auction->bid_allowed( $info ) ) {
+					goodbids()->notices->add_notice( Notices::BID_ALREADY_PLACED );
+					WC()->cart->empty_cart();
 					return;
 				}
 
-				// Make sure Free Bids are allowed.
-				if ( ! $auction->are_free_bids_allowed() ) {
-					goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-					return;
-				}
-
-				// Make sure the current user has available Free Bids.
-				if ( ! goodbids()->users->get_available_free_bid_count() ) {
-					goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
-				}
+				// Lock the Bid.
+				$auction->lock_bid();
 			},
-			10,
+			50,
 			2
 		);
 	}

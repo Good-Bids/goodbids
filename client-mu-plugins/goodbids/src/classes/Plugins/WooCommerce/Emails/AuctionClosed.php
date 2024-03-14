@@ -75,9 +75,7 @@ class AuctionClosed extends Email {
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_watchers( $auction );
 				$this->send_to_bidders( $auction );
-			},
-			10,
-			2
+			}
 		);
 	}
 

@@ -44,6 +44,7 @@ class Orders {
 	public function get_auction_info( int $order_id ): ?array {
 		$order         = wc_get_order( $order_id );
 		$auction_id    = $this->get_auction_id( $order_id );
+		$variation_id  = $this->get_bid_product_variation_id( $order_id );
 		$order_type    = $this->get_type( $order_id );
 		$uses_free_bid = $this->is_free_bid_order( $order_id );
 
@@ -51,6 +52,7 @@ class Orders {
 		if ( $auction_id && $order_type ) {
 			return [
 				'auction_id'    => $auction_id,
+				'variation_id'  => $variation_id,
 				'order_type'    => $order_type,
 				'uses_free_bid' => $uses_free_bid,
 			];
@@ -67,6 +69,7 @@ class Orders {
 			}
 
 			if ( $auction_id && $order_type ) {
+				$variation_id = $item->get_variation_id();
 				break;
 			}
 		}
@@ -78,6 +81,7 @@ class Orders {
 		return [
 			'auction_id'    => $auction_id,
 			'order_type'    => $order_type,
+			'variation_id'  => $variation_id,
 			'uses_free_bid' => $uses_free_bid,
 		];
 	}
@@ -116,6 +120,29 @@ class Orders {
 	public function get_type( int $order_id ): ?string {
 		$order = wc_get_order( $order_id );
 		return $order->get_meta( WooCommerce::TYPE_META_KEY ) ?: null;
+	}
+
+	/**
+	 * Get the Bid Product Variation ID from an Order.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id
+	 *
+	 * @return ?int
+	 */
+	public function get_bid_product_variation_id( int $order_id ): ?int {
+		$order = wc_get_order( $order_id );
+
+		foreach ( $order->get_items() as $item ) {
+			$product_type = goodbids()->products->get_type( $item->get_product_id() );
+
+			if ( Bids::ITEM_TYPE === $product_type ) {
+				return $item->get_variation_id();
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -245,15 +272,29 @@ class Orders {
 				$admin_url = str_replace( '&amp;', '&', $admin_url );
 				?>
 				<script>
+					let goodbidsCartBidAbort = false;
 					const goodbidsCartBidHandlerInterval = 2000;
 					const goodbidsHandleCartBidPlaced = () => {
 						const xhr = new XMLHttpRequest();
 						xhr.open('POST', '<?php echo $admin_url; // phpcs:ignore ?>', true);
 						xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-						xhr.onreadystatechange = function() {
+						if ( goodbidsCartBidAbort ) {
+							return;
+						}
+
+						xhr.onreadystatechange = () => {
+							if ( goodbidsCartBidAbort ) {
+								xhr.abort();
+								return;
+							}
+
 							if (xhr.readyState === 4 && xhr.status === 200) {
 								const response = JSON.parse(xhr.responseText);
+
+								if ( goodbidsCartBidAbort ) {
+									return;
+								}
 
 								if (!response || typeof response !== 'object' || !response.data) {
 									return;
@@ -270,6 +311,10 @@ class Orders {
 									return;
 								}
 
+								if ( goodbidsCartBidAbort ) {
+									return;
+								}
+
 								// Redirect to the Auction for the error.
 								window.location.replace(response.data.auctionUrl);
 							}
@@ -278,7 +323,15 @@ class Orders {
 						xhr.send('action=<?php echo esc_js( $ajax_action ); ?>');
 					};
 
+					const goodbidsAbortHandlerOnBid = () => {
+						const checkoutButton = document.querySelector('.wc-block-components-checkout-place-order-button');
+						checkoutButton.addEventListener('click', () => {
+							goodbidsCartBidAbort = true;
+						}
+					};
+
 					document.addEventListener('DOMContentLoaded', function() {
+						goodbidsAbortHandlerOnBid();
 						goodbidsHandleCartBidPlaced();
 					});
 				</script>
@@ -319,6 +372,17 @@ class Orders {
 				$auction_id = goodbids()->products->get_auction_id_from_product( $variation_id );
 				$auction    = goodbids()->auctions->get( $auction_id );
 
+//				$info = [
+//					'auction_id'    => $auction_id,
+//					'variation_id'  => $variation_id,
+//					'order_type'    => Bids::ITEM_TYPE,
+//					'uses_free_bid' => WC()->cart->get_total( 'edit' ) <= 0,
+//				];
+//
+//				if ( $auction->bid_allowed( $info ) ) {
+//					wp_send_json_success( $response );
+//				}
+
 				// Send a halt signal to the winning bidder.
 				if ( $auction->is_current_user_winning() ) {
 					$response['halt'] = true;
@@ -326,13 +390,37 @@ class Orders {
 				}
 
 				// Looks like a different user reduced the quantity.
+				WC()->cart->empty_cart(); // Empty their cart.
+
 				$response['outbid']     = true;
 				$response['auctionUrl'] = $auction->get_url();
 
 				$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED_CART );
-				wc_add_notice( $notice['message'], $notice['type'] );
+				wc_add_notice( $notice['message'], $notice['type'], [ '_notice_id' => Notices::BID_ALREADY_PLACED_CART ] );
 
 				wp_send_json_success( $response );
+			}
+		);
+
+		// Clear Notice if the user is the winning bidder.
+		add_action(
+			'template_redirect',
+			function () {
+				if ( ! is_singular( goodbids()->auctions->get_post_type() ) ) {
+					return;
+				}
+
+				$auction = goodbids()->auctions->get( get_queried_object_id() );
+
+				if ( ! $auction->is_current_user_winning() ) {
+					return;
+				}
+
+				if ( ! goodbids()->notices->notice_exists( Notices::BID_ALREADY_PLACED_CART ) ) {
+					return;
+				}
+
+				goodbids()->notices->remove_notice( Notices::BID_ALREADY_PLACED_CART );
 			}
 		);
 	}

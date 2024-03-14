@@ -67,6 +67,12 @@ class Auction {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_LOCKED_META_KEY = '_goodbids_bid_locked';
+
+	/**
+	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -138,6 +144,19 @@ class Auction {
 	}
 
 	/**
+	 * Get the URL to place a bid on the Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool $is_free_bid
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url( bool $is_free_bid = false ): string {
+		return goodbids()->bids->get_place_bid_url( $this->get_id(), $is_free_bid );
+	}
+
+	/**
 	 * Get the Edit URL for the Auction
 	 *
 	 * @since 1.0.0
@@ -202,7 +221,29 @@ class Auction {
 	 * @return bool
 	 */
 	public function has_bid_product(): bool {
-		return boolval( goodbids()->bids->get_product_id( $this->get_id() ) );
+		return boolval( $this->get_product_id() );
+	}
+
+	/**
+	 * Get the Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_product_id(): ?int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get the Bid Product Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_variation_id(): ?int {
+		return goodbids()->bids->get_variation_id( $this->get_id() );
 	}
 
 	/**
@@ -230,6 +271,28 @@ class Auction {
 	 */
 	public function set_bid_variation_id( int $bid_variation_id ): void {
 		update_post_meta( $this->get_id(), Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
+	}
+
+	/**
+	 * Get Reward Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_reward_id(): int {
+		return goodbids()->rewards->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Claim Reward URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_claim_reward_url(): int {
+		return goodbids()->rewards->get_claim_reward_url( $this->get_id() );
 	}
 
 	/**
@@ -1165,5 +1228,60 @@ class Auction {
 	 */
 	public function get_watch_count(): int {
 		return goodbids()->watchers->get_watcher_count( $this->get_id() );
+	}
+
+	/**
+	 * Final checks to ensure bid is allowed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $order_info
+	 *
+	 * @return bool
+	 */
+	public function bid_allowed( array $order_info ): bool {
+		$product = wc_get_product( $this->get_variation_id() );
+
+		if ( $order_info['variation_id'] !== $this->get_variation_id() ) {
+			return false;
+		}
+
+		if ( $product->get_stock_quantity() <= 0 ) {
+			return false;
+		}
+
+		if ( $this->bid_locked() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if the bid is currently locked.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function bid_locked(): bool {
+		$lock = get_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, true );
+
+		if ( ! $lock ) {
+			return false;
+		}
+
+		return get_current_user_id() !== $lock;
+	}
+
+	/**
+	 * Lock the bid to prevent duplicates
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function lock_bid(): void {
+		update_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, get_current_user_id() );
 	}
 }

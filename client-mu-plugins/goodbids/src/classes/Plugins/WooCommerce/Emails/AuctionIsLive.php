@@ -54,9 +54,7 @@ class AuctionIsLive extends Email {
 			function ( int $auction_id ) {
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_watchers( $auction );
-			},
-			10,
-			2
+			}
 		);
 	}
 

@@ -131,13 +131,7 @@ class BidNow extends ACFBlock {
 				return '#';
 			}
 
-			$url = add_query_arg( 'add-to-cart', $this->bid_variation_id, wc_get_checkout_url() );
-
-			if ( $is_free_bid ) {
-				$url = add_query_arg( 'use-free-bid', 1, $url );
-			}
-
-			return $url;
+			return $this->auction->get_place_bid_url( $is_free_bid );
 		}
 
 		// Double check.
