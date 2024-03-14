@@ -56,6 +56,9 @@ class Emails {
 
 		// Disable Processing Order Emails
 		$this->disable_processing_order_emails();
+
+		// Disable Order Completed Emails
+		$this->disable_order_completed_emails();
 	}
 
 	/**
@@ -216,6 +219,32 @@ class Emails {
 			'woocommerce_email_get_option',
 			function ( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
 				if ( 'customer_processing_order' !== $email->id || 'enabled' !== $key ) {
+					return $value;
+				}
+
+				$email->form_fields['enabled']['default'] = 'no';
+
+				return 'no';
+			},
+			10,
+			4
+		);
+	}
+
+	/**
+	 * Disable Order Completed Emails
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_order_completed_emails(): void {
+		add_filter( 'woocommerce_enabled_customer_completed_order', '__return_false' );
+
+		add_filter(
+			'woocommerce_email_get_option',
+			function ( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
+				if ( 'customer_completed_order' !== $email->id || 'enabled' !== $key ) {
 					return $value;
 				}
 
