@@ -24,7 +24,7 @@ if ( ! empty( $field['class'] ) ) {
 ?>
 <?php if ( $wrap ) : ?>
 	<div class="mb-6">
-		<label for="<?php echo esc_attr( $field_id ); ?>" class="block mb-2 text-sm font-medium text-gb-green-100<?php echo $required ? 'form-required' : ''; ?>">
+		<label for="<?php echo esc_attr( $field_id ); ?>" class="block mb-2 text-sm font-medium text-gb-green-100<?php echo $required ? ' form-required' : ''; ?>">
 			<?php
 			echo esc_html( $field['label'] );
 			if ( $required ) :
@@ -52,6 +52,10 @@ if ( ! empty( $field['class'] ) ) {
 			<?php endif; ?>
 
 			<?php foreach ( $field['options'] as $index => $option ) :
+				if ( ! empty( $option['hidden'] ) ) {
+					continue;
+				}
+
 				$opt_label = is_string( $option ) ? $option : $option['label'];
 				$opt_value = ! is_numeric( $index ) ? $index : ( is_string( $option ) ? $option : $option['value'] );
 				$disabled  = ! is_string( $option ) && ! empty( $option['disabled'] );

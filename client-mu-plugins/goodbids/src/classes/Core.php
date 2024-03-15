@@ -21,6 +21,7 @@ use GoodBids\Frontend\Assets;
 use GoodBids\Frontend\Forms;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
+use GoodBids\Frontend\SupportRequest;
 use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
@@ -506,6 +507,7 @@ class Core {
 				$this->acf           = new ACF();
 				$this->admin         = new Admin();
 				$this->forms         = new Forms();
+				$this->support       = new SupportRequest();
 				$this->auctions      = new Auctions();
 				$this->auctioneer    = new Auctioneer();
 				$this->products      = new Products();

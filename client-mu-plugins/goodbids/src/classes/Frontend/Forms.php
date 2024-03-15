@@ -25,6 +25,10 @@ class Forms {
 	 * @return void
 	 */
 	public function render_field( string $key, array $field, string $prefix = '', array $data = [], bool $wrap = true ) : void {
+		if ( ! empty( $field['hidden'] ) ) {
+			return;
+		}
+
 		$required    = ! empty( $field['required'] ) && true === $field['required'];
 		$placeholder = $field['placeholder'] ?? '';
 		$field_id    = $prefix ? $prefix . '-' . $key : $key;

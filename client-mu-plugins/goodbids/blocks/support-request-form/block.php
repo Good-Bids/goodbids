@@ -27,6 +27,54 @@ class SupportRequestForm extends ACFBlock {
 	const NONCE_ACTION = 'support-request-form';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TYPE_BID = 'Placed Bid';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TYPE_REWARD = 'Claimed Reward';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TYPE_AUCTION = 'Auction';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const TYPE_OTHER = 'Other';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FIELD_TYPE = '_type';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FIELD_AUCTION_ID = '_auction_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FIELD_BID_ID = '_bid_id';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FIELD_REWARD_ID = '_reward_id';
+
+	/**
 	 * Form fields
 	 *
 	 * @since 1.0.0
@@ -44,7 +92,15 @@ class SupportRequestForm extends ACFBlock {
 	public function __construct( array $block ) {
 		parent::__construct( $block );
 
+		// Populate the Select Menus.
 		$this->insert_auction_options();
+		$this->insert_bid_options();
+		$this->insert_reward_options();
+
+		// Field Dependencies
+		$this->modify_for_dependencies();
+
+		// Generate the fields.
 		$this->init_fields();
 	}
 
@@ -59,17 +115,18 @@ class SupportRequestForm extends ACFBlock {
 		$this->fields = apply_filters(
 			'goodbids_support_request_form_fields',
 			[
-				'request_type' => [
-					'type'    => 'select',
-					'label'   => __( 'What do you need help with?', 'goodbids' ),
-					'options' => [
-						__( 'A bid I placed', 'goodbids' ),
-						__( 'A reward I claimed', 'goodbids' ),
-						__( 'An auction', 'goodbids' ),
-						__( 'Something else', 'goodbids' ),
+				self::FIELD_TYPE => [
+					'type'     => 'select',
+					'label'    => __( 'What do you need help with?', 'goodbids' ),
+					'required' => true,
+					'options'  => [
+						self::TYPE_BID     => __( 'A bid I placed', 'goodbids' ),
+						self::TYPE_REWARD  => __( 'A reward I claimed', 'goodbids' ),
+						self::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
+						self::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 					],
 				],
-				'auction_id' => [
+				self::FIELD_AUCTION_ID => [
 					'type'    => 'select',
 					'label'   => __( 'Which Auction are you referencing?', 'goodbids' ),
 					'options' => [
@@ -77,8 +134,11 @@ class SupportRequestForm extends ACFBlock {
 						'Auction 2',
 						'Auction 3',
 					],
+					'dependencies' => [
+						self::FIELD_TYPE => [ self::TYPE_BID, self::TYPE_REWARD, self::TYPE_AUCTION ],
+					],
 				],
-				'bid_id' => [
+				self::FIELD_BID_ID => [
 					'type'    => 'select',
 					'label'   => __( 'Which bid are you referencing?', 'goodbids' ),
 					'options' => [
@@ -86,8 +146,12 @@ class SupportRequestForm extends ACFBlock {
 						'Bid 2',
 						'Bid 3',
 					],
+					'dependencies' => [
+						self::FIELD_TYPE       => self::TYPE_BID,
+						self::FIELD_AUCTION_ID => null,
+					],
 				],
-				'reward_id' => [
+				self::FIELD_REWARD_ID => [
 					'type'    => 'select',
 					'label'   => __( 'Which reward are you referencing?', 'goodbids' ),
 					'options' => [
@@ -95,19 +159,42 @@ class SupportRequestForm extends ACFBlock {
 						'Reward 2',
 						'Reward 3',
 					],
+					'dependencies' => [
+						self::FIELD_TYPE       => self::TYPE_REWARD,
+						self::FIELD_AUCTION_ID => null,
+					],
 				],
 				'request_nature' => [
 					'type'    => 'select',
 					'label'   => __( 'What is the nature of your request?', 'goodbids' ),
 					'options' => [
-						__( 'Report an issue', 'goodbids' ),
-						__( 'Request a refund', 'goodbids' ),
-						__( 'Ask a question', 'goodbids' ),
+						[
+							'label' => __( 'Report an issue', 'goodbids' ),
+							'value' => __( 'Issue', 'goodbids' ),
+						],
+						[
+							'label' => __( 'Request a refund', 'goodbids' ),
+							'value' => __( 'Refund', 'goodbids' ),
+							'dependencies' => [
+								self::FIELD_TYPE => self::TYPE_BID,
+							],
+						],
+						[
+							'label' => __( 'Ask a question', 'goodbids' ),
+							'value' => __( 'Question', 'goodbids' ),
+						],
+					],
+					'dependencies' => [
+						self::FIELD_TYPE => null,
 					],
 				],
 				'request_description' => [
-					'type'  => 'textarea',
-					'label' => __( 'Please describe your request', 'goodbids' ),
+					'type'        => 'textarea',
+					'label'       => __( 'Please describe your request', 'goodbids' ),
+					'placeholder' => __( 'Tell us what\'s going on', 'goodbids' ),
+					'dependencies' => [
+						self::FIELD_TYPE => null,
+					],
 				],
 			]
 		);
@@ -186,9 +273,9 @@ class SupportRequestForm extends ACFBlock {
 	private function get_url_vars(): array {
 		$form_data = [];
 		$query_vars = [
-			'auction' => 'auction_id',
-			'bid'     => 'bid_id',
-			'reward'  => 'reward_id',
+			'auction' => self::FIELD_AUCTION_ID,
+			'bid'     => self::FIELD_BID_ID,
+			'reward'  => self::FIELD_REWARD_ID,
 		];
 
 		foreach ( $query_vars as $query_var => $field_key ) {
@@ -230,11 +317,202 @@ class SupportRequestForm extends ACFBlock {
 					);
 				}
 
-				$fields['auction_id']['options'] = $options;
+				$options = collect( $options )
+					->sortBy( 'label' )
+					->all();
+
+				$fields[ self::FIELD_AUCTION_ID ]['options'] = $options;
 
 				return $fields;
 			}
 		);
+	}
+
+	/**
+	 * Populate the Bids Select with the user's bids
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function insert_bid_options(): void {
+		add_filter(
+			'goodbids_support_request_form_fields',
+			function ( array $fields ): array {
+				if ( ! is_user_logged_in() || is_admin() ) {
+					return $fields;
+				}
+
+				$form_data = $this->get_form_data();
+				$options   = [];
+
+				if ( empty( $form_data[ self::FIELD_AUCTION_ID ] ) ) {
+					$fields[ self::FIELD_BID_ID ]['options'] = [
+						[
+							'value' => '',
+							'label' => __( 'Select an Auction first', 'goodbids' ),
+						],
+					];
+					return $fields;
+				}
+
+				$bids = goodbids()->sites->get_user_bid_orders( get_current_user_id() );
+				$bids = collect( $bids )
+					->filter(
+						function ( $bid_data ) use ( $form_data ) {
+							return goodbids()->sites->swap(
+								function () use ( $bid_data, $form_data ) {
+									return goodbids()->woocommerce->orders->get_auction_id( $bid_data['order_id'] ) === $form_data[ self::FIELD_AUCTION_ID ];
+								},
+								$bid_data['site_id']
+							);
+						}
+					)
+					->all();
+
+				foreach ( $bids as $bid_data ) {
+					goodbids()->sites->swap(
+						function () use ( $bid_data, &$options ) {
+							$options[] = [
+								'value' => $bid_data['site_id'] . '|' . $bid_data['order_id'],
+								'label' => get_the_title( $bid_data['order_id'] ),
+							];
+						},
+						$bid_data['site_id']
+					);
+				}
+
+				$fields[ self::FIELD_BID_ID ]['options'] = $options;
+
+				return $fields;
+			}
+		);
+	}
+
+	/**
+	 * Populate the Rewards Select with the user's bids
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function insert_reward_options(): void {
+		add_filter(
+			'goodbids_support_request_form_fields',
+			function ( array $fields ): array {
+				if ( ! is_user_logged_in() || is_admin() ) {
+					return $fields;
+				}
+
+				$form_data = $this->get_form_data();
+				$options   = [];
+
+				if ( empty( $form_data[ self::FIELD_AUCTION_ID ] ) ) {
+					$fields[ self::FIELD_REWARD_ID ]['options'] = [
+						[
+							'value' => '',
+							'label' => __( 'Select an Auction first', 'goodbids' ),
+						],
+					];
+					return $fields;
+				}
+
+				$rewards = goodbids()->sites->get_user_reward_orders( get_current_user_id() );
+				$rewards = collect( $rewards )
+					->filter(
+						function ( $reward_data ) use ( $form_data ) {
+							return goodbids()->sites->swap(
+								function () use ( $reward_data, $form_data ) {
+									return goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $form_data[ self::FIELD_AUCTION_ID ];
+								},
+								$reward_data['site_id']
+							);
+						}
+					)
+					->all();
+
+				foreach ( $rewards as $reward_data ) {
+					goodbids()->sites->swap(
+						function () use ( $reward_data, &$options ) {
+							$options[] = [
+								'value' => $reward_data['site_id'] . '|' . $reward_data['order_id'],
+								'label' => get_the_title( $reward_data['order_id'] ),
+							];
+						},
+						$reward_data['site_id']
+					);
+				}
+
+				$fields[ self::FIELD_REWARD_ID ]['options'] = $options;
+
+				return $fields;
+			}
+		);
+	}
+
+	/**
+	 * Update fields with dependencies
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function modify_for_dependencies(): void {
+		add_filter(
+			'goodbids_support_request_form_fields',
+			function ( array $fields ): array {
+				return $this->handle_dependencies( $fields );
+			}
+		);
+	}
+
+	/**
+	 * Hide fields based on dependencies
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $fields
+	 *
+	 * @return array
+	 */
+	private function handle_dependencies( array $fields ): array {
+		$form_data = $this->get_form_data();
+
+		foreach ( $fields as $key => &$field ) {
+			if ( ! empty( $field['options'] ) ) {
+				$field['options'] = $this->handle_dependencies( $field['options'] );
+			}
+
+			if ( empty( $field['dependencies'] ) ) {
+				continue;
+			}
+
+			$dependencies = $field['dependencies'];
+
+			foreach ( $dependencies as $dependency_key => $dependency_value ) {
+				if ( empty( $form_data[ $dependency_key ] ) ) {
+					$fields[ $key ]['hidden'] = true;
+					break;
+				}
+
+				if ( is_null( $dependency_value ) ) {
+					continue;
+				}
+
+				if ( is_string( $dependency_value ) && $form_data[ $dependency_key ] === $dependency_value ) {
+					continue;
+				}
+
+				if ( is_array( $dependency_value ) && in_array( $form_data[ $dependency_key ], $dependency_value, true ) ) {
+					continue;
+				}
+
+				$fields[ $key ]['hidden'] = true;
+				break;
+			}
+		}
+
+		return $fields;
 	}
 
 	/**
