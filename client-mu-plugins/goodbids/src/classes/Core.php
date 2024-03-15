@@ -18,6 +18,7 @@ use GoodBids\Auctions\Rewards;
 use GoodBids\Auctions\Watchers;
 use GoodBids\Frontend\Blocks;
 use GoodBids\Frontend\Assets;
+use GoodBids\Frontend\Forms;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
 use GoodBids\Network\Dashboard;
@@ -106,6 +107,12 @@ class Core {
 	 * @var Admin
 	 */
 	public Admin $admin;
+
+	/**
+	 * @since 1.0.0
+	 * @var Forms
+	 */
+	public Forms $forms;
 
 	/**
 	 * @since 1.0.0
@@ -498,6 +505,7 @@ class Core {
 				$this->utilities     = new Utilities();
 				$this->acf           = new ACF();
 				$this->admin         = new Admin();
+				$this->forms         = new Forms();
 				$this->auctions      = new Auctions();
 				$this->auctioneer    = new Auctioneer();
 				$this->products      = new Products();
