@@ -247,7 +247,6 @@ class AllAuctions extends ACFBlock {
 			'starting' => 'calculate_starting_bid',
 			'ending'   => 'get_end_date_time',
 			'low_bid'  => 'bid_variation_price',
-			'popular'  => 'get_watch_count',
 			default    => false,
 		};
 
