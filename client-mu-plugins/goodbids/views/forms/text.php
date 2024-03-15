@@ -16,7 +16,7 @@
  * @package GoodBids
  */
 
-$class = 'block w-full p-4 text-gb-green-100 border border-gb-green-100 rounded bg-transparent text-base focus:ring-gb-green-500 focus:border-gb-green-500';
+$class = 'block w-full p-4 bg-transparent border rounded text-base-2 border-base focus:ring-contrast-3 focus:border-contrast-3';
 
 if ( ! empty( $field['class'] ) ) {
 	$class .= ' ' . $field['class'];
@@ -24,7 +24,7 @@ if ( ! empty( $field['class'] ) ) {
 ?>
 <?php if ( $wrap ) : ?>
 	<div class="mb-6">
-		<label for="<?php echo esc_attr( $field_id ); ?>" class="block mb-2 text-sm font-medium text-gb-green-100<?php echo $required ? ' form-required' : ''; ?>">
+		<label for="<?php echo esc_attr( $field_id ); ?>" class="block mb-2 text-sm font-medium text-base <?php echo $required ? ' form-required' : ''; ?>">
 			<?php
 			echo esc_html( $field['label'] );
 			if ( $required ) :
@@ -53,7 +53,7 @@ if ( ! empty( $field['class'] ) ) {
 			echo $required ? ' required' : '';
 
 			if ( ! empty( $field['attr'] ) ) :
-				foreach( $field['attr'] as $attr => $val ) :
+				foreach ( $field['attr'] as $attr => $val ) :
 					echo ' ' . esc_attr( $attr ) . '="' . esc_attr( $val ) . '"';
 				endforeach;
 			endif;

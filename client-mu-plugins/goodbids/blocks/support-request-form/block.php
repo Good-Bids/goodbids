@@ -156,7 +156,7 @@ class SupportRequestForm extends ACFBlock {
 		$form_data   = $this->get_form_data();
 
 		// Dynamic Dependencies for the 2 Request Fields
-		$extra_deps  = [
+		$extra_deps = [
 			self::FIELD_TYPE => null,
 		];
 
@@ -175,7 +175,7 @@ class SupportRequestForm extends ACFBlock {
 		$this->fields = apply_filters(
 			'goodbids_support_request_form_fields',
 			[
-				self::FIELD_TYPE => [
+				self::FIELD_TYPE       => [
 					'type'     => 'select',
 					'label'    => __( 'What do you need help with?', 'goodbids' ),
 					'required' => true,
@@ -185,7 +185,7 @@ class SupportRequestForm extends ACFBlock {
 						self::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
 						self::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 					],
-					'attr'    => [
+					'attr'     => [
 						'hx-trigger'   => 'change',
 						'hx-get'       => $current_url,
 						'hx-target'    => '#gb-support-form-target',
@@ -194,14 +194,14 @@ class SupportRequestForm extends ACFBlock {
 					],
 				],
 				self::FIELD_AUCTION_ID => [
-					'type'    => 'select',
-					'label'   => __( 'Which Auction are you referencing?', 'goodbids' ),
-					'options' => [
+					'type'         => 'select',
+					'label'        => __( 'Which Auction are you referencing?', 'goodbids' ),
+					'options'      => [
 						'Auction 1',
 						'Auction 2',
 						'Auction 3',
 					],
-					'attr'    => [
+					'attr'         => [
 						'hx-trigger'   => 'change',
 						'hx-get'       => $current_url,
 						'hx-target'    => '#gb-support-form-target',
@@ -213,10 +213,10 @@ class SupportRequestForm extends ACFBlock {
 						self::FIELD_TYPE => [ self::TYPE_BID, self::TYPE_REWARD, self::TYPE_AUCTION ],
 					],
 				],
-				self::FIELD_BID_ID => [
-					'type'    => 'select',
-					'label'   => __( 'Which bid are you referencing?', 'goodbids' ),
-					'options' => [
+				self::FIELD_BID_ID     => [
+					'type'         => 'select',
+					'label'        => __( 'Which bid are you referencing?', 'goodbids' ),
+					'options'      => [
 						'Bid 1',
 						'Bid 2',
 						'Bid 3',
@@ -226,7 +226,7 @@ class SupportRequestForm extends ACFBlock {
 						self::FIELD_TYPE       => self::TYPE_BID,
 						self::FIELD_AUCTION_ID => null,
 					],
-					'attr'    => [
+					'attr'         => [
 						'hx-trigger'   => 'change',
 						'hx-get'       => $current_url,
 						'hx-target'    => '#gb-support-form-target',
@@ -234,10 +234,10 @@ class SupportRequestForm extends ACFBlock {
 						'hx-indicator' => '[data-form-spinner]',
 					],
 				],
-				self::FIELD_REWARD_ID => [
-					'type'    => 'select',
-					'label'   => __( 'Which reward are you referencing?', 'goodbids' ),
-					'options' => [
+				self::FIELD_REWARD_ID  => [
+					'type'         => 'select',
+					'label'        => __( 'Which reward are you referencing?', 'goodbids' ),
+					'options'      => [
 						'Reward 1',
 						'Reward 2',
 						'Reward 3',
@@ -247,7 +247,7 @@ class SupportRequestForm extends ACFBlock {
 						self::FIELD_TYPE       => self::TYPE_REWARD,
 						self::FIELD_AUCTION_ID => null,
 					],
-					'attr'    => [
+					'attr'         => [
 						'hx-trigger'   => 'change',
 						'hx-get'       => $current_url,
 						'hx-target'    => '#gb-support-form-target',
@@ -255,17 +255,17 @@ class SupportRequestForm extends ACFBlock {
 						'hx-indicator' => '[data-form-spinner]',
 					],
 				],
-				'request_nature' => [
-					'type'    => 'select',
-					'label'   => __( 'What is the nature of your request?', 'goodbids' ),
-					'options' => [
+				'request_nature'       => [
+					'type'         => 'select',
+					'label'        => __( 'What is the nature of your request?', 'goodbids' ),
+					'options'      => [
 						[
 							'label' => __( 'Report an issue', 'goodbids' ),
 							'value' => __( 'Issue', 'goodbids' ),
 						],
 						[
-							'label' => __( 'Request a refund', 'goodbids' ),
-							'value' => __( 'Refund', 'goodbids' ),
+							'label'        => __( 'Request a refund', 'goodbids' ),
+							'value'        => __( 'Refund', 'goodbids' ),
 							'dependencies' => [
 								self::FIELD_TYPE => self::TYPE_BID,
 							],
@@ -278,7 +278,7 @@ class SupportRequestForm extends ACFBlock {
 					'required'     => 'dependencies',
 					'dependencies' => $extra_deps,
 				],
-				'request_description' => [
+				'request_description'  => [
 					'type'         => 'textarea',
 					'label'        => __( 'Please describe your request', 'goodbids' ),
 					'placeholder'  => __( 'Tell us what\'s going on', 'goodbids' ),
@@ -309,7 +309,7 @@ class SupportRequestForm extends ACFBlock {
 	 */
 	private function render_success(): void {
 		?>
-		<div class="bg-gb-green-700 rounded p-4">
+		<div class="p-4 rounded bg-gb-green-700">
 			<p class="text-gb-green-100">
 				<?php esc_html_e( 'Your request has been submitted. We will respond as soon as we can.', 'goodbids' ); ?>
 			</p>
@@ -377,13 +377,13 @@ class SupportRequestForm extends ACFBlock {
 		}
 
 		$form_data    = $this->get_form_data();
-		$button_class = 'text-gb-green-700 bg-gb-green-100 border-0 hover:bg-gb-green-500 hover:text-white focus:outline-none font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 cursor-pointer';
+		$button_class = 'btn-fill-secondary text-md';
 
 		if ( is_admin() ) {
 			$button_class .= ' pointer-events-none';
 		}
 		?>
-		<form data-form-spinner method="post" action="" class="bg-gb-green-700 rounded p-4 relative group opacity-100 group-[.htmx-request]:opacity-50 transition-opacity">
+		<form data-form-spinner method="post" action="" class="px-8 pt-4 pb-12 rounded-sm bg-contrast relative group opacity-100 group-[.htmx-request]:opacity-50 transition-opacity">
 			<div class="absolute flex justify-center w-full -translate-y-full">
 				<svg xmlns="http://www.w3.org/2000/svg" class="relative inset-0 htmx-indicator w-14 h-14 animate-spin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
 			</div>
@@ -403,11 +403,12 @@ class SupportRequestForm extends ACFBlock {
 					goodbids()->forms->render_field( $key, $field, '', $form_data );
 				endforeach;
 				?>
-				<input
+				<button
 					type="submit"
-					value="<?php esc_attr_e( 'Submit Request', 'goodbids' ); ?>"
 					class="<?php echo esc_attr( $button_class ); ?>"
 				>
+					<?php esc_attr_e( 'Submit Request', 'goodbids' ); ?>
+				</button>
 			</div>
 		</form>
 		<?php
@@ -425,7 +426,7 @@ class SupportRequestForm extends ACFBlock {
 			return;
 		}
 		?>
-		<div class="bg-gb-red-700 rounded p-4 mb-4">
+		<div class="p-4 mb-4 rounded bg-gb-red-700">
 			<p class="text-gb-red-100">
 				<?php echo esc_html( $this->error ); ?>
 			</p>
@@ -466,7 +467,7 @@ class SupportRequestForm extends ACFBlock {
 	 * @return array
 	 */
 	private function get_url_vars(): array {
-		$form_data = [];
+		$form_data  = [];
 		$query_vars = [
 			'type'    => self::FIELD_TYPE,
 			'auction' => self::FIELD_AUCTION_ID,
@@ -568,8 +569,8 @@ class SupportRequestForm extends ACFBlock {
 				}
 
 				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ self::FIELD_AUCTION_ID ] ) );
-				$bids = goodbids()->sites->get_user_bid_orders( get_current_user_id() );
-				$bids = collect( $bids )
+				$bids                         = goodbids()->sites->get_user_bid_orders( get_current_user_id() );
+				$bids                         = collect( $bids )
 					->filter(
 						fn ( $bid_data ) => $bid_data['site_id'] === $site_id
 					)
@@ -649,8 +650,8 @@ class SupportRequestForm extends ACFBlock {
 				}
 
 				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ self::FIELD_AUCTION_ID ] ) );
-				$rewards = goodbids()->sites->get_user_reward_orders( get_current_user_id() );
-				$rewards = collect( $rewards )
+				$rewards                      = goodbids()->sites->get_user_reward_orders( get_current_user_id() );
+				$rewards                      = collect( $rewards )
 					->filter(
 						fn ( $reward_data ) => $reward_data['site_id'] === $site_id
 					)
@@ -781,16 +782,16 @@ class SupportRequestForm extends ACFBlock {
 	public function inner_blocks(): void {
 		$template = [
 			[
-				'core/post-title',
+				'core/heading',
 				[
-					'textColor' => 'base',
+					'textColor' => 'base-2',
 				],
 			],
 			[
 				'core/paragraph',
 				[
 					'content'   => __( 'Use the form below to submit a support request to this Nonprofit. Your submission will be visible to administrators for this Nonprofit site as well as the GOODBIDS support team. We will respond as soon as we can.', 'goodbids' ),
-					'textColor' => 'base',
+					'textColor' => 'base-2',
 				],
 			],
 		];
