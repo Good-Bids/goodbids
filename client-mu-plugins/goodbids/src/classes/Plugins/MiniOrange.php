@@ -84,9 +84,6 @@ class MiniOrange {
 
 				global $Yh;
 
-				$no_of_sites_key = 'noOfSubSites';
-				$no_of_sites     = intval( $Yh->mo_oauth_client_get_option( $no_of_sites_key ) );
-
 				$sites_key = 'mo_oauth_c3Vic2l0ZXNzZWxlY3RlZA';
 				$sites_val = $Yh->mo_oauth_client_get_option( $sites_key );
 				$sites     = json_decode( $Yh->mooauthdecrypt( $sites_val ) );
@@ -103,8 +100,12 @@ class MiniOrange {
 					return;
 				}
 
+				// Make sure they don't exceed their limit.
+				$no_of_sites_key = 'noOfSubSites';
+				$no_of_sites     = intval( $Yh->mo_oauth_client_get_option( $no_of_sites_key ) );
+
 				if ( count( $sites ) + 1 > $no_of_sites ) {
-					Log::warning( 'You have reached the limit of sub-sites allowed for SSO.' );
+					Log::warning( 'You have reached the limit of sub-sites allowed for SSO.', compact( 'sites', 'no_of_sites' ) );
 					return;
 				}
 
