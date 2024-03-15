@@ -67,6 +67,14 @@ class FreeBid {
 	public ?string $earned_date = null;
 
 	/**
+	 * Has the user been notified of this yet?
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	public bool $awarded_notification = true;
+
+	/**
 	 * Type of Free Bid
 	 *
 	 * @since 1.0.0
@@ -397,5 +405,27 @@ class FreeBid {
 		$this->bid_value         = $order->get_subtotal();
 
 		return true;
+	}
+
+	/**
+	 * Used to notify users of awarded free bids later then when they were awarded.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function did_awarded_notification(): bool {
+		return false !== $this->awarded_notification;
+	}
+
+	/**
+	 * Mark the Free Bid as Notified.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function mark_as_notified(): void {
+		$this->awarded_notification = true;
 	}
 }

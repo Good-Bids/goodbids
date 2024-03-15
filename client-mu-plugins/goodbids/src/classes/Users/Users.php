@@ -107,10 +107,11 @@ class Users {
 	 * @param ?int   $auction_id
 	 * @param string $type
 	 * @param string $details
+	 * @param bool   $notify_later
 	 *
 	 * @return bool
 	 */
-	public function award_free_bid( int $user_id, ?int $auction_id = null, string $type = FreeBid::TYPE_PAID_BID, string $details = '' ): bool {
+	public function award_free_bid( int $user_id, ?int $auction_id = null, string $type = FreeBid::TYPE_PAID_BID, string $details = '', bool $notify_later = false ): bool {
 		$free_bid = new FreeBid();
 
 		if ( $auction_id ) {
@@ -119,6 +120,10 @@ class Users {
 
 		$free_bid->set_type( $type );
 		$free_bid->set_details( $details );
+
+		if ( $notify_later ) {
+			$free_bid->awarded_notification = false;
+		}
 
 		$free_bids   = $this->get_free_bids( $user_id );
 		$free_bids[] = $free_bid;
@@ -132,7 +137,6 @@ class Users {
 		 * @param int     $user_id
 		 */
 		do_action( 'goodbids_award_free_bid', $free_bid, $user_id );
-		Log::debug( 'Calling free bid awarded action' );
 
 		return $this->save_free_bids( $user_id, $free_bids );
 	}
@@ -147,16 +151,14 @@ class Users {
 	 *
 	 * @return bool
 	 */
-	private function save_free_bids( int $user_id, array $free_bids ): bool {
+	public function save_free_bids( int $user_id, array $free_bids ): bool {
 		$original = get_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, true );
 
 		if ( $original === $free_bids ) {
-			Log::debug( 'Free bids unchanged' );
 			// Data is unchanged.
 			return false;
 		}
 
-		Log::debug( 'Updating free bids' );
 		return boolval( update_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, $free_bids ) );
 	}
 
