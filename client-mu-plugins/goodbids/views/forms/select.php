@@ -44,8 +44,17 @@ if ( ! empty( $field['class'] ) ) {
 			name="<?php echo esc_attr( $name ); ?>"
 			id="<?php echo esc_attr( $field_id ); ?>"
 			class="<?php echo esc_attr( $class ); ?>"
-			<?php disabled( ! empty( $field['disabled'] ) ) ?>
-			<?php echo $required ? 'required' : ''; ?>
+			<?php
+			disabled( ! empty( $field['disabled'] ) );
+
+			echo $required ? ' required' : '';
+
+			if ( ! empty( $field['attr'] ) ) :
+				foreach( $field['attr'] as $attr => $val ) :
+					echo ' ' . esc_attr( $attr ) . '="' . esc_attr( $val ) . '"';
+				endforeach;
+			endif;
+			?>
 		>
 			<?php if ( ! $required || ! $value ) : ?>
 				<option value="" <?php selected( $value, '' ); ?>><?php esc_html_e( 'Select One', 'goodbids' ); ?></option>

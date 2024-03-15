@@ -10,6 +10,7 @@
 namespace GoodBids\Frontend;
 
 use GoodBids\Core;
+use GoodBids\Utilities\Log;
 use WP_Post;
 
 class SupportRequest {
@@ -337,5 +338,30 @@ class SupportRequest {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Create a new support request
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $post_data
+	 *
+	 * @return int|bool
+	 */
+	public function create_request( array $post_data ): int|bool {
+		$request_id = wp_insert_post( $post_data );
+
+		if ( is_wp_error( $request_id ) ) {
+			Log::error( 'Error creating support request: ' . $request_id->get_error_message(), compact( 'post_data' ) );
+			return false;
+		}
+
+		if ( ! $request_id ) {
+			Log::error( 'Unknown error creating support request.', compact( 'post_data' ) );
+			return false;
+		}
+
+		return $request_id;
 	}
 }

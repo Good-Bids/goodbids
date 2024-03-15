@@ -117,6 +117,12 @@ class Core {
 
 	/**
 	 * @since 1.0.0
+	 * @var SupportRequest
+	 */
+	public SupportRequest $support;
+
+	/**
+	 * @since 1.0.0
 	 * @var Auctioneer
 	 */
 	public Auctioneer $auctioneer;

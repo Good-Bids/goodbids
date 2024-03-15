@@ -9,6 +9,7 @@
 namespace GoodBids\Blocks;
 
 use GoodBids\Plugins\ACF\ACFBlock;
+use GoodBids\Users\Bidder;
 use GoodBids\Utilities\Log;
 
 /**
@@ -83,6 +84,15 @@ class SupportRequestForm extends ACFBlock {
 	private array $fields = [];
 
 	/**
+	 * Error message
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var ?string
+	 */
+	private ?string $error = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.0.0
@@ -102,6 +112,9 @@ class SupportRequestForm extends ACFBlock {
 
 		// Generate the fields.
 		$this->init_fields();
+
+		// Handle the Form Submission.
+		$this->handle_submission();
 	}
 
 	/**
@@ -112,6 +125,25 @@ class SupportRequestForm extends ACFBlock {
 	 * @return void
 	 */
 	private function init_fields(): void {
+		global $wp;
+		$current_url = home_url( $wp->request );
+		$form_data   = $this->get_form_data();
+		$extra_deps  = [
+			self::FIELD_TYPE => null,
+		];
+
+		$type = ! empty( $form_data[ self::FIELD_TYPE ] ) ? $form_data[ self::FIELD_TYPE ] : null;
+
+		if ( in_array( $type, [ self::TYPE_BID, self::TYPE_REWARD ], true ) ) {
+			$extra_deps[ self::FIELD_AUCTION_ID ] = null;
+
+			if ( $type === self::TYPE_BID ) {
+				$extra_deps[ self::FIELD_BID_ID ] = null;
+			} elseif ( $type === self::TYPE_REWARD ) {
+				$extra_deps[ self::FIELD_REWARD_ID ] = null;
+			}
+		}
+
 		$this->fields = apply_filters(
 			'goodbids_support_request_form_fields',
 			[
@@ -125,6 +157,13 @@ class SupportRequestForm extends ACFBlock {
 						self::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
 						self::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 					],
+					'attr'    => [
+						'hx-trigger'   => 'change',
+						'hx-get'       => $current_url,
+						'hx-target'    => '#gb-support-form-target',
+						'hx-select'    => '#gb-support-form-target',
+						'hx-indicator' => '[data-form-spinner]',
+					],
 				],
 				self::FIELD_AUCTION_ID => [
 					'type'    => 'select',
@@ -134,6 +173,14 @@ class SupportRequestForm extends ACFBlock {
 						'Auction 2',
 						'Auction 3',
 					],
+					'attr'    => [
+						'hx-trigger'   => 'change',
+						'hx-get'       => $current_url,
+						'hx-target'    => '#gb-support-form-target',
+						'hx-select'    => '#gb-support-form-target',
+						'hx-indicator' => '[data-form-spinner]',
+					],
+					'required'     => 'dependencies',
 					'dependencies' => [
 						self::FIELD_TYPE => [ self::TYPE_BID, self::TYPE_REWARD, self::TYPE_AUCTION ],
 					],
@@ -146,6 +193,7 @@ class SupportRequestForm extends ACFBlock {
 						'Bid 2',
 						'Bid 3',
 					],
+					'required'     => 'dependencies',
 					'dependencies' => [
 						self::FIELD_TYPE       => self::TYPE_BID,
 						self::FIELD_AUCTION_ID => null,
@@ -159,6 +207,7 @@ class SupportRequestForm extends ACFBlock {
 						'Reward 2',
 						'Reward 3',
 					],
+					'required'     => 'dependencies',
 					'dependencies' => [
 						self::FIELD_TYPE       => self::TYPE_REWARD,
 						self::FIELD_AUCTION_ID => null,
@@ -184,20 +233,90 @@ class SupportRequestForm extends ACFBlock {
 							'value' => __( 'Question', 'goodbids' ),
 						],
 					],
-					'dependencies' => [
-						self::FIELD_TYPE => null,
-					],
+					'dependencies' => $extra_deps,
 				],
 				'request_description' => [
 					'type'        => 'textarea',
 					'label'       => __( 'Please describe your request', 'goodbids' ),
 					'placeholder' => __( 'Tell us what\'s going on', 'goodbids' ),
-					'dependencies' => [
-						self::FIELD_TYPE => null,
-					],
+					'dependencies' => $extra_deps,
 				],
 			]
 		);
+	}
+
+	/**
+	 * Check if submission was processed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function submission_processed(): bool {
+		return ! empty( $_GET['success'] ); // phpcs:ignore
+	}
+
+	/**
+	 * Render the success message
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function render_success(): void {
+		?>
+		<div class="bg-gb-green-700 rounded p-4">
+			<p class="text-gb-green-100">
+				<?php esc_html_e( 'Your request has been submitted. We will respond as soon as we can.', 'goodbids' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Check all required fields.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function passed_validation(): bool {
+		$form_data = $this->get_form_data();
+
+		foreach ( $this->fields as $key => $field ) {
+			if ( empty( $field['required'] ) ) {
+				continue;
+			}
+
+			if ( 'dependencies' === $field['required'] && ! empty( $field['dependencies'] ) ) {
+				$required = array_keys( $field['dependencies'] );
+			} elseif ( is_array( $field['required'] ) ) {
+				$required = $field['required'];
+			} else {
+				$required = [ $key ];
+			}
+
+			foreach ( $required as $item ) {
+				if ( ! empty( $form_data[ $item ] ) ) {
+					continue;
+				}
+
+				// Check for 0 values.
+				if ( in_array( $form_data[ $item ], [ '0', 0 ], true ) ) {
+					continue;
+				}
+
+				$this->error = sprintf(
+					/* translators: %s: Field Label */
+					__( 'The %s field is required.', 'goodbids' ),
+					$field['label']
+				);
+
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -208,6 +327,11 @@ class SupportRequestForm extends ACFBlock {
 	 * @return void
 	 */
 	public function render(): void {
+		if ( $this->submission_processed() ) {
+			$this->render_success();
+			return;
+		}
+
 		$form_data    = $this->get_form_data();
 		$button_class = 'text-gb-green-700 bg-gb-green-100 border-0 hover:bg-gb-green-500 hover:text-white focus:outline-none font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 cursor-pointer';
 
@@ -215,7 +339,10 @@ class SupportRequestForm extends ACFBlock {
 			$button_class .= ' pointer-events-none';
 		}
 		?>
-		<form method="post" action="" class="bg-gb-green-700 rounded p-4">
+		<form data-form-spinner method="post" action="" class="bg-gb-green-700 rounded p-4 relative group opacity-100 group-[.htmx-request]:opacity-50 transition-opacity">
+			<div class="absolute flex justify-center w-full -translate-y-full">
+				<svg xmlns="http://www.w3.org/2000/svg" class="relative inset-0 htmx-indicator w-14 h-14 animate-spin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
+			</div>
 			<?php
 			if ( ! is_admin() ) {
 				wp_nonce_field( self::NONCE_ACTION, self::NONCE_ACTION . '-nonce' );
@@ -223,17 +350,42 @@ class SupportRequestForm extends ACFBlock {
 
 			$this->inner_blocks();
 
-			foreach ( $this->fields as $key => $field ) :
-				goodbids()->forms->render_field( $key, $field, '', $form_data );
-			endforeach;
 			?>
+			<div id="gb-support-form-target">
+				<?php
+				$this->render_error();
 
-			<input
-				type="submit"
-				value="<?php esc_attr_e( 'Submit Request', 'goodbids' ); ?>"
-				class="<?php echo esc_attr( $button_class ); ?>"
-			>
+				foreach ( $this->fields as $key => $field ) :
+					goodbids()->forms->render_field( $key, $field, '', $form_data );
+				endforeach;
+				?>
+				<input
+					type="submit"
+					value="<?php esc_attr_e( 'Submit Request', 'goodbids' ); ?>"
+					class="<?php echo esc_attr( $button_class ); ?>"
+				>
+			</div>
 		</form>
+		<?php
+	}
+
+	/**
+	 * Render the error message if exists.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function render_error(): void {
+		if ( ! $this->error ) {
+			return;
+		}
+		?>
+		<div class="bg-gb-red-700 rounded p-4 mb-4">
+			<p class="text-gb-red-100">
+				<?php echo esc_html( $this->error ); ?>
+			</p>
+		</div>
 		<?php
 	}
 
@@ -252,7 +404,6 @@ class SupportRequestForm extends ACFBlock {
 		}
 
 		if ( ! wp_verify_nonce( self::NONCE_ACTION . '-nonce', self::NONCE_ACTION ) ) {
-			Log::debug( 'Failed to verify nonce.' );
 			return $form_data;
 		}
 
@@ -273,14 +424,19 @@ class SupportRequestForm extends ACFBlock {
 	private function get_url_vars(): array {
 		$form_data = [];
 		$query_vars = [
+			'type'    => self::FIELD_TYPE,
 			'auction' => self::FIELD_AUCTION_ID,
 			'bid'     => self::FIELD_BID_ID,
 			'reward'  => self::FIELD_REWARD_ID,
 		];
 
+		// Check both values for data.
 		foreach ( $query_vars as $query_var => $field_key ) {
 			if ( ! empty( $_GET[ $query_var ] ) ) { // phpcs:ignore
 				$form_data[ $field_key ] = sanitize_text_field( $_GET[ $query_var ] ); // phpcs:ignore
+			}
+			if ( ! empty( $_GET[ $field_key ] ) ) { // phpcs:ignore
+				$form_data[ $field_key ] = sanitize_text_field( $_GET[ $field_key ] ); // phpcs:ignore
 			}
 		}
 
@@ -542,6 +698,65 @@ class SupportRequestForm extends ACFBlock {
 		printf(
 			'<InnerBlocks template="%s" />',
 			esc_attr( wp_json_encode( $template ) )
+		);
+	}
+
+	/**
+	 * Process the Submission
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_submission(): void {
+		add_action(
+			'template_redirect',
+			function () {
+				if ( empty( $_POST[ self::NONCE_ACTION . '-nonce' ] ) ) {
+					return;
+				}
+
+				if ( ! wp_verify_nonce( self::NONCE_ACTION . '-nonce', self::NONCE_ACTION ) ) {
+					Log::debug( 'Failed to verify nonce.' );
+					return;
+				}
+
+				if ( ! $this->passed_validation() ) {
+					return;
+				}
+
+				$form_data = $this->get_form_data();
+
+				$user  = new Bidder();
+				$title = sprintf(
+					'%s %s %s',
+					$form_data[ self::FIELD_TYPE ],
+					__( 'from', 'goodbids' ),
+					$user->get_username()
+				);
+
+				$support_post = [
+					'post_type'   => goodbids()->support->get_post_type(),
+					'author'      => 1,
+					'post_title'  => $title,
+					'post_status' => 'private',
+					'meta_input'  => [
+						self::FIELD_TYPE       => $form_data[ self::FIELD_TYPE ],
+						self::FIELD_AUCTION_ID => $form_data[ self::FIELD_AUCTION_ID ],
+						self::FIELD_BID_ID     => $form_data[ self::FIELD_BID_ID ],
+						self::FIELD_REWARD_ID  => $form_data[ self::FIELD_REWARD_ID ],
+						'request_nature'       => $form_data['_request_nature'],
+						'request_description'  => $form_data['_request_description'],
+					],
+				];
+
+				if ( ! goodbids()->support->create_request( $support_post ) ) {
+					return;
+				}
+
+				wp_safe_redirect( add_query_arg( 'success', 1, ) );
+				exit;
+			}
 		);
 	}
 }

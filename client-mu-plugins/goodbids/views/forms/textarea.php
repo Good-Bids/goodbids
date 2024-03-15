@@ -46,8 +46,17 @@ if ( ! empty( $field['class'] ) ) {
 			class="<?php echo esc_attr( $class ); ?>"
 			id="<?php echo esc_attr( $field_id ); ?>"
 			placeholder="<?php echo esc_attr( $placeholder ); ?>"
-			<?php disabled( ! empty( $field['disabled'] ) ) ?>
-			<?php echo $required ? 'required' : ''; ?>
+			<?php
+			disabled( ! empty( $field['disabled'] ) );
+
+			echo $required ? ' required' : '';
+
+			if ( ! empty( $field['attr'] ) ) :
+				foreach( $field['attr'] as $attr => $val ) :
+					echo ' ' . esc_attr( $attr ) . '="' . esc_attr( $val ) . '"';
+				endforeach;
+			endif;
+			?>
 		><?php echo esc_textarea( $value ); ?></textarea>
 
 		<?php
