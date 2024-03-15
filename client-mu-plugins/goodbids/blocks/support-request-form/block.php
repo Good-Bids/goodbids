@@ -31,13 +31,13 @@ class SupportRequestForm extends ACFBlock {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const TYPE_BID = 'Placed Bid';
+	const TYPE_BID = 'Bid';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const TYPE_REWARD = 'Claimed Reward';
+	const TYPE_REWARD = 'Reward';
 
 	/**
 	 * @since 1.0.0
@@ -118,6 +118,33 @@ class SupportRequestForm extends ACFBlock {
 	}
 
 	/**
+	 * Get the Current URL with Query Parameters added.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_current_url(): string {
+		global $wp;
+		$current_url   = home_url( $wp->request );
+		$form_data     = $this->get_form_data();
+		$append_fields = [
+			self::FIELD_TYPE,
+			self::FIELD_AUCTION_ID,
+			self::FIELD_BID_ID,
+			self::FIELD_REWARD_ID,
+		];
+
+		foreach ( $append_fields as $data_field ) {
+			if ( ! empty( $form_data[ $data_field ] ) ) {
+				$current_url = add_query_arg( $data_field, urlencode( $form_data[ $data_field ] ), $current_url );
+			}
+		}
+
+		return $current_url;
+	}
+
+	/**
 	 * Initialize the form fields
 	 *
 	 * @since 1.0.0
@@ -125,16 +152,13 @@ class SupportRequestForm extends ACFBlock {
 	 * @return void
 	 */
 	private function init_fields(): void {
-		global $wp;
-		$current_url = home_url( $wp->request );
+		$current_url = $this->get_current_url();
 		$form_data   = $this->get_form_data();
+
+		// Dynamic Dependencies for the 2 Request Fields
 		$extra_deps  = [
 			self::FIELD_TYPE => null,
 		];
-
-		if ( ! empty( $form_data[ self::FIELD_TYPE ] ) ) {
-			$current_url = add_query_arg( self::FIELD_TYPE, $form_data[ self::FIELD_TYPE ], $current_url );
-		}
 
 		$type = ! empty( $form_data[ self::FIELD_TYPE ] ) ? $form_data[ self::FIELD_TYPE ] : null;
 
@@ -202,6 +226,13 @@ class SupportRequestForm extends ACFBlock {
 						self::FIELD_TYPE       => self::TYPE_BID,
 						self::FIELD_AUCTION_ID => null,
 					],
+					'attr'    => [
+						'hx-trigger'   => 'change',
+						'hx-get'       => $current_url,
+						'hx-target'    => '#gb-support-form-target',
+						'hx-select'    => '#gb-support-form-target',
+						'hx-indicator' => '[data-form-spinner]',
+					],
 				],
 				self::FIELD_REWARD_ID => [
 					'type'    => 'select',
@@ -215,6 +246,13 @@ class SupportRequestForm extends ACFBlock {
 					'dependencies' => [
 						self::FIELD_TYPE       => self::TYPE_REWARD,
 						self::FIELD_AUCTION_ID => null,
+					],
+					'attr'    => [
+						'hx-trigger'   => 'change',
+						'hx-get'       => $current_url,
+						'hx-target'    => '#gb-support-form-target',
+						'hx-select'    => '#gb-support-form-target',
+						'hx-indicator' => '[data-form-spinner]',
 					],
 				],
 				'request_nature' => [
@@ -237,12 +275,14 @@ class SupportRequestForm extends ACFBlock {
 							'value' => __( 'Question', 'goodbids' ),
 						],
 					],
+					'required'     => 'dependencies',
 					'dependencies' => $extra_deps,
 				],
 				'request_description' => [
-					'type'        => 'textarea',
-					'label'       => __( 'Please describe your request', 'goodbids' ),
-					'placeholder' => __( 'Tell us what\'s going on', 'goodbids' ),
+					'type'         => 'textarea',
+					'label'        => __( 'Please describe your request', 'goodbids' ),
+					'placeholder'  => __( 'Tell us what\'s going on', 'goodbids' ),
+					'required'     => 'dependencies',
 					'dependencies' => $extra_deps,
 				],
 			]
@@ -477,8 +517,19 @@ class SupportRequestForm extends ACFBlock {
 					);
 				}
 
+				if ( empty( $options ) ) {
+					$fields[ self::FIELD_AUCTION_ID ]['options'] = [
+						[
+							'value' => 'unknown',
+							'label' => __( 'No auctions found. Select this to submit your request anyway.', 'goodbids' ),
+						],
+					];
+					return $fields;
+				}
+
 				$options = collect( $options )
 					->sortBy( 'label' )
+					->values()
 					->all();
 
 				$fields[ self::FIELD_AUCTION_ID ]['options'] = $options;
@@ -516,26 +567,46 @@ class SupportRequestForm extends ACFBlock {
 					return $fields;
 				}
 
+				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ self::FIELD_AUCTION_ID ] ) );
 				$bids = goodbids()->sites->get_user_bid_orders( get_current_user_id() );
 				$bids = collect( $bids )
 					->filter(
-						function ( $bid_data ) use ( $form_data ) {
+						fn ( $bid_data ) => $bid_data['site_id'] === $site_id
+					)
+					->filter(
+						function ( $bid_data ) use ( $auction_id ) {
 							return goodbids()->sites->swap(
-								function () use ( $bid_data, $form_data ) {
-									return goodbids()->woocommerce->orders->get_auction_id( $bid_data['order_id'] ) === $form_data[ self::FIELD_AUCTION_ID ];
+								function () use ( $bid_data, $auction_id ) {
+									return goodbids()->woocommerce->orders->get_auction_id( $bid_data['order_id'] ) === $auction_id;
 								},
 								$bid_data['site_id']
 							);
 						}
 					)
+					->values()
 					->all();
+
+				if ( empty( $bids ) ) {
+					$fields[ self::FIELD_BID_ID ]['options'] = [
+						[
+							'value' => '',
+							'label' => __( 'No bids found. Select this to submit your request anyway.', 'goodbids' ),
+						],
+					];
+					return $fields;
+				}
 
 				foreach ( $bids as $bid_data ) {
 					goodbids()->sites->swap(
 						function () use ( $bid_data, &$options ) {
+							$order  = wc_get_order( $bid_data['order_id'] );
+							$title  = __( 'Bid Order #', 'goodbids' ) . $bid_data['order_id'];
+							$title .= $bid_data['order_id'];
+							$title .= ' (' . wp_strip_all_tags( wc_price( $order->get_total( 'edit' ) ) ) . ')';
+
 							$options[] = [
 								'value' => $bid_data['site_id'] . '|' . $bid_data['order_id'],
-								'label' => get_the_title( $bid_data['order_id'] ),
+								'label' => $title,
 							];
 						},
 						$bid_data['site_id']
@@ -577,26 +648,51 @@ class SupportRequestForm extends ACFBlock {
 					return $fields;
 				}
 
+				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ self::FIELD_AUCTION_ID ] ) );
 				$rewards = goodbids()->sites->get_user_reward_orders( get_current_user_id() );
 				$rewards = collect( $rewards )
 					->filter(
-						function ( $reward_data ) use ( $form_data ) {
+						fn ( $reward_data ) => $reward_data['site_id'] === $site_id
+					)
+					->filter(
+						function ( $reward_data ) use ( $auction_id ) {
 							return goodbids()->sites->swap(
-								function () use ( $reward_data, $form_data ) {
-									return goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $form_data[ self::FIELD_AUCTION_ID ];
+								function () use ( $reward_data, $auction_id ) {
+									return goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $auction_id;
 								},
 								$reward_data['site_id']
 							);
 						}
 					)
+					->values()
 					->all();
+
+				if ( empty( $rewards ) ) {
+					$fields[ self::FIELD_REWARD_ID ]['options'] = [
+						[
+							'value' => 'unknown',
+							'label' => __( 'No rewards found. Select this to submit your request anyway.', 'goodbids' ),
+						],
+					];
+					return $fields;
+				}
 
 				foreach ( $rewards as $reward_data ) {
 					goodbids()->sites->swap(
 						function () use ( $reward_data, &$options ) {
+							$order = wc_get_order( $reward_data['order_id'] );
+							$title = __( 'Reward Order #', 'goodbids' ) . $reward_data['order_id'];
+							foreach ( $order->get_items() as $item ) {
+								$product = wc_get_product( $item['product_id'] );
+
+								if ( $product ) {
+									$title = $product->get_title();
+								}
+							}
+
 							$options[] = [
 								'value' => $reward_data['site_id'] . '|' . $reward_data['order_id'],
-								'label' => get_the_title( $reward_data['order_id'] ),
+								'label' => $title,
 							];
 						},
 						$reward_data['site_id']
@@ -717,20 +813,25 @@ class SupportRequestForm extends ACFBlock {
 			'template_redirect',
 			function () {
 				if ( empty( $_POST[ self::NONCE_ACTION . '-nonce' ] ) ) {
+					Log::debug( 'Nonce empty' );
 					return;
 				}
 
 				if ( ! wp_verify_nonce( self::NONCE_ACTION . '-nonce', self::NONCE_ACTION ) ) {
-					Log::debug( 'Failed to verify nonce.' );
-					return;
-				}
-
-				if ( ! $this->passed_validation() ) {
+					Log::debug( 'Invalid nonce' );
 					return;
 				}
 
 				$form_data = $this->get_form_data();
 
+				Log::debug( 'Data', $form_data );
+
+				if ( ! $this->passed_validation() ) {
+					Log::debug( 'Validation failed' );
+					return;
+				}
+
+				dd( $form_data );
 				$user  = new Bidder();
 				$title = sprintf(
 					'%s %s %s',
