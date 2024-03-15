@@ -3,6 +3,7 @@ import { Create } from './create';
 import { Edit } from './edit';
 import { useState } from 'react';
 import { z } from 'zod';
+import { Clone } from './clone';
 
 const modeSchema = z.enum(gbAuctionWizard.modeParamOptions).catch('create');
 
@@ -31,7 +32,12 @@ function Wizard() {
 	}
 
 	if (mode === 'clone' && auctionId && rewardId) {
-		return <div>Cloning coming soon</div>;
+		return (
+			<Clone
+				auctionId={parseInt(auctionId, 10)}
+				rewardId={parseInt(rewardId, 10)}
+			/>
+		);
 	}
 
 	return <Create />;

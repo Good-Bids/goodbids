@@ -16,6 +16,7 @@ declare const gbAuctionWizard: {
 	appID: string;
 	ajaxUrl: string;
 	adminURL: string;
+	auctionsIndexURL: string;
 
 	modeParam: string;
 	modeParamOptions: ['create', 'edit', 'clone'];

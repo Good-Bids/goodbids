@@ -83,7 +83,7 @@ export function UpdateStep({
 		const base = {
 			name: product.name.value,
 			regular_price: product.regularPrice.value,
-			images: process.env.NODE_ENV === 'development' ? [] : images,
+			images,
 			categories: [{ id: category!.id }],
 		};
 

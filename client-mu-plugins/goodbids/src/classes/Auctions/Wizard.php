@@ -313,10 +313,11 @@ class Wizard {
 	private function get_js_vars(): array {
 		return [
 			// General.
-			'baseURL'  => $this->get_wizard_url(),
-			'appID'    => self::PAGE_SLUG,
-			'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-			'adminURL' => admin_url(),
+			'baseURL'          => $this->get_wizard_url(),
+			'appID'            => self::PAGE_SLUG,
+			'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+			'adminURL'         => admin_url(),
+			'auctionsIndexURL' => admin_url( 'edit.php?post_type=' . goodbids()->auctions->get_post_type() ),
 
 			// URL Params
 			'modeParam'        => self::MODE_PARAM,
