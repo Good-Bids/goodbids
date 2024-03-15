@@ -293,11 +293,9 @@ class Notices {
 		$notice = $this->get_notice( $notice_id );
 
 		if ( ! $notice || ! function_exists( 'wc_add_notice' ) ) {
-			Log::debug( 'No notice to add: ' . $notice_id );
 			return;
 		}
 
-		Log::debug( 'Adding WC Notice: ' . $notice_id );
 		wc_add_notice( $notice['message'], $notice['type'], [ '_notice_id' => $notice_id ] );
 	}
 
