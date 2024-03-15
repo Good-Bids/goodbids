@@ -132,6 +132,7 @@ class Users {
 		 * @param int     $user_id
 		 */
 		do_action( 'goodbids_award_free_bid', $free_bid, $user_id );
+		Log::debug( 'Calling free bid awarded action' );
 
 		return $this->save_free_bids( $user_id, $free_bids );
 	}
@@ -150,10 +151,12 @@ class Users {
 		$original = get_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, true );
 
 		if ( $original === $free_bids ) {
+			Log::debug( 'Free bids unchanged' );
 			// Data is unchanged.
 			return false;
 		}
 
+		Log::debug( 'Updating free bids' );
 		return boolval( update_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, $free_bids ) );
 	}
 

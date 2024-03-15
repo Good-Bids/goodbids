@@ -164,6 +164,8 @@ class Bids {
 		add_action(
 			'template_redirect',
 			function (): void {
+				Log::debug( 'Notices', [ 'notices' => wc_get_notices() ] );
+
 				if ( ! get_query_var( self::PLACE_BID_SLUG ) ) {
 					return;
 				}
@@ -693,12 +695,15 @@ class Bids {
 					return;
 				}
 
+				Log::debug( 'Notices', [ 'notices' => wc_get_notices() ] );
+
 				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
 				$auction    = goodbids()->auctions->get( $auction_id );
 
 				wp_safe_redirect( $auction->get_url() );
 				exit;
-			}
+			},
+			5
 		);
 	}
 
@@ -719,25 +724,29 @@ class Bids {
 				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 					// Reduce the Free Bid Count for the user.
 					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+						Log::debug( 'Creating REDEEMED Free Bid Notice' );
 						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
-				} else {
-					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
-					$remaining_free_bids = $auction->get_free_bids_available();
-					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
-					$bid_order           = wc_get_order( $order_id );
+					return;
+				}
 
-					$description = sprintf(
-						// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
-						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
-						goodbids()->utilities->get_ordinal( $nth_bid ),
-						$bid_order->get_total( 'edit' ),
-						$auction_id
-					);
+				Log::debug( 'Starting to award free bid.' );
+				$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
+				$remaining_free_bids = $auction->get_free_bids_available();
+				$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
+				$bid_order           = wc_get_order( $order_id );
 
-					if ( $auction->maybe_award_free_bid( null, $description ) ) {
-						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
-					}
+				$description = sprintf(
+					// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+					__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
+					goodbids()->utilities->get_ordinal( $nth_bid ),
+					$bid_order->get_total( 'edit' ),
+					$auction_id
+				);
+
+				if ( $auction->maybe_award_free_bid( null, $description ) ) {
+					Log::debug( 'Creating Free Bid WC Notice' );
+					goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
 				}
 			},
 			10,
