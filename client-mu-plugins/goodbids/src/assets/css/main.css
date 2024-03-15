@@ -6,6 +6,7 @@
 @import 'activate-page.css';
 
 /* Patterns */
+@import 'patterns/blocks.css';
 @import 'patterns/comments.css';
 @import 'patterns/nonprofit-interest-form.css';
 @import 'patterns/header.css';
