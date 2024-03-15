@@ -199,6 +199,13 @@ class Track {
 					return;
 				}
 
+				$order = wc_get_order( $order_id );
+
+				// Don't award if payment didn't go through.
+				if ( $order->needs_payment() ) {
+					return;
+				}
+
 				// Convert the Referral
 				goodbids()->referrals->convert( $referrer_id, get_current_user_id(), $auction_id, $order_id );
 			},

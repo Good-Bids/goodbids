@@ -300,6 +300,28 @@ class Auction {
 	}
 
 	/**
+	 * Get Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_bid_product_id(): int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Bid Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_bid_product(): ?WC_Product {
+		return goodbids()->bids->get_product( $this->get_id() );
+	}
+
+	/**
 	 * Get Reward Product ID
 	 *
 	 * @since 1.0.0
@@ -747,11 +769,13 @@ class Auction {
 	 * @since 1.0.0
 	 *
 	 * @param ?int   $user_id
-	 * @param string $description
+	 * @param string $details
+	 * @param string $type
+	 * @param bool   $notify_later
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $user_id = null, string $description = '' ): bool {
+	public function maybe_award_free_bid( ?int $user_id = null, string $details = '', string $type = FreeBid::TYPE_PAID_BID, bool $notify_later = false ): bool {
 		$free_bids = $this->get_free_bids_available();
 		if ( ! $free_bids ) {
 			return false;
@@ -761,7 +785,7 @@ class Auction {
 			$user_id = get_current_user_id();
 		}
 
-		if ( goodbids()->users->award_free_bid( $user_id, $this->get_id(), $description ) ) {
+		if ( goodbids()->users->award_free_bid( $user_id, $this->get_id(), $type, $details, $notify_later ) ) {
 			--$free_bids;
 			$this->update_free_bids( $free_bids );
 			return true;

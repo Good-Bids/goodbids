@@ -698,7 +698,8 @@ class Bids {
 
 				wp_safe_redirect( $auction->get_url() );
 				exit;
-			}
+			},
+			5
 		);
 	}
 
@@ -721,27 +722,70 @@ class Bids {
 					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
 						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
-				} else {
-					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
-					$remaining_free_bids = $auction->get_free_bids_available();
-					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
-					$bid_order           = wc_get_order( $order_id );
-
-					$description = sprintf(
-						// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
-						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
-						goodbids()->utilities->get_ordinal( $nth_bid ),
-						$bid_order->get_total( 'edit' ),
-						$auction_id
-					);
-
-					if ( $auction->maybe_award_free_bid( null, $description ) ) {
-						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
-					}
+					return;
 				}
+
+				$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
+				$remaining_free_bids = $auction->get_free_bids_available();
+				$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
+				$bid_order           = wc_get_order( $order_id );
+
+				// Do not award a free bid if payment didn't go through.
+				if ( $bid_order->needs_payment() ) {
+					return;
+				}
+
+				$details = sprintf(
+					// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+					__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
+					goodbids()->utilities->get_ordinal( $nth_bid ),
+					$bid_order->get_total( 'edit' ),
+					$auction_id
+				);
+
+				// Potentially award a free bid and reduce the Auction's free bid count.
+				$auction->maybe_award_free_bid(
+					get_current_user_id(),
+					$details,
+					FreeBid::TYPE_PAID_BID,
+					true
+				);
 			},
 			10,
 			2
+		);
+
+		// Notify of Free Bids Awarded that have not already been notified.
+		add_action(
+			'template_redirect',
+			function () {
+				if ( get_post_type( get_queried_object_id() ) === goodbids()->auctions->get_post_type() ) {
+					$type = FreeBid::TYPE_PAID_BID;
+				} elseif ( is_account_page() ) {
+					$type = FreeBid::TYPE_REFERRAL;
+				} else {
+					$type = FreeBid::TYPE_ADMIN_GRANT;
+				}
+
+				$free_bids = goodbids()->users->get_free_bids( get_current_user_id(), Bids::FREE_BID_STATUS_UNUSED, $type );
+				$do_update = false;
+
+				foreach ( $free_bids as $free_bid ) {
+					if ( $free_bid->did_awarded_notification() ) {
+						continue;
+					}
+
+					$free_bid->mark_as_notified();
+					goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
+					$do_update = true;
+
+					break;
+				}
+
+				if ( $do_update ) {
+					goodbids()->users->save_free_bids( get_current_user_id(), $free_bids );
+				}
+			}
 		);
 	}
 

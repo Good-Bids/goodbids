@@ -292,7 +292,7 @@ class Notices {
 	public function add_notice( string $notice_id ) : void {
 		$notice = $this->get_notice( $notice_id );
 
-		if ( ! $notice ) {
+		if ( ! $notice || ! function_exists( 'wc_add_notice' ) ) {
 			return;
 		}
 

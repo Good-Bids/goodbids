@@ -55,12 +55,13 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int   $user_id
-	 * @param string $status
+	 * @param ?int    $user_id
+	 * @param string  $status
+	 * @param ?string $type
 	 *
 	 * @return FreeBid[]
 	 */
-	public function get_free_bids( ?int $user_id = null, string $status = Bids::FREE_BID_STATUS_ALL ): array {
+	public function get_free_bids( ?int $user_id = null, string $status = Bids::FREE_BID_STATUS_ALL, ?string $type = null ): array {
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -72,7 +73,7 @@ class Users {
 			return [];
 		}
 
-		return collect( $free_bids )
+		$collection = collect( $free_bids )
 			->filter(
 				fn ( $free_bid ) => (
 					// When status is Bids::FREE_BID_STATUS_ALL, always returns true.
@@ -80,7 +81,15 @@ class Users {
 					// Otherwise bid must match status.
 					|| $status === $free_bid->get_status()
 				)
-			)
+			);
+
+		if ( $type ) {
+			$collection = $collection->filter(
+				fn ( $free_bid ) => $type === $free_bid->get_type()
+			);
+		}
+
+		return $collection
 			->values()
 			->all();
 	}
@@ -107,10 +116,11 @@ class Users {
 	 * @param ?int   $auction_id
 	 * @param string $type
 	 * @param string $details
+	 * @param bool   $notify_later
 	 *
 	 * @return bool
 	 */
-	public function award_free_bid( int $user_id, ?int $auction_id = null, string $type = FreeBid::TYPE_PAID_BID, string $details = '' ): bool {
+	public function award_free_bid( int $user_id, ?int $auction_id = null, string $type = FreeBid::TYPE_PAID_BID, string $details = '', bool $notify_later = false ): bool {
 		$free_bid = new FreeBid();
 
 		if ( $auction_id ) {
@@ -119,6 +129,10 @@ class Users {
 
 		$free_bid->set_type( $type );
 		$free_bid->set_details( $details );
+
+		if ( $notify_later ) {
+			$free_bid->awarded_notification = false;
+		}
 
 		$free_bids   = $this->get_free_bids( $user_id );
 		$free_bids[] = $free_bid;
@@ -146,7 +160,7 @@ class Users {
 	 *
 	 * @return bool
 	 */
-	private function save_free_bids( int $user_id, array $free_bids ): bool {
+	public function save_free_bids( int $user_id, array $free_bids ): bool {
 		$original = get_user_meta( $user_id, Bids::FREE_BIDS_META_KEY, true );
 
 		if ( $original === $free_bids ) {
@@ -358,7 +372,7 @@ class Users {
 					wp_die();
 				}
 
-				if ( ! $this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason ) ) {
+				if ( ! $this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason, true ) ) {
 					wp_send_json_error(
 						[
 							'error' => __( 'There was a problem granting the free bid.', 'goodbids' ),
