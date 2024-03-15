@@ -132,6 +132,10 @@ class SupportRequestForm extends ACFBlock {
 			self::FIELD_TYPE => null,
 		];
 
+		if ( ! empty( $form_data[ self::FIELD_TYPE ] ) ) {
+			$current_url = add_query_arg( self::FIELD_TYPE, $form_data[ self::FIELD_TYPE ], $current_url );
+		}
+
 		$type = ! empty( $form_data[ self::FIELD_TYPE ] ) ? $form_data[ self::FIELD_TYPE ] : null;
 
 		if ( in_array( $type, [ self::TYPE_BID, self::TYPE_REWARD ], true ) ) {
