@@ -358,7 +358,6 @@ class Referrals {
 		$referral = new Referral( $referral_id );
 
 		if ( $referral->is_converted() ) {
-			Log::warning( 'Referral already converted', compact( 'user_id', 'referrer_id' ) );
 			return false;
 		}
 
@@ -371,7 +370,7 @@ class Referrals {
 			$auction_id
 		);
 
-		goodbids()->users->award_free_bid( $referrer_id, $auction_id, FreeBid::TYPE_REFERRAL, $details );
+		goodbids()->users->award_free_bid( $referrer_id, $auction_id, FreeBid::TYPE_REFERRAL, $details, true );
 
 		return true;
 	}

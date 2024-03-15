@@ -55,12 +55,13 @@ class Users {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param ?int   $user_id
-	 * @param string $status
+	 * @param ?int    $user_id
+	 * @param string  $status
+	 * @param ?string $type
 	 *
 	 * @return FreeBid[]
 	 */
-	public function get_free_bids( ?int $user_id = null, string $status = Bids::FREE_BID_STATUS_ALL ): array {
+	public function get_free_bids( ?int $user_id = null, string $status = Bids::FREE_BID_STATUS_ALL, ?string $type = null ): array {
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -72,7 +73,7 @@ class Users {
 			return [];
 		}
 
-		return collect( $free_bids )
+		$collection = collect( $free_bids )
 			->filter(
 				fn ( $free_bid ) => (
 					// When status is Bids::FREE_BID_STATUS_ALL, always returns true.
@@ -80,7 +81,15 @@ class Users {
 					// Otherwise bid must match status.
 					|| $status === $free_bid->get_status()
 				)
-			)
+			);
+
+		if ( $type ) {
+			$collection = $collection->filter(
+				fn ( $free_bid ) => $type === $free_bid->get_type()
+			);
+		}
+
+		return $collection
 			->values()
 			->all();
 	}
@@ -363,7 +372,7 @@ class Users {
 					wp_die();
 				}
 
-				if ( ! $this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason ) ) {
+				if ( ! $this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason, true ) ) {
 					wp_send_json_error(
 						[
 							'error' => __( 'There was a problem granting the free bid.', 'goodbids' ),

@@ -755,15 +755,19 @@ class Bids {
 			2
 		);
 
-		// Notify of Free Bids Awarded.
+		// Notify of Free Bids Awarded that have not already been notified.
 		add_action(
 			'template_redirect',
 			function () {
-				if ( get_post_type( get_queried_object_id() ) !== goodbids()->auctions->get_post_type() ) {
-					return;
+				if ( get_post_type( get_queried_object_id() ) === goodbids()->auctions->get_post_type() ) {
+					$type = FreeBid::TYPE_PAID_BID;
+				} elseif ( is_account_page() ) {
+					$type = FreeBid::TYPE_REFERRAL;
+				} else {
+					$type = FreeBid::TYPE_ADMIN_GRANT;
 				}
 
-				$free_bids = goodbids()->users->get_free_bids( get_current_user_id(), Bids::FREE_BID_STATUS_UNUSED );
+				$free_bids = goodbids()->users->get_free_bids( get_current_user_id(), Bids::FREE_BID_STATUS_UNUSED, $type );
 				$do_update = false;
 
 				foreach ( $free_bids as $free_bid ) {
@@ -779,7 +783,7 @@ class Bids {
 				}
 
 				if ( $do_update ) {
-					goodbids()->users->save_free_bids(get_current_user_id(), $free_bids);
+					goodbids()->users->save_free_bids( get_current_user_id(), $free_bids );
 				}
 			}
 		);

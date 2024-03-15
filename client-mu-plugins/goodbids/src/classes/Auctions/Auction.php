@@ -300,6 +300,28 @@ class Auction {
 	}
 
 	/**
+	 * Get Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_bid_product_id(): int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Bid Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_bid_product(): ?WC_Product {
+		return goodbids()->bids->get_product( $this->get_id() );
+	}
+
+	/**
 	 * Get Reward Product ID
 	 *
 	 * @since 1.0.0
