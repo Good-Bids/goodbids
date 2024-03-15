@@ -82,6 +82,15 @@ export type AuctionWizardStoreState = {
 	auction: AuctionState;
 };
 
+export type EditableAuctionValues = keyof Omit<
+	AuctionState,
+	'error' | 'clonedContent'
+>;
+export type EditableProductValues = keyof Omit<
+	AuctionWizardProductState,
+	'error'
+>;
+
 type AuctionWizardStoreActions = {
 	setStep: (step: StepType) => void;
 	setAuctionId: (id: number) => void;
@@ -90,13 +99,13 @@ type AuctionWizardStoreActions = {
 	addToProductGallery: (image: ImageType) => void;
 	removeFromProductGallery: (id: number) => void;
 	setProductValue: (
-		key: keyof Omit<AuctionWizardProductState, 'error'>,
+		key: EditableProductValues,
 		value: string,
 		error?: string,
 	) => void;
 	setProductError: (error: string) => void;
 	setAuctionValue: (
-		key: keyof Omit<AuctionState, 'error' | 'clonedContent'>,
+		key: EditableAuctionValues,
 		value: string,
 		error?: string,
 	) => void;
