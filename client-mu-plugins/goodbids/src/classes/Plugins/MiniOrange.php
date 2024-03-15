@@ -84,26 +84,35 @@ class MiniOrange {
 
 				global $Yh;
 
-				$no_of_sites_key = 'noOfSubSites';
-				$no_of_sites     = intval( $Yh->mo_oauth_client_get_option($no_of_sites_key ) );
+				$sites_key = 'mo_oauth_c3Vic2l0ZXNzZWxlY3RlZA';
+				$sites_val = $Yh->mo_oauth_client_get_option( $sites_key );
+				$sites     = json_decode( $Yh->mooauthdecrypt( $sites_val ) );
 
-				$option_key = 'mo_oauth_c3Vic2l0ZXNzZWxlY3RlZA';
-				$original   = get_site_meta( get_main_site_id(), $option_key, true );
-				$sites      = json_decode( $Yh->mooauthdecrypt( $original ) );
-
-				if ( in_array( (string) $site_id, $sites, true ) ) {
+				if ( ! $sites || ! is_array( $sites ) ) {
+					Log::error( 'Unable to decode the SSO settings.', compact( 'sites_val', 'sites' ) );
 					return;
 				}
+
+				// Cast to string.
+				$site_id = (string) $site_id;
+
+				if ( in_array( $site_id, $sites, true ) ) {
+					return;
+				}
+
+				// Make sure they don't exceed their limit.
+				$no_of_sites_key = 'noOfSubSites';
+				$no_of_sites     = intval( $Yh->mo_oauth_client_get_option( $no_of_sites_key ) );
 
 				if ( count( $sites ) + 1 > $no_of_sites ) {
-					Log::warning( 'You have reached the limit of sub-sites allowed for SSO.' );
+					Log::warning( 'You have reached the limit of sub-sites allowed for SSO.', compact( 'sites', 'no_of_sites' ) );
 					return;
 				}
 
-				$sites[] = (string) $site_id;
+				$sites[] = $site_id;
 				$updated = $Yh->mooauthencrypt( json_encode( $sites ) ); // phpcs:ignore
 
-				update_site_meta( get_main_site_id(), $option_key, $updated );
+				$Yh->mo_oauth_client_update_option( $sites_key, $updated );
 
 				// :crossed_fingers:
 			}
