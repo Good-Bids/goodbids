@@ -33,13 +33,37 @@ class Wizard {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const MODE_PARAM = 'mode';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const CREATE_MODE_OPTION = 'create';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const CLONE_MODE_OPTION = 'clone';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const EDIT_MODE_OPTION = 'edit';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const AUCTION_ID_PARAM = 'auction_id';
 
 	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const REWARD_EDIT_PARAM = 'reward_id';
+	const REWARD_ID_PARAM = 'reward_id';
 
 	/**
 	 * Wizard Admin Page ID
@@ -202,20 +226,24 @@ class Wizard {
 	 *
 	 * @since 1.0.0
 	 *
+	 * @param ?string $mode Wizard mode.
 	 * @param ?int $auction_id Auction ID.
 	 * @param ?int $reward_id  Reward ID.
 	 *
 	 * @return string
 	 */
-	public function get_wizard_url( ?int $auction_id = null, ?int $reward_id = null ): string {
+	public function get_wizard_url(?string $wizard_mode = null, ?int $auction_id = null, ?int $reward_id = null ): string {
 		$wizard_url = admin_url( self::BASE_URL . goodbids()->auctions->get_post_type() );
 		$wizard_url = add_query_arg( 'page', self::PAGE_SLUG, $wizard_url );
 
+		if ( $wizard_mode ) {
+			$wizard_url = add_query_arg( 'mode', $wizard_mode, $wizard_url );
+		}
 		if ( $auction_id ) {
 			$wizard_url = add_query_arg( self::AUCTION_ID_PARAM, $auction_id, $wizard_url );
 		}
 		if ( $reward_id ) {
-			$wizard_url = add_query_arg( self::REWARD_EDIT_PARAM, $reward_id, $wizard_url );
+			$wizard_url = add_query_arg( self::REWARD_ID_PARAM, $reward_id, $wizard_url );
 		}
 
 		return $wizard_url;
@@ -276,6 +304,8 @@ class Wizard {
 	/**
 	 * Localized JS Variables
 	 *
+	 * See globals.d.ts for equivalent TypeScript types.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
@@ -289,9 +319,15 @@ class Wizard {
 			'adminURL' => admin_url(),
 
 			// URL Params
-			'auctionIdParam'  => self::AUCTION_ID_PARAM,
-			'editRewardParam' => self::REWARD_EDIT_PARAM,
-			'useFreeBidParam' => Bids::USE_FREE_BID_PARAM,
+			'modeParam'        => self::MODE_PARAM,
+			'modeParamOptions' => [
+				self::CREATE_MODE_OPTION,
+				self::CLONE_MODE_OPTION,
+				self::EDIT_MODE_OPTION,
+			],
+			'auctionIdParam'   => self::AUCTION_ID_PARAM,
+			'rewardIdParam'    => self::REWARD_ID_PARAM,
+			'useFreeBidParam'  => Bids::USE_FREE_BID_PARAM,
 
 			// Flags.
 			'metricsEnabled' => false,

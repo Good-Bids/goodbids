@@ -3,8 +3,6 @@ declare module '*.svg';
 declare module '*.jpeg';
 declare module '*.jpg';
 
-type PHPVariables = Record<string, string>;
-
 type OnboardingStepOption =
 	| 'init-onboarding'
 	| 'activate-accessibility-checker'
@@ -13,7 +11,22 @@ type OnboardingStepOption =
 	| 'onboarding-complete';
 
 // These are only defined for the auction wizard page
-declare const gbAuctionWizard: PHPVariables;
+declare const gbAuctionWizard: {
+	baseURL: string;
+	appID: string;
+	ajaxUrl: string;
+	adminURL: string;
+
+	modeParam: string;
+	modeParamOptions: ['create', 'edit', 'clone'];
+	auctionIdParam: string;
+	rewardIdParam: string;
+	useFreeBidParam: string;
+
+	metricsEnabled: boolean;
+
+	rewardCategorySlug: string;
+};
 
 // These are only defined for the nonprofit setup page
 declare const gbNonprofitSetupGuide: {
@@ -62,8 +75,8 @@ declare const gbNonprofitSetupGuide: {
 };
 
 declare const gbNonprofitOnboarding: {
-	appID: string;
 	baseUrl: string;
+	appID: string;
 	stepParam: string;
 	skipStepParam: string;
 	stepOptions: [

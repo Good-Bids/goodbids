@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# bin/compile: Compiles TypeScript
+#
+# When to use:
+#  - When you want to check for complitation errors
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+cd client-mu-plugins/goodbids && npm run compile
