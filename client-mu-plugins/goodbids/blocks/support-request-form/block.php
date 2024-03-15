@@ -309,8 +309,8 @@ class SupportRequestForm extends ACFBlock {
 	 */
 	private function render_success(): void {
 		?>
-		<div class="p-4 rounded bg-gb-green-700">
-			<p class="text-gb-green-100">
+		<div class="p-4 rounded bg-contrast">
+			<p class="text-base">
 				<?php esc_html_e( 'Your request has been submitted. We will respond as soon as we can.', 'goodbids' ); ?>
 			</p>
 		</div>
@@ -384,7 +384,7 @@ class SupportRequestForm extends ACFBlock {
 		}
 		?>
 		<form data-form-spinner method="post" action="" class="px-8 pt-4 pb-12 rounded-sm bg-contrast relative group opacity-100 group-[.htmx-request]:opacity-50 transition-opacity">
-			<div class="absolute flex justify-center w-full -translate-y-full">
+			<div class="absolute inset-x-0 flex justify-center w-full -translate-y-full -bottom-2.5 text-base-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="relative inset-0 htmx-indicator w-14 h-14 animate-spin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
 			</div>
 			<?php
