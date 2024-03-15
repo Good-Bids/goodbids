@@ -24,7 +24,7 @@ export function Edit({ auctionId, rewardId }: EditProps) {
 	);
 }
 
-export function EditContent({ auctionId, rewardId }: EditProps) {
+function EditContent({ auctionId, rewardId }: EditProps) {
 	const { setProduct, step } = useAuctionWizardState();
 	const htmlRegex = /(<([^>]+)>)/gi;
 

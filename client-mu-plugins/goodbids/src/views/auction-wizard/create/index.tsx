@@ -20,7 +20,7 @@ export function Create() {
 	);
 }
 
-export function CreateContent() {
+function CreateContent() {
 	const { step } = useAuctionWizardState();
 
 	const shippingClasses = useGetShippingClasses();

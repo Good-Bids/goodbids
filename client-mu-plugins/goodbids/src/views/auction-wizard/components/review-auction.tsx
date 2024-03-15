@@ -54,16 +54,22 @@ export function ReviewAuction({
 				)}
 
 				<tr>
-					<ReviewTH>{__('Start', 'goodbids')}</ReviewTH>
-					<ReviewTD>
-						{new Date(auction.startDate.value).toLocaleString()}
+					<ReviewTH error={!!auction.startDate.error}>
+						{__('Start', 'goodbids')}
+					</ReviewTH>
+					<ReviewTD error={!!auction.startDate.error}>
+						{auction.startDate.error ||
+							new Date(auction.startDate.value).toLocaleString()}
 					</ReviewTD>
 				</tr>
 
 				<tr>
-					<ReviewTH>{__('End', 'goodbids')}</ReviewTH>
-					<ReviewTD>
-						{new Date(auction.endDate.value).toLocaleString()}
+					<ReviewTH error={!!auction.endDate.error}>
+						{__('End', 'goodbids')}
+					</ReviewTH>
+					<ReviewTD error={!!auction.endDate.error}>
+						{auction.endDate.error ||
+							new Date(auction.endDate.value).toLocaleString()}
 					</ReviewTD>
 				</tr>
 
