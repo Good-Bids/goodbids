@@ -33,6 +33,7 @@ use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
 use GoodBids\Plugins\EarlyHooks;
 use GoodBids\Plugins\EqualizeDigital;
+use GoodBids\Plugins\MiniOrange;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Users\Permissions;
@@ -288,6 +289,10 @@ class Core {
 		if ( file_exists( $local_json ) ) {
 			$local = json_decode( file_get_contents( $local_json ), true ); // phpcs:ignore
 			if ( is_array( $local ) ) {
+				if ( empty( $local['version'] ) || version_compare( $json['version'], $local['version'], '!=' ) ) {
+					Log::warning( 'Local config file version mismatch.' );
+				}
+
 				$json = array_merge_recursive( $json, $local );
 			}
 		}
@@ -403,12 +408,7 @@ class Core {
 			return;
 		}
 
-		$plugins              = $this->get_config( 'active-plugins' );
-		$post_install_plugins = $this->get_config( 'post-install-plugins' );
-
-		if ( ! is_network_admin() ) {
-			array_push( $plugins, ...$post_install_plugins );
-		}
+		$plugins = $this->get_config_plugins();
 
 		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
 			return;
@@ -435,6 +435,32 @@ class Core {
 	}
 
 	/**
+	 * Get plugins to be activated from Config file.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function get_config_plugins(): array {
+		$plugins              = $this->get_config( 'active-plugins' );
+		$main_site_plugins    = $this->get_config( 'main-active-plugins' );
+		$nonprofit_plugins    = $this->get_config( 'nonprofit-active-plugins' );
+		$post_install_plugins = $this->get_config( 'post-install-plugins' );
+
+		if ( is_main_site() ) {
+			$plugins = array_merge( $plugins, $main_site_plugins );
+		} else {
+			$plugins = array_merge( $plugins, $nonprofit_plugins );
+		}
+
+		if ( ! is_network_admin() ) {
+			array_push( $plugins, ...$post_install_plugins );
+		}
+
+		return $plugins;
+	}
+
+	/**
 	 * Check if a plugin is active.
 	 *
 	 * @since 1.0.0
@@ -444,12 +470,7 @@ class Core {
 	 * @return bool
 	 */
 	public function is_plugin_active( string $plugin ): bool {
-		$plugins              = $this->get_config( 'active-plugins' );
-		$post_install_plugins = $this->get_config( 'post-install-plugins' );
-
-		if ( ! is_network_admin() ) {
-			array_push( $plugins, ...$post_install_plugins );
-		}
+		$plugins = $this->get_config_plugins();
 
 		if ( in_array( $plugin, $plugins, true ) ) {
 			return true;
@@ -505,6 +526,7 @@ class Core {
 				new OneTrust();
 				new Guide();
 				new NonprofitAdmin();
+				new MiniOrange();
 			}
 		);
 	}
