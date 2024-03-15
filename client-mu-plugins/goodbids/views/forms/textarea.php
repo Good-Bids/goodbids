@@ -57,7 +57,7 @@ if ( ! empty( $field['class'] ) ) {
 				endforeach;
 			endif;
 			?>
-		><?php echo esc_textarea( $value ); ?></textarea>
+		><?php echo esc_textarea( stripslashes( $value ) ); ?></textarea>
 
 		<?php
 		if ( ! empty( $field['after'] ) ) :

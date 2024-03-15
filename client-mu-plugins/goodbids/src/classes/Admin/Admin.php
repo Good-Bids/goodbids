@@ -81,7 +81,7 @@ class Admin {
 	 * @return void
 	 */
 	public function render_field( string $key, array $field, string $prefix = '', array $data = [], bool $wrap = true ) : void {
-		$required    = ! empty( $field['required'] ) && true === $field['required'];
+		$required    = ! empty( $field['required'] );
 		$placeholder = $field['placeholder'] ?? '';
 		$field_id    = $prefix ? $prefix . '-' . $key : $key;
 		$value       = $data[ $key ] ?? '';

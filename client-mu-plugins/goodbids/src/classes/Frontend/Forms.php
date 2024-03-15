@@ -29,7 +29,7 @@ class Forms {
 			return;
 		}
 
-		$required    = ! empty( $field['required'] ) && true === $field['required'];
+		$required    = ! empty( $field['required'] );
 		$placeholder = $field['placeholder'] ?? '';
 		$field_id    = $prefix ? $prefix . '-' . $key : $key;
 		$value       = $data[ $key ] ?? '';
