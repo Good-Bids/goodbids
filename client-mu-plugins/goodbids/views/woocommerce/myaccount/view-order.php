@@ -12,19 +12,16 @@
  * @version 3.0.0
  */
 
+use GoodBids\Auctions\Bids;
+use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\SupportRequest;
 use GoodBids\Network\Nonprofit;
 
 defined( 'ABSPATH' ) || exit;
 
-$notes     = $order->get_customer_order_notes();
-$nonprofit = new Nonprofit( get_current_blog_id() );
-
-$request_args = [
-	'type'    => SupportRequest::TYPE_BID,
-	'auction' => $nonprofit->get_id() . '|' . goodbids()->woocommerce->orders->get_auction_id( $order_id ),
-	'bid'     => $nonprofit->get_id() . '|' . $order_id,
-];
+$notes      = $order->get_customer_order_notes();
+$nonprofit  = new Nonprofit( get_current_blog_id() );
+$order_type = goodbids()->woocommerce->orders->get_type( $order_id );
 ?>
 <p>
 	<?php if ( goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) : ?>
@@ -84,6 +81,25 @@ $request_args = [
 
 <?php do_action( 'woocommerce_view_order', $order_id ); ?>
 
+<?php
+if ( ! $order_type ) {
+	return;
+}
+
+if ( Bids::ITEM_TYPE === $order_type ) {
+	$request_type = SupportRequest::TYPE_BID;
+} elseif ( Rewards::ITEM_TYPE === $order_type ) {
+	$request_type = SupportRequest::TYPE_REWARD;
+} else {
+	return;
+}
+
+$request_args = [
+	'type'    => $request_type,
+	'auction' => $nonprofit->get_id() . '|' . goodbids()->woocommerce->orders->get_auction_id( $order_id ),
+	'bid'     => $nonprofit->get_id() . '|' . $order_id,
+];
+?>
 <h3><?php esc_html_e( 'Need Help?', 'goodbids' ); ?></h3>
 
 <p><a href="<?php echo esc_url( goodbids()->support->get_form_url( $request_args ) ); ?>"><?php esc_html_e( 'Submit a support request', 'goodbids' ); ?></a> <?php esc_html_e( 'to', 'goodbids' ); ?> <?php echo esc_html( $nonprofit->get_name() ); ?> <?php esc_html_e( 'for this bid.', 'goodbids' ); ?></p>
