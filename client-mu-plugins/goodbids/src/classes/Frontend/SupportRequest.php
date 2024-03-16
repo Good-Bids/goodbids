@@ -30,72 +30,6 @@ class SupportRequest {
 	const FORM_NONCE_ACTION = 'support-request-form';
 
 	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const TYPE_BID = 'Bid';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const TYPE_REWARD = 'Reward';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const TYPE_AUCTION = 'Auction';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const TYPE_OTHER = 'Other';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_TYPE = '_type';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_AUCTION = '_auction';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_BID = '_bid';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_REWARD = '_reward';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_NATURE = '_nature';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_REQUEST = '_request';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FIELD_USER_ID = '_user_id';
-
-	/**
 	 * Form fields
 	 *
 	 * @since 1.0.0
@@ -413,8 +347,8 @@ class SupportRequest {
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
-						$new_columns[ self::FIELD_USER_ID ] = __( 'User ID', 'goodbids' );
-						$new_columns[ self::FIELD_AUCTION ] = __( 'Auction', 'goodbids' );
+						$new_columns[ Request::FIELD_USER_ID ] = __( 'User ID', 'goodbids' );
+						$new_columns[ Request::FIELD_AUCTION ] = __( 'Auction', 'goodbids' );
 					}
 				}
 
@@ -426,10 +360,10 @@ class SupportRequest {
 			'manage_' . self::POST_TYPE . '_posts_custom_column',
 			function ( string $column, int $post_id ) {
 
-				if ( self::FIELD_USER_ID === $column ) {
-					echo esc_html( get_post_meta( $post_id, self::FIELD_USER_ID, true ) );
-				} elseif ( self::FIELD_AUCTION === $column ) {
-					$auction = get_post_meta( $post_id, self::FIELD_AUCTION, true );
+				if ( Request::FIELD_USER_ID === $column ) {
+					echo esc_html( get_post_meta( $post_id, Request::FIELD_USER_ID, true ) );
+				} elseif ( Request::FIELD_AUCTION === $column ) {
+					$auction = get_post_meta( $post_id, Request::FIELD_AUCTION, true );
 					echo esc_html( $auction );
 
 //					printf(
@@ -620,7 +554,7 @@ class SupportRequest {
 				}
 
 				if ( empty( $options ) ) {
-					$fields[ self::FIELD_AUCTION ]['options'] = [
+					$fields[ Request::FIELD_AUCTION ]['options'] = [
 						[
 							'value' => 'unknown',
 							'label' => __( 'No auctions found. Select this to submit your request anyway.', 'goodbids' ),
@@ -634,7 +568,7 @@ class SupportRequest {
 					->values()
 					->all();
 
-				$fields[ self::FIELD_AUCTION ]['options'] = $options;
+				$fields[ Request::FIELD_AUCTION ]['options'] = $options;
 
 				return $fields;
 			}
@@ -658,8 +592,8 @@ class SupportRequest {
 
 				$options = [];
 
-				if ( empty( $form_data[ self::FIELD_AUCTION ] ) ) {
-					$fields[ self::FIELD_BID ]['options'] = [
+				if ( empty( $form_data[ Request::FIELD_AUCTION ] ) ) {
+					$fields[ Request::FIELD_BID ]['options'] = [
 						[
 							'value' => '',
 							'label' => __( 'Select an Auction first', 'goodbids' ),
@@ -668,7 +602,7 @@ class SupportRequest {
 					return $fields;
 				}
 
-				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ self::FIELD_AUCTION ] ) );
+				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ Request::FIELD_AUCTION ] ) );
 				$bids = goodbids()->sites->get_user_bid_orders( get_current_user_id() );
 				$bids = collect( $bids )
 					->filter(
@@ -688,7 +622,7 @@ class SupportRequest {
 					->all();
 
 				if ( empty( $bids ) ) {
-					$fields[ self::FIELD_BID ]['options'] = [
+					$fields[ Request::FIELD_BID ]['options'] = [
 						[
 							'value' => '',
 							'label' => __( 'No bids found. Select this to submit your request anyway.', 'goodbids' ),
@@ -714,7 +648,7 @@ class SupportRequest {
 					);
 				}
 
-				$fields[ self::FIELD_BID ]['options'] = $options;
+				$fields[ Request::FIELD_BID ]['options'] = $options;
 
 				return $fields;
 			},
@@ -740,8 +674,8 @@ class SupportRequest {
 
 				$options = [];
 
-				if ( empty( $form_data[ self::FIELD_AUCTION ] ) ) {
-					$fields[ self::FIELD_REWARD ]['options'] = [
+				if ( empty( $form_data[ Request::FIELD_AUCTION ] ) ) {
+					$fields[ Request::FIELD_REWARD ]['options'] = [
 						[
 							'value' => '',
 							'label' => __( 'Select an Auction first', 'goodbids' ),
@@ -750,7 +684,7 @@ class SupportRequest {
 					return $fields;
 				}
 
-				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ self::FIELD_AUCTION ] ) );
+				list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $form_data[ Request::FIELD_AUCTION ] ) );
 				$rewards = goodbids()->sites->get_user_reward_orders( get_current_user_id() );
 				$rewards = collect( $rewards )
 					->filter(
@@ -770,7 +704,7 @@ class SupportRequest {
 					->all();
 
 				if ( empty( $rewards ) ) {
-					$fields[ self::FIELD_REWARD ]['options'] = [
+					$fields[ Request::FIELD_REWARD ]['options'] = [
 						[
 							'value' => 'unknown',
 							'label' => __( 'No rewards found. Select this to submit your request anyway.', 'goodbids' ),
@@ -801,7 +735,7 @@ class SupportRequest {
 					);
 				}
 
-				$fields[ self::FIELD_REWARD ]['options'] = $options;
+				$fields[ Request::FIELD_REWARD ]['options'] = $options;
 
 				return $fields;
 			},
@@ -892,18 +826,18 @@ class SupportRequest {
 
 				// Dynamic Dependencies for the 2 Request Fields
 				$extra_deps  = [
-					self::FIELD_TYPE => null,
+					Request::FIELD_TYPE => null,
 				];
 
-				$type = ! empty( $form_data[ self::FIELD_TYPE ] ) ? $form_data[ self::FIELD_TYPE ] : null;
+				$type = ! empty( $form_data[ Request::FIELD_TYPE ] ) ? $form_data[ Request::FIELD_TYPE ] : null;
 
-				if ( in_array( $type, [ self::TYPE_BID, self::TYPE_REWARD ], true ) ) {
-					$extra_deps[ self::FIELD_AUCTION ] = null;
+				if ( in_array( $type, [ Request::TYPE_BID, Request::TYPE_REWARD ], true ) ) {
+					$extra_deps[ Request::FIELD_AUCTION ] = null;
 
-					if ( $type === self::TYPE_BID ) {
-						$extra_deps[ self::FIELD_BID ] = null;
-					} elseif ( $type === self::TYPE_REWARD ) {
-						$extra_deps[ self::FIELD_REWARD ] = null;
+					if ( $type === Request::TYPE_BID ) {
+						$extra_deps[ Request::FIELD_BID ] = null;
+					} elseif ( $type === Request::TYPE_REWARD ) {
+						$extra_deps[ Request::FIELD_REWARD ] = null;
 					}
 				}
 
@@ -918,15 +852,15 @@ class SupportRequest {
 				$this->fields = apply_filters(
 					'goodbids_support_request_form_fields',
 					[
-						self::FIELD_TYPE => [
+						Request::FIELD_TYPE => [
 							'type'     => 'select',
 							'label'    => __( 'What do you need help with?', 'goodbids' ),
 							'required' => true,
 							'options'  => [
-								self::TYPE_BID     => __( 'A bid I placed', 'goodbids' ),
-								self::TYPE_REWARD  => __( 'A reward I claimed', 'goodbids' ),
-								self::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
-								self::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
+								Request::TYPE_BID     => __( 'A bid I placed', 'goodbids' ),
+								Request::TYPE_REWARD  => __( 'A reward I claimed', 'goodbids' ),
+								Request::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
+								Request::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 							],
 							'attr'    => [
 								'hx-trigger'   => 'change',
@@ -936,7 +870,7 @@ class SupportRequest {
 								'hx-indicator' => '[data-form-spinner]',
 							],
 						],
-						self::FIELD_AUCTION => [
+						Request::FIELD_AUCTION => [
 							'type'    => 'select',
 							'label'   => __( 'Which Auction are you referencing?', 'goodbids' ),
 							'options' => [
@@ -953,10 +887,10 @@ class SupportRequest {
 							],
 							'required'     => 'dependencies',
 							'dependencies' => [
-								self::FIELD_TYPE => [ self::TYPE_BID, self::TYPE_REWARD, self::TYPE_AUCTION ],
+								Request::FIELD_TYPE => [ Request::TYPE_BID, Request::TYPE_REWARD, Request::TYPE_AUCTION ],
 							],
 						],
-						self::FIELD_BID => [
+						Request::FIELD_BID => [
 							'type'    => 'select',
 							'label'   => __( 'Which bid are you referencing?', 'goodbids' ),
 							'options' => [
@@ -966,8 +900,8 @@ class SupportRequest {
 							],
 							'required'     => 'dependencies',
 							'dependencies' => [
-								self::FIELD_TYPE       => self::TYPE_BID,
-								self::FIELD_AUCTION => null,
+								Request::FIELD_TYPE    => Request::TYPE_BID,
+								Request::FIELD_AUCTION => null,
 							],
 							'attr'    => [
 								'hx-trigger'   => 'change',
@@ -977,7 +911,7 @@ class SupportRequest {
 								'hx-indicator' => '[data-form-spinner]',
 							],
 						],
-						self::FIELD_REWARD => [
+						Request::FIELD_REWARD => [
 							'type'    => 'select',
 							'label'   => __( 'Which reward are you referencing?', 'goodbids' ),
 							'options' => [
@@ -987,8 +921,8 @@ class SupportRequest {
 							],
 							'required'     => 'dependencies',
 							'dependencies' => [
-								self::FIELD_TYPE    => self::TYPE_REWARD,
-								self::FIELD_AUCTION => null,
+								Request::FIELD_TYPE    => Request::TYPE_REWARD,
+								Request::FIELD_AUCTION => null,
 							],
 							'attr'    => [
 								'hx-trigger'   => 'change',
@@ -998,7 +932,7 @@ class SupportRequest {
 								'hx-indicator' => '[data-form-spinner]',
 							],
 						],
-						self::FIELD_NATURE => [
+						Request::FIELD_NATURE => [
 							'type'    => 'select',
 							'label'   => __( 'What is the nature of your request?', 'goodbids' ),
 							'options' => [
@@ -1010,7 +944,7 @@ class SupportRequest {
 									'label' => __( 'Request a refund', 'goodbids' ),
 									'value' => __( 'Refund', 'goodbids' ),
 									'dependencies' => [
-										self::FIELD_TYPE => self::TYPE_BID,
+										Request::FIELD_TYPE => Request::TYPE_BID,
 									],
 								],
 								[
@@ -1021,7 +955,7 @@ class SupportRequest {
 							'required'     => 'dependencies',
 							'dependencies' => $extra_deps,
 						],
-						self::FIELD_REQUEST => [
+						Request::FIELD_REQUEST => [
 							'type'         => 'textarea',
 							'label'        => __( 'Please describe your request', 'goodbids' ),
 							'placeholder'  => __( 'Tell us what\'s going on', 'goodbids' ),
@@ -1047,10 +981,10 @@ class SupportRequest {
 		$current_url   = home_url( $wp->request );
 		$form_data     = $this->get_form_data();
 		$append_fields = [
-			self::FIELD_TYPE,
-			self::FIELD_AUCTION,
-			self::FIELD_BID,
-			self::FIELD_REWARD,
+			Request::FIELD_TYPE,
+			Request::FIELD_AUCTION,
+			Request::FIELD_BID,
+			Request::FIELD_REWARD,
 		];
 
 		foreach ( $append_fields as $data_field ) {
@@ -1072,10 +1006,10 @@ class SupportRequest {
 	private function get_url_vars(): array {
 		$form_data = [];
 		$query_vars = [
-			'type'    => self::FIELD_TYPE,
-			'auction' => self::FIELD_AUCTION,
-			'bid'     => self::FIELD_BID,
-			'reward'  => self::FIELD_REWARD,
+			'type'    => Request::FIELD_TYPE,
+			'auction' => Request::FIELD_AUCTION,
+			'bid'     => Request::FIELD_BID,
+			'reward'  => Request::FIELD_REWARD,
 		];
 
 		// Check both values for data.
@@ -1134,19 +1068,19 @@ class SupportRequest {
 				}
 
 				$metadata = [
-					self::FIELD_USER_ID => get_current_user_id(),
-					self::FIELD_TYPE    => $form_data[ self::FIELD_TYPE ] ?? '',
-					self::FIELD_AUCTION => $form_data[ self::FIELD_AUCTION ] ?? '',
-					self::FIELD_BID     => $form_data[ self::FIELD_BID ] ?? '',
-					self::FIELD_REWARD  => $form_data[ self::FIELD_REWARD ] ?? '',
-					self::FIELD_NATURE  => $form_data[ self::FIELD_NATURE ] ?? '',
-					self::FIELD_REQUEST => $form_data[ self::FIELD_REQUEST ] ?? '',
+					Request::FIELD_USER_ID => get_current_user_id(),
+					Request::FIELD_TYPE    => $form_data[ Request::FIELD_TYPE ] ?? '',
+					Request::FIELD_AUCTION => $form_data[ Request::FIELD_AUCTION ] ?? '',
+					Request::FIELD_BID     => $form_data[ Request::FIELD_BID ] ?? '',
+					Request::FIELD_REWARD  => $form_data[ Request::FIELD_REWARD ] ?? '',
+					Request::FIELD_NATURE  => $form_data[ Request::FIELD_NATURE ] ?? '',
+					Request::FIELD_REQUEST => $form_data[ Request::FIELD_REQUEST ] ?? '',
 				];
 
 				$user  = new Bidder();
 				$title = sprintf(
 					'%s %s %s',
-					$metadata[ self::FIELD_TYPE ],
+					$metadata[ Request::FIELD_TYPE ],
 					__( 'from', 'goodbids' ),
 					$user->get_username()
 				);
