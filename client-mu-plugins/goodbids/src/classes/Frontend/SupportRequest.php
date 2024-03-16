@@ -262,21 +262,6 @@ class SupportRequest {
 					'normal',
 					'high'
 				);
-
-				add_meta_box(
-					'goodbids-support-requests-actions',
-					__( 'Actions', 'goodbids' ),
-					function ( WP_Post $post ): void {
-						?>
-						<div style="display: flex; justify-content: space-between; align-items: center;margin-top: 0.5rem;">
-							Test
-						</div>
-						<?php
-					},
-					self::POST_TYPE,
-					'side',
-					'high'
-				);
 			}
 		);
 	}
@@ -347,8 +332,10 @@ class SupportRequest {
 
 					// Insert Custom Columns after the Title column.
 					if ( 'title' === $column ) {
-						$new_columns[ Request::FIELD_USER_ID ] = __( 'User ID', 'goodbids' );
+						$new_columns[ Request::FIELD_USER_ID ] = __( 'User', 'goodbids' );
 						$new_columns[ Request::FIELD_AUCTION ] = __( 'Auction', 'goodbids' );
+						$new_columns[ Request::FIELD_TYPE ] = __( 'Type', 'goodbids' );
+						$new_columns[ Request::FIELD_NATURE ] = __( 'Nature', 'goodbids' );
 					}
 				}
 
@@ -360,19 +347,16 @@ class SupportRequest {
 			'manage_' . self::POST_TYPE . '_posts_custom_column',
 			function ( string $column, int $post_id ) {
 
-				if ( Request::FIELD_USER_ID === $column ) {
-					echo esc_html( get_post_meta( $post_id, Request::FIELD_USER_ID, true ) );
-				} elseif ( Request::FIELD_AUCTION === $column ) {
-					$auction = get_post_meta( $post_id, Request::FIELD_AUCTION, true );
-					echo esc_html( $auction );
+				$request = new Request( $post_id );
 
-//					printf(
-//						'<a href="%s">%s</a> (<a href="%s" target="_blank">%s</a>)',
-//						esc_url( get_edit_post_link( $auction_id ) ),
-//						esc_html( get_the_title( $auction_id ) ),
-//						esc_url( get_permalink( $auction_id ) ),
-//						esc_html__( 'View', 'goodbids' )
-//					);
+				if ( Request::FIELD_USER_ID === $column ) {
+					echo wp_kses_post( $request->get_user_html() );
+				} elseif ( Request::FIELD_AUCTION === $column ) {
+					echo wp_kses_post( $request->get_auction_html() );
+				} elseif ( Request::FIELD_TYPE === $column ) {
+					echo esc_html( $request->get_field( Request::FIELD_TYPE ) );
+				} elseif ( Request::FIELD_NATURE === $column ) {
+					echo esc_html( $request->get_field( Request::FIELD_NATURE ) );
 				}
 			},
 			10,
@@ -818,155 +802,155 @@ class SupportRequest {
 	 * @return void
 	 */
 	private function init_fields(): void {
-		add_action(
-			'template_redirect',
-			function () {
-				$current_url = $this->get_current_url();
-				$form_data   = $this->get_form_data();
+		$init_fields = function () {
+			$current_url = $this->get_current_url();
+			$form_data   = $this->get_form_data();
 
-				// Dynamic Dependencies for the 2 Request Fields
-				$extra_deps  = [
-					Request::FIELD_TYPE => null,
-				];
+			// Dynamic Dependencies for the 2 Request Fields
+			$extra_deps  = [
+				Request::FIELD_TYPE => null,
+			];
 
-				$type = ! empty( $form_data[ Request::FIELD_TYPE ] ) ? $form_data[ Request::FIELD_TYPE ] : null;
+			$type = ! empty( $form_data[ Request::FIELD_TYPE ] ) ? $form_data[ Request::FIELD_TYPE ] : null;
 
-				if ( in_array( $type, [ Request::TYPE_BID, Request::TYPE_REWARD ], true ) ) {
-					$extra_deps[ Request::FIELD_AUCTION ] = null;
+			if ( in_array( $type, [ Request::TYPE_BID, Request::TYPE_REWARD ], true ) ) {
+				$extra_deps[ Request::FIELD_AUCTION ] = null;
 
-					if ( $type === Request::TYPE_BID ) {
-						$extra_deps[ Request::FIELD_BID ] = null;
-					} elseif ( $type === Request::TYPE_REWARD ) {
-						$extra_deps[ Request::FIELD_REWARD ] = null;
-					}
+				if ( $type === Request::TYPE_BID ) {
+					$extra_deps[ Request::FIELD_BID ] = null;
+				} elseif ( $type === Request::TYPE_REWARD ) {
+					$extra_deps[ Request::FIELD_REWARD ] = null;
 				}
+			}
 
-				/**
-				 * Adjust the Support Request Form Fields
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param array $fields
-				 * @param array $form_data
-				 */
-				$this->fields = apply_filters(
-					'goodbids_support_request_form_fields',
-					[
-						Request::FIELD_TYPE => [
-							'type'     => 'select',
-							'label'    => __( 'What do you need help with?', 'goodbids' ),
-							'required' => true,
-							'options'  => [
-								Request::TYPE_BID     => __( 'A bid I placed', 'goodbids' ),
-								Request::TYPE_REWARD  => __( 'A reward I claimed', 'goodbids' ),
-								Request::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
-								Request::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
-							],
-							'attr'    => [
-								'hx-trigger'   => 'change',
-								'hx-get'       => $current_url,
-								'hx-target'    => '#gb-support-form-target',
-								'hx-select'    => '#gb-support-form-target',
-								'hx-indicator' => '[data-form-spinner]',
-							],
+			/**
+			 * Adjust the Support Request Form Fields
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array $fields
+			 * @param array $form_data
+			 */
+			$this->fields = apply_filters(
+				'goodbids_support_request_form_fields',
+				[
+					Request::FIELD_TYPE => [
+						'type'     => 'select',
+						'label'    => __( 'What do you need help with?', 'goodbids' ),
+						'required' => true,
+						'options'  => [
+							Request::TYPE_BID     => __( 'A bid I placed', 'goodbids' ),
+							Request::TYPE_REWARD  => __( 'A reward I claimed', 'goodbids' ),
+							Request::TYPE_AUCTION => __( 'An auction', 'goodbids' ),
+							Request::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 						],
-						Request::FIELD_AUCTION => [
-							'type'    => 'select',
-							'label'   => __( 'Which Auction are you referencing?', 'goodbids' ),
-							'options' => [
-								'Auction 1',
-								'Auction 2',
-								'Auction 3',
-							],
-							'attr'    => [
-								'hx-trigger'   => 'change',
-								'hx-get'       => $current_url,
-								'hx-target'    => '#gb-support-form-target',
-								'hx-select'    => '#gb-support-form-target',
-								'hx-indicator' => '[data-form-spinner]',
-							],
-							'required'     => 'dependencies',
-							'dependencies' => [
-								Request::FIELD_TYPE => [ Request::TYPE_BID, Request::TYPE_REWARD, Request::TYPE_AUCTION ],
-							],
-						],
-						Request::FIELD_BID => [
-							'type'    => 'select',
-							'label'   => __( 'Which bid are you referencing?', 'goodbids' ),
-							'options' => [
-								'Bid 1',
-								'Bid 2',
-								'Bid 3',
-							],
-							'required'     => 'dependencies',
-							'dependencies' => [
-								Request::FIELD_TYPE    => Request::TYPE_BID,
-								Request::FIELD_AUCTION => null,
-							],
-							'attr'    => [
-								'hx-trigger'   => 'change',
-								'hx-get'       => $current_url,
-								'hx-target'    => '#gb-support-form-target',
-								'hx-select'    => '#gb-support-form-target',
-								'hx-indicator' => '[data-form-spinner]',
-							],
-						],
-						Request::FIELD_REWARD => [
-							'type'    => 'select',
-							'label'   => __( 'Which reward are you referencing?', 'goodbids' ),
-							'options' => [
-								'Reward 1',
-								'Reward 2',
-								'Reward 3',
-							],
-							'required'     => 'dependencies',
-							'dependencies' => [
-								Request::FIELD_TYPE    => Request::TYPE_REWARD,
-								Request::FIELD_AUCTION => null,
-							],
-							'attr'    => [
-								'hx-trigger'   => 'change',
-								'hx-get'       => $current_url,
-								'hx-target'    => '#gb-support-form-target',
-								'hx-select'    => '#gb-support-form-target',
-								'hx-indicator' => '[data-form-spinner]',
-							],
-						],
-						Request::FIELD_NATURE => [
-							'type'    => 'select',
-							'label'   => __( 'What is the nature of your request?', 'goodbids' ),
-							'options' => [
-								[
-									'label' => __( 'Report an issue', 'goodbids' ),
-									'value' => __( 'Issue', 'goodbids' ),
-								],
-								[
-									'label' => __( 'Request a refund', 'goodbids' ),
-									'value' => __( 'Refund', 'goodbids' ),
-									'dependencies' => [
-										Request::FIELD_TYPE => Request::TYPE_BID,
-									],
-								],
-								[
-									'label' => __( 'Ask a question', 'goodbids' ),
-									'value' => __( 'Question', 'goodbids' ),
-								],
-							],
-							'required'     => 'dependencies',
-							'dependencies' => $extra_deps,
-						],
-						Request::FIELD_REQUEST => [
-							'type'         => 'textarea',
-							'label'        => __( 'Please describe your request', 'goodbids' ),
-							'placeholder'  => __( 'Tell us what\'s going on', 'goodbids' ),
-							'required'     => 'dependencies',
-							'dependencies' => $extra_deps,
+						'attr'    => [
+							'hx-trigger'   => 'change',
+							'hx-get'       => $current_url,
+							'hx-target'    => '#gb-support-form-target',
+							'hx-select'    => '#gb-support-form-target',
+							'hx-indicator' => '[data-form-spinner]',
 						],
 					],
-					$form_data
-				);
-			}
-		);
+					Request::FIELD_AUCTION => [
+						'type'    => 'select',
+						'label'   => __( 'Which Auction are you referencing?', 'goodbids' ),
+						'options' => [
+							'Auction 1',
+							'Auction 2',
+							'Auction 3',
+						],
+						'attr'    => [
+							'hx-trigger'   => 'change',
+							'hx-get'       => $current_url,
+							'hx-target'    => '#gb-support-form-target',
+							'hx-select'    => '#gb-support-form-target',
+							'hx-indicator' => '[data-form-spinner]',
+						],
+						'required'     => 'dependencies',
+						'dependencies' => [
+							Request::FIELD_TYPE => [ Request::TYPE_BID, Request::TYPE_REWARD, Request::TYPE_AUCTION ],
+						],
+					],
+					Request::FIELD_BID => [
+						'type'    => 'select',
+						'label'   => __( 'Which bid are you referencing?', 'goodbids' ),
+						'options' => [
+							'Bid 1',
+							'Bid 2',
+							'Bid 3',
+						],
+						'required'     => 'dependencies',
+						'dependencies' => [
+							Request::FIELD_TYPE    => Request::TYPE_BID,
+							Request::FIELD_AUCTION => null,
+						],
+						'attr'    => [
+							'hx-trigger'   => 'change',
+							'hx-get'       => $current_url,
+							'hx-target'    => '#gb-support-form-target',
+							'hx-select'    => '#gb-support-form-target',
+							'hx-indicator' => '[data-form-spinner]',
+						],
+					],
+					Request::FIELD_REWARD => [
+						'type'    => 'select',
+						'label'   => __( 'Which reward are you referencing?', 'goodbids' ),
+						'options' => [
+							'Reward 1',
+							'Reward 2',
+							'Reward 3',
+						],
+						'required'     => 'dependencies',
+						'dependencies' => [
+							Request::FIELD_TYPE    => Request::TYPE_REWARD,
+							Request::FIELD_AUCTION => null,
+						],
+						'attr'    => [
+							'hx-trigger'   => 'change',
+							'hx-get'       => $current_url,
+							'hx-target'    => '#gb-support-form-target',
+							'hx-select'    => '#gb-support-form-target',
+							'hx-indicator' => '[data-form-spinner]',
+						],
+					],
+					Request::FIELD_NATURE => [
+						'type'    => 'select',
+						'label'   => __( 'What is the nature of your request?', 'goodbids' ),
+						'options' => [
+							[
+								'label' => __( 'Report an issue', 'goodbids' ),
+								'value' => __( 'Issue', 'goodbids' ),
+							],
+							[
+								'label' => __( 'Request a refund', 'goodbids' ),
+								'value' => __( 'Refund', 'goodbids' ),
+								'dependencies' => [
+									Request::FIELD_TYPE => Request::TYPE_BID,
+								],
+							],
+							[
+								'label' => __( 'Ask a question', 'goodbids' ),
+								'value' => __( 'Question', 'goodbids' ),
+							],
+						],
+						'required'     => 'dependencies',
+						'dependencies' => $extra_deps,
+					],
+					Request::FIELD_REQUEST => [
+						'type'         => 'textarea',
+						'label'        => __( 'Please describe your request', 'goodbids' ),
+						'placeholder'  => __( 'Tell us what\'s going on', 'goodbids' ),
+						'required'     => 'dependencies',
+						'dependencies' => $extra_deps,
+					],
+				],
+				$form_data
+			);
+		};
+
+		add_action( 'template_redirect', $init_fields );
+		add_action( 'admin_init', $init_fields );
 	}
 
 	/**

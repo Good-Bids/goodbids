@@ -8,6 +8,7 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Users\Bidder;
 use WP_Post;
 
 /**
@@ -131,4 +132,60 @@ class Request {
 	}
 
 
+	public function get_user_id(): ?int {
+		$user_id = get_post_meta( $this->get_id(), self::FIELD_USER_ID, true );
+		if ( ! $user_id ) {
+			return null;
+		}
+
+		return $user_id;
+	}
+
+	public function get_user(): ?Bidder {
+		$user_id = $this->get_user_id();
+		if ( ! $user_id ) {
+			return null;
+		}
+
+		return new Bidder( $user_id );
+	}
+
+	public function get_field( string $key ): mixed {
+		return get_post_meta( $this->get_id(), $key, true );
+	}
+
+	public function get_auction_html(): string {
+		$auction = $this->get_field( self::FIELD_AUCTION );
+		if ( ! $auction ) {
+			return '';
+		}
+
+		list( $site_id, $auction_id ) = array_map( 'intval', explode( '|', $auction ) );
+
+		return goodbids()->sites->swap(
+			function () use ( $auction_id ) {
+				return sprintf(
+					'<a href="%s">%s</a> (<a href="%s" target="_blank">%s</a>)',
+					esc_url( get_edit_post_link( $auction_id ) ),
+					esc_html( get_the_title( $auction_id ) ),
+					esc_url( get_permalink( $auction_id ) ),
+					esc_html__( 'View', 'goodbids' )
+				);
+			},
+			$site_id
+		);
+	}
+
+	public function get_user_html(): string {
+		$user = $this->get_user();
+		if ( ! $user ) {
+			return '';
+		}
+
+		return sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( $user->get_edit_url() ),
+			esc_html( $user->get_username() )
+		);
+	}
 }

@@ -14,6 +14,7 @@
 
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
+use GoodBids\Frontend\Request;
 use GoodBids\Frontend\SupportRequest;
 use GoodBids\Network\Nonprofit;
 
@@ -87,9 +88,9 @@ if ( ! $order_type ) {
 }
 
 if ( Bids::ITEM_TYPE === $order_type ) {
-	$request_type = SupportRequest::TYPE_BID;
+	$request_type = Request::TYPE_BID;
 } elseif ( Rewards::ITEM_TYPE === $order_type ) {
-	$request_type = SupportRequest::TYPE_REWARD;
+	$request_type = Request::TYPE_REWARD;
 } else {
 	return;
 }
