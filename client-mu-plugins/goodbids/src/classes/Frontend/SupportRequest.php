@@ -262,6 +262,32 @@ class SupportRequest {
 					'normal',
 					'high'
 				);
+
+				add_meta_box(
+					'goodbids-support-request-actions',
+					__( 'Info', 'goodbids' ),
+					function ( WP_Post $post ): void {
+						$request = new Request( $post->ID );
+
+						if ( ! $request->is_valid() ) {
+							return;
+						}
+						?>
+						<div style="display: flex; justify-content: space-between; align-items: center;margin-top: 0.5rem;">
+							<p>
+								<strong><?php esc_html_e( 'Submission Date', 'goodbids' ); ?></strong><br>
+								<?php
+								$date = $request->get_post_data( 'post_date' );
+								echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $date ) ) );
+								?>
+							</p>
+						</div>
+						<?php
+					},
+					$this->get_post_type(),
+					'side',
+					'high'
+				);
 			}
 		);
 	}
@@ -1065,7 +1091,7 @@ class SupportRequest {
 				$title = sprintf(
 					'%s %s %s',
 					$metadata[ Request::FIELD_TYPE ],
-					__( 'from', 'goodbids' ),
+					__( 'Request from', 'goodbids' ),
 					$user->get_username()
 				);
 
