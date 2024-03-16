@@ -17,6 +17,7 @@ use GoodBids\Utilities\Log;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
+use WP_Screen;
 
 /**
  * Class for Auctions
@@ -770,8 +771,7 @@ class Auctions {
 	private function hide_auction_title(): void {
 		add_action(
 			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
+			function ( WP_Screen $screen ): void {
 				if ( $this->get_post_type() !== $screen->post_type ) {
 					return;
 				}
@@ -796,8 +796,7 @@ class Auctions {
 	private function remove_excerpt_placeholder(): void {
 		add_action(
 			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
+			function ( WP_Screen $screen ): void {
 				if ( $this->get_post_type() !== $screen->post_type ) {
 					return;
 				}

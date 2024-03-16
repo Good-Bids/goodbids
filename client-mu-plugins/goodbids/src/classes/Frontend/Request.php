@@ -86,6 +86,12 @@ class Request {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const READ_DATE_META_KEY = '_read_date';
+
+	/**
+	 * @since 1.0.0
 	 * @var int
 	 */
 	private int $request_id;
@@ -318,5 +324,50 @@ class Request {
 			},
 			$site_id
 		);
+	}
+
+	/**
+	 * Has this Request been viewed by an admin?
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_unread(): bool {
+		return is_null( $this->get_read_date() );
+	}
+
+	/**
+	 * Get the Read Date
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $format
+	 *
+	 * @return ?string
+	 */
+	public function get_read_date( string $format = 'n/j/Y g:ia' ): ?string {
+		$read_date = get_post_meta( $this->get_id(), self::READ_DATE_META_KEY, true );
+
+		if ( ! $read_date ) {
+			return null;
+		}
+
+		return mysql2date( $format, $read_date );
+	}
+
+	/**
+	 * Mark the request as read
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function mark_as_read(): void {
+		if ( ! $this->is_unread() ) {
+			return;
+		}
+
+		update_post_meta( $this->get_id(), self::READ_DATE_META_KEY, current_time( 'mysql' ) );
 	}
 }

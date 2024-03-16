@@ -10,6 +10,7 @@ namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Utilities\Log;
 use WP_Post;
+use WP_Screen;
 
 /**
  * Class for Admin Methods
@@ -50,9 +51,7 @@ class Admin {
 	private function add_auction_meta_box(): void {
 		add_action(
 			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
-
+			function ( WP_Screen $screen ): void {
 				if ( 'woocommerce_page_wc-orders' !== $screen->id ) {
 					return;
 				}

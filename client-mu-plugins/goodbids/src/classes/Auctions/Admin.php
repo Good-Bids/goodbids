@@ -10,6 +10,7 @@ namespace GoodBids\Auctions;
 
 use WC_Product_Variation;
 use WP_Post;
+use WP_Screen;
 
 /**
  * Auction Admin Class
@@ -54,9 +55,7 @@ class Admin {
 	private function add_info_meta_box(): void {
 		add_action(
 			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
-
+			function ( WP_Screen $screen ): void {
 				if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
 					return;
 				}
@@ -233,8 +232,8 @@ class Admin {
 	private function live_auction_restrictions(): void {
 		add_action(
 			'current_screen',
-			function () {
-				if ( ! $this->is_restricted() ) {
+			function ( WP_Screen $screen ): void {
+				if ( $screen->id !== goodbids()->auctions->get_post_type() || ! $this->is_restricted() ) {
 					return;
 				}
 				?>

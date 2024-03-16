@@ -12,6 +12,7 @@ namespace GoodBids\Frontend;
 use GoodBids\Users\Bidder;
 use GoodBids\Utilities\Log;
 use WP_Post;
+use WP_Screen;
 
 class SupportRequest {
 
@@ -89,6 +90,12 @@ class SupportRequest {
 
 		// Handle the Form Submission.
 		$this->handle_form_submission();
+
+		// Mark requests as read when opened in the admin.
+		$this->handle_mark_as_read();
+
+		// Display the unread count of Support Requests.
+		$this->display_unread_count();
 	}
 
 	/**
@@ -351,8 +358,6 @@ class SupportRequest {
 			'manage_' . self::POST_TYPE . '_posts_columns',
 			function ( array $columns ): array {
 				$new_columns = [];
-				unset( $columns['cb'] );
-
 				foreach ( $columns as $column => $label ) {
 					$new_columns[ $column ] = $label;
 
@@ -360,8 +365,8 @@ class SupportRequest {
 					if ( 'title' === $column ) {
 						$new_columns[ Request::FIELD_USER_ID ] = __( 'User', 'goodbids' );
 						$new_columns[ Request::FIELD_AUCTION ] = __( 'Auction', 'goodbids' );
-						$new_columns[ Request::FIELD_TYPE ] = __( 'Type', 'goodbids' );
-						$new_columns[ Request::FIELD_NATURE ] = __( 'Nature', 'goodbids' );
+						$new_columns[ Request::FIELD_TYPE ]    = __( 'Type', 'goodbids' );
+						$new_columns[ Request::FIELD_NATURE ]  = __( 'Nature', 'goodbids' );
 					}
 				}
 
@@ -372,11 +377,13 @@ class SupportRequest {
 		add_action(
 			'manage_' . self::POST_TYPE . '_posts_custom_column',
 			function ( string $column, int $post_id ) {
-
 				$request = new Request( $post_id );
 
 				if ( Request::FIELD_USER_ID === $column ) {
 					echo wp_kses_post( $request->get_user_html() );
+					if ( ! $request->is_unread() ) {
+						printf( '<style>tr#post-%s .column-title strong a { font-weight:normal !important; }</style>', esc_html( $post_id ) );
+					}
 				} elseif ( Request::FIELD_AUCTION === $column ) {
 					echo wp_kses_post( $request->get_auction_html() );
 				} elseif ( Request::FIELD_TYPE === $column ) {
@@ -1136,5 +1143,87 @@ class SupportRequest {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Get the number of unread support requests
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_unread_count(): int {
+		$args = [
+			'post_type'      => self::POST_TYPE,
+			'post_status'    => 'private',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_key'       => Request::READ_DATE_META_KEY,
+			'meta_compare'   =>'NOT EXISTS',
+		];
+
+		$unread = new \WP_Query( $args );
+		return $unread->found_posts;
+	}
+
+	/**
+	 * Mark a Request as read
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_mark_as_read(): void {
+		add_action(
+			'current_screen',
+			function ( WP_Screen $screen ) {
+				if ( self::POST_TYPE !== $screen->id || empty( $_GET['post'] ) ) { // phpcs:ignore
+					return;
+				}
+
+				$request_id = absint( sanitize_text_field( $_GET['post'] ) ); // phpcs:ignore
+				$request    = new Request( $request_id );
+
+				if ( ! $request->is_valid() ) {
+					return;
+				}
+
+				if ( $request->is_unread() ) {
+					$request->mark_as_read();
+				}
+			}
+		);
+	}
+
+	/**
+	 * Display the unread count in the WP Admin menu
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function display_unread_count(): void {
+		add_action(
+			'admin_menu',
+			function () {
+				global $menu;
+
+				$unread_count = $this->get_unread_count();
+
+				// Loop through the menu items
+				foreach ( $menu as $key => $value ) {
+					// Check if the menu item is for our post type
+					if ( 'edit.php?post_type=' . self::POST_TYPE !== $value[2] ) {
+						continue;
+					}
+
+					// If there are unread items, add the count to the menu item title
+					if ( $unread_count > 0 ) {
+						$menu[ $key ][0] .= ' <span class="update-plugins count-' . $unread_count . '"><span class="plugin-count">' . esc_html( $unread_count ) . '</span></span>'; // phpcs:ignore
+					}
+					break;
+				}
+			}
+		);
 	}
 }
