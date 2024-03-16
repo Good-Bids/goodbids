@@ -1170,4 +1170,27 @@ class SupportRequest {
 			}
 		);
 	}
+
+	/**
+	 * Get the Support Request form URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $args
+	 *
+	 * @return string
+	 */
+	public function get_form_url( array $args = [] ): string {
+		$url = trailingslashit( home_url( 'support-request' ) );
+
+		if ( empty( $args ) ) {
+			return $url;
+		}
+
+		foreach ( $args as $arg => $val ) {
+			$url = add_query_arg( $arg, $val, $url );
+		}
+
+		return $url;
+	}
 }
