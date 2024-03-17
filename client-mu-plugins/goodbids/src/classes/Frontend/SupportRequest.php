@@ -1173,7 +1173,6 @@ class SupportRequest {
 	public function get_form_url( array $args = [] ): string {
 		$page_id = get_option( Sites::SUPPORT_OPTION );
 
-		// Make sure it doesn't already exist.
 		if ( ! $page_id ) {
 			$existing = get_page_by_path( self::FORM_SLUG );
 
