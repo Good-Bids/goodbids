@@ -249,7 +249,6 @@ class Referrals {
 		);
 
 		if ( empty( $user ) ) {
-			Log::warning( 'Unable to locate user by Referral Code: ' . $code );
 			return false;
 		}
 
