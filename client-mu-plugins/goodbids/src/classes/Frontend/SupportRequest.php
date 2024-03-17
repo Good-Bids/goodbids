@@ -9,6 +9,7 @@
 
 namespace GoodBids\Frontend;
 
+use GoodBids\Network\Sites;
 use GoodBids\Users\Bidder;
 use GoodBids\Utilities\Log;
 use WP_Post;
@@ -30,6 +31,14 @@ class SupportRequest {
 	 * @var string
 	 */
 	const FORM_NONCE_ACTION = 'support-request-form';
+
+	/**
+	 * Nonce action
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FORM_SLUG = 'support-request';
 
 	/**
 	 * Form fields
@@ -1162,7 +1171,21 @@ class SupportRequest {
 	 * @return string
 	 */
 	public function get_form_url( array $args = [] ): string {
-		$url = trailingslashit( home_url( 'support-request' ) );
+		$page_id = get_option( Sites::SUPPORT_OPTION );
+
+		// Make sure it doesn't already exist.
+		if ( ! $page_id ) {
+			$existing = get_page_by_path( self::FORM_SLUG );
+
+			if ( ! $existing ) {
+				return '#' . self::FORM_SLUG;
+			}
+
+			$page_id = $existing->ID;
+			update_option( Sites::SUPPORT_OPTION, $page_id );
+		}
+
+		$url = get_permalink( $page_id );
 
 		if ( empty( $args ) ) {
 			return $url;

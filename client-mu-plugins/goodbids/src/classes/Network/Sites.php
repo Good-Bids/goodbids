@@ -12,6 +12,7 @@ use Automattic\WP\Cron_Control\Events_Store;
 use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
+use GoodBids\Frontend\SupportRequest;
 use GoodBids\Nonprofits\Verification;
 use GoodBids\Users\Permissions;
 use GoodBids\Utilities\Log;
@@ -496,7 +497,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$page_slug = 'support-request';
+				$page_slug = SupportRequest::FORM_SLUG;
 				$existing  = get_option( self::SUPPORT_OPTION );
 
 				// Make sure it doesn't already exist.
