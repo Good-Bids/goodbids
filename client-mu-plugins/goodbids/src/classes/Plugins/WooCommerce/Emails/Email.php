@@ -52,6 +52,14 @@ class Email extends WC_Email {
 	protected bool $admin_email = false;
 
 	/**
+	 * If email is sent to Super Admins.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $super_admins_email = false;
+
+	/**
 	 * If email is sent to Bidders.
 	 *
 	 * @since 1.0.0
@@ -573,6 +581,10 @@ class Email extends WC_Email {
 			$recipients[] = __( 'Admin', 'goodbids' );
 		}
 
+		if ( $this->is_super_admins_email() ) {
+			$recipients[] = __( 'Super Admins', 'goodbids' );
+		}
+
 		if ( ! $recipients ) {
 			return __( 'Not Set', 'goodbids' );
 		}
@@ -588,6 +600,16 @@ class Email extends WC_Email {
 	 */
 	public function is_admin_email(): bool {
 		return $this->admin_email;
+	}
+
+	/**
+	 * Check if the email is sent to Super Admins.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	public function is_super_admins_email(): bool {
+		return $this->super_admins_email;
 	}
 
 	/**
@@ -837,6 +859,22 @@ class Email extends WC_Email {
 	 */
 	public function send_to_admins( mixed $object ): void {
 		$admins = get_users( [ 'role' => 'administrator', 'fields' => 'ID' ] );
+
+		if ( $this->is_super_admins_email() ) {
+			$super_admins = get_super_admins();
+			$super_ids    = [];
+			foreach ( $super_admins as $username ) {
+				$super_admin = get_user_by( 'login', $username );
+				if ( ! $super_admin || ! $super_admin->user_email ) {
+					continue;
+				}
+				$super_ids[] = $super_admin->ID;
+			}
+			$admins = array_merge( $admins, $super_ids );
+		}
+
+		$admins = array_unique( $admins );
+
 		if ( empty( $admins ) ) {
 			Log::error( 'No Admins found to send email to', [ 'object' => $object ] );
 		}

@@ -28,12 +28,13 @@ class SupportRequest extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_support_request';
-		$this->title          = __( 'Support Request', 'goodbids' );
-		$this->description    = __( 'Notification email sent to all site admins when a new support request is received.', 'goodbids' );
-		$this->template_html  = 'emails/support-request.php';
-		$this->template_plain = 'emails/plain/support-request.php';
-		$this->admin_email    = true;
+		$this->id                 = 'goodbids_support_request';
+		$this->title              = __( 'Support Request', 'goodbids' );
+		$this->description        = __( 'Notification email sent to all site admins when a new support request is received.', 'goodbids' );
+		$this->template_html      = 'emails/support-request.php';
+		$this->template_plain     = 'emails/plain/support-request.php';
+		$this->admin_email        = true;
+		$this->super_admins_email = true;
 
 		$this->trigger_on_new_support_request();
 	}
@@ -82,5 +83,19 @@ class SupportRequest extends Email {
 			'{user.name}',
 			'{site_title}'
 		);
+	}
+
+	/**
+	 * Init Form Fields
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function init_form_fields(): void {
+		parent::init_form_fields();
+
+		// Prevent email from being disabled
+		$this->form_fields['enabled']['disabled'] = true;
 	}
 }
