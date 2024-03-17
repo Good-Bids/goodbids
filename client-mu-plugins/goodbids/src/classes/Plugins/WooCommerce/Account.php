@@ -147,7 +147,7 @@ class Account {
 		add_filter(
 			'goodbids_account_' . self::FREE_BIDS_SLUG . '_args',
 			function ( $args ) {
-				$args['free_bids'] = goodbids()->users->get_free_bids();
+				$args['free_bids'] = goodbids()->free_bids->get();
 				return $args;
 			}
 		);

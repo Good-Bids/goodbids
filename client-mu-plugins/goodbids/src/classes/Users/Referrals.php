@@ -8,7 +8,6 @@
 
 namespace GoodBids\Users;
 
-use GoodBids\Auctions\FreeBid;
 use GoodBids\Core;
 use GoodBids\Users\Referrals\Admin;
 use GoodBids\Users\Referrals\Generator;
@@ -369,7 +368,7 @@ class Referrals {
 			$auction_id
 		);
 
-		goodbids()->users->award_free_bid( $referrer_id, $auction_id, FreeBid::TYPE_REFERRAL, $details, true );
+		goodbids()->free_bids->award( $referrer_id, $auction_id, FreeBid::TYPE_REFERRAL, $details, true );
 
 		return true;
 	}

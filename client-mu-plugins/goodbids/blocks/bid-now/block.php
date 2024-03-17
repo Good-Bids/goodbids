@@ -208,7 +208,7 @@ class BidNow extends ACFBlock {
 		}
 
 		// Make sure the user has free bids.
-		if ( ! goodbids()->users->get_available_free_bid_count() ) {
+		if ( ! goodbids()->free_bids->get_available_count() ) {
 			return false;
 		}
 

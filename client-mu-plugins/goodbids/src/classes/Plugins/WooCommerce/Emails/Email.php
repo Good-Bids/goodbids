@@ -11,8 +11,8 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
-use GoodBids\Auctions\FreeBid;
 use GoodBids\Frontend\Request;
+use GoodBids\Users\FreeBid;
 use GoodBids\Users\Referrals\Referrer;
 use GoodBids\Utilities\Log;
 use WC_Email;
@@ -445,7 +445,7 @@ class Email extends WC_Email {
 		$referrer = new Referrer( $this->user_id );
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
 		$this->add_placeholder( '{user.account_url}', wc_get_page_permalink( 'myaccount' ) );
-		$this->add_placeholder( '{user.free_bid_count}', goodbids()->users->get_available_free_bid_count( $this->user_id ) );
+		$this->add_placeholder( '{user.free_bid_count}', goodbids()->free_bids->get_available_count( $this->user_id ) );
 		$this->add_placeholder( '{user.referral_link}', $referrer->get_link() );
 
 		// Order Details

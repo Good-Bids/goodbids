@@ -2,12 +2,14 @@
 /**
  * Admin Invoice Details
  *
- * @global GoodBids\Nonprofits\Invoice $invoice
- * @global int $auction_id
+ * @global Invoice $invoice
+ * @global int     $auction_id
  *
  * @since 1.0.0
  * @package GoodBids
  */
+
+use GoodBids\Nonprofits\Invoice;
 
 $auction = goodbids()->auctions->get( $auction_id );
 ?>

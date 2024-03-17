@@ -8,6 +8,7 @@
 
 namespace GoodBids\Auctions;
 
+use GoodBids\Users\FreeBids;
 use WP_Admin_Bar;
 
 /**
@@ -291,7 +292,7 @@ class Wizard {
 			// URL Params
 			'auctionIdParam'  => self::AUCTION_ID_PARAM,
 			'editRewardParam' => self::REWARD_EDIT_PARAM,
-			'useFreeBidParam' => Bids::USE_FREE_BID_PARAM,
+			'useFreeBidParam' => FreeBids::USE_FREE_BID_PARAM,
 
 			// Flags.
 			'metricsEnabled' => false,
