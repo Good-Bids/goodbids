@@ -38,6 +38,9 @@ class Admin {
 		// Disable Auction functions once they have started.
 		$this->maybe_disable_auction();
 
+		// Add Clone link to row actions.
+		$this->add_clone_link();
+
 		// Validate Start/End Dates for Auctions.
 		$this->validate_auction_dates();
 
@@ -476,6 +479,42 @@ class Admin {
 				unset( $all_caps['delete_posts'] );
 
 				return $all_caps;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Add clone link to row actions.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_clone_link(): void {
+		add_filter(
+			'post_row_actions',
+			function ( array $actions, $post ) {
+				if ( goodbids()->auctions->get_post_type() !== get_post_type( $post ) ) {
+					return $actions;
+				}
+
+				$auction = goodbids()->auctions->get( $post->ID );
+				$reward_product = $auction->get_reward();
+
+				$actions['clone'] = sprintf(
+					'<a href="%s" aria-label="%s">%s</a>',
+					esc_url( goodbids()->auctions->wizard->get_wizard_url(
+						Wizard::CLONE_MODE_OPTION,
+						$auction->get_id(),
+						$reward_product->get_id()
+					) ),
+					esc_attr( __( 'Clone', 'goodbids' ) ),
+					__( 'Clone', 'goodbids' )
+				);
+
+				return $actions;
 			},
 			10,
 			2

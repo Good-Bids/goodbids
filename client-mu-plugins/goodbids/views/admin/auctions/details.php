@@ -9,6 +9,7 @@
  */
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Auctions\Wizard;
 
 ?>
 <h3><?php esc_html_e( 'Auction Details', 'goodbids' ); ?></h3>
@@ -59,7 +60,7 @@ if ( $reward_product ) {
 			'<p><strong>%s</strong><br>%s (<a href="%s">%s</a>)</p>',
 			esc_html__( 'Reward Product', 'goodbids' ),
 			esc_html( $reward_product->get_name() ),
-			esc_html( goodbids()->auctions->wizard->get_wizard_url( $auction_id, $reward_product->get_id() ) ),
+			esc_html( goodbids()->auctions->wizard->get_wizard_url( Wizard::EDIT_MODE_OPTION, $auction_id, $reward_product->get_id() ) ),
 			esc_html__( 'Edit', 'goodbids' )
 		);
 	}

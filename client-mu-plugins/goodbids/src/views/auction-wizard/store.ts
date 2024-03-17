@@ -56,6 +56,7 @@ export type AuctionState = {
 	auctionGoal: ValueType<string>;
 	expectedHighBid: ValueType<string>;
 	estimatedRetailValue: ValueType<string>;
+	clonedContent: string | null;
 	error: string | null;
 };
 
@@ -70,6 +71,7 @@ const defaultAuctionState: AuctionState = {
 	auctionGoal: { value: '' },
 	expectedHighBid: { value: '' },
 	estimatedRetailValue: { value: '' },
+	clonedContent: null,
 	error: null,
 };
 
@@ -80,6 +82,15 @@ export type AuctionWizardStoreState = {
 	auction: AuctionState;
 };
 
+export type EditableAuctionValues = keyof Omit<
+	AuctionState,
+	'error' | 'clonedContent'
+>;
+export type EditableProductValues = keyof Omit<
+	AuctionWizardProductState,
+	'error'
+>;
+
 type AuctionWizardStoreActions = {
 	setStep: (step: StepType) => void;
 	setAuctionId: (id: number) => void;
@@ -88,17 +99,19 @@ type AuctionWizardStoreActions = {
 	addToProductGallery: (image: ImageType) => void;
 	removeFromProductGallery: (id: number) => void;
 	setProductValue: (
-		key: keyof AuctionWizardProductState,
+		key: EditableProductValues,
 		value: string,
 		error?: string,
 	) => void;
 	setProductError: (error: string) => void;
 	setAuctionValue: (
-		key: keyof AuctionState,
+		key: EditableAuctionValues,
 		value: string,
 		error?: string,
 	) => void;
+	setAuctionClonedContent: (content: string) => void;
 	setAuctionError: (error: string) => void;
+	setAuction: (auction: Omit<AuctionState, 'error'>) => void;
 	setProduct: (product: Omit<AuctionWizardProductState, 'error'>) => void;
 	clearStore: () => void;
 };
@@ -166,8 +179,14 @@ const useAuctionWizardStore = create<
 						[key]: { value, error },
 					},
 				})),
+			setAuctionClonedContent: (content) =>
+				set((state) => ({
+					auction: { ...state.auction, clonedContent: content },
+				})),
 			setAuctionError: (error) =>
 				set((state) => ({ auction: { ...state.auction, error } })),
+			setAuction: (auction) =>
+				set((state) => ({ auction: { ...state.auction, ...auction } })),
 			setProduct: (product) =>
 				set((state) => ({ product: { ...state.product, ...product } })),
 			clearStore: () =>

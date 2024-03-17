@@ -14,7 +14,7 @@ export function OnboardingCompleteStep() {
 
 				<P>
 					{__(
-						'Hooray! We’ve confirmed that you set up payments. You’ve now completed the required steps for onboarding and you’re ready to start customizing your site. Click the button below to turn on the lights and see our site setup dashboard, which will walk you through all the next steps to build out and launch your site. ',
+						'Hooray! You’ve completed the required steps for onboarding and you’re ready to start customizing your site. Click the button below to turn on the lights and see our site setup dashboard, which will walk you through all the next steps to build out and launch your site. ',
 						'goodbids',
 					)}
 				</P>
