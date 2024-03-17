@@ -836,7 +836,7 @@ class SupportRequest {
 			$form_data   = $this->get_form_data();
 
 			// Dynamic Dependencies for the 2 Request Fields
-			$extra_deps  = [
+			$extra_deps = [
 				Request::FIELD_TYPE => null,
 			];
 
