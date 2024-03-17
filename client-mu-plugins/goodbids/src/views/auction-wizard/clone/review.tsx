@@ -12,11 +12,13 @@ import { Wrapper } from './wrapper';
 import { getContent } from './get-content';
 
 type ReviewStepProps = {
+	auctionId: number;
 	shippingClasses: ShippingClasses;
 	productCategories: ProductCategories;
 };
 
 export function ReviewStep({
+	auctionId,
 	shippingClasses,
 	productCategories,
 }: ReviewStepProps) {
@@ -146,9 +148,13 @@ export function ReviewStep({
 	};
 
 	const handleAuctionContentUpdate = (id: number) => {
+		if (!auction.clonedContent) {
+			return;
+		}
+
 		updateAuctionContent.mutate({
 			id,
-			content: getContent(id),
+			content: getContent(auctionId, id, auction.clonedContent),
 		});
 	};
 
@@ -164,11 +170,7 @@ export function ReviewStep({
 		updateAuctionContent.status === 'pending';
 
 	return (
-		<Wrapper
-			progress={90}
-			step={3}
-			title={__('Review your auction settings', 'goodbids')}
-		>
+		<Wrapper title={__('Review your cloned auction', 'goodbids')}>
 			<div className="flex flex-col gap-8">
 				<ReviewProduct
 					shippingClasses={shippingClasses}
@@ -181,7 +183,11 @@ export function ReviewStep({
 				/>
 
 				<Button
-					disabled={loading}
+					disabled={
+						loading ||
+						!!auction.startDate.error ||
+						!!auction.endDate.error
+					}
 					variant="solid"
 					onClick={handleSubmitStart}
 				>

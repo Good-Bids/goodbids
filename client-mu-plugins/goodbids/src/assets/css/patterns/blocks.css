@@ -1,0 +1,8 @@
+@layer components {
+	.wp-block-media-text.has-media-on-the-right .wp-block-media-text__content {
+		@apply sm:!pl-1;
+	}
+	.wp-block-media-text .wp-block-media-text__content {
+		@apply sm:!pr-1;
+	}
+}

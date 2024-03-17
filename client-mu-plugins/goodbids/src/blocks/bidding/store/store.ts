@@ -65,6 +65,8 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 				message,
 				state.userId,
 				state.setCountdownInterval,
+				state.startTime,
+				state.endTime,
 			),
 		);
 	},

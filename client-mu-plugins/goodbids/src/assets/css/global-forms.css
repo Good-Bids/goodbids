@@ -17,13 +17,13 @@
 			@apply rounded border-solid border-base bg-contrast text-base-2 placeholder:text-base focus:outline-contrast-3;
 		}
 
-		.contact-form__select-wrapper:after {
-			@apply !bottom-0 !top-0 !m-auto;
-		}
-
 		.wp-block-button__link {
 			@apply btn-fill-secondary;
 		}
+	}
+
+	.contact-form .contact-form__select-wrapper:after {
+		@apply !bottom-0 !top-0 !m-auto;
 	}
 
 	/* WooCommerce Forms */
