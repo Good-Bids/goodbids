@@ -329,7 +329,7 @@ class Wizard {
 			],
 			'auctionIdParam'   => self::AUCTION_ID_PARAM,
 			'rewardIdParam'    => self::REWARD_ID_PARAM,
-			'useFreeBidParam'  => Bids::USE_FREE_BID_PARAM,
+			'useFreeBidParam'  => FreeBids::USE_FREE_BID_PARAM,
 
 			// Flags.
 			'metricsEnabled' => false,
