@@ -359,7 +359,6 @@ class Users {
 						],
 						200
 					);
-					wp_die();
 				}
 
 				if ( ! $reason ) {
@@ -369,7 +368,6 @@ class Users {
 						],
 						200
 					);
-					wp_die();
 				}
 
 				if ( ! $this->award_free_bid( $user_id, null, FreeBid::TYPE_ADMIN_GRANT, $reason, true ) ) {
@@ -379,7 +377,6 @@ class Users {
 						],
 						200
 					);
-					wp_die();
 				}
 
 				wp_send_json_success( [ 'done' ] );
@@ -408,7 +405,6 @@ class Users {
 				],
 				200
 			);
-			wp_die();
 		}
 
 		return [ $user_id, $reason ];

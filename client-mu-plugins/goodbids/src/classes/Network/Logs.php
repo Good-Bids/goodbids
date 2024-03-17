@@ -222,7 +222,7 @@ class Logs {
 				$file_path = Log::get_logs_dir() . $file_name;
 
 				if ( ! file_exists( $file_path ) ) {
-					wp_die( 'Error: File not found.' );
+					goodbids()->utilities->die( 'Error: File not found.' );
 				}
 
 				header( 'Content-Description: File Transfer' );

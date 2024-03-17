@@ -830,7 +830,7 @@ class Verification {
 				}
 
 				if ( ! $this->is_verified( get_current_blog_id() ) ) {
-					wp_die( esc_html__( 'This site must be verified first.', 'goodbids' ) );
+					goodbids()->utilities->die( __( 'This site must be verified first.', 'goodbids' ) );
 				}
 			}
 		);

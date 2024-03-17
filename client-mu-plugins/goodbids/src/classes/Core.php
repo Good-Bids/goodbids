@@ -509,40 +509,56 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->utilities     = new Utilities();
-				$this->acf           = new ACF();
-				$this->admin         = new Admin();
-				$this->forms         = new Forms();
-				$this->support       = new SupportRequest();
-				$this->auctions      = new Auctions();
-				$this->auctioneer    = new Auctioneer();
-				$this->products      = new Products();
-				$this->bids          = new Bids();
-				$this->rewards       = new Rewards();
-				$this->network       = new Network();
-				$this->sites         = new Sites();
-				$this->invoices      = new Invoices();
-				$this->verification  = new Verification();
-				$this->settings      = new Settings();
-				$this->woocommerce   = new WooCommerce();
-				$this->onboarding    = new Onboarding();
-				$this->notices       = new Notices();
-				$this->users         = new Users();
-				$this->watchers      = new Watchers();
-				$this->referrals     = new Referrals();
-				$this->accessibility = new EqualizeDigital();
+				/**
+				 * Loading order here is important.
+				 * Some modules depend on others being loaded first.
+				 */
 
-				// Init Modules not part of the API.
+				// Utilities and Helpers
+				$this->utilities = new Utilities();
+				$this->forms     = new Forms();
 				new Permissions();
-				new AuctionsAdmin();
 				new Patterns();
-				new Partners();
-				new Dashboard();
 				new Blocks();
+
+				// General
+				$this->users   = new Users();
+				$this->admin   = new Admin();
+				$this->support = new SupportRequest();
+				new Partners();
+
+				// Third Party
+				$this->acf           = new ACF();
+				$this->woocommerce   = new WooCommerce();
+				$this->accessibility = new EqualizeDigital();
 				new OneTrust();
-				new Guide();
-				new NonprofitAdmin();
 				new MiniOrange();
+
+				// Auctions and submodules
+				$this->auctions = new Auctions();
+				new AuctionsAdmin();
+
+				// Auction Submodules
+				$this->auctioneer = new Auctioneer();
+				$this->products   = new Products();
+				$this->bids       = new Bids();
+				$this->rewards    = new Rewards();
+				$this->watchers   = new Watchers();
+
+				// Onboarding
+				$this->sites        = new Sites();
+				$this->network      = new Network();
+				$this->onboarding   = new Onboarding();
+				$this->verification = new Verification();
+				new Guide();
+
+				// Network Admin
+				$this->invoices  = new Invoices();
+				$this->settings  = new Settings();
+				$this->notices   = new Notices();
+				$this->referrals = new Referrals();
+				new Dashboard();
+				new NonprofitAdmin();
 			}
 		);
 	}

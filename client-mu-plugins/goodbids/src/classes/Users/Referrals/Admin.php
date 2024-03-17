@@ -184,7 +184,6 @@ class Admin {
 						),
 						200
 					);
-					wp_die();
 				}
 
 				$referred_by = goodbids()->referrals->get_referrer_id( $user_id );
@@ -196,7 +195,6 @@ class Admin {
 						],
 						200
 					);
-					wp_die();
 				}
 
 				goodbids()->referrals->add_referral( $referrer_id, $user_id );
@@ -340,7 +338,6 @@ class Admin {
 				],
 				422
 			);
-			wp_die();
 		}
 
 		return [ $user_id, $referrer_id ];
