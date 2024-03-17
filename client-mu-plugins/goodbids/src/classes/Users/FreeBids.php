@@ -235,13 +235,8 @@ class FreeBids {
 		$collection = collect( $all_free_bids );
 
 		if ( self::STATUS_ALL !== $status ) {
-			$collection->filter(
-				fn ( $free_bid ) => (
-					// When status is STATUS_ALL, always returns true.
-					self::STATUS_ALL === $status
-					// Otherwise bid must match status.
-					|| $status === $free_bid->get_status()
-				)
+			$collection = $collection->filter(
+				fn ( $free_bid ) => $status === $free_bid->get_status()
 			);
 		}
 
