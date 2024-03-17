@@ -162,7 +162,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function is_valid(): bool {
-		return is_null( $this->post );
+		return ! is_null( $this->post );
 	}
 
 	/**
@@ -1198,7 +1198,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function end_triggered(): bool {
-		return boolval( get_post_meta( $this->get_id(), self::AUCTION_CLOSE_META_KEY, true ) );
+		return boolval( get_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, true ) );
 	}
 
 	/**
