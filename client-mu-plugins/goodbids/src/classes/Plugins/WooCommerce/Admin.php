@@ -39,6 +39,9 @@ class Admin {
 
 		// Remove WooCommerce Features on Main site
 		$this->main_site_cleanup();
+
+		// Limit access to pages
+		$this->limit_access_to_pages();
 	}
 
 	/**
@@ -306,6 +309,33 @@ class Admin {
 				return $tabs;
 			},
 			100
+		);
+	}
+
+	/**
+	 * Limit access from WooCommerce pages
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function limit_access_to_pages(): void {
+		add_filter(
+			'goodbids_restrict_pages',
+			function ( array $pages ): array {
+				$wc_pages = array_filter(
+					[
+						intval( get_option( 'woocommerce_cart_page_id' ) ),
+						intval( get_option( 'woocommerce_checkout_page_id' ) ),
+						intval( get_option( 'woocommerce_myaccount_page_id' ) ),
+						intval( get_option( 'woocommerce_shop_page_id' ) ),
+						intval( get_option( 'woocommerce_view_order_page_id' ) ),
+						intval( get_option( 'woocommerce_authentication_page_id' ) ),
+					]
+				);
+
+				return array_merge( $pages, $wc_pages );
+			}
 		);
 	}
 }
