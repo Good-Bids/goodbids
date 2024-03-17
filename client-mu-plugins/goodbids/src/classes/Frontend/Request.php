@@ -312,8 +312,6 @@ class Request {
 					$reward_id
 				);
 
-				$order = wc_get_order( $reward_id );
-
 				return sprintf(
 					'<a href="%s">%s %s %s</a>',
 					esc_url( get_edit_post_link( $reward_id ) ),
