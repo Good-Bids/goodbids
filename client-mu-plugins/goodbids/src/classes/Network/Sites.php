@@ -76,11 +76,16 @@ class Sites {
 
 		// New Site Initialization
 		$this->activate_child_theme_on_new_site();
+		$this->set_default_posts_per_page();
+
+		// Create new pages on new sites.
 		$this->create_about_page();
+		$this->create_support_page();
 		$this->create_all_auctions_page();
+
+		// Delete Sample content
 		$this->delete_sample_page();
 		$this->delete_sample_post();
-		$this->set_default_posts_per_page();
 
 		// Lock down the block editor.
 		$this->lock_block_editor();
