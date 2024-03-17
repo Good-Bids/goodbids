@@ -13,6 +13,7 @@ use GoodBids\Users\Bidder;
 use GoodBids\Utilities\Log;
 use WP_Post;
 use WP_Screen;
+use function is_user_logged_in;
 
 class SupportRequest {
 
@@ -430,24 +431,7 @@ class SupportRequest {
 	 * @return bool
 	 */
 	public function submission_processed(): bool {
-		return ! empty( $_GET['success'] ); // phpcs:ignore
-	}
-
-	/**
-	 * Render the success message
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function render_success(): void {
-		?>
-		<div class="bg-gb-green-700 rounded p-4">
-			<p class="text-gb-green-100">
-				<?php esc_html_e( 'Your request has been submitted. We will respond as soon as we can.', 'goodbids' ); ?>
-			</p>
-		</div>
-		<?php
+		return ! empty( $_GET['support-request'] ) && 'submitted' === $_GET['support-request']; // phpcs:ignore
 	}
 
 	/**
@@ -585,7 +569,11 @@ class SupportRequest {
 					->values()
 					->all();
 
-				$fields[ Request::FIELD_AUCTION ]['options'] = $options;
+				$fields[ Request::FIELD_AUCTION ]['options']   = $options;
+				$fields[ Request::FIELD_AUCTION ]['options'][] = [
+					'value' => 'unlisted',
+					'label' => __( 'The Auction is not listed.', 'goodbids' ),
+				];
 
 				return $fields;
 			}
@@ -665,7 +653,11 @@ class SupportRequest {
 					);
 				}
 
-				$fields[ Request::FIELD_BID ]['options'] = $options;
+				$fields[ Request::FIELD_BID ]['options']   = $options;
+				$fields[ Request::FIELD_BID ]['options'][] = [
+					'value' => 'unlisted',
+					'label' => __( 'The Bid Order is not listed.', 'goodbids' ),
+				];
 
 				return $fields;
 			},
@@ -685,7 +677,7 @@ class SupportRequest {
 		add_filter(
 			'goodbids_support_request_form_fields',
 			function ( array $fields, array $form_data ): array {
-				if ( ! \is_user_logged_in() || is_admin() ) {
+				if ( ! is_user_logged_in() || is_admin() ) {
 					return $fields;
 				}
 
@@ -752,7 +744,11 @@ class SupportRequest {
 					);
 				}
 
-				$fields[ Request::FIELD_REWARD ]['options'] = $options;
+				$fields[ Request::FIELD_REWARD ]['options']   = $options;
+				$fields[ Request::FIELD_REWARD ]['options'][] = [
+					'value' => 'unlisted',
+					'label' => __( 'The Reward Order is not listed.', 'goodbids' ),
+				];
 
 				return $fields;
 			},
@@ -1052,7 +1048,7 @@ class SupportRequest {
 	public function get_form_data(): array {
 		$form_data = $this->get_url_vars();
 
-		if ( empty( $_POST[ self::FORM_NONCE_ACTION ] ) || empty( $this->fields ) ) { // phpcs:ignore
+		if ( ! $this->verify_nonce() || empty( $this->fields ) ) {
 			return $form_data;
 		}
 
@@ -1061,6 +1057,25 @@ class SupportRequest {
 		}
 
 		return $form_data;
+	}
+
+	/**
+	 * Verify the Nonce
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function verify_nonce(): bool {
+		if ( empty( $_POST[ self::FORM_NONCE_ACTION . '_nonce' ] ) ) {
+			return false;
+		}
+
+		if ( ! wp_verify_nonce( sanitize_text_field( $_POST[ self::FORM_NONCE_ACTION . '_nonce' ] ), self::FORM_NONCE_ACTION ) ) { // phpcs:ignore
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -1074,7 +1089,7 @@ class SupportRequest {
 		add_action(
 			'template_redirect',
 			function () {
-				if ( empty( $_POST ) ) { // phpcs:ignore
+				if ( ! $this->verify_nonce() ) { // phpcs:ignore
 					return;
 				}
 
@@ -1110,15 +1125,27 @@ class SupportRequest {
 					'meta_input'  => $metadata,
 				];
 
-				if ( ! $this->create_request( $support_post ) ) {
+				$request_id = $this->create_request( $support_post );
+				if ( ! $request_id ) {
 					return;
 				}
 
+				/**
+				 * Fires after a support request is received.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $request_id The ID of the support request.
+				 */
+				do_action( 'goodbids_support_request_received', $request_id );
+
 				global $wp;
-				$redirect = add_query_arg( 'success', 1, trailingslashit( home_url( $wp->request ) ) );
+				$redirect = trailingslashit( home_url( $wp->request ) );
+				$redirect = add_query_arg( 'support-request', 'submitted', $redirect );
 				wp_safe_redirect( $redirect );
 				exit;
-			}
+			},
+			100
 		);
 	}
 

@@ -12,7 +12,9 @@ defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\FreeBid;
+use GoodBids\Frontend\Request;
 use GoodBids\Users\Referrals\Referrer;
+use GoodBids\Utilities\Log;
 use WC_Email;
 use WC_Order;
 use WP_User;
@@ -377,6 +379,7 @@ class Email extends WC_Email {
 		$auction    = $this->object instanceof Auction ? $this->object : null;
 		$order      = $this->object instanceof WC_Order ? $this->object : null;
 		$free_bid   = $this->object instanceof FreeBid ? $this->object : null;
+		$request    = $this->object instanceof Request ? $this->object : null;
 		$order_type = false;
 
 		if ( $order ) {
@@ -445,6 +448,17 @@ class Email extends WC_Email {
 		// Free Bid Details
 		$this->add_placeholder( '{free_bid.type}', $free_bid?->get_type_display() );
 		$this->add_placeholder( '{free_bid.type_action}', $free_bid?->get_type_action() );
+
+		// Request Details
+		$support_admin_url = add_query_arg( 'post_type', goodbids()->support->get_post_type(), admin_url( 'edit.php' ) );
+		$request_url       = get_edit_post_link( $request?->get_id() );
+		$this->add_placeholder( '{support_request_admin_url}', $support_admin_url );
+		$this->add_placeholder( '{request.url}', $request_url );
+		$this->add_placeholder( '{request.user.name}', $request?->get_user()?->get_username() );
+		$this->add_placeholder( '{request.user.email}', $request?->get_user()?->get_email() );
+		$this->add_placeholder( '{request.type}', $request?->get_field( Request::FIELD_TYPE ) );
+		$this->add_placeholder( '{request.nature}', $request?->get_field( Request::FIELD_NATURE ) );
+		$this->add_placeholder( '{request.request}', $request?->get_field( Request::FIELD_REQUEST ) );
 	}
 
 	/**
@@ -815,20 +829,20 @@ class Email extends WC_Email {
 	/**
 	 * Send the email to all Admins
 	 *
-	 * TODO: Get all site admin emails.
-	 *
-	 * @param Auction $auction
+	 * @param mixed $object
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function send_to_admins( Auction $auction ): void {
-		$admin  = get_user_by( 'email', get_option( 'admin_email' ) );
-		$admins = [ $admin->ID ];
+	public function send_to_admins( mixed $object ): void {
+		$admins = get_users( [ 'role' => 'administrator', 'fields' => 'ID' ] );
+		if ( empty( $admins ) ) {
+			Log::error( 'No Admins found to send email to', [ 'object' => $object ] );
+		}
 
-		foreach ( $admins as $user_id ) {
-			$this->trigger( $auction, $user_id );
+		foreach ( $admins as $admin_id ) {
+			$this->trigger( $object, $admin_id );
 		}
 	}
 

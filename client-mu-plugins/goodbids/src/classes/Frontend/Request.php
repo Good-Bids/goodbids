@@ -327,6 +327,17 @@ class Request {
 	}
 
 	/**
+	 * Get the formatted request value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_request_html(): string {
+		return nl2br( $this->get_field( self::FIELD_REQUEST ) );
+	}
+
+	/**
 	 * Has this Request been viewed by an admin?
 	 *
 	 * @since 1.0.0
