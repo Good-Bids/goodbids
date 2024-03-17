@@ -16,7 +16,7 @@
  * @package GoodBids
  */
 
-$class = 'border bg-transparent border-gb-green-100 text-gb-green-100 text-sm focus:ring-gb-green-500 focus:border-gb-green-500 block w-full p-2.5 rounded-full';
+$class = 'rounded border-solid border-base w-full p-4 pr-10 bg-[right_1rem_center] bg-no-repeat appearance-none bg-contrast text-base bg-select-arrow-reverse bg-[length:20px_20px] focus:outline-contrast-3';
 
 if ( ! empty( $field['class'] ) ) {
 	$class .= ' ' . $field['class'];
@@ -50,7 +50,7 @@ if ( ! empty( $field['class'] ) ) {
 			echo $required ? ' required' : '';
 
 			if ( ! empty( $field['attr'] ) ) :
-				foreach( $field['attr'] as $attr => $val ) :
+				foreach ( $field['attr'] as $attr => $val ) :
 					echo ' ' . esc_attr( $attr ) . '="' . esc_attr( $val ) . '"';
 				endforeach;
 			endif;
@@ -60,7 +60,8 @@ if ( ! empty( $field['class'] ) ) {
 				<option value="" <?php selected( $value, '' ); ?>><?php esc_html_e( 'Select One', 'goodbids' ); ?></option>
 			<?php endif; ?>
 
-			<?php foreach ( $field['options'] as $index => $option ) :
+			<?php
+			foreach ( $field['options'] as $index => $option ) :
 				if ( ! empty( $option['hidden'] ) ) {
 					continue;
 				}

@@ -10,6 +10,7 @@ namespace GoodBids\Blocks;
 
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\SupportRequest;
+use GoodBids\Network\Nonprofit;
 use GoodBids\Plugins\ACF\ACFBlock;
 
 /**
@@ -35,16 +36,18 @@ class SupportRequestForm extends ACFBlock {
 			$form_data = goodbids()->support->get_form_data();
 		}
 
-		$button_class = 'text-gb-green-700 bg-gb-green-100 border-0 hover:bg-gb-green-500 hover:text-white focus:outline-none font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 cursor-pointer';
+		$button_class = 'btn-fill-secondary text-md';
 
 		if ( is_admin() ) {
 			$button_class .= ' pointer-events-none';
 		}
 		?>
-		<form method="post" action="" data-form-spinner="true" class="bg-gb-green-700 rounded p-4 relative group opacity-100 group-[.htmx-request]:opacity-50 transition-opacity">
-			<div class="absolute flex justify-center w-full -translate-y-full">
-				<svg xmlns="http://www.w3.org/2000/svg" class="relative inset-0 htmx-indicator w-14 h-14 animate-spin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
-			</div>
+		<form method="post" action="" class="px-8 pt-4 pb-12 rounded-sm bg-contrast relative group opacity-100 group-[.htmx-request]:opacity-50 transition-opacity" data-form-spinner>
+			<?php if ( ! is_admin() ) : ?>
+				<div class="absolute inset-x-0 flex justify-center w-full -translate-y-full -bottom-2.5 text-base-2">
+					<svg xmlns="http://www.w3.org/2000/svg" class="relative inset-0 htmx-indicator w-14 h-14 animate-spin" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C16.9706 3 21 7.02944 21 12H19C19 8.13401 15.866 5 12 5V3Z"></path></svg>
+				</div>
+			<?php endif; ?>
 
             <?php
 			if ( ! is_admin() ) :
@@ -62,11 +65,12 @@ class SupportRequestForm extends ACFBlock {
 					goodbids()->forms->render_field( $key, $field, '', $form_data );
 				endforeach;
 				?>
-				<input
+				<button
 					type="submit"
-					value="<?php esc_attr_e( 'Submit Request', 'goodbids' ); ?>"
 					class="<?php echo esc_attr( $button_class ); ?>"
 				>
+					<?php esc_attr_e( 'Submit Request', 'goodbids' ); ?>
+				</button>
 			</div>
 		</form>
 		<?php
@@ -84,8 +88,8 @@ class SupportRequestForm extends ACFBlock {
 			return;
 		}
 		?>
-		<div class="border-gb-green-100 rounded p-4 mb-4">
-			<p class="text-gb-green-100">
+		<div class="bg-gb-red-700 rounded p-4 mb-4">
+			<p class="text-gb-red-100">
 				<?php echo esc_html( goodbids()->support->get_error() ); ?>
 			</p>
 		</div>
@@ -100,18 +104,20 @@ class SupportRequestForm extends ACFBlock {
 	 * @return void
 	 */
 	public function inner_blocks(): void {
-		$template = [
+		$nonprofit = new Nonprofit( get_current_blog_id() );
+		$template  = [
 			[
-				'core/post-title',
+				'core/heading',
 				[
-					'textColor' => 'base',
+					'textColor' => 'base-2',
+					'content'   => __( 'Request Support from', 'goodbids' ) . ' ' . $nonprofit->get_name(),
 				],
 			],
 			[
 				'core/paragraph',
 				[
 					'content'   => __( 'Use the form below to submit a support request to this Nonprofit. Your submission will be visible to administrators for this Nonprofit site as well as the GOODBIDS support team. We will respond as soon as we can.', 'goodbids' ),
-					'textColor' => 'base',
+					'textColor' => 'base-2',
 				],
 			],
 		];

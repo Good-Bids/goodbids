@@ -852,6 +852,9 @@ class SupportRequest {
 				}
 			}
 
+			$hx_target  = '#gb-support-form-target';
+			$hx_spinner = 'form[data-form-spinner]';
+
 			/**
 			 * Adjust the Support Request Form Fields
 			 *
@@ -876,9 +879,9 @@ class SupportRequest {
 						'attr'    => [
 							'hx-trigger'   => 'change',
 							'hx-get'       => $current_url,
-							'hx-target'    => '#gb-support-form-target',
-							'hx-select'    => '#gb-support-form-target',
-							'hx-indicator' => '[data-form-spinner]',
+							'hx-target'    => $hx_target,
+							'hx-select'    => $hx_target,
+							'hx-indicator' => $hx_spinner,
 						],
 					],
 					Request::FIELD_AUCTION => [
@@ -892,9 +895,9 @@ class SupportRequest {
 						'attr'    => [
 							'hx-trigger'   => 'change',
 							'hx-get'       => $current_url,
-							'hx-target'    => '#gb-support-form-target',
-							'hx-select'    => '#gb-support-form-target',
-							'hx-indicator' => '[data-form-spinner]',
+							'hx-target'    => $hx_target,
+							'hx-select'    => $hx_target,
+							'hx-indicator' => $hx_spinner,
 						],
 						'required'     => 'dependencies',
 						'dependencies' => [
@@ -917,9 +920,9 @@ class SupportRequest {
 						'attr'    => [
 							'hx-trigger'   => 'change',
 							'hx-get'       => $current_url,
-							'hx-target'    => '#gb-support-form-target',
-							'hx-select'    => '#gb-support-form-target',
-							'hx-indicator' => '[data-form-spinner]',
+							'hx-target'    => $hx_target,
+							'hx-select'    => $hx_target,
+							'hx-indicator' => $hx_spinner,
 						],
 					],
 					Request::FIELD_REWARD => [
@@ -938,9 +941,9 @@ class SupportRequest {
 						'attr'    => [
 							'hx-trigger'   => 'change',
 							'hx-get'       => $current_url,
-							'hx-target'    => '#gb-support-form-target',
-							'hx-select'    => '#gb-support-form-target',
-							'hx-indicator' => '[data-form-spinner]',
+							'hx-target'    => $hx_target,
+							'hx-select'    => $hx_target,
+							'hx-indicator' => $hx_spinner,
 						],
 					],
 					Request::FIELD_NATURE => [
