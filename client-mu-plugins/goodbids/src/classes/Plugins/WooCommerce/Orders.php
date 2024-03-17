@@ -188,7 +188,7 @@ class Orders {
 
 		$order = wc_get_order( $order_id );
 
-		if ( 0 < $order->get_total( 'edit' ) ) {
+		if ( $order->get_total( 'edit' ) > 0 ) {
 			return false;
 		}
 

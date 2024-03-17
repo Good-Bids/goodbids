@@ -138,7 +138,7 @@ class Bidder {
 	 * @return int
 	 */
 	public function get_total_free_bids(): int {
-		return count( goodbids()->users->get_free_bids( $this->get_id() ) );
+		return count( goodbids()->free_bids->get( $this->get_id() ) );
 	}
 
 	/**

@@ -138,7 +138,7 @@ class Checkout {
 					}
 
 					// Make sure the current user has available Free Bids.
-					if ( ! goodbids()->users->get_available_free_bid_count() ) {
+					if ( ! goodbids()->free_bids->get_available_count() ) {
 						goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 						return;
 					}
@@ -198,7 +198,7 @@ class Checkout {
 
 				$order = wc_get_order( $order_id );
 
-				if ( $order->needs_payment() ) {
+				if ( $order->get_total( 'edit' ) > 0 && $order->needs_payment() ) {
 					return;
 				}
 

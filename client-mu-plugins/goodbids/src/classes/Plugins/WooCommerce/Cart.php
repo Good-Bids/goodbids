@@ -10,10 +10,8 @@ namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
-use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce;
 use WC_Order_Item_Product;
-use WC_Product;
 
 /**
  * Class for Cart Methods

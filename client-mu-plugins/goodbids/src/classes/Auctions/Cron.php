@@ -9,7 +9,6 @@
 namespace GoodBids\Auctions;
 
 use DateInterval;
-use GoodBids\Core;
 use GoodBids\Utilities\Log;
 use WP_Query;
 
@@ -45,7 +44,7 @@ class Cron {
 	 */
 	public function __construct() {
 		// Disable Auctions on Main Site.
-		if ( is_main_site() && ! Core::is_local_env() ) {
+		if ( is_main_site() ) {
 			return;
 		}
 
@@ -337,6 +336,10 @@ class Cron {
 		add_action(
 			'template_redirect',
 			function (): void {
+				if ( get_post_type() !== goodbids()->auctions->get_post_type() ) {
+					return;
+				}
+
 				$auction = goodbids()->auctions->get();
 
 				if ( ! $auction->is_valid() ) {

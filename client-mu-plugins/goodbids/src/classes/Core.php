@@ -38,6 +38,7 @@ use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\MiniOrange;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\FreeBids;
 use GoodBids\Users\Permissions;
 use GoodBids\Users\Referrals;
 use GoodBids\Users\Users;
@@ -144,6 +145,12 @@ class Core {
 	 * @var Bids
 	 */
 	public Bids $bids;
+
+	/**
+	 * @since 1.0.0
+	 * @var FreeBids
+	 */
+	public FreeBids $free_bids;
 
 	/**
 	 * @since 1.0.0
@@ -522,9 +529,9 @@ class Core {
 				new Blocks();
 
 				// General
-				$this->users   = new Users();
-				$this->admin   = new Admin();
-				$this->support = new SupportRequest();
+				$this->users     = new Users();
+				$this->admin     = new Admin();
+				$this->support   = new SupportRequest();
 				new Partners();
 
 				// Third Party
@@ -542,6 +549,7 @@ class Core {
 				$this->auctioneer = new Auctioneer();
 				$this->products   = new Products();
 				$this->bids       = new Bids();
+				$this->free_bids  = new FreeBids();
 				$this->rewards    = new Rewards();
 				$this->watchers   = new Watchers();
 
