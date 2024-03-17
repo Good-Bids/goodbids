@@ -295,6 +295,10 @@ class Admin {
 		add_filter(
 			'woocommerce_settings_tabs_array',
 			function ( array $tabs ): array {
+				if ( ! is_main_site() ) {
+					return $tabs;
+				}
+
 				unset( $tabs['products'] );
 				unset( $tabs['tax'] );
 				unset( $tabs['shipping'] );
