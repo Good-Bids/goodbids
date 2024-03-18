@@ -112,7 +112,6 @@ class AllAuctions extends ACFBlock {
 		}
 
 		// default to get all auctions from the current site
-		// TODO: maybe good to make this a transient as well
 		return collect( ( goodbids()->auctions->get_all() )->posts )
 			->map(
 				fn ( int $post_id ) => [
