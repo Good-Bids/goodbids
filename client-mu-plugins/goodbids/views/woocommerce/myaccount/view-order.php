@@ -105,4 +105,4 @@ $request_args = [
 ?>
 <h3><?php esc_html_e( 'Need Help?', 'goodbids' ); ?></h3>
 
-<p><a href="<?php echo esc_url( goodbids()->support->get_form_url( $request_args ) ); ?>"><?php esc_html_e( 'Submit a support request', 'goodbids' ); ?></a> <?php esc_html_e( 'to', 'goodbids' ); ?> <?php echo esc_html( $nonprofit->get_name() ); ?> <?php esc_html_e( 'for this bid.', 'goodbids' ); ?></p>
+<p><a href="<?php echo esc_url( goodbids()->support->get_form_url( $request_args ) ); ?>"><?php esc_html_e( 'Submit a support request', 'goodbids' ); ?></a> <?php esc_html_e( 'to', 'goodbids' ); ?> <?php echo esc_html( $nonprofit->get_name() ); ?> <?php esc_html_e( '.', 'goodbids' ); ?></p>
