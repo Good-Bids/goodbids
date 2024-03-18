@@ -89,8 +89,10 @@ if ( ! $order_type ) {
 
 if ( Bids::ITEM_TYPE === $order_type ) {
 	$request_type = Request::TYPE_BID;
+	$arg          = 'bid';
 } elseif ( Rewards::ITEM_TYPE === $order_type ) {
 	$request_type = Request::TYPE_REWARD;
+	$arg          = 'reward';
 } else {
 	return;
 }
@@ -98,7 +100,7 @@ if ( Bids::ITEM_TYPE === $order_type ) {
 $request_args = [
 	'type'    => $request_type,
 	'auction' => $nonprofit->get_id() . '|' . goodbids()->woocommerce->orders->get_auction_id( $order_id ),
-	'bid'     => $nonprofit->get_id() . '|' . $order_id,
+	$arg      => $nonprofit->get_id() . '|' . $order_id,
 ];
 ?>
 <h3><?php esc_html_e( 'Need Help?', 'goodbids' ); ?></h3>
