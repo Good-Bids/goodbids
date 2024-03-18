@@ -227,9 +227,9 @@ class Admin {
 		add_action(
 			'admin_init',
 			function () {
-				$pages = apply_filters(
-					'goodbids_restrict_pages',
-					array_filter(
+				$pages = array_filter(
+					apply_filters(
+						'goodbids_restrict_pages',
 						[
 							intval( get_option( Sites::SUPPORT_OPTION ) ),
 						]
