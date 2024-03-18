@@ -24,6 +24,20 @@ class Utilities {
 	public function __construct() {}
 
 	/**
+	 * Render a custom message and exit.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $message
+	 *
+	 * @return void
+	 */
+	public function die( string $message ): void {
+		goodbids()->load_view( 'parts/die.php', compact( 'message' ) );
+		exit;
+	}
+
+	/**
 	 * Format a date/time string.
 	 *
 	 * @since 1.0.0

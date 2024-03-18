@@ -18,8 +18,10 @@ use GoodBids\Auctions\Rewards;
 use GoodBids\Auctions\Watchers;
 use GoodBids\Frontend\Blocks;
 use GoodBids\Frontend\Assets;
+use GoodBids\Frontend\Forms;
 use GoodBids\Frontend\Notices;
 use GoodBids\Frontend\Patterns;
+use GoodBids\Frontend\SupportRequest;
 use GoodBids\Network\Dashboard;
 use GoodBids\Network\Network;
 use GoodBids\Network\Settings;
@@ -36,6 +38,7 @@ use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\MiniOrange;
 use GoodBids\Plugins\OneTrust;
 use GoodBids\Plugins\WooCommerce;
+use GoodBids\Users\FreeBids;
 use GoodBids\Users\Permissions;
 use GoodBids\Users\Referrals;
 use GoodBids\Users\Users;
@@ -109,6 +112,18 @@ class Core {
 
 	/**
 	 * @since 1.0.0
+	 * @var Forms
+	 */
+	public Forms $forms;
+
+	/**
+	 * @since 1.0.0
+	 * @var SupportRequest
+	 */
+	public SupportRequest $support;
+
+	/**
+	 * @since 1.0.0
 	 * @var Auctioneer
 	 */
 	public Auctioneer $auctioneer;
@@ -130,6 +145,12 @@ class Core {
 	 * @var Bids
 	 */
 	public Bids $bids;
+
+	/**
+	 * @since 1.0.0
+	 * @var FreeBids
+	 */
+	public FreeBids $free_bids;
 
 	/**
 	 * @since 1.0.0
@@ -495,38 +516,57 @@ class Core {
 		add_action(
 			'mu_plugin_loaded',
 			function () {
-				$this->utilities     = new Utilities();
-				$this->acf           = new ACF();
-				$this->admin         = new Admin();
-				$this->auctions      = new Auctions();
-				$this->auctioneer    = new Auctioneer();
-				$this->products      = new Products();
-				$this->bids          = new Bids();
-				$this->rewards       = new Rewards();
-				$this->network       = new Network();
-				$this->sites         = new Sites();
-				$this->invoices      = new Invoices();
-				$this->verification  = new Verification();
-				$this->settings      = new Settings();
-				$this->woocommerce   = new WooCommerce();
-				$this->onboarding    = new Onboarding();
-				$this->notices       = new Notices();
-				$this->users         = new Users();
-				$this->watchers      = new Watchers();
-				$this->referrals     = new Referrals();
-				$this->accessibility = new EqualizeDigital();
+				/**
+				 * Loading order here is important.
+				 * Some modules depend on others being loaded first.
+				 */
 
-				// Init Modules not part of the API.
+				// Utilities and Helpers
+				$this->utilities = new Utilities();
+				$this->forms     = new Forms();
 				new Permissions();
-				new AuctionsAdmin();
 				new Patterns();
-				new Partners();
-				new Dashboard();
 				new Blocks();
+
+				// General
+				$this->users     = new Users();
+				$this->admin     = new Admin();
+				$this->support   = new SupportRequest();
+				new Partners();
+
+				// Third Party
+				$this->acf           = new ACF();
+				$this->woocommerce   = new WooCommerce();
+				$this->accessibility = new EqualizeDigital();
 				new OneTrust();
-				new Guide();
-				new NonprofitAdmin();
 				new MiniOrange();
+
+				// Auctions and submodules
+				$this->auctions = new Auctions();
+				new AuctionsAdmin();
+
+				// Auction Submodules
+				$this->auctioneer = new Auctioneer();
+				$this->products   = new Products();
+				$this->bids       = new Bids();
+				$this->free_bids  = new FreeBids();
+				$this->rewards    = new Rewards();
+				$this->watchers   = new Watchers();
+
+				// Onboarding
+				$this->sites        = new Sites();
+				$this->network      = new Network();
+				$this->onboarding   = new Onboarding();
+				$this->verification = new Verification();
+				new Guide();
+
+				// Network Admin
+				$this->invoices  = new Invoices();
+				$this->settings  = new Settings();
+				$this->notices   = new Notices();
+				$this->referrals = new Referrals();
+				new Dashboard();
+				new NonprofitAdmin();
 			}
 		);
 	}

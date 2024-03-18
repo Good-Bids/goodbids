@@ -9,7 +9,6 @@
 namespace GoodBids\Users\Referrals;
 
 use GoodBids\Utilities\Cookies;
-use GoodBids\Utilities\Log;
 
 /**
  * Class for Tracking Referrals
@@ -202,7 +201,7 @@ class Track {
 				$order = wc_get_order( $order_id );
 
 				// Don't award if payment didn't go through.
-				if ( $order->needs_payment() ) {
+				if ( $order->get_total( 'edit' ) > 0 && $order->needs_payment() ) {
 					return;
 				}
 

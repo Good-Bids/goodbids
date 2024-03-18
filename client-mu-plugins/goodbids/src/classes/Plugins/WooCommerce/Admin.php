@@ -10,6 +10,7 @@ namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Utilities\Log;
 use WP_Post;
+use WP_Screen;
 
 /**
  * Class for Admin Methods
@@ -38,6 +39,9 @@ class Admin {
 
 		// Remove WooCommerce Features on Main site
 		$this->main_site_cleanup();
+
+		// Limit access to pages
+		$this->limit_access_to_pages();
 	}
 
 	/**
@@ -50,9 +54,7 @@ class Admin {
 	private function add_auction_meta_box(): void {
 		add_action(
 			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
-
+			function ( WP_Screen $screen ): void {
 				if ( 'woocommerce_page_wc-orders' !== $screen->id ) {
 					return;
 				}
@@ -296,6 +298,10 @@ class Admin {
 		add_filter(
 			'woocommerce_settings_tabs_array',
 			function ( array $tabs ): array {
+				if ( ! is_main_site() ) {
+					return $tabs;
+				}
+
 				unset( $tabs['products'] );
 				unset( $tabs['tax'] );
 				unset( $tabs['shipping'] );
@@ -303,6 +309,33 @@ class Admin {
 				return $tabs;
 			},
 			100
+		);
+	}
+
+	/**
+	 * Limit access from WooCommerce pages
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function limit_access_to_pages(): void {
+		add_filter(
+			'goodbids_restrict_pages',
+			function ( array $pages ): array {
+				$wc_pages = array_filter(
+					[
+						intval( get_option( 'woocommerce_cart_page_id' ) ),
+						intval( get_option( 'woocommerce_checkout_page_id' ) ),
+						intval( get_option( 'woocommerce_myaccount_page_id' ) ),
+						intval( get_option( 'woocommerce_shop_page_id' ) ),
+						intval( get_option( 'woocommerce_view_order_page_id' ) ),
+						intval( get_option( 'woocommerce_authentication_page_id' ) ),
+					]
+				);
+
+				return array_merge( $pages, $wc_pages );
+			}
 		);
 	}
 }

@@ -12,6 +12,7 @@ use Automattic\WP\Cron_Control\Events_Store;
 use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
+use GoodBids\Frontend\SupportRequest;
 use GoodBids\Nonprofits\Verification;
 use GoodBids\Users\Permissions;
 use GoodBids\Utilities\Log;
@@ -50,6 +51,12 @@ class Sites {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const SUPPORT_OPTION = 'gb_support_page';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const NAVIGATION_ID_OPTION = 'gb_navigation_id';
 
 	/**
@@ -70,11 +77,16 @@ class Sites {
 
 		// New Site Initialization
 		$this->activate_child_theme_on_new_site();
+		$this->set_default_posts_per_page();
+
+		// Create new pages on new sites.
 		$this->create_about_page();
+		$this->create_support_page();
 		$this->create_all_auctions_page();
+
+		// Delete Sample content
 		$this->delete_sample_page();
 		$this->delete_sample_post();
-		$this->set_default_posts_per_page();
 
 		// Lock down the block editor.
 		$this->lock_block_editor();
@@ -471,6 +483,48 @@ class Sites {
 				update_option( self::ABOUT_OPTION, $about_id );
 			},
 			100
+		);
+	}
+
+	/**
+	 * Creates the Support Request page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function create_support_page(): void {
+		add_action(
+			'goodbids_initialize_site',
+			function (): void {
+				$page_slug = SupportRequest::FORM_SLUG;
+				$existing  = get_option( self::SUPPORT_OPTION );
+
+				// Make sure it doesn't already exist.
+				if ( $existing || get_page_by_path( $page_slug ) ) {
+					return;
+				}
+
+				$nonprofit = new Nonprofit( get_current_blog_id() );
+				$page_args = [
+					'post_title'   => __( 'Request Support from', 'goodbids' ) . ' ' . $nonprofit->get_name() ,
+					'post_content' => goodbids()->get_view( 'patterns/template-support-request-page.php' ),
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+					'post_name'    => $page_slug,
+				];
+
+				$page_id = wp_insert_post( $page_args );
+
+				if ( is_wp_error( $page_id ) ) {
+					Log::error( $page_id->get_error_message() );
+					return;
+				}
+
+				update_option( self::SUPPORT_OPTION, $page_id );
+			},
+			105
 		);
 	}
 

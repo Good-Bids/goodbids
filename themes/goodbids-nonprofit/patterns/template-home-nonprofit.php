@@ -6,6 +6,8 @@
  * @package GoodBidsNonprofit
  */
 
+use GoodBids\Auctions\Auctions;
+
 ?>
 <!-- wp:group {"align":"full","layout":{"type":"constrained"},"metadata":{"name":"Nonprofit Homepage"}} -->
 <div class="wp-block-group alignfull">
@@ -23,7 +25,7 @@
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
 			<div class="wp-block-buttons" style="margin-bottom:var(--wp--preset--spacing--40)">
 				<!-- wp:button -->
-				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_post_type_archive_link( goodbids()->auctions->get_post_type() ) ); ?>"><?php esc_html_e( 'See our live auctions', 'goodbids' ); ?></a>
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_post_type_archive_link( Auctions::POST_TYPE ) ); ?>"><?php esc_html_e( 'See our live auctions', 'goodbids' ); ?></a>
 				</div>
 				<!-- /wp:button -->
 			</div>

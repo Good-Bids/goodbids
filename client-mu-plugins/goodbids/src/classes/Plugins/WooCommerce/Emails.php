@@ -19,6 +19,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Emails\FreeBidEarned;
+use GoodBids\Plugins\WooCommerce\Emails\SupportRequest;
 
 /**
  * Class for Email functions
@@ -101,6 +102,7 @@ class Emails {
 			'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
 			'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
 			'FreeBidEarned'             => new FreeBidEarned(),
+			'SupportRequest'            => new SupportRequest(),
 		];
 	}
 
@@ -120,6 +122,8 @@ class Emails {
 			}
 
 			require_once $wc_email_path;
+
+			\WC_Emails::instance();
 		}
 
 		return true;

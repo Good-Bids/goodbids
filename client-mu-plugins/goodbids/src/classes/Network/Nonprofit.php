@@ -76,7 +76,7 @@ class Nonprofit {
 	 * @return bool
 	 */
 	public function is_valid(): bool {
-		return (bool) $this->site;
+		return ! is_null( $this->site );
 	}
 
 	/**

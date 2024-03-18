@@ -9,12 +9,10 @@
 namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Auctions\Auction;
-use GoodBids\Auctions\Bids;
-use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\Notices;
+use GoodBids\Users\FreeBids;
 use GoodBids\Utilities\Log;
 use WC_Coupon;
-use WC_Product;
 
 /**
  * Class for Coupons Functionality
@@ -191,7 +189,7 @@ class Coupons {
 		add_action(
 			'goodbids_place_bid',
 			function ( int $auction_id, int $product_id, int $variation_id ): void {
-				if ( empty( $_REQUEST[ Bids::USE_FREE_BID_PARAM ] ) ) { // phpcs:ignore
+				if ( empty( $_REQUEST[ FreeBids::USE_FREE_BID_PARAM ] ) ) { // phpcs:ignore
 					return;
 				}
 
@@ -202,7 +200,7 @@ class Coupons {
 					return;
 				}
 
-				if ( ! goodbids()->users->get_available_free_bid_count() ) {
+				if ( ! goodbids()->free_bids->get_available_count() ) {
 					goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 					return;
 				}
@@ -246,7 +244,7 @@ class Coupons {
 			goodbids()->notices->add_notice( Notices::GET_REWARD_COUPON_ERROR );
 			add_filter(
 				$redirect_hook,
-				function ( $redirect_url ) use ( $auction ) {
+				function () use ( $auction ) {
 					return $auction->get_url();
 				}
 			);
@@ -269,7 +267,7 @@ class Coupons {
 
 		add_filter(
 			$redirect_hook,
-			function ( $redirect_url ) use ( $auction ) {
+			function () use ( $auction ) {
 				return $auction->get_url();
 			}
 		);

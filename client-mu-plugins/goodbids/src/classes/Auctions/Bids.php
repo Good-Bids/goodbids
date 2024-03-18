@@ -9,6 +9,8 @@
 namespace GoodBids\Auctions;
 
 use GoodBids\Frontend\Notices;
+use GoodBids\Users\FreeBid;
+use GoodBids\Users\FreeBids;
 use GoodBids\Utilities\Log;
 use WC_Data_Exception;
 use WC_Product;
@@ -47,36 +49,6 @@ class Bids {
 	 * @var string
 	 */
 	const AUCTION_BID_VARIATION_META_KEY = '_gb_bid_variation_id';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BID_STATUS_ALL = 'all';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BID_STATUS_UNUSED = 'unused';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const FREE_BID_STATUS_USED = 'used';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const USE_FREE_BID_PARAM = 'use-free-bid';
 
 	/**
 	 * Initialize Bids
@@ -515,7 +487,7 @@ class Bids {
 		$url = trailingslashit( get_permalink( $auction_id ) ) . self::PLACE_BID_SLUG . '/';
 
 		if ( $is_free_bid ) {
-			$url = add_query_arg( self::USE_FREE_BID_PARAM, 1, $url );
+			$url = add_query_arg( FreeBids::USE_FREE_BID_PARAM, 1, $url );
 		}
 
 		return $url;
@@ -719,7 +691,7 @@ class Bids {
 				// Do not award free bids if this order contains a free bid.
 				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 					// Reduce the Free Bid Count for the user.
-					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
+					if ( goodbids()->free_bids->redeem( $auction_id, $order_id ) ) {
 						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
 					return;
@@ -731,7 +703,7 @@ class Bids {
 				$bid_order           = wc_get_order( $order_id );
 
 				// Do not award a free bid if payment didn't go through.
-				if ( $bid_order->needs_payment() ) {
+				if ( $bid_order->get_total( 'edit' ) > 0 && $bid_order->needs_payment() ) {
 					return;
 				}
 
@@ -747,7 +719,6 @@ class Bids {
 				$auction->maybe_award_free_bid(
 					get_current_user_id(),
 					$details,
-					FreeBid::TYPE_PAID_BID,
 					true
 				);
 			},
@@ -767,8 +738,7 @@ class Bids {
 					$type = FreeBid::TYPE_ADMIN_GRANT;
 				}
 
-				$free_bids = goodbids()->users->get_free_bids( get_current_user_id(), Bids::FREE_BID_STATUS_UNUSED, $type );
-				$do_update = false;
+				$free_bids = goodbids()->free_bids->get( get_current_user_id(), FreeBids::STATUS_UNUSED, $type );
 
 				foreach ( $free_bids as $free_bid ) {
 					if ( $free_bid->did_awarded_notification() ) {
@@ -776,14 +746,11 @@ class Bids {
 					}
 
 					$free_bid->mark_as_notified();
+					goodbids()->free_bids->update( get_current_user_id(), $free_bid->get_id(), $free_bid );
+
 					goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
-					$do_update = true;
 
 					break;
-				}
-
-				if ( $do_update ) {
-					goodbids()->users->save_free_bids( get_current_user_id(), $free_bids );
 				}
 			}
 		);

@@ -88,60 +88,60 @@ function CloneContent({ auctionId, rewardId }: CloneProps) {
 	}, [getProduct.data]);
 
 	useEffect(() => {
-		if (getAuction.data) {
-			let startTimeWarning: string | undefined;
-			let endTimeWarning: string | undefined;
-
-			if (getAuction.data.acf.auction_start === '') {
-				startTimeWarning = __(
-					'Cloned auction start date is in the past. Click edit auction to add a new date.',
-					'goodbids',
-				);
-			}
-
-			if (getAuction.data.acf.auction_end === '') {
-				endTimeWarning = __(
-					'Cloned auction end date is in the past. Click edit auction to add a new date.',
-					'goodbids',
-				);
-			}
-
-			setAuction({
-				title: { value: getAuction.data.title.raw },
-				excerpt: {
-					value: getAuction.data.excerpt.raw,
-				},
-				startDate: {
-					value: getAuction.data.acf.auction_start,
-					error: startTimeWarning,
-				},
-				endDate: {
-					value: getAuction.data.acf.auction_end,
-					error: endTimeWarning,
-				},
-				bidIncrement: {
-					value: getAuction.data.acf.bid_increment.toString(),
-				},
-				startingBid: {
-					value: getAuction.data.acf.starting_bid.toString(),
-				},
-				bidExtensionMinutes: {
-					value: getAuction.data.acf.bid_extension.minutes.toString(),
-				},
-				auctionGoal: {
-					value: getAuction.data.acf.auction_goal?.toString() || '',
-				},
-				expectedHighBid: {
-					value:
-						getAuction.data.acf.expected_high_bid?.toString() || '',
-				},
-				estimatedRetailValue: {
-					value:
-						getAuction.data.acf.estimated_value?.toString() || '',
-				},
-				clonedContent: getAuction.data.content.raw,
-			});
+		if (!getAuction.data) {
+			return;
 		}
+
+		let startTimeWarning: string | undefined;
+		let endTimeWarning: string | undefined;
+
+		if (getAuction.data.acf.auction_start === '') {
+			startTimeWarning = __(
+				'Cloned auction start date is in the past. Click edit auction to add a new date.',
+				'goodbids',
+			);
+		}
+
+		if (getAuction.data.acf.auction_end === '') {
+			endTimeWarning = __(
+				'Cloned auction end date is in the past. Click edit auction to add a new date.',
+				'goodbids',
+			);
+		}
+
+		setAuction({
+			title: { value: getAuction.data.title.raw },
+			excerpt: {
+				value: getAuction.data.excerpt.raw,
+			},
+			startDate: {
+				value: getAuction.data.acf.auction_start,
+				error: startTimeWarning,
+			},
+			endDate: {
+				value: getAuction.data.acf.auction_end,
+				error: endTimeWarning,
+			},
+			bidIncrement: {
+				value: getAuction.data.acf.bid_increment.toString(),
+			},
+			startingBid: {
+				value: getAuction.data.acf.starting_bid.toString(),
+			},
+			bidExtensionMinutes: {
+				value: getAuction.data.acf.bid_extension.minutes.toString(),
+			},
+			auctionGoal: {
+				value: getAuction.data.acf.auction_goal?.toString() || '',
+			},
+			expectedHighBid: {
+				value: getAuction.data.acf.expected_high_bid?.toString() || '',
+			},
+			estimatedRetailValue: {
+				value: getAuction.data.acf.estimated_value?.toString() || '',
+			},
+			clonedContent: getAuction.data.content.raw,
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getAuction.data]);
 

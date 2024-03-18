@@ -8,7 +8,7 @@
  * @package GoodBids
  */
 
-use GoodBids\Users\Users;
+use GoodBids\Users\FreeBids;
 ?>
 <br>
 <h2 id="goodbids-user-free-bids"><?php esc_html_e( 'GoodBids Free Bids', 'goodbids' ); ?></h2>
@@ -16,7 +16,7 @@ use GoodBids\Users\Users;
 <table class="form-table">
 	<tr>
 		<th>
-			<label for="<?php echo esc_attr( Users::FREE_BID_REASON_FIELD ); ?>">
+			<label for="<?php echo esc_attr( FreeBids::REASON_FIELD ); ?>">
 				<?php esc_html_e( 'Grant Free Bid', 'goodbids' ); ?>
 			</label>
 		</th>
@@ -25,8 +25,8 @@ use GoodBids\Users\Users;
 			<input
 				type="text"
 				class="regular-text"
-				name="<?php echo esc_attr( Users::FREE_BID_REASON_FIELD ); ?>"
-				id="<?php echo esc_attr( Users::FREE_BID_REASON_FIELD ); ?>"
+				name="<?php echo esc_attr( FreeBids::REASON_FIELD ); ?>"
+				id="<?php echo esc_attr( FreeBids::REASON_FIELD ); ?>"
 				placeholder="<?php esc_attr_e( 'Reason for granting free bid', 'goodbids' ); ?>"
 				value=""
 			/>

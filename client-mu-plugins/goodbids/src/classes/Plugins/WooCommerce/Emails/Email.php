@@ -11,7 +11,8 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
-use GoodBids\Auctions\FreeBid;
+use GoodBids\Frontend\Request;
+use GoodBids\Users\FreeBid;
 use GoodBids\Users\Referrals\Referrer;
 use WC_Email;
 use WC_Order;
@@ -48,6 +49,14 @@ class Email extends WC_Email {
 	 * @var bool
 	 */
 	protected bool $admin_email = false;
+
+	/**
+	 * If email is sent to Super Admins.
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	protected bool $super_admins_email = false;
 
 	/**
 	 * If email is sent to Bidders.
@@ -374,13 +383,12 @@ class Email extends WC_Email {
 		);
 
 		// Get Email Object
-		$auction    = $this->object instanceof Auction ? $this->object : null;
-		$order      = $this->object instanceof WC_Order ? $this->object : null;
-		$free_bid   = $this->object instanceof FreeBid ? $this->object : null;
-		$order_type = false;
+		$auction  = $this->object instanceof Auction ? $this->object : null;
+		$order    = $this->object instanceof WC_Order ? $this->object : null;
+		$free_bid = $this->object instanceof FreeBid ? $this->object : null;
+		$request  = $this->object instanceof Request ? $this->object : null;
 
 		if ( $order ) {
-			$order_type = goodbids()->woocommerce->orders->get_type( $order->get_id() );
 			$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order->get_id() );
 			$auction    = goodbids()->auctions->get( $auction_id );
 		}
@@ -434,7 +442,7 @@ class Email extends WC_Email {
 		$referrer = new Referrer( $this->user_id );
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
 		$this->add_placeholder( '{user.account_url}', wc_get_page_permalink( 'myaccount' ) );
-		$this->add_placeholder( '{user.free_bid_count}', goodbids()->users->get_available_free_bid_count( $this->user_id ) );
+		$this->add_placeholder( '{user.free_bid_count}', goodbids()->free_bids->get_available_count( $this->user_id ) );
 		$this->add_placeholder( '{user.referral_link}', $referrer->get_link() );
 
 		// Order Details
@@ -445,6 +453,17 @@ class Email extends WC_Email {
 		// Free Bid Details
 		$this->add_placeholder( '{free_bid.type}', $free_bid?->get_type_display() );
 		$this->add_placeholder( '{free_bid.type_action}', $free_bid?->get_type_action() );
+
+		// Request Details
+		$support_admin_url = add_query_arg( 'post_type', goodbids()->support->get_post_type(), admin_url( 'edit.php' ) );
+		$request_url       = get_edit_post_link( $request?->get_id() );
+		$this->add_placeholder( '{support_request_admin_url}', $support_admin_url );
+		$this->add_placeholder( '{request.url}', $request_url );
+		$this->add_placeholder( '{request.user.name}', $request?->get_user()?->get_username() );
+		$this->add_placeholder( '{request.user.email}', $request?->get_user()?->get_email() );
+		$this->add_placeholder( '{request.type}', $request?->get_field( Request::FIELD_TYPE ) );
+		$this->add_placeholder( '{request.nature}', $request?->get_field( Request::FIELD_NATURE ) );
+		$this->add_placeholder( '{request.request}', $request?->get_field( Request::FIELD_REQUEST ) );
 	}
 
 	/**
@@ -559,6 +578,10 @@ class Email extends WC_Email {
 			$recipients[] = __( 'Admin', 'goodbids' );
 		}
 
+		if ( $this->is_super_admins_email() ) {
+			$recipients[] = __( 'Super Admins', 'goodbids' );
+		}
+
 		if ( ! $recipients ) {
 			return __( 'Not Set', 'goodbids' );
 		}
@@ -574,6 +597,16 @@ class Email extends WC_Email {
 	 */
 	public function is_admin_email(): bool {
 		return $this->admin_email;
+	}
+
+	/**
+	 * Check if the email is sent to Super Admins.
+	 *
+	 * @since 1.0.0
+	 * @return bool
+	 */
+	public function is_super_admins_email(): bool {
+		return $this->super_admins_email;
 	}
 
 	/**
@@ -815,20 +848,36 @@ class Email extends WC_Email {
 	/**
 	 * Send the email to all Admins
 	 *
-	 * TODO: Get all site admin emails.
-	 *
-	 * @param Auction $auction
+	 * @param mixed $object
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	public function send_to_admins( Auction $auction ): void {
-		$admin  = get_user_by( 'email', get_option( 'admin_email' ) );
-		$admins = [ $admin->ID ];
+	public function send_to_admins( mixed $object ): void {
+		$admins = get_users( [ 'role' => 'administrator', 'fields' => 'ID' ] );
 
-		foreach ( $admins as $user_id ) {
-			$this->trigger( $auction, $user_id );
+		if ( $this->is_super_admins_email() ) {
+			$super_admins = get_super_admins();
+			$super_ids    = [];
+			foreach ( $super_admins as $username ) {
+				$super_admin = get_user_by( 'login', $username );
+				if ( ! $super_admin || ! $super_admin->user_email ) {
+					continue;
+				}
+				$super_ids[] = $super_admin->ID;
+			}
+			$admins = array_merge( $admins, $super_ids );
+		}
+
+		$admins = array_unique( $admins );
+
+		if ( empty( $admins ) ) {
+			Log::error( 'No Admins found to send email to', [ 'object' => $object ] );
+		}
+
+		foreach ( $admins as $admin_id ) {
+			$this->trigger( $object, $admin_id );
 		}
 	}
 
