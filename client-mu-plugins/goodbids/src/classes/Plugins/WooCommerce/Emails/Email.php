@@ -84,6 +84,15 @@ class Email extends WC_Email {
 	public $recipient = '';
 
 	/**
+	 * Check if this has been initialized yet.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var bool
+	 */
+	protected $did_init = false;
+
+	/**
 	 * Set default vars and placeholders
 	 *
 	 * @since 1.0.0
