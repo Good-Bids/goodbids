@@ -26,6 +26,10 @@ class SupportRequest extends Email {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		if ( $this->did_init ) {
+			return;
+		}
+
 		parent::__construct();
 
 		$this->id                 = 'goodbids_support_request';
@@ -37,6 +41,8 @@ class SupportRequest extends Email {
 		$this->super_admins_email = true;
 
 		$this->trigger_on_new_support_request();
+
+		$this->did_init = true;
 	}
 
 	/**
