@@ -709,14 +709,10 @@ class SupportRequest {
 						fn ( $reward_data ) => $reward_data['site_id'] === $site_id
 					)
 					->filter(
-						function ( $reward_data ) use ( $auction_id ) {
-							return goodbids()->sites->swap(
-								function () use ( $reward_data, $auction_id ) {
-									return goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $auction_id;
-								},
-								$reward_data['site_id']
-							);
-						}
+						fn ( $reward_data ) => goodbids()->sites->swap(
+							fn () => goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $auction_id,
+							$reward_data['site_id']
+						)
 					)
 					->values()
 					->all();
