@@ -98,7 +98,7 @@ class DocItem {
 	public array $returnTypes = [];
 
 	/**
-	 * @var array
+	 * @var DocItem[]
 	 */
 	public array $parameters = [];
 
