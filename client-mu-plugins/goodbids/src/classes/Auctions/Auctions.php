@@ -795,14 +795,18 @@ class Auctions {
 	 */
 	private function remove_excerpt_placeholder(): void {
 		add_action(
+			'init',
+			function () {
+				remove_filter( 'get_the_excerpt', 'wp_trim_excerpt' );
+			}
+		);
+		add_action(
 			'current_screen',
 			function (): void {
 				$screen = get_current_screen();
 				if ( $this->get_post_type() !== $screen->post_type ) {
 					return;
 				}
-
-				remove_filter( 'get_the_excerpt', 'wp_trim_excerpt' );
 				?>
 				<style>
 					a.block-editor-rich-text__editable.wp-block-post-excerpt__more-link.rich-text {
