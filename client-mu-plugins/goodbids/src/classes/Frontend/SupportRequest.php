@@ -440,7 +440,7 @@ class SupportRequest {
 	 * @return bool
 	 */
 	public function submission_processed(): bool {
-		return ! empty( $_GET['support-request'] ) && 'submitted' === $_GET['support-request']; // phpcs:ignore
+		return ! empty( $_GET[ self::FORM_SLUG ] ) && 'submitted' === $_GET[ self::FORM_SLUG ]; // phpcs:ignore
 	}
 
 	/**
@@ -1149,7 +1149,7 @@ class SupportRequest {
 
 				global $wp;
 				$redirect = trailingslashit( home_url( $wp->request ) );
-				$redirect = add_query_arg( 'support-request', 'submitted', $redirect );
+				$redirect = add_query_arg( self::FORM_SLUG, 'submitted', $redirect );
 				wp_safe_redirect( $redirect );
 				exit;
 			},
