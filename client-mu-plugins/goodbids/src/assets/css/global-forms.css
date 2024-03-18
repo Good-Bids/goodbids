@@ -83,6 +83,6 @@
 		@apply btn-fill-secondary bg-gb-red-500 text-sm text-base-2 hover:bg-gb-red-500 hover:opacity-90;
 	}
 	input[name='plugin_delete_me_shortcode_password'] {
-		@apply block w-full rounded border-solid border-gb-green-700 p-4 text-sm;
+		@apply block w-full rounded border-solid border-contrast p-4 text-sm;
 	}
 }
