@@ -4,7 +4,7 @@ import { DatePickers } from './date-pickers';
 import { validateDecimal, validateInteger } from '~/utils/number';
 import { MoneyIcon } from '~/components/icons/money-icon';
 import { __ } from '@wordpress/i18n';
-import { AuctionState, useAuctionWizardState } from '../../store';
+import { EditableAuctionValues, useAuctionWizardState } from '../../store';
 import { H3, P } from '~/components/typography';
 import { TextArea } from '~/components/text-area';
 
@@ -25,7 +25,7 @@ export function AuctionForm() {
 
 	const handleDebounce = useDebouncedCallback(
 		(
-			key: keyof AuctionState,
+			key: EditableAuctionValues,
 			value: string,
 			validator?: (value: string) => string | undefined,
 		) => {
