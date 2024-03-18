@@ -38,6 +38,9 @@ class DeleteMe {
 
 		// Enable Customers to Delete their Account.
 		$this->set_customer_cap();
+
+		// Add the Delete Me form to the My Account > Account Details page.
+		$this->insert_delete_account_form();
 	}
 
 	/**
@@ -91,5 +94,59 @@ class DeleteMe {
 				$wp_roles->roles['customer']['capabilities']['plugin_delete_me'] = true;
 			}
 		);
+	}
+
+	/**
+	 * Add the Delete Me link to the My Account > Account Details page.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function insert_delete_account_form(): void {
+		add_action(
+			'woocommerce_after_edit_account_form',
+			function (): void {
+				if ( ! current_user_can( 'customer' ) || $this->current_user_is_admin() ) {
+					return;
+				}
+
+				printf(
+					'<h3>%s</h3>',
+					esc_html__( 'Delete Your Account', 'goodbids' )
+				);
+
+				echo do_shortcode( '[plugin_delete_me]' ); // phpcs:ignore
+			}
+		);
+	}
+
+	/**
+	 * Check if Current user is Admin on any Nonprofit
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function current_user_is_admin(): bool {
+		if ( is_super_admin() ) {
+			return true;
+		}
+
+		if ( current_user_can( 'administrator' ) ) {
+			return true;
+		}
+
+		$is_admin = false;
+
+		goodbids()->sites->loop(
+			function () use ( &$is_admin ) {
+				if ( current_user_can( 'administrator' ) ) {
+					$is_admin = true;
+				}
+			}
+		);
+
+		return $is_admin;
 	}
 }
