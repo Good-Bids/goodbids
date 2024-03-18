@@ -33,6 +33,7 @@ use GoodBids\Nonprofits\Onboarding;
 use GoodBids\Nonprofits\Verification;
 use GoodBids\Partners\Partners;
 use GoodBids\Plugins\ACF;
+use GoodBids\Plugins\DeleteMe;
 use GoodBids\Plugins\EarlyHooks;
 use GoodBids\Plugins\EqualizeDigital;
 use GoodBids\Plugins\MiniOrange;
@@ -540,6 +541,7 @@ class Core {
 				$this->accessibility = new EqualizeDigital();
 				new OneTrust();
 				new MiniOrange();
+				new DeleteMe();
 
 				// Auctions and submodules
 				$this->auctions = new Auctions();

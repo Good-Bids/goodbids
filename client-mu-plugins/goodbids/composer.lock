@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f7a18aedff95f21ea9bec5229e265d0",
+    "content-hash": "316bd44dbd7932a5190f666fe8c247e5",
     "packages": [
         {
             "name": "composer/installers",
@@ -1246,6 +1246,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/accessibility-checker/"
+        },
+        {
+            "name": "wpackagist-plugin/delete-me",
+            "version": "3.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/delete-me/",
+                "reference": "tags/3.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/delete-me.3.1.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/delete-me/"
         },
         {
             "name": "wpackagist-plugin/svg-support",

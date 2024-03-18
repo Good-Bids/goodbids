@@ -54,6 +54,7 @@
 		"oomphinc/composer-installers-extender": "^2.0",
 		"vlucas/phpdotenv": "^5.5",
 		"wpackagist-plugin/accessibility-checker": "^1.9.3",
+		"wpackagist-plugin/delete-me": "^3.1",
 		"wpackagist-plugin/svg-support": "^2.5",
 		"wpackagist-plugin/user-role-editor": "^4.64",
 		"wpackagist-plugin/user-switching": "^1.7",
