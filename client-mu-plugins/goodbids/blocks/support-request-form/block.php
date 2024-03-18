@@ -49,7 +49,7 @@ class SupportRequestForm extends ACFBlock {
 				</div>
 			<?php endif; ?>
 
-            <?php
+			<?php
 			if ( ! is_admin() ) :
 				wp_nonce_field( SupportRequest::FORM_NONCE_ACTION, SupportRequest::FORM_NONCE_ACTION . '_nonce' );
 			endif;
@@ -57,7 +57,7 @@ class SupportRequestForm extends ACFBlock {
 
 			<?php $this->inner_blocks(); ?>
 
-			<div id="gb-support-form-target">
+			<div id="gb-support-form-target" class="relative z-10">
 				<?php
 				$this->render_error();
 
@@ -88,7 +88,7 @@ class SupportRequestForm extends ACFBlock {
 			return;
 		}
 		?>
-		<div class="bg-gb-red-700 rounded p-4 mb-4">
+		<div class="p-4 mb-4 rounded bg-gb-red-700">
 			<p class="text-gb-red-100">
 				<?php echo esc_html( goodbids()->support->get_error() ); ?>
 			</p>
