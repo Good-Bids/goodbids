@@ -24,7 +24,7 @@ if ( ! empty( $field['class'] ) ) {
 ?>
 <?php if ( $wrap ) : ?>
 	<div class="mb-6">
-		<label for="<?php echo esc_attr( $field_id ); ?>" class="block mb-2 text-sm font-medium text-gb-green-100<?php echo $required ? ' form-required' : ''; ?>">
+		<label for="<?php echo esc_attr( $field_id ); ?>" class="block mb-2 text-sm font-medium text-base<?php echo $required ? ' form-required' : ''; ?>">
 			<?php
 			echo esc_html( $field['label'] );
 			if ( $required ) :
