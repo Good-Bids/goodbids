@@ -122,7 +122,7 @@ class SupportRequest {
 				$labels = [
 					'name'                  => _x( 'Support Requests', 'Post Type General Name', 'goodbids' ),
 					'singular_name'         => _x( 'Support Request', 'Post Type Singular Name', 'goodbids' ),
-					'menu_name'             => __( 'Support Requests', 'goodbids' ),
+					'menu_name'             => __( 'Support', 'goodbids' ),
 					'name_admin_bar'        => __( 'Support Request', 'goodbids' ),
 					'archives'              => __( 'Support Request Archives', 'goodbids' ),
 					'attributes'            => __( 'Support Request Attributes', 'goodbids' ),
