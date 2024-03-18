@@ -88,8 +88,8 @@ class SupportRequestForm extends ACFBlock {
 			return;
 		}
 		?>
-		<div class="p-4 mb-4 rounded bg-gb-red-700">
-			<p class="text-gb-red-100">
+		<div class="p-4 mb-4 rounded bg-error-bg">
+			<p class="text-error-text">
 				<?php echo esc_html( goodbids()->support->get_error() ); ?>
 			</p>
 		</div>

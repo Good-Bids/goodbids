@@ -122,6 +122,8 @@ class Emails {
 			}
 
 			require_once $wc_email_path;
+
+			\WC_Emails::instance();
 		}
 
 		return true;

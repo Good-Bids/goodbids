@@ -440,7 +440,7 @@ class SupportRequest {
 	 * @return bool
 	 */
 	public function submission_processed(): bool {
-		return ! empty( $_GET['support-request'] ) && 'submitted' === $_GET['support-request']; // phpcs:ignore
+		return ! empty( $_GET[ self::FORM_SLUG ] ) && 'submitted' === $_GET[ self::FORM_SLUG ]; // phpcs:ignore
 	}
 
 	/**
@@ -709,14 +709,10 @@ class SupportRequest {
 						fn ( $reward_data ) => $reward_data['site_id'] === $site_id
 					)
 					->filter(
-						function ( $reward_data ) use ( $auction_id ) {
-							return goodbids()->sites->swap(
-								function () use ( $reward_data, $auction_id ) {
-									return goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $auction_id;
-								},
-								$reward_data['site_id']
-							);
-						}
+						fn ( $reward_data ) => goodbids()->sites->swap(
+							fn () => goodbids()->woocommerce->orders->get_auction_id( $reward_data['order_id'] ) === $auction_id,
+							$reward_data['site_id']
+						)
 					)
 					->values()
 					->all();
@@ -1153,7 +1149,7 @@ class SupportRequest {
 
 				global $wp;
 				$redirect = trailingslashit( home_url( $wp->request ) );
-				$redirect = add_query_arg( 'support-request', 'submitted', $redirect );
+				$redirect = add_query_arg( self::FORM_SLUG, 'submitted', $redirect );
 				wp_safe_redirect( $redirect );
 				exit;
 			},

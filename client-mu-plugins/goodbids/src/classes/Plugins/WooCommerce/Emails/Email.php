@@ -384,14 +384,12 @@ class Email extends WC_Email {
 		);
 
 		// Get Email Object
-		$auction    = $this->object instanceof Auction ? $this->object : null;
-		$order      = $this->object instanceof WC_Order ? $this->object : null;
-		$free_bid   = $this->object instanceof FreeBid ? $this->object : null;
-		$request    = $this->object instanceof Request ? $this->object : null;
-		$order_type = false;
+		$auction  = $this->object instanceof Auction ? $this->object : null;
+		$order    = $this->object instanceof WC_Order ? $this->object : null;
+		$free_bid = $this->object instanceof FreeBid ? $this->object : null;
+		$request  = $this->object instanceof Request ? $this->object : null;
 
 		if ( $order ) {
-			$order_type = goodbids()->woocommerce->orders->get_type( $order->get_id() );
 			$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order->get_id() );
 			$auction    = goodbids()->auctions->get( $auction_id );
 		}

@@ -598,8 +598,51 @@ class Auction {
 		$sec = $seconds % MINUTE_IN_SECONDS;
 
 		if ( $seconds < HOUR_IN_SECONDS ) {
-			return sprintf(
-				'%d %s and %d %s',
+			$return = sprintf(
+				'%d %s',
+				$min,
+				_n( 'minute', 'minutes', $min, 'goodbids' )
+			);
+
+			if ( $sec ) {
+				$return .= sprintf(
+					' and %d %s',
+					$sec,
+					_n( 'second', 'seconds', $sec, 'goodbids' )
+				);
+			}
+
+			return $return;
+		}
+
+		$hr  = floor( $seconds / HOUR_IN_SECONDS );
+		$min = floor( ( $seconds % HOUR_IN_SECONDS ) / MINUTE_IN_SECONDS );
+
+		$return = sprintf(
+			'%d %s',
+			$hr,
+			_n( 'hour', 'hours', $hr, 'goodbids' )
+		);
+
+		if ( ! $min && ! $sec ) {
+			return $return;
+		}
+
+		if ( $min && ! $sec ) {
+			$return .= sprintf(
+				' and %d %s',
+				$min,
+				_n( 'minute', 'minutes', $min, 'goodbids' )
+			);
+		} else if ( ! $min && $sec ) {
+			$return .= sprintf(
+				' and %d %s',
+				$sec,
+				_n( 'second', 'seconds', $sec, 'goodbids' )
+			);
+		} else {
+			$return .= sprintf(
+				', %d %s, and %d %s',
 				$min,
 				_n( 'minute', 'minutes', $min, 'goodbids' ),
 				$sec,
@@ -607,18 +650,7 @@ class Auction {
 			);
 		}
 
-		$hr  = floor( $seconds / HOUR_IN_SECONDS );
-		$min = floor( ( $seconds % HOUR_IN_SECONDS ) / MINUTE_IN_SECONDS );
-
-		return sprintf(
-			'%d %s, %d %s, and %d %s',
-			$hr,
-			_n( 'hour', 'hours', $hr, 'goodbids' ),
-			$min,
-			_n( 'minute', 'minutes', $min, 'goodbids' ),
-			$sec,
-			_n( 'second', 'seconds', $sec, 'goodbids' )
-		);
+		return $return;
 	}
 
 	/**
