@@ -3,10 +3,31 @@ declare module '*.svg';
 declare module '*.jpeg';
 declare module '*.jpg';
 
-type PHPVariables = Record<string, string>;
+type OnboardingStepOption =
+	| 'init-onboarding'
+	| 'activate-accessibility-checker'
+	| 'create-store'
+	| 'set-up-payments'
+	| 'onboarding-complete';
 
 // These are only defined for the auction wizard page
-declare const gbAuctionWizard: PHPVariables;
+declare const gbAuctionWizard: {
+	baseURL: string;
+	appID: string;
+	ajaxUrl: string;
+	adminURL: string;
+	auctionsIndexURL: string;
+
+	modeParam: string;
+	modeParamOptions: ['create', 'edit', 'clone'];
+	auctionIdParam: string;
+	rewardIdParam: string;
+	useFreeBidParam: string;
+
+	metricsEnabled: boolean;
+
+	rewardCategorySlug: string;
+};
 
 // These are only defined for the nonprofit setup page
 declare const gbNonprofitSetupGuide: {
@@ -20,7 +41,9 @@ declare const gbNonprofitSetupGuide: {
 	akismetURL: string;
 	accessibilityCheckerURL: string;
 
+	connectStripeURL: string;
 	woocommerceSettingsURL: string;
+	updateWoocommerceStoreURL: string;
 	configureShippingURL: string;
 	orderMetricsURL: string;
 	revenueMetricsURL: string;
@@ -32,6 +55,7 @@ declare const gbNonprofitSetupGuide: {
 
 	pagesURL: string;
 	patternsURL: string;
+	usersUrl: string;
 	addUsersURL: string;
 
 	auctionWizardURL: string;
@@ -41,19 +65,32 @@ declare const gbNonprofitSetupGuide: {
 	siteId: number;
 	siteStatus: string;
 	siteStatusOptions: ['pending', 'live', 'inactive'];
+
+	isAdmin: boolean;
+	isBDPAdmin: boolean;
+	isJrAdmin: boolean;
+
+	skippedOnboardingSteps: OnboardingStepOption[];
+	isOnboardingComplete: boolean;
+	isOnboardingPartiallyComplete: boolean;
 };
 
 declare const gbNonprofitOnboarding: {
+	baseUrl: string;
 	appID: string;
 	stepParam: string;
+	skipStepParam: string;
 	stepOptions: [
+		'init-onboarding',
+		'activate-accessibility-checker',
 		'create-store',
 		'set-up-payments',
-		'activate-accessibility-checker',
 		'onboarding-complete',
 	];
+	initOnboardingUrl: string;
 	createStoreUrl: string;
 	setUpPaymentsUrl: string;
+	skipSetUpPaymentsUrl: string;
 	accessibilityCheckerUrl: string;
 	onboardingCompleteUrl: string;
 	setupGuideUrl: string;

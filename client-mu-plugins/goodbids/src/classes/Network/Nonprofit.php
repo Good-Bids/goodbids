@@ -10,6 +10,7 @@ namespace GoodBids\Network;
 
 use GoodBids\Auctions\Auction;
 use GoodBids\Nonprofits\Invoice;
+use GoodBids\Nonprofits\Stripe;
 use GoodBids\Nonprofits\Verification;
 use stdClass;
 use WP_Site;
@@ -161,7 +162,14 @@ class Nonprofit {
 			return false;
 		}
 
-		return update_site_meta( $this->get_id(), Verification::STATUS_OPTION, $status );
+		// Onboarding must be complete.
+		if ( Nonprofit::STATUS_LIVE === $status && ! $this->is_onboarded() ) {
+			return false;
+		}
+
+		$meta_key = Verification::OPTION_SLUG . '-' . Verification::STATUS_OPTION;
+
+		return update_site_meta( $this->get_id(), $meta_key, $status );
 	}
 
 	/**
@@ -274,7 +282,7 @@ class Nonprofit {
 	 * @return string
 	 */
 	public function get_admin_email(): string {
-		return get_site_option( 'admin_email', '', $this->get_id() );
+		return get_blog_option(  $this->get_id(), 'admin_email', '' );
 	}
 
 	/**
@@ -362,10 +370,7 @@ class Nonprofit {
 	 * @return ?string
 	 */
 	public function get_stripe_customer_id(): ?string {
-		return goodbids()->sites->swap(
-			fn () => goodbids()->invoices->stripe->get_customer_id(),
-			$this->get_id()
-		);
+		return get_blog_option( $this->get_id(), Stripe::STRIPE_CUSTOMER_ID_OPT, null );
 	}
 
 	/**
@@ -383,5 +388,16 @@ class Nonprofit {
 		}
 
 		return goodbids()->invoices->stripe->get_customer( $customer_id );
+	}
+
+	/**
+	 * Check if Nonprofit has completed onboarding.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_onboarded(): bool {
+		return goodbids()->network->nonprofits->is_onboarded( $this->get_id() );
 	}
 }

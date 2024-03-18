@@ -11,6 +11,7 @@ namespace GoodBids\Auctions;
 use DateInterval;
 use DateTimeImmutable;
 use Exception;
+use GoodBids\Frontend\Notices;
 use GoodBids\Plugins\WooCommerce\Coupons;
 use GoodBids\Utilities\Log;
 use WC_Product;
@@ -27,6 +28,12 @@ class Rewards {
 	 * @var string
 	 */
 	const ITEM_TYPE = 'rewards';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const CLAIM_REWARD_SLUG = 'claim-reward';
 
 	/**
 	 * @since 1.0.0
@@ -54,6 +61,10 @@ class Rewards {
 		// Init Rewards Category.
 		$this->init_category();
 
+		// Use the Claim Reward slug at the end of the Auction URL to claim reward.
+		$this->add_claim_reward_url_rewrite();
+		$this->handle_claim_reward_endpoint();
+
 		// Connect Reward product to Auctions.
 		$this->connect_reward_product_on_auction_save();
 
@@ -76,6 +87,133 @@ class Rewards {
 			'init',
 			function () {
 				$this->get_category_id();
+			}
+		);
+	}
+
+	/**
+	 * Add custom rewrite rule to claim reward for Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_claim_reward_url_rewrite(): void {
+		add_filter(
+			'query_vars',
+			function ( $vars ) {
+				$vars[] = self::CLAIM_REWARD_SLUG;
+				return $vars;
+			}
+		);
+
+		add_action(
+			'init',
+			function () {
+				$auction_slug = Auctions::SINGULAR_SLUG;
+				$post_type    = goodbids()->auctions->get_post_type();
+				$claim_slug   = self::CLAIM_REWARD_SLUG;
+
+				add_rewrite_rule(
+					'^' . $auction_slug . '/([^/]+)/' . $claim_slug . '/?',
+					'index.php?post_type=' . $post_type . '&name=$matches[1]&' . $claim_slug . '=1',
+					'top'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Redirect to the checkout page with the Reward product in cart.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_claim_reward_endpoint(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! get_query_var( self::CLAIM_REWARD_SLUG ) ) {
+					return;
+				}
+
+				$auction_id = get_queried_object_id();
+				$auction    = new Auction( $auction_id );
+				$reward_id  = $auction->get_reward_id();
+
+				if ( ! is_user_logged_in() ) {
+					$auth_url    = wc_get_page_permalink( 'myaccount' );
+					$redirect_to = $auction->get_claim_reward_url();
+
+					goodbids()->notices->add_notice( Notices::NOT_AUTHENTICATED );
+					$redirect = add_query_arg( 'redirect-to', urlencode( $redirect_to ), $auth_url );
+
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( ! $auction->is_current_user_winner() ) {
+					goodbids()->notices->add_notice( Notices::NOT_AUCTION_WINNER );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				if ( ! $auction->has_ended() ) {
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_ENDED );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				// Make sure the price has been updated.
+				$this->update_price_to_auction_bid( $auction_id );
+
+				if ( $this->is_redeemed( $auction_id ) ) {
+					goodbids()->notices->add_notice( Notices::REWARD_ALREADY_REDEEMED );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				if ( ! $reward_id  ) {
+					// TODO: Add Error Message
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				WC()->cart->empty_cart();
+
+				try {
+					WC()->cart->add_to_cart( $reward_id, 1 );
+				} catch ( \Exception $e ) {
+					Log::error( $e->getMessage() );
+
+					// TODO: Add Error Message
+					wp_safe_redirect( $auction->get_url() );
+					exit();
+				}
+
+				/**
+				 * Action to perform when a reward is added to cart.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $auction_id The Auction ID.
+				 * @param int $reward_id The Reward Product ID.
+				 */
+				do_action( 'goodbids_claim_reward', $auction_id, $reward_id );
+
+				/**
+				 * Filter the URL to redirect after reward has been added to cart.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param string $redirect The URL to redirect to.
+				 * @param int $auction_id The Auction ID.
+				 */
+				$redirect = apply_filters( 'goodbids_claim_reward_redirect', wc_get_checkout_url(), $auction_id );
+
+				wp_safe_redirect( $redirect );
+				exit();
 			}
 		);
 	}
@@ -145,13 +283,7 @@ class Rewards {
 	 * @return string
 	 */
 	public function get_claim_reward_url( ?int $auction_id = null ): string {
-		$reward_product_id = $this->get_product_id( $auction_id );
-
-		if ( ! $reward_product_id ) {
-			return '';
-		}
-
-		return add_query_arg( 'add-to-cart', $reward_product_id, wc_get_checkout_url() );
+		return trailingslashit( get_permalink( $auction_id ) ) . self::CLAIM_REWARD_SLUG . '/';
 	}
 
 	/**
@@ -267,7 +399,6 @@ class Rewards {
 				}
 
 				if ( ! goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) {
-					Log::error( 'Not a reward order.' );
 					return;
 				}
 
@@ -277,6 +408,14 @@ class Rewards {
 				update_post_meta( $reward_id, self::REDEEMED_META_KEY, 1 );
 				delete_post_meta( $reward_id, sprintf( Coupons::REWARD_COUPON_META_KEY, $auction_id ), true );
 
+				/**
+				 * Reward Redeemed by Auction Winner
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $auction_id
+				 * @param int $order_id
+				 */
 				do_action( 'goodbids_reward_redeemed', $auction_id, $order_id );
 
 				wp_safe_redirect( get_permalink( $auction_id ) );
@@ -295,28 +434,36 @@ class Rewards {
 	private function set_price_on_auction_end(): void {
 		add_action(
 			'goodbids_auction_end',
-			function ( int $auction_id ): void {
-				$reward_id = $this->get_product_id( $auction_id );
-
-				if ( ! $reward_id ) {
-					Log::error( 'Auction missing Reward Product.', compact( 'auction_id' ) );
-					return;
-				}
-
-				$reward = $this->get_product( $auction_id );
-
-				if ( ! $reward ) {
-					Log::error( 'Reward Product not found.', compact( 'auction_id' ) );
-					return;
-				}
-
-				$auction     = goodbids()->auctions->get( $auction_id );
-				$winning_bid = $auction->get_last_bid();
-
-				$reward->set_regular_price( $winning_bid->get_subtotal() );
-				$reward->set_price( $winning_bid->get_subtotal() );
-				$reward->save();
-			}
+			fn ( int $auction_id ) => $this->update_price_to_auction_bid( $auction_id )
 		);
+	}
+
+	/**
+	 * Update the Reward product price to the last bid amount.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return void
+	 */
+	public function update_price_to_auction_bid( int $auction_id ): void {
+		$auction = goodbids()->auctions->get( $auction_id );
+		$reward  = $auction?->get_reward();
+
+		if ( ! $reward ) {
+			Log::error( 'Auction or Reward not found.', compact( 'auction_id' ) );
+			return;
+		}
+
+		$winning_bid = $auction->get_last_bid();
+
+		if ( floatval( $reward->get_price( 'edit' ) ) === $winning_bid->get_subtotal() ) {
+			return;
+		}
+
+		$reward->set_regular_price( $winning_bid->get_subtotal() );
+		$reward->set_price( $winning_bid->get_subtotal() );
+		$reward->save();
 	}
 }

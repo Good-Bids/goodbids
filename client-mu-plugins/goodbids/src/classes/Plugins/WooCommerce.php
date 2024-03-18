@@ -15,18 +15,10 @@ use GoodBids\Plugins\WooCommerce\API\Credentials;
 use GoodBids\Plugins\WooCommerce\Cart;
 use GoodBids\Plugins\WooCommerce\Checkout;
 use GoodBids\Plugins\WooCommerce\Coupons;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
-use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
+use GoodBids\Plugins\WooCommerce\Emails;
 use GoodBids\Plugins\WooCommerce\Orders;
 use GoodBids\Plugins\WooCommerce\Stripe;
 use GoodBids\Plugins\WooCommerce\Taxes;
-use WC_Email;
-use WC_Product;
 use WP_Error;
 
 /**
@@ -65,6 +57,18 @@ class WooCommerce {
 	 * @var ?Account
 	 */
 	public ?Account $account = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?Emails
+	 */
+	public ?Emails $emails = null;
+
+	/**
+	 * @since 1.0.0
+	 * @var ?Admin
+	 */
+	public ?Admin $admin = null;
 
 	/**
 	 * @since 1.0.0
@@ -146,20 +150,8 @@ class WooCommerce {
 		$this->modify_login_page();
 		$this->modify_register_page();
 
-		// Add email notifications.
-		$this->setup_email_notifications();
-
-		// Adding Custom Email Styles
-		$this->add_custom_email_styles();
-
 		// Limit access to pages
 		$this->limit_access_to_pages();
-
-		// Disable New Order Emails
-		$this->disable_new_order_emails();
-
-		// Disable Processing Order Emails
-		$this->disable_processing_order_emails();
 
 		// Skip some of the Setup Tasks
 		$this->skip_setup_tasks();
@@ -485,53 +477,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Add a custom email to the list of emails WooCommerce
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	private function setup_email_notifications(): void {
-		add_filter(
-			'woocommerce_email_classes',
-			function ( array $email_classes ): array {
-				$goodbids_emails = [
-					'AuctionClosed'             => new AuctionClosed(),
-					'AuctionIsLive'             => new AuctionIsLive(),
-					'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
-					'AuctionOutbid'             => new AuctionOutbid(),
-					'AuctionRewardReminder'     => new AuctionRewardReminder(),
-					'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
-					'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
-				];
-
-				return array_merge( $email_classes, $goodbids_emails );
-			}
-		);
-	}
-
-	/**
-	 * Retrieve the current add-to-cart product.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param ?WC_Product $product
-	 *
-	 * @return ?WC_Product
-	 */
-	public function get_add_to_cart_product( ?WC_Product $product = null ): ?WC_Product {
-		// Sometimes this filter does not pass a product.
-		if ( ! $product && ! empty( $_REQUEST['add-to-cart'] ) ) { // phpcs:ignore
-			$product = wc_get_product( intval( sanitize_text_field( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ); // phpcs:ignore
-		}
-
-		if ( ! $product instanceof WC_Product ) {
-			return null;
-		}
-
-		return $product;
-	}
-
-	/**
 	 * Disable the Return to Cart link on the Checkout page inside the Checkout Actions block.
 	 *
 	 * @since 1.0.0
@@ -596,40 +541,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Add custom email styles
-	 *
-	 * @since 1.0.0
-	 * @return void
-	 */
-	private function add_custom_email_styles(): void {
-		add_filter(
-			'woocommerce_email_styles',
-			function ( string $css ) {
-				$custom_css = sprintf(
-					'.button-wrapper {
-						text-align: center;
-						margin: 42px 0 12px 0 !important;
-					}
-					.button {
-						display: inline-block;
-						margin: 0 auto;
-						background-color: %s;
-						border-radius: 3px;
-						color: #ffffff;
-						padding: 8px 20px;
-						text-decoration: none;
-					}',
-					esc_attr( get_option( 'woocommerce_email_base_color' ) )
-				);
-
-				return $css . $custom_css;
-			},
-			10
-		);
-	}
-
-
-	/**
 	 * Modify Login Page
 	 *
 	 * @since 1.0.0
@@ -642,13 +553,13 @@ class WooCommerce {
 			function () {
 				if ( ! is_user_logged_in() ) {
 					printf(
-						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full font-extrabold">%s</p>%s</div>',
-						esc_html__( 'Or login with one of these providers', 'goodbids' ),
+						'<div class="flex flex-col items-center mo-oauth-login"><p class="w-full text-sm text-center">%s</p>%s</div>',
+						esc_html__( 'Or continue with', 'goodbids' ),
 						do_shortcode( '[mo_oauth_login]' ),
 					);
 					printf(
-						'<p>%s %s %s %s.<p>',
-						esc_html__( 'By clicking to continue with any of these providers, you agree to GOODBIDS\'', 'goodbids' ),
+						'<p class="w-full text-sm text-center">%s %s %s %s.<p>',
+						esc_html__( 'By logging in, you agree to GOODBIDS\'', 'goodbids' ),
 						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
 						esc_html__( 'and', 'goodbids' ),
 						wp_kses_post( goodbids()->sites->get_privacy_policy_link() )
@@ -671,7 +582,7 @@ class WooCommerce {
 			function () {
 				if ( ! is_user_logged_in() ) {
 					printf(
-						'<p>%s %s %s %s.<p>',
+						'<p class="w-full text-sm text-center">%s %s %s %s.<p>',
 						esc_html__( 'By registering an account, you agree to GOODBIDS\'', 'goodbids' ),
 						wp_kses_post( goodbids()->sites->get_terms_conditions_link() ),
 						esc_html__( 'and', 'goodbids' ),
@@ -741,58 +652,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Disable New Order Emails
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function disable_new_order_emails(): void {
-		add_filter( 'woocommerce_email_enabled_new_order', '__return_false' );
-
-		add_filter(
-			'woocommerce_email_get_option',
-			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
-				if ( 'new_order' !== $email->id || 'enabled' !== $key ) {
-					return $value;
-				}
-
-				$email->form_fields['enabled']['default'] = 'no';
-
-				return 'no';
-			},
-			10,
-			4
-		);
-	}
-
-	/**
-	 * Disable Processing Order Emails
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function disable_processing_order_emails(): void {
-		add_filter( 'woocommerce_enabled_customer_processing_order', '__return_false' );
-
-		add_filter(
-			'woocommerce_email_get_option',
-			function( mixed $value, \WC_Email $email, mixed $original_value, string $key ) {
-				if ( 'customer_processing_order' !== $email->id || 'enabled' !== $key ) {
-					return $value;
-				}
-
-				$email->form_fields['enabled']['default'] = 'no';
-
-				return 'no';
-			},
-			10,
-			4
-		);
-	}
-
-	/**
 	 * Skip setup tasks
 	 *
 	 * @since 1.0.0
@@ -800,7 +659,7 @@ class WooCommerce {
 	 * @return void
 	 */
 	private function skip_setup_tasks(): void {
-		$hide_setup_steps = function( array $lists ) {
+		$hide_setup_steps = function ( array $lists ) {
 			// Hide Initial Steps
 			$lists['setup']->visible = false;
 

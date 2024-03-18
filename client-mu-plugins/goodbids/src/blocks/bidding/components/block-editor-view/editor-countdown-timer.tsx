@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { ClockIcon } from '../icons/clock-icon';
 
 export function EditorCountdownTimer() {
@@ -20,7 +21,9 @@ function EditorCountdownTimerIcon() {
 function EditCountdownTimerContent() {
 	return (
 		<span>
-			<b>You will win in 30:00</b> if nobody else bids.
+			{__('You will win in', 'goodbids')}{' '}
+			<i>{__('bid_extension_window', 'goodbids')}</i>{' '}
+			{__('if nobody else bids.', 'goodbids')}
 		</span>
 	);
 }

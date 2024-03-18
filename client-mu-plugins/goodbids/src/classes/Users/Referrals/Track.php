@@ -61,16 +61,19 @@ class Track {
 
 				$code = trim( sanitize_text_field( wp_unslash( $_GET[ self::REFERRAL_CODE_QUERY_ARG ] ) ) ); // phpcs:ignore
 
-				if ( ! $code ) {
-					return;
-				}
+				if ( $code ) {
+					$referrer = goodbids()->referrals->get_user_id_by_referral_code( $code );
 
-				$this->set_cookie(
-					[
-						'code'    => $code,
-						'created' => current_time( 'mysql', true ),
-					]
-				);
+					// Don't track if the referrer is the current user.
+					if ( $referrer && $referrer !== get_current_user_id() ) {
+						$this->set_cookie(
+							[
+								'code'    => $code,
+								'created' => current_time( 'mysql', true ),
+							]
+						);
+					}
+				}
 
 				// Remove referral code from URL.
 				wp_safe_redirect( remove_query_arg( self::REFERRAL_CODE_QUERY_ARG ) );
@@ -193,6 +196,13 @@ class Track {
 
 				// No Free Bids for non-Paid-Bid Orders.
 				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) || goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$order = wc_get_order( $order_id );
+
+				// Don't award if payment didn't go through.
+				if ( $order->needs_payment() ) {
 					return;
 				}
 

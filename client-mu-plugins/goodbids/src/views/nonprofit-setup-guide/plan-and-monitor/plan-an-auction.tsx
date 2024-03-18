@@ -1,21 +1,16 @@
 import { __ } from '@wordpress/i18n';
 import { MultiStepHeading } from '../components/multi-step-heading';
 import { ButtonLink } from '../../../components/button-link';
+import { Footnote } from '../components/footnote';
 
 export function PlanAnAuction() {
 	return (
 		<MultiStepHeading
 			title={__('Plan an Auction', 'goodbids')}
-			content={
-				<>
-					{__(
-						'Create your first auction using the guided setup wizard, then build and publish the Auction page. Additional auctions can be created in the',
-						'goodbids',
-					)}{' '}
-					<i>{__('Auctions', 'goodbids')}</i>{' '}
-					{__('section', 'goodbids')}
-				</>
-			}
+			content={__(
+				'Create a GOODBIDS auction using the guided setup wizard, then build and publish the Auction page to your site.',
+				'goodbids',
+			)}
 		>
 			<div className="w-full max-w-60">
 				<ButtonLink
@@ -26,6 +21,12 @@ export function PlanAnAuction() {
 					{__('Get Started', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('This button takes you to', 'goodbids')}{' '}
+				<i>{__('Add New', 'goodbids')}</i>{' '}
+				{__('in the Auctions tab.', 'goodbids')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }

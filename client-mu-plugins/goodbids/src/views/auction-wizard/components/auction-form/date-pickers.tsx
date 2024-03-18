@@ -1,6 +1,6 @@
 import { useDebouncedCallback } from 'use-debounce';
 import { TextInput } from '~/components/text-input';
-import { AuctionState, useAuctionWizardState } from '../../store';
+import { EditableAuctionValues, useAuctionWizardState } from '../../store';
 import { validateDateTime } from '~/utils/datetime';
 import { __ } from '@wordpress/i18n';
 import { H3 } from '~/components/typography';
@@ -59,7 +59,7 @@ export function DatePickers() {
 
 	const handleDebounce = useDebouncedCallback(
 		(
-			key: keyof AuctionState,
+			key: EditableAuctionValues,
 			value: string,
 			validator?: (value: string) => string | undefined,
 		) => {

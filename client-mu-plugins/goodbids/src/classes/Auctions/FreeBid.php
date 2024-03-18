@@ -30,6 +30,13 @@ class FreeBid {
 	const TYPE_REFERRAL = 'referral';
 
 	/**
+	 * Admin Granted Free Bid type.
+	 *
+	 * @since 1.0.0
+	 */
+	const TYPE_ADMIN_GRANT = 'admin_grant';
+
+	/**
 	 * Unique Identifier.
 	 *
 	 * @since 1.0.0
@@ -58,6 +65,14 @@ class FreeBid {
 	 * @var ?string
 	 */
 	public ?string $earned_date = null;
+
+	/**
+	 * Has the user been notified of this yet?
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	public bool $awarded_notification = true;
 
 	/**
 	 * Type of Free Bid
@@ -127,10 +142,14 @@ class FreeBid {
 	/**
 	 * Initialize Free Bid Object
 	 *
+	 * @param ?int $auction_id_earned
+	 *
 	 * @since 1.0.0
 	 */
-	public function __construct( int $auction_id_earned ) {
-		$this->auction_id_earned = $auction_id_earned;
+	public function __construct( ?int $auction_id_earned = null ) {
+		if ( $auction_id_earned ) {
+			$this->set_auction_id( $auction_id_earned );
+		}
 
 		if ( ! $this->id ) {
 			$this->id = uniqid( 'GBFB-' );
@@ -140,6 +159,20 @@ class FreeBid {
 			$this->earned_date = current_time( 'Y-m-d H:i:s' );
 		}
 
+		return $this;
+	}
+
+	/**
+	 * Set the Auction ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return FreeBid
+	 */
+	public function set_auction_id( int $auction_id ): FreeBid {
+		$this->auction_id_earned = $auction_id;
 		return $this;
 	}
 
@@ -208,6 +241,17 @@ class FreeBid {
 	}
 
 	/**
+	 * Returns the type of the Free Bid for display
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type_display(): string {
+		return ucwords( str_replace( '_', ' ', $this->get_type() ) );
+	}
+
+	/**
 	 * Displays the type of the Free Bid
 	 *
 	 * @since 1.0.0
@@ -215,7 +259,27 @@ class FreeBid {
 	 * @return void
 	 */
 	public function display_type(): void {
-		echo esc_html( ucwords( str_replace( '_', ' ', $this->get_type() ) ) );
+		echo esc_html( $this->get_type_display() );
+	}
+
+	/**
+	 * Get the type action performed to be awarded free bid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_type_action(): string {
+		if ( $this->get_type() === self::TYPE_REFERRAL ) {
+			return __( 'Referral', 'goodbids' );
+		}
+
+		if ( $this->get_type() === self::TYPE_ADMIN_GRANT ) {
+			return __( 'admin grant', 'goodbids' );
+		}
+
+		// Default to Bid.
+		return __( 'Bid', 'goodbids' );
 	}
 
 	/**
@@ -341,5 +405,27 @@ class FreeBid {
 		$this->bid_value         = $order->get_subtotal();
 
 		return true;
+	}
+
+	/**
+	 * Used to notify users of awarded free bids later then when they were awarded.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function did_awarded_notification(): bool {
+		return false !== $this->awarded_notification;
+	}
+
+	/**
+	 * Mark the Free Bid as Notified.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function mark_as_notified(): void {
+		$this->awarded_notification = true;
 	}
 }

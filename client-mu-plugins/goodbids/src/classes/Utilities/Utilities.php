@@ -182,22 +182,14 @@ class Utilities {
 	}
 
 	/**
-	 * Helper for get_page_by_path
+	 * Disable HyperDB For the remainder of the current request.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $path
-	 * @param string $output
-	 * @param string $post_type
-	 *
-	 * @return mixed
+	 * @return void
 	 */
-	public function get_page_by_path( string $path, string $output = OBJECT, string $post_type = 'page' ): mixed {
-		if ( function_exists( 'wpcom_vip_get_page_by_path' ) ) {
-			return wpcom_vip_get_page_by_path( $path, $output, $post_type );
-		}
-
-		return get_page_by_path( $path, $output, $post_type ); // phpcs:ignore
+	public function disable_hyperdb_temporarily(): void {
+		goodbids()->woocommerce->coupons->hyperdb_enabled = false;
 	}
 
 	/**
@@ -212,14 +204,27 @@ class Utilities {
 			return is_main_site();
 		}
 
-		if ( empty( $_GET['id'] ) ) { // phpcs:ignore
-			return false;
+		$site_id = $this->network_get_current_blog_id();
+
+		if ( ! $site_id ) {
+			return is_main_site();
 		}
 
-		if ( intval( sanitize_text_field( $_GET['id'] ) ) !== get_main_site_id() ) { // phpcs:ignore
-			return false;
+		return $site_id === get_main_site_id();
+	}
+
+	/**
+	 * Gets the current Site ID in the context of the Network Admin.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function network_get_current_blog_id(): int {
+		if ( ! is_network_admin() || empty( $_GET['id'] ) ) { // phpcs:ignore
+			return get_current_blog_id();
 		}
 
-		return true;
+		return intval( sanitize_text_field( $_GET['id'] ) ); // phpcs:ignore
 	}
 }

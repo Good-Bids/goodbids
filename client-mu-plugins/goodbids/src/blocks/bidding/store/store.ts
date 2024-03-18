@@ -26,6 +26,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	currentBid: 0,
 	lastBid: 0,
 	lastBidder: undefined,
+	useFreeBidParam: 'use-free-bid',
 	freeBidsAvailable: 0,
 	freeBidsAllowed: false,
 
@@ -64,6 +65,8 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 				message,
 				state.userId,
 				state.setCountdownInterval,
+				state.startTime,
+				state.endTime,
 			),
 		);
 	},

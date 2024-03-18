@@ -8,6 +8,7 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use GoodBids\Auctions\Auction;
 use GoodBids\Auctions\Bids;
 use GoodBids\Auctions\Rewards;
 use GoodBids\Frontend\Notices;
@@ -32,7 +33,7 @@ class Coupons {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const FREE_BID_COUPON_META_KEY = '_goodbids_free_bid_%d_coupon_id';
+	const FREE_BID_COUPON_META_KEY = '_goodbids_free_bid_%d_%d_coupon_id';
 
 	/**
 	 * @since 1.0.0
@@ -123,7 +124,7 @@ class Coupons {
 			return null;
 		}
 
-		$existing = get_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), true );
+		$existing = get_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id, $bid_variation_id ), true );
 
 		if ( $existing ) {
 			// Make sure it's still valid.
@@ -142,7 +143,7 @@ class Coupons {
 
 		$this->generate( $coupon_code, $description, $bid_variation_id, $reward_price );
 
-		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id ), $coupon_code );
+		update_user_meta( get_current_user_id(), sprintf( self::FREE_BID_COUPON_META_KEY, $auction_id, $bid_variation_id ), $coupon_code );
 
 		return $coupon_code;
 	}
@@ -181,89 +182,96 @@ class Coupons {
 	}
 
 	/**
-	 * Apply Reward Coupon to cart, if applicable.
+	 * Apply Free Bid and Reward Coupon to cart, if applicable.
 	 *
 	 * @since 1.0.0
 	 * @return void
 	 */
 	private function apply_cart_coupons(): void {
-		add_filter(
-			'woocommerce_add_to_cart_redirect',
-			function ( string $url, ?WC_Product $product ) {
-				$product = goodbids()->woocommerce->get_add_to_cart_product( $product );
-
-				if ( ! $product ) {
-					return $url;
-				}
-
-				$product_type = goodbids()->products->get_type( $product->get_id() );
-				$redirect_url = wc_get_page_permalink( 'myaccount' );
-				$coupon_code  = false;
-
-				if ( ! $product_type ) {
-					return $url;
-				}
-
-				$auction_id = goodbids()->products->get_auction_id_from_product( $product->get_id() );
-
-				if ( ! $auction_id ) {
-					goodbids()->notices->add_notice( Notices::AUCTION_NOT_FOUND );
-					return $url;
+		add_action(
+			'goodbids_place_bid',
+			function ( int $auction_id, int $product_id, int $variation_id ): void {
+				if ( empty( $_REQUEST[ Bids::USE_FREE_BID_PARAM ] ) ) { // phpcs:ignore
+					return;
 				}
 
 				$auction = goodbids()->auctions->get( $auction_id );
 
-				if ( Rewards::ITEM_TYPE === $product_type ) {
-
-					$redirect_url = $auction->get_url();
-
-					if ( ! $auction->is_current_user_winner() ) {
-						WC()->cart->empty_cart();
-						goodbids()->notices->add_notice( Notices::NOT_AUCTION_WINNER );
-						return $url;
-					}
-
-					$coupon_code = $this->get_reward_coupon_code( $auction_id, $product->get_id() );
-
-					if ( ! $coupon_code ) {
-						goodbids()->notices->add_notice( Notices::GET_REWARD_COUPON_ERROR );
-						return $redirect_url;
-					}
-				} elseif ( Bids::ITEM_TYPE === $product_type ) {
-					if ( ! empty( $_REQUEST['use-free-bid'] ) ) { // phpcs:ignore
-						if ( ! $auction->are_free_bids_allowed() ) {
-							goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-							return $url;
-						}
-
-						if ( ! goodbids()->users->get_available_free_bid_count() ) {
-							goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
-							return $url;
-						}
-
-						$coupon_code = $this->get_free_bid_coupon_code( $auction_id, $product->get_id() );
-
-						if ( ! $coupon_code ) {
-							goodbids()->notices->add_notice( Notices::GET_FREE_BID_COUPON_ERROR );
-							return $redirect_url;
-						}
-					}
+				if ( ! $auction->are_free_bids_allowed() ) {
+					goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+					return;
 				}
 
-				// Only apply Coupon once.
-				if ( $coupon_code && ! WC()->cart->has_discount( $coupon_code ) ) {
-					// Apply the Coupon.
-					if ( ! WC()->cart->add_discount( $coupon_code ) ) {
-						Log::error( 'There was a problem adding the discount coupon', compact( 'coupon_code' ) );
-						goodbids()->notices->add_notice( Notices::APPLY_COUPON_ERROR );
-						return $redirect_url;
-					}
+				if ( ! goodbids()->users->get_available_free_bid_count() ) {
+					goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+					return;
 				}
 
-				return $url;
+				$product     = wc_get_product( $variation_id );
+				$coupon_code = $this->get_free_bid_coupon_code( $auction_id, $product->get_id() );
+
+				$this->apply_the_coupon_code( $coupon_code, $auction, 'goodbids_place_bid_redirect' );
+			},
+			10,
+			3
+		);
+
+		add_action(
+			'goodbids_claim_reward',
+			function ( int $auction_id, int $reward_id ): void {
+				$auction     = goodbids()->auctions->get( $auction_id );
+				$product     = wc_get_product( $reward_id );
+				$coupon_code = $this->get_reward_coupon_code( $auction_id, $product->get_id() );
+
+				$this->apply_the_coupon_code( $coupon_code, $auction, 'goodbids_claim_reward_redirect' );
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Apply the WooCommerce Coupon
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $coupon_code
+	 * @param Auction $auction
+	 * @param string $redirect_hook
+	 *
+	 * @return void
+	 */
+	private function apply_the_coupon_code( string $coupon_code, Auction $auction, string $redirect_hook ): void {
+		if ( ! $coupon_code ) {
+			goodbids()->notices->add_notice( Notices::GET_REWARD_COUPON_ERROR );
+			add_filter(
+				$redirect_hook,
+				function ( $redirect_url ) use ( $auction ) {
+					return $auction->get_url();
+				}
+			);
+			return;
+		}
+
+		// Only apply Coupon once.
+		if (  WC()->cart->has_discount( $coupon_code ) ) {
+			return;
+		}
+
+		// Apply the Coupon.
+		if ( WC()->cart->add_discount( $coupon_code ) ) {
+			return;
+		}
+
+		Log::error( 'There was a problem adding the discount coupon', compact( 'coupon_code' ) );
+
+		goodbids()->notices->add_notice( Notices::APPLY_COUPON_ERROR );
+
+		add_filter(
+			$redirect_hook,
+			function ( $redirect_url ) use ( $auction ) {
+				return $auction->get_url();
+			}
 		);
 	}
 

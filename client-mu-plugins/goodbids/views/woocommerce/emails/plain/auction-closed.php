@@ -22,8 +22,8 @@ printf(
 	'{auction.bid_count}',
 	'{auction.total_raised}',
 	'{site_title}',
-	'{user.bid_count}',
-	'{user.total_donated}'
+	'{auction.user.bid_count}',
+	'{auction.user.total_donated}'
 );
 
 echo "\n\n----------------------------------------\n\n";

@@ -5,6 +5,16 @@ export function Live() {
 	return (
 		<>
 			<H1>{__('Live', 'goodbids')}</H1>
+			<P>
+				{__('Now that your site is live, review the', 'goodbids')}{' '}
+				<a href={gbNonprofitSetupGuide.accessibilityCheckerURL}>
+					{__('site-wide accessibility report', 'goodbids')}
+				</a>{' '}
+				{__(
+					'and resolve any issues flagged on your pages.',
+					'goodbids',
+				)}
+			</P>
 
 			<P>
 				{__(

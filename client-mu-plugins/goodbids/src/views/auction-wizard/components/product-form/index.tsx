@@ -10,7 +10,7 @@ import { ProductGallery } from './image-upload/product-gallery';
 import { useDebouncedCallback } from 'use-debounce';
 import { __ } from '@wordpress/i18n';
 import {
-	AuctionWizardProductState,
+	EditableProductValues,
 	useAuctionWizardState,
 } from '~/views/auction-wizard/store';
 import { H3 } from '~/components/typography';
@@ -37,7 +37,7 @@ export function ProductForm({ shippingClasses }: ProductFormProps) {
 
 	const handleDebounce = useDebouncedCallback(
 		(
-			key: keyof AuctionWizardProductState,
+			key: EditableProductValues,
 			value: string,
 			validator?: (value: string) => string | undefined,
 		) => {
@@ -87,7 +87,7 @@ export function ProductForm({ shippingClasses }: ProductFormProps) {
 				}
 				startAdornment={<MoneyIcon width={20} />}
 				supportingText={__(
-					"This is for internal purposes only and is not shown to bidders. If you'd like to share an estimated retail value for the reward, add it on the next step.",
+					'This is for internal purposes only and is not shown to bidders.',
 					'goodbids',
 				)}
 			/>

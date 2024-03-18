@@ -18,6 +18,13 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 		publishSite.mutate({ site_id: gbNonprofitSetupGuide.siteId });
 	};
 
+	const loading = publishSite.status === 'pending';
+
+	const paymentSetUpSkipped =
+		gbNonprofitSetupGuide.skippedOnboardingSteps.includes(
+			'set-up-payments',
+		);
+
 	return (
 		<>
 			<H1>{__('Pending', 'goodbids')}</H1>
@@ -30,13 +37,9 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 				<a href={gbNonprofitSetupGuide.optionsGeneralURL}>
 					{__('site timezone', 'goodbids')}
 				</a>
-				{__(', update your', 'goodbids')}{' '}
+				{__(' and update your', 'goodbids')}{' '}
 				<a href={gbNonprofitSetupGuide.customizeHomepageURL}>
 					{__('homepage', 'goodbids')}
-				</a>
-				{__(', and review the', 'goodbids')}{' '}
-				<a href={gbNonprofitSetupGuide.accessibilityCheckerURL}>
-					{__('site-wide accessibility report', 'goodbids')}
 				</a>
 				.{' '}
 				{__(
@@ -55,10 +58,31 @@ export function Pending({ manuallySetToLive }: PendingProps) {
 			</P>
 
 			<div className="w-full max-w-60">
-				<Button variant="solid" onClick={handlePublishSite}>
-					{__('Launch Site', 'goodbids')}
+				<Button
+					disabled={
+						loading || !gbNonprofitSetupGuide.isOnboardingComplete
+					}
+					variant="solid"
+					onClick={handlePublishSite}
+				>
+					{loading
+						? __('Saving', 'goodbids')
+						: __('Launch Site', 'goodbids')}
 				</Button>
 			</div>
+
+			{paymentSetUpSkipped && (
+				<P>
+					{__(
+						"You are not able to launch your site until you've",
+						'goodbids',
+					)}{' '}
+					<a href={gbNonprofitSetupGuide.connectStripeURL}>
+						{__('connected a Stripe account', 'goodbids')}{' '}
+					</a>{' '}
+					{__('to collect payments.', 'goodbids')}
+				</P>
+			)}
 
 			<AnimatePresence>
 				{publishSite.status !== 'idle' && (

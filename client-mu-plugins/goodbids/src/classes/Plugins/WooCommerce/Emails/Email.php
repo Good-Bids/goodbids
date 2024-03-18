@@ -11,7 +11,10 @@ namespace GoodBids\Plugins\WooCommerce\Emails;
 defined( 'ABSPATH' ) || exit;
 
 use GoodBids\Auctions\Auction;
+use GoodBids\Auctions\FreeBid;
+use GoodBids\Users\Referrals\Referrer;
 use WC_Email;
+use WC_Order;
 use WP_User;
 
 /**
@@ -363,20 +366,37 @@ class Email extends WC_Email {
 	 * @return void
 	 */
 	private function default_placeholders(): void {
+		$date_format     = 'F j, Y';
+		$datetime_format = sprintf(
+			'%s %s g:ia',
+			$date_format,
+			addcslashes( __( 'at', 'goodbids' ), 'A..z' )
+		);
+
+		// Get Email Object
+		$auction    = $this->object instanceof Auction ? $this->object : null;
+		$order      = $this->object instanceof WC_Order ? $this->object : null;
+		$free_bid   = $this->object instanceof FreeBid ? $this->object : null;
+		$order_type = false;
+
+		if ( $order ) {
+			$order_type = goodbids()->woocommerce->orders->get_type( $order->get_id() );
+			$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order->get_id() );
+			$auction    = goodbids()->auctions->get( $auction_id );
+		}
+
+		$reward = goodbids()->rewards->get_product( $auction?->get_id() );
+
 		// Default Placeholders.
 		$this->add_placeholder( '{login_url}', wc_get_page_permalink( 'authentication' ) );
 		$this->add_placeholder( '{auctions_url}', get_post_type_archive_link( goodbids()->auctions->get_post_type() ) );
-
-		// Auction Placeholders
-		$auction = $this->object instanceof Auction ? $this->object : null;
-		$reward  = goodbids()->rewards->get_product( $auction?->get_id() );
 
 		// Auction Details.
 		$this->add_placeholder( '{auction.url}', $auction?->get_url() );
 		$this->add_placeholder( '{auction.admin_url}', get_edit_post_link( $auction?->get_id() ) );
 		$this->add_placeholder( '{auction.title}', $auction?->get_title() );
-		$this->add_placeholder( '{auction.start_date_time}', $auction?->get_start_date_time( 'n/j/Y g:i a' ) );
-		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( 'n/j/Y g:i a' ) );
+		$this->add_placeholder( '{auction.start_date_time}', $auction?->get_start_date_time( $datetime_format ) );
+		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( $datetime_format ) );
 
 		// Bid Details
 		$starting_bid = wc_price( $auction?->get_starting_bid() );
@@ -394,25 +414,37 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{auction.estimated_value}', $auction?->get_estimated_value_formatted() );
 		$this->add_placeholder( '{auction.expected_high_bid}', $auction?->get_expected_high_bid_formatted() );
 
+		// User Specific Auction Details
+		$user_last_bid        = $auction?->get_user_last_bid( $this->user_id );
+		$user_last_bid_amount = $user_last_bid ? $user_last_bid->get_subtotal() : 0;
+		$user_bid_count       = $this->user_id ? $auction?->get_user_bid_count( $this->user_id ) : '';
+		$user_total_donated   = $this->user_id ? $auction?->get_user_total_donated_formatted( $this->user_id ) : '';
+		$this->add_placeholder( '{auction.user.last_bid_amount}', wc_price( $user_last_bid_amount ) );
+		$this->add_placeholder( '{auction.user.bid_count}', $user_bid_count );
+		$this->add_placeholder( '{auction.user.total_donated}', $user_total_donated );
+
 		// Reward Details.
 		$this->add_placeholder( '{reward.title}', $reward?->get_title() );
-		$this->add_placeholder( '{reward.type}', 'TBD' );
 		$this->add_placeholder( '{reward.purchase_note}', $reward?->get_purchase_note() );
 		$this->add_placeholder( '{reward.claim_url}', goodbids()->rewards->get_claim_reward_url( $auction?->get_id() ) );
 		$this->add_placeholder( '{reward.days_to_claim_setting}', goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
 		$this->add_placeholder( '{reward.claim_deadline_date}', goodbids()->rewards->get_claim_deadline_date( $auction?->get_id() ) );
 
-		// User Details.
-		$user_last_bid        = $auction?->get_user_last_bid( $this->user_id );
-		$user_last_bid_amount = $user_last_bid ? $user_last_bid->get_subtotal() : 0;
+		// General User Details.
+		$referrer = new Referrer( $this->user_id );
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
-		$this->add_placeholder( '{user.last_bid_amount}', wc_price( $user_last_bid_amount ) );
+		$this->add_placeholder( '{user.account_url}', wc_get_page_permalink( 'myaccount' ) );
+		$this->add_placeholder( '{user.free_bid_count}', goodbids()->users->get_available_free_bid_count( $this->user_id ) );
+		$this->add_placeholder( '{user.referral_link}', $referrer->get_link() );
 
-		$user_bid_count = $this->user_id ? $auction?->get_user_bid_count( $this->user_id ) : '';
-		$this->add_placeholder( '{user.bid_count}', $user_bid_count );
+		// Order Details
+		$order_date = $order?->get_date_completed() ? $order->get_date_completed()->date( $datetime_format ) : '';
+		$this->add_placeholder( '{order.total}', $order?->get_total() );
+		$this->add_placeholder( '{order.date}', $order_date );
 
-		$user_total_donated = $this->user_id ? $auction?->get_user_total_donated_formatted( $this->user_id ) : '';
-		$this->add_placeholder( '{user.total_donated}', $user_total_donated );
+		// Free Bid Details
+		$this->add_placeholder( '{free_bid.type}', $free_bid?->get_type_display() );
+		$this->add_placeholder( '{free_bid.type_action}', $free_bid?->get_type_action() );
 	}
 
 	/**
@@ -798,5 +830,22 @@ class Email extends WC_Email {
 		foreach ( $admins as $user_id ) {
 			$this->trigger( $auction, $user_id );
 		}
+	}
+
+	/**
+	 * Set common admin email vars
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function set_admin_vars(): void {
+		$auction = $this->object instanceof Auction ? $this->object : null;
+		$this->add_email_var( 'auction_estimated_value', $auction?->get_estimated_value() );
+		$this->add_email_var( 'auction_estimated_value_formatted', $auction?->get_estimated_value_formatted() );
+		$this->add_email_var( 'auction_goal', $auction?->get_goal() );
+		$this->add_email_var( 'auction_goal_formatted', $auction?->get_goal_formatted() );
+		$this->add_email_var( 'auction_expected_high_bid', $auction?->get_expected_high_bid() );
+		$this->add_email_var( 'auction_expected_high_bid_formatted', $auction?->get_expected_high_bid_formatted() );
 	}
 }

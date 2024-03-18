@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { MultiStepHeading } from '../components/multi-step-heading';
 import { ButtonLink } from '../../../components/button-link';
+import { Footnote } from '../components/footnote';
 
 export function ModerateComments() {
 	return (
@@ -14,11 +15,9 @@ export function ModerateComments() {
 					)}{' '}
 					<i>{__('Comments')}</i>{' '}
 					{__(
-						'tab. You will also be emailed when a comment requires moderation. You can manage your comment moderation settings in the',
+						'tab. You will be emailed when a comment requires moderation.',
 						'goodbids',
-					)}{' '}
-					<i>{__('Settings > Discussion')}</i>{' '}
-					{__('tab.', 'goodbids')}
+					)}
 				</>
 			}
 		>
@@ -31,6 +30,15 @@ export function ModerateComments() {
 					{__('See Comments', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__(
+					'You can manage your comment moderation settings on the',
+					'goodbids',
+				)}{' '}
+				<i>{__('Settings > Discussion', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }

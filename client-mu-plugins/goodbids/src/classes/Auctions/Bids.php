@@ -34,6 +34,12 @@ class Bids {
 	 * @since 1.0.0
 	 * @var string
 	 */
+	const PLACE_BID_SLUG = 'place-bid';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
 	const AUCTION_BID_META_KEY = 'gb_bid_product_id';
 
 	/**
@@ -67,6 +73,12 @@ class Bids {
 	const FREE_BID_STATUS_USED = 'used';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const USE_FREE_BID_PARAM = 'use-free-bid';
+
+	/**
 	 * Initialize Bids
 	 *
 	 * @since 1.0.0
@@ -77,8 +89,15 @@ class Bids {
 			return;
 		}
 
+		// Use the Place Bid slug at the end of the Auction URL to place Bid.
+		$this->add_place_bid_url_rewrite();
+		$this->handle_place_bid_endpoint();
+
 		// Create a Bid product when an Auction is created.
 		$this->create_bid_product_for_auction();
+
+		// Process Free bids before updating the Bid Product.
+		$this->update_free_bids_on_order_complete();
 
 		// Bump Auction Bid Product Price when an Order is completed.
 		$this->update_bid_product_on_order_complete();
@@ -97,6 +116,137 @@ class Bids {
 
 		// Hide Bid Products from WP Admin > Products.
 		$this->filter_bid_products();
+
+		// Reduce the current Bid Product stock to 0 when the Auction ends.
+		$this->disable_bid_product_on_auction_end();
+	}
+
+	/**
+	 * Add custom rewrite rule to place bid for Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_place_bid_url_rewrite(): void {
+		add_filter(
+			'query_vars',
+			function ( $vars ) {
+				$vars[] = self::PLACE_BID_SLUG;
+				return $vars;
+			}
+		);
+
+		add_action(
+			'init',
+			function () {
+				$auction_slug = Auctions::SINGULAR_SLUG;
+				$post_type    = goodbids()->auctions->get_post_type();
+				$bid_slug     = self::PLACE_BID_SLUG;
+
+				add_rewrite_rule(
+					'^' . $auction_slug . '/([^/]+)/' . $bid_slug . '/?',
+					'index.php?post_type=' . $post_type . '&name=$matches[1]&' . $bid_slug . '=1',
+					'top'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Redirect to the checkout page with latest Bid Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function handle_place_bid_endpoint(): void {
+		add_action(
+			'template_redirect',
+			function (): void {
+				if ( ! get_query_var( self::PLACE_BID_SLUG ) ) {
+					return;
+				}
+
+				$auction_id = get_queried_object_id();
+				$auction    = new Auction( $auction_id );
+
+				if ( ! is_user_logged_in() ) {
+					$auth_url    = wc_get_page_permalink( 'myaccount' );
+					$redirect_to = $auction->get_place_bid_url();
+
+					goodbids()->notices->add_notice( Notices::NOT_AUTHENTICATED );
+					$redirect = add_query_arg( 'redirect-to', urlencode( $redirect_to ), $auth_url );
+
+					wp_safe_redirect( $redirect );
+					exit;
+				}
+
+				if ( ! $auction->has_started() ) {
+					goodbids()->notices->add_notice( Notices::AUCTION_NOT_STARTED );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				if ( $auction->has_ended() ) {
+					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				// Make sure they aren't the current high bidder.
+				if ( $auction->is_current_user_winning() ) {
+					goodbids()->notices->add_notice( Notices::ALREADY_HIGH_BIDDER );
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				$product_id   = $auction->get_product_id();
+				$variation_id = $auction->get_variation_id();
+
+				if ( ! $product_id || ! $variation_id ) {
+					// TODO: Add Error Message
+					wp_safe_redirect( $auction->get_url() );
+					exit;
+				}
+
+				WC()->cart->empty_cart();
+
+				try {
+					WC()->cart->add_to_cart( $product_id, 1, $variation_id );
+				} catch ( \Exception $e ) {
+					Log::error( $e->getMessage() );
+
+					// TODO: Add Error Message
+					wp_safe_redirect( $auction->get_url() );
+					exit();
+				}
+
+				/**
+				 * Action to perform when a bid is placed.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $auction_id The Auction ID.
+				 * @param int $product_id The Bid Product ID.
+				 * @param int $variation_id The Bid Variation ID.
+				 */
+				do_action( 'goodbids_place_bid', $auction_id, $product_id, $variation_id );
+
+				/**
+				 * Filter the URL to redirect after placing a bid.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param string $redirect The URL to redirect to.
+				 * @param int $auction_id The Auction ID.
+				 */
+				$redirect = apply_filters( 'goodbids_place_bid_redirect', wc_get_checkout_url(), $auction_id );
+
+				wp_safe_redirect( $redirect );
+				exit();
+			}
+		);
 	}
 
 	/**
@@ -357,17 +507,18 @@ class Bids {
 	 * @since 1.0.0
 	 *
 	 * @param int $auction_id
+	 * @param bool $is_free_bid
 	 *
 	 * @return string
 	 */
-	public function get_place_bid_url( int $auction_id ): string {
-		$bid_variation_id = $this->get_variation_id( $auction_id );
+	public function get_place_bid_url( int $auction_id, bool $is_free_bid = false ): string {
+		$url = trailingslashit( get_permalink( $auction_id ) ) . self::PLACE_BID_SLUG . '/';
 
-		if ( ! $bid_variation_id ) {
-			return '';
+		if ( $is_free_bid ) {
+			$url = add_query_arg( self::USE_FREE_BID_PARAM, 1, $url );
 		}
 
-		return add_query_arg( 'add-to-cart', $bid_variation_id, wc_get_checkout_url() );
+		return $url;
 	}
 
 	/**
@@ -410,7 +561,7 @@ class Bids {
 					Log::error( 'There was a problem trying to increase the Bid Amount', compact( 'auction_id' ) );
 				}
 			},
-			10,
+			20,
 			2
 		);
 	}
@@ -543,36 +694,97 @@ class Bids {
 				}
 
 				$auction_id = goodbids()->woocommerce->orders->get_auction_id( $order_id );
-				$redirect   = get_permalink( $auction_id );
 				$auction    = goodbids()->auctions->get( $auction_id );
 
+				wp_safe_redirect( $auction->get_url() );
+				exit;
+			},
+			5
+		);
+	}
+
+	/**
+	 * Adjust Free Bid quantities on order complete
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_free_bids_on_order_complete(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				$auction = goodbids()->auctions->get( $auction_id );
+
 				// Do not award free bids if this order contains a free bid.
-				if ( ! goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
-					$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
-					$remaining_free_bids = $auction->get_free_bids_available();
-					$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
-					$bid_order           = wc_get_order( $order_id );
-
-					$description = sprintf(
-					// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
-						__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
-						goodbids()->utilities->get_ordinal( $nth_bid ),
-						$bid_order->get_total( 'edit' ),
-						$auction_id
-					);
-
-					if ( $auction->maybe_award_free_bid( null, $description ) ) {
-						// TODO: Let the user know they earned a free bid.
-						goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
-					}
-				} else { // Reduce the Free Bid Count for the user.
+				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					// Reduce the Free Bid Count for the user.
 					if ( goodbids()->users->redeem_free_bid( $auction_id, $order_id ) ) {
 						goodbids()->notices->add_notice( Notices::FREE_BID_REDEEMED );
 					}
+					return;
 				}
 
-				wp_safe_redirect( $redirect );
-				exit;
+				$max_free_bids       = intval( goodbids()->get_config( 'auctions.default-free-bids' ) );
+				$remaining_free_bids = $auction->get_free_bids_available();
+				$nth_bid             = $max_free_bids - $remaining_free_bids + 1;
+				$bid_order           = wc_get_order( $order_id );
+
+				// Do not award a free bid if payment didn't go through.
+				if ( $bid_order->needs_payment() ) {
+					return;
+				}
+
+				$details = sprintf(
+					// translators: %1$s represents the nth bid placed, %2$s represent the amount of the bid, %3$d represents the Auction ID.
+					__( 'Placed %1$s Paid Bid for %2$s on Auction ID %3$d.', 'goodbids' ),
+					goodbids()->utilities->get_ordinal( $nth_bid ),
+					$bid_order->get_total( 'edit' ),
+					$auction_id
+				);
+
+				// Potentially award a free bid and reduce the Auction's free bid count.
+				$auction->maybe_award_free_bid(
+					get_current_user_id(),
+					$details,
+					FreeBid::TYPE_PAID_BID,
+					true
+				);
+			},
+			10,
+			2
+		);
+
+		// Notify of Free Bids Awarded that have not already been notified.
+		add_action(
+			'template_redirect',
+			function () {
+				if ( get_post_type( get_queried_object_id() ) === goodbids()->auctions->get_post_type() ) {
+					$type = FreeBid::TYPE_PAID_BID;
+				} elseif ( is_account_page() ) {
+					$type = FreeBid::TYPE_REFERRAL;
+				} else {
+					$type = FreeBid::TYPE_ADMIN_GRANT;
+				}
+
+				$free_bids = goodbids()->users->get_free_bids( get_current_user_id(), Bids::FREE_BID_STATUS_UNUSED, $type );
+				$do_update = false;
+
+				foreach ( $free_bids as $free_bid ) {
+					if ( $free_bid->did_awarded_notification() ) {
+						continue;
+					}
+
+					$free_bid->mark_as_notified();
+					goodbids()->notices->add_notice( Notices::EARNED_FREE_BID );
+					$do_update = true;
+
+					break;
+				}
+
+				if ( $do_update ) {
+					goodbids()->users->save_free_bids( get_current_user_id(), $free_bids );
+				}
 			}
 		);
 	}
@@ -609,4 +821,24 @@ class Bids {
 			}
 		);
 	}
+
+	/**
+	 * Reduce the Bid Variation stock to 0 when the Auction ends.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function disable_bid_product_on_auction_end(): void {
+		add_action(
+			'goodbids_auction_end',
+			function ( int $auction_id ) {
+				$bid_variation = goodbids()->bids->get_variation( $auction_id );
+				$bid_variation->set_stock_quantity( 0 );
+				$bid_variation->save();
+			},
+			11
+		);
+	}
+
 }

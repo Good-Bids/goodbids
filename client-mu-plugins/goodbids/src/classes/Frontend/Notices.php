@@ -292,11 +292,11 @@ class Notices {
 	public function add_notice( string $notice_id ) : void {
 		$notice = $this->get_notice( $notice_id );
 
-		if ( ! $notice ) {
+		if ( ! $notice || ! function_exists( 'wc_add_notice' ) ) {
 			return;
 		}
 
-		wc_add_notice( $notice['message'], $notice['type'] );
+		wc_add_notice( $notice['message'], $notice['type'], [ '_notice_id' => $notice_id ] );
 	}
 
 	/**
@@ -319,5 +319,74 @@ class Notices {
 		}
 
 		return $this->notices[ $notice_id ];
+	}
+
+	/**
+	 * Check if a notice exists.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return bool
+	 */
+	public function notice_exists( string $notice_id ): bool {
+		if ( ! did_action( 'woocommerce_init' ) ) {
+			return false;
+		}
+
+		$notices = wc_get_notices();
+
+		if ( ! $notices ) {
+			return false;
+		}
+
+		foreach ( $notices as $type_notices ) {
+			foreach ( $type_notices as $notice ) {
+				if ( empty( $notice['data'] ) || empty( $notice['data']['_notice_id'] ) ) {
+					continue;
+				}
+
+				if ( $notice['data']['_notice_id'] === $notice_id ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Remove a notice by ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return void
+	 */
+	public function remove_notice( string $notice_id ): void {
+		if ( ! did_action( 'woocommerce_init' ) ) {
+			return;
+		}
+
+		$notices = wc_get_notices();
+
+		if ( ! $notices ) {
+			return;
+		}
+
+		foreach ( $notices as $type => $type_notices ) {
+			foreach ( $type_notices as $index => $notice ) {
+				if ( empty( $notice['data'] ) || empty( $notice['data']['_notice_id'] ) ) {
+					continue;
+				}
+
+				if ( $notice['data']['_notice_id'] === $notice_id ) {
+					unset( $notices[ $type ][ $index ] );
+					break;
+				}
+			}
+		}
 	}
 }

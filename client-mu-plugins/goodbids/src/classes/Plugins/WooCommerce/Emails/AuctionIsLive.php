@@ -8,9 +8,6 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
-use GoodBids\Auctions\Auction;
-use GoodBids\Utilities\Log;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -54,9 +51,7 @@ class AuctionIsLive extends Email {
 			function ( int $auction_id ) {
 				$auction = goodbids()->auctions->get( $auction_id );
 				$this->send_to_watchers( $auction );
-			},
-			10,
-			2
+			}
 		);
 	}
 
@@ -104,23 +99,5 @@ class AuctionIsLive extends Email {
 	 */
 	public function get_button_url(): string {
 		return '{auction.url}';
-	}
-
-	/**
-	 * Trigger the Email
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param mixed $object
-	 * @param ?int  $user_id
-	 *
-	 * @return void
-	 */
-	public function trigger( mixed $object = null, ?int $user_id = null ): void{
-		if ( ! $object instanceof Auction ) {
-			return;
-		}
-
-		parent::trigger( $object, $user_id );
 	}
 }

@@ -5,6 +5,8 @@ import { CardHeading } from '../components/card-heading';
 import { ManageShipping } from './manage-shipping';
 import { AccessRevenueReport } from './access-revenue-report';
 import { ShippingLabels } from './shipping-labels';
+import { ManagePayments } from './manage-payments';
+import { UpdateWooCommerceStore } from './update-woocommerce-store';
 
 export function Ecommerce() {
 	return (
@@ -12,11 +14,19 @@ export function Ecommerce() {
 			<CardHeading title={__('Ecommerce', 'goodbids')} />
 
 			<MultiStep
-				defaultStep="manage-shipping"
+				defaultStep="manage-payments"
 				steps={{
+					'manage-payments': {
+						label: __('Manage Payments', 'goodbids'),
+						component: <ManagePayments />,
+					},
 					'manage-shipping': {
 						label: __('Manage Shipping', 'goodbids'),
 						component: <ManageShipping />,
+					},
+					'update-woocommerce-store': {
+						label: __('Update WooCommerce Store', 'goodbids'),
+						component: <UpdateWooCommerceStore />,
 					},
 					'access-revenue-report': {
 						label: __('Access Revenue Report', 'goodbids'),

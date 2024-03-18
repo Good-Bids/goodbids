@@ -9,6 +9,7 @@ import { __ } from '@wordpress/i18n';
 import { ReviewAuction } from '../components/review-auction';
 import { ReviewProduct } from '../components/reward-product-review';
 import { Wrapper } from './wrapper';
+import { getContent } from './get-content';
 
 type ReviewStepProps = {
 	shippingClasses: ShippingClasses;
@@ -82,30 +83,19 @@ export function ReviewStep({
 		);
 
 		const images = product.productImage
-			? [{ src: product.productImage.value.src }].concat(
+			? [{ id: product.productImage.value.id }].concat(
 					product.productGallery.map((image) => {
-						return { src: image.value.src };
+						return { id: image.value.id };
 					}),
 				)
 			: product.productGallery.map((image) => {
-					return { src: image.value.src };
+					return { id: image.value.id };
 				});
-
-		/* TODO: Figure out local image upload
-
-		 	Current Error:
-		 	"Error getting remote image http://turtles.goodbids.vipdev.lndo.site/wp-content/uploads/sites/3/2024/02/monkeys-6.png. Error: cURL error 7: Failed to connect to turtles.goodbids.vipdev.lndo.site port 80 after 37 ms: Connection refused"
-		*/
-		if (process.env.NODE_ENV === 'development') {
-			console.log(
-				'Images cannot be uploaded in development mode. Please use the default product creation form to add images.',
-			);
-		}
 
 		const base = {
 			name: product.name.value,
 			regular_price: product.regularPrice.value,
-			images: process.env.NODE_ENV === 'development' ? [] : images,
+			images,
 			categories: [{ id: category!.id }],
 		};
 
@@ -156,7 +146,10 @@ export function ReviewStep({
 	};
 
 	const handleAuctionContentUpdate = (id: number) => {
-		updateAuctionContent.mutate(id);
+		updateAuctionContent.mutate({
+			id,
+			content: getContent(id),
+		});
 	};
 
 	const completeAuctionWizard = (id: number) => {
@@ -164,6 +157,11 @@ export function ReviewStep({
 		clearStore();
 		setStep('finish');
 	};
+
+	const loading =
+		createProduct.status === 'pending' ||
+		createAuction.status === 'pending' ||
+		updateAuctionContent.status === 'pending';
 
 	return (
 		<Wrapper
@@ -182,8 +180,14 @@ export function ReviewStep({
 					updateStatus={updateAuctionContent.status}
 				/>
 
-				<Button variant="solid" onClick={handleSubmitStart}>
-					{__('Save and continue', 'goodbids')}
+				<Button
+					disabled={loading}
+					variant="solid"
+					onClick={handleSubmitStart}
+				>
+					{loading
+						? __('Saving', 'goodbids')
+						: __('Save my progress', 'goodbids')}
 				</Button>
 			</div>
 		</Wrapper>

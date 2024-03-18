@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { MultiStepHeading } from '../components/multi-step-heading';
 import { ButtonLink } from '../../../components/button-link';
+import { Footnote } from '../components/footnote';
 
 export function AccessRevenueReport() {
 	return (
@@ -8,10 +9,8 @@ export function AccessRevenueReport() {
 			title={__('Access Revenue Report', 'goodbids')}
 			content={
 				<>
-					{__('Visit the', 'goodbids')}{' '}
-					<i>{__('WooCommerce > Analytics > Revenue', 'goodbids')}</i>{' '}
 					{__(
-						'tab to see how much you’ve raised on the GOODBIDS network. The',
+						'See how much you’ve raised on the GOODBIDS network! The',
 						'goodbids',
 					)}{' '}
 					<i>{__('Net Sales', 'goodbids')}</i>{' '}
@@ -31,6 +30,12 @@ export function AccessRevenueReport() {
 					{__('See Revenue Metrics', 'goodbids')}
 				</ButtonLink>
 			</div>
+
+			<Footnote>
+				{__('This button takes you to the', 'goodbids')}{' '}
+				<i>{__('WooCommerce > Analytics > Revenue', 'goodbids')}</i>{' '}
+				{__('page.', 'goodbids')}
+			</Footnote>
 		</MultiStepHeading>
 	);
 }

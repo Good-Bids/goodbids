@@ -14,11 +14,9 @@ use GoodBids\Core;
 use GoodBids\Network\Sites;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
-use WC_Product_Variation;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
-use WP_Role;
 
 /**
  * Class for Auctions
@@ -55,18 +53,6 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const CRON_AUCTION_START_HOOK = 'goodbids_auction_start_event';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
-	const CRON_AUCTION_CLOSE_HOOK = 'goodbids_auction_close_event';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
 	const AUCTION_STARTED_META_KEY = '_auction_started';
 
 	/**
@@ -83,9 +69,9 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
-	 * @var array
+	 * @var Wizard
 	 */
-	public array $cron_intervals = [];
+	public Wizard $wizard;
 
 	/**
 	 * Initialize Auctions
@@ -93,7 +79,7 @@ class Auctions {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Disable Auctions on Main Site.
+		// Disable Auctions on Main Site, but not locally for debugging.
 		if ( is_main_site() && ! Core::is_local_env() ) {
 			return;
 		}
@@ -101,22 +87,11 @@ class Auctions {
 		// Init Auction Wizard.
 		$this->wizard = new Wizard();
 
-		// Set up Cron Schedules.
-		$this->cron_intervals['1min']  = [
-			'interval' => MINUTE_IN_SECONDS,
-			'name'     => '1min',
-			'display'  => __( 'Once Every Minute', 'goodbids' ),
-		];
-		$this->cron_intervals['30sec'] = [
-			'interval' => 30,
-			'name'     => '30sec',
-			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
-		];
-		$this->cron_intervals['daily'] = [
-			'interval' => DAY_IN_SECONDS,
-			'name'     => 'Daily',
-			'display'  => __( 'Every Day', 'goodbids' ),
-		];
+		// Init Cron functions.
+		new Cron();
+
+		// Init Fundraising Fields class.
+		new FundraisingFields();
 
 		// Register Post Type.
 		$this->register_post_type();
@@ -127,17 +102,8 @@ class Auctions {
 		// Reduce the REST API cache time for Auction Requests.
 		$this->adjust_rest_timeout();
 
-		// Attempt to trigger events for opened/closed auctions.
-		$this->maybe_trigger_events();
-
 		// Register the Auction Single and Archive templates.
 		$this->set_templates();
-
-		// Add Auction Meta Box to display details and metrics.
-		$this->add_info_meta_box();
-
-		// Add custom Admin Columns for Auctions.
-		$this->add_admin_columns();
 
 		// Configure some values for new Auction posts.
 		$this->new_auction_post_init();
@@ -148,35 +114,20 @@ class Auctions {
 		// Override End Date/Time.
 		$this->override_end_date_time();
 
-		// Set up 1min Cron Job Schedule.
-		$this->add_one_min_cron_schedule();
-
-		// Schedule a cron job to trigger the start of auctions.
-		$this->schedule_auction_start_cron();
-
-		// Schedule a cron job to trigger the close of auctions.
-		$this->schedule_auction_close_cron();
-
-		// Schedule a cron job to remind users to claim their rewards.
-		$this->schedule_reward_claim_reminder();
-
-		// Use cron action to start auctions.
-		$this->check_for_starting_auctions();
-
-		// Use cron action to close auctions.
-		$this->check_for_closing_auctions();
-
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
 
 		// Tell Auctioneer about new Bid Order.
 		$this->update_auctioneer_on_order_complete();
 
-		// Allow admins to force update the close date to the Auction End Date.
-		$this->force_update_close_date();
-
 		// Restrict operations when a Nonprofit is delinquent.
 		$this->restrict_delinquent_sites();
+
+		// Hide the Auction title from the editor.
+		$this->hide_auction_title();
+
+		// Remove the excerpt placeholder.
+		$this->remove_excerpt_placeholder();
 	}
 
 	/**
@@ -353,7 +304,7 @@ class Auctions {
 	 */
 	public function get_unclaimed_reward_auctions( array $query_args = [] ): array {
 		$query_args = array_merge_recursive(
-				[
+			[
 				'meta_query' => [
 					[
 						'key'     => self::AUCTION_CLOSED_META_KEY,
@@ -383,7 +334,7 @@ class Auctions {
 	 */
 	public function get_unclaimed_reward_auction_emails(): array {
 		$reminder_interval_days = intval( goodbids()->get_config( 'auctions.reward-claim-reminder-interval-days' ) );
-		$reward_days_to_claim = intval( goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
+		$reward_days_to_claim   = intval( goodbids()->get_config( 'auctions.reward-days-to-claim' ) );
 
 		if ( $reward_days_to_claim < $reminder_interval_days ) {
 			Log::warning( 'Reminder interval is greater than allowed days to claim reward.' );
@@ -397,7 +348,7 @@ class Auctions {
 			try {
 				// Use the Current Date - X days to check for Auctions that have been closed for each interval.
 				$threshold_start = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 00:00:00' );
-				$threshold_end = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 23:59:59' );
+				$threshold_end   = current_datetime()->sub( new DateInterval( 'P' . $current_interval . 'D' ) )->format( 'Y-m-d 23:59:59' );
 			} catch ( Exception $e ) {
 				Log::error( 'Error querying reminders for unclaimed reward auctions.', [ 'error' => $e->getMessage() ] );
 				return [];
@@ -424,7 +375,7 @@ class Auctions {
 				array_push( $reminder_emails, ...$unclaimed );
 			}
 
-			if( $current_interval >= $reward_days_to_claim ) {
+			if ( $current_interval >= $reward_days_to_claim ) {
 				break;
 			}
 
@@ -631,34 +582,6 @@ class Auctions {
 	}
 
 	/**
-	 * Add a meta box to show Auction metrics and other details.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_info_meta_box(): void {
-		add_action(
-			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
-
-				if ( $this->get_post_type() !== $screen->id ) {
-					return;
-				}
-
-				add_meta_box(
-					'goodbids-auction-info',
-					__( 'Auction Info', 'goodbids' ),
-					[ $this, 'info_meta_box' ],
-					$screen->id,
-					'side'
-				);
-			}
-		);
-	}
-
-	/**
 	 * Clear Metric Transients on new Bid Order.
 	 *
 	 * @since 1.0.0
@@ -703,369 +626,6 @@ class Auctions {
 		foreach ( $transients as $transient ) {
 			delete_transient( $transient );
 		}
-	}
-
-	/**
-	 * Display the Auction Metrics and other details.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	public function info_meta_box(): void {
-		$auction_id = $this->get_auction_id();
-
-		// Display the Auction Details.
-		goodbids()->load_view( 'admin/auctions/details.php', compact( 'auction_id' ) );
-
-		echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
-
-		// Display the Auction Metrics.
-		goodbids()->load_view( 'admin/auctions/metrics.php', compact( 'auction_id' ) );
-	}
-
-	/**
-	 * Insert custom metrics admin columns
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_admin_columns(): void {
-		add_filter(
-			'manage_' . $this->get_post_type() . '_posts_columns',
-			function ( array $columns ): array {
-				$new_columns = [];
-
-				foreach ( $columns as $column => $label ) {
-					$new_columns[ $column ] = $label;
-
-					// Insert Custom Columns after the Title column.
-					if ( 'title' === $column ) {
-						$new_columns['status']        = __( 'Status', 'goodbids' );
-						$new_columns['starting_bid']  = __( 'Starting Bid', 'goodbids' );
-						$new_columns['bid_increment'] = __( 'Bid Increment', 'goodbids' );
-						$new_columns['total_bids']    = __( 'Total Bids', 'goodbids' );
-						$new_columns['total_raised']  = __( 'Total Raised', 'goodbids' );
-						$new_columns['last_bid']      = __( 'Last Bid', 'goodbids' );
-						$new_columns['current_bid']   = __( 'Current Bid', 'goodbids' );
-					}
-				}
-
-				return $new_columns;
-			}
-		);
-
-		add_action(
-			'manage_' . $this->get_post_type() . '_posts_custom_column',
-			function ( string $column, int $post_id ) {
-				// Columns that require a "published" status.
-				$published_cols = [
-					'starting_bid',
-					'bid_increment',
-					'total_bids',
-					'total_raised',
-					'last_bid',
-					'current_bid',
-				];
-
-				// Bail early if Auction isn't published.
-				if ( in_array( $column, $published_cols, true ) && 'publish' !== get_post_status( $post_id ) ) {
-					echo '&mdash;';
-					return;
-				}
-
-				$auction = goodbids()->auctions->get( $post_id );
-
-				// Output the column values.
-				if ( 'status' === $column ) {
-					$status = $auction->get_status();
-					$title  = $status;
-
-					if ( Auction::STATUS_LIVE === $status ) {
-						$title = __( 'Ends', 'goodbids' ) . ': ' . $auction->get_end_date_time();
-					} elseif ( Auction::STATUS_UPCOMING === $status ) {
-						$title = __( 'Starts', 'goodbids' ) . ': ' . $auction->get_start_date_time();
-					} elseif ( Auction::STATUS_CLOSED === $status ) {
-						$title = __( 'Ended', 'goodbids' ) . ': ' . $auction->get_end_date_time();
-					}
-
-					printf(
-						'<span title="%s" class="goodbids-status status-%s">%s</span>',
-						esc_attr( $title ),
-						esc_attr( strtolower( $status ) ),
-						esc_html( $status )
-					);
-				} elseif ( 'starting_bid' === $column ) {
-					echo wp_kses_post( wc_price( $auction->calculate_starting_bid() ) );
-				} elseif ( 'bid_increment' === $column ) {
-					echo wp_kses_post( wc_price( $auction->get_bid_increment() ) );
-				} elseif ( 'total_bids' === $column ) {
-					echo esc_html( $auction->get_bid_count() );
-				} elseif ( 'total_raised' === $column ) {
-					echo wp_kses_post( wc_price( $auction->get_total_raised() ) );
-				} elseif ( 'last_bid' === $column ) {
-					$last_bid = $auction->get_last_bid();
-					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
-				} elseif ( 'current_bid' === $column ) {
-					/** @var WC_Product_Variation $bid_variation */
-					$bid_variation = goodbids()->bids->get_variation( $post_id );
-					echo $bid_variation ? wp_kses_post( wc_price( $bid_variation->get_price() ) ) : '';
-				}
-			},
-			10,
-			2
-		);
-	}
-
-	/**
-	 * Add a 1min Cron Job Schedule.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_one_min_cron_schedule(): void {
-		add_filter(
-			'cron_schedules', // phpcs:ignore
-			function ( array $schedules ): array {
-				foreach ( $this->cron_intervals as $id => $props ) {
-					// If one is already set, confirm it matches our schedule.
-					if ( ! empty( $schedules[ $props['name'] ] ) ) {
-						if ( MINUTE_IN_SECONDS === $schedules[ $props['name'] ] ) {
-							continue;
-						}
-
-						$this->cron_intervals[ $id ]['name'] .= '_goodbids';
-					}
-
-					// Adds every minute cron schedule.
-					$schedules[ $this->cron_intervals[ $id ]['name'] ] = [
-						'interval' => $this->cron_intervals[ $id ]['interval'],
-						'display'  => $this->cron_intervals[ $id ]['display'],
-					];
-				}
-
-				return $schedules;
-			}
-		);
-	}
-
-	/**
-	 * Schedule a cron job that runs every minute to trigger auctions to start.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function schedule_auction_start_cron(): void {
-		add_action(
-			'init',
-			function (): void {
-				if ( wp_next_scheduled( self::CRON_AUCTION_START_HOOK ) ) {
-					return;
-				}
-
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['1min']['name'], self::CRON_AUCTION_START_HOOK );
-			}
-		);
-	}
-
-	/**
-	 * Schedule a cron job that runs every half minute to trigger auctions to close.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function schedule_auction_close_cron(): void {
-		add_action(
-			'init',
-			function (): void {
-				if ( wp_next_scheduled( self::CRON_AUCTION_CLOSE_HOOK ) ) {
-					return;
-				}
-
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['30sec']['name'], self::CRON_AUCTION_CLOSE_HOOK );
-			}
-		);
-	}
-
-	/**
-	 * Schedule a cron job that runs every day to trigger unclaimed rewards reminder
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function schedule_reward_claim_reminder(): void {
-		add_action(
-			'init',
-			function (): void {
-				if ( wp_next_scheduled( Rewards::CRON_UNCLAIMED_REMINDER_HOOK ) ) {
-					return;
-				}
-
-				wp_schedule_event( strtotime( current_datetime()->format( 'Y-m-d H:i:s' ) ), $this->cron_intervals['daily']['name'], Rewards::CRON_UNCLAIMED_REMINDER_HOOK );
-			}
-		);
-	}
-
-	/**
-	 * Check for Auctions that are starting during cron hook.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function check_for_starting_auctions(): void {
-		add_action(
-			self::CRON_AUCTION_START_HOOK,
-			function (): void {
-				$auctions = $this->get_starting_auctions();
-				$starts   = 0;
-
-				if ( ! $auctions->have_posts() ) {
-					return;
-				}
-
-				foreach ( $auctions->posts as $auction_id ) {
-					$auction = goodbids()->auctions->get( $auction_id );
-					// Skip START Action on Auctions that have ended.
-					if ( $auction->has_ended() ) {
-						continue;
-					}
-
-					if ( $auction->trigger_start() ) {
-						$starts++;
-					}
-				}
-
-				$count = count( $auctions->posts );
-
-				if ( $count !== $starts ) {
-					Log::warning(
-						'Not all Auctions were started',
-						[
-							'starts'   => $starts,
-							'expected' => $count,
-							'posts'    => $auctions->posts,
-						]
-					);
-				}
-			}
-		);
-	}
-
-	/**
-	 * Check for Auctions that have closed during cron hook.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function check_for_closing_auctions(): void {
-		add_action(
-			self::CRON_AUCTION_CLOSE_HOOK,
-			function (): void {
-				$auctions = $this->get_closing_auctions();
-
-				if ( ! $auctions->have_posts() ) {
-					return;
-				}
-
-				foreach ( $auctions->posts as $auction_id ) {
-					$auction = goodbids()->auctions->get( $auction_id );
-					$auction->trigger_close();
-				}
-			}
-		);
-	}
-
-	/**
-	 * Get Auctions that are starting.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return WP_Query
-	 */
-	private function get_starting_auctions(): WP_Query {
-		// Use the current time + 1min to get Auctions about to start.
-		$auction_start = current_datetime()->add( new DateInterval( 'PT1M' ) )->format( 'Y-m-d H:i:s' );
-		$query_args    = [
-			'meta_query' => [
-				[
-					'key'     => 'auction_start',
-					'value'   => $auction_start,
-					'compare' => '<=',
-				],
-				[
-					'key'   => self::AUCTION_STARTED_META_KEY,
-					'value' => 0,
-				],
-			],
-		];
-
-		return $this->get_all( $query_args );
-	}
-
-	/**
-	 * Get Auctions that are closing.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return WP_Query
-	 */
-	private function get_closing_auctions(): WP_Query {
-		$current_time = current_datetime()->format( 'Y-m-d H:i:s' );
-		$query_args   = [
-			'meta_query' => [
-				[
-					'key'     => self::AUCTION_CLOSE_META_KEY,
-					'value'   => $current_time,
-					'compare' => '<=',
-				],
-				[
-					'key'   => self::AUCTION_CLOSED_META_KEY,
-					'value' => 0,
-				],
-			],
-		];
-
-		return $this->get_all( $query_args );
-	}
-
-	/**
-	 * Additional attempt to trigger Auction events.
-	 * Useful when Cron Jobs are slow or not firing.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function maybe_trigger_events(): void {
-		add_action(
-			'template_redirect',
-			function (): void {
-				$auction_id = $this->get_auction_id();
-
-				if ( ! $auction_id ) {
-					return;
-				}
-
-				$auction = goodbids()->auctions->get( $auction_id );
-
-				// TODO: Move to background process.
-
-				if ( $auction->has_started() ) {
-					$auction->trigger_start();
-				}
-
-				if ( $auction->has_ended() ) {
-					$auction->trigger_close();
-				}
-			}
-		);
 	}
 
 	/**
@@ -1124,44 +684,6 @@ class Auctions {
 	}
 
 	/**
-	 * Admin AJAX Action from the Auction Edit screen to force update the Auction Close Date/Time.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function force_update_close_date(): void {
-		add_action(
-			'wp_ajax_goodbids_force_auction_close_date',
-			function () {
-				if ( empty( $_REQUEST['gb_nonce'] ) ) {
-					wp_send_json_error( __( 'Missing nonce.', 'goodbids' ) );
-				}
-
-				if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['gb_nonce'] ), 'gb-force-update-close-date' ) ) {
-					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
-				}
-
-				$auction_id = isset( $_POST['auction_id'] ) ? intval( $_POST['auction_id'] ) : 0;
-
-				if ( ! $auction_id ) {
-					wp_send_json_error( __( 'Invalid Auction ID.', 'goodbids' ) );
-				}
-
-				// Get raw End Date/Time, do not use get_setting().
-				$end_date = get_field( 'auction_end', $auction_id );
-				update_post_meta( $auction_id, self::AUCTION_CLOSE_META_KEY, $end_date );
-
-				wp_send_json_success(
-					[
-						'closeDate' => goodbids()->utilities->format_date_time( $end_date, 'n/j/Y g:i:s a' ),
-					]
-				);
-			}
-		);
-	}
-
-	/**
 	 * Prevent delinquent Nonprofits from publishing Auctions.
 	 *
 	 * @since 1.0.0
@@ -1172,7 +694,7 @@ class Auctions {
 		add_action(
 			'transition_post_status',
 			function ( string $new_status, string $old_status, WP_Post $post ): void {
-				if ( is_main_site() ) {
+				if ( is_main_site() || is_super_admin() ) {
 					return;
 				}
 
@@ -1202,6 +724,93 @@ class Auctions {
 			},
 			10,
 			3
+		);
+	}
+
+	/**
+	 * Check if Reward Product Should be hidden.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function should_hide_reward_product(): bool {
+		if ( is_super_admin() ) {
+			return false;
+		}
+
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
+				return false;
+			}
+		}
+
+		$auction_id = goodbids()->auctions->get_auction_id();
+
+		if ( ! $auction_id ) {
+			return false;
+		}
+
+		if ( 'publish' !== get_post_status( $auction_id ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Hide the Auction title from the editor.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function hide_auction_title(): void {
+		add_action(
+			'current_screen',
+			function (): void {
+				$screen = get_current_screen();
+				if ( $this->get_post_type() !== $screen->post_type ) {
+					return;
+				}
+				?>
+				<style>
+					h1.wp-block.wp-block-post-title.block-editor-block-list__block.editor-post-title.editor-post-title__input.rich-text{
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
+		);
+	}
+
+	/**
+	 * Remove the excerpt placeholder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function remove_excerpt_placeholder(): void {
+		add_action(
+			'current_screen',
+			function (): void {
+				$screen = get_current_screen();
+				if ( $this->get_post_type() !== $screen->post_type ) {
+					return;
+				}
+
+				remove_filter( 'get_the_excerpt', 'wp_trim_excerpt' );
+				?>
+				<style>
+					a.block-editor-rich-text__editable.wp-block-post-excerpt__more-link.rich-text {
+						display: none !important;
+					}
+				</style>
+				<?php
+			}
 		);
 	}
 }

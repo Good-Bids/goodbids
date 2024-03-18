@@ -65,6 +65,9 @@ class Verification {
 		// Adjust custom Nonprofit fields for BDP Admins.
 		$this->bdp_admin_field_adjustments();
 
+		// Adjust status field for Nonprofits still Onboarding
+		$this->onboarding_field_adjustments();
+
 		// Add Details/Verification Site Tab
 		$this->add_custom_site_tab();
 
@@ -301,7 +304,7 @@ class Verification {
 					'default'     => '',
 					'after'       => '<span>' . __( 'days', 'goodbids' ) . '</span>',
 					'placeholder' => goodbids()->get_config( 'invoices.payment-terms-days', false ),
-					'description' => __( 'Number of days until an invoice is due.', 'goodbids' ),
+					'description' => __( 'Number of days until an invoice is due. Only Super Admins can update Net Payment Terms.', 'goodbids' ),
 				];
 				$fields['stripe_data']                        = [
 					'label'    => __( 'Stripe Details', 'goodbids' ),
@@ -345,7 +348,85 @@ class Verification {
 					return $fields;
 				}
 
-				unset( $fields['status'] );
+				unset( $fields[ self::STATUS_OPTION ] );
+
+				return $fields;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Field Adjustments for BDP Admin
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function onboarding_field_adjustments(): void {
+		add_filter(
+			'goodbids_nonprofit_custom_fields',
+			function ( array $fields, string $context ): array {
+				if ( 'edit' !== $context ) {
+					return $fields;
+				}
+
+				if ( empty( $fields[ self::STATUS_OPTION ] ) ) {
+					return $fields;
+				}
+
+				$site_id = $this->get_site_id();
+
+				if ( ! $site_id ) {
+					return $fields;
+				}
+
+				if ( goodbids()->network->nonprofits->is_onboarded( $site_id ) ) {
+					return $fields;
+				}
+
+				foreach ( $fields[ self::STATUS_OPTION ]['options'] as &$option ) {
+					if ( Nonprofit::STATUS_LIVE === $option['value'] ) {
+						$option['disabled'] = true;
+					}
+				}
+
+				if ( goodbids()->network->nonprofits->is_partially_onboarded( $site_id ) ) {
+					$skipped = goodbids()->sites->swap(
+						function () {
+							return goodbids()->onboarding->get_skipped_steps();
+						},
+						$site_id
+					);
+
+					$steps   = goodbids()->sites->swap(
+						function () {
+							return goodbids()->onboarding->get_steps();
+						},
+						$site_id
+					);
+
+					$message = '';
+					foreach ( $skipped as $step ) {
+						if ( empty( $steps[ $step ] ) ) {
+							continue;
+						}
+
+						$validation = empty( $steps[ $step ]['validation_message'] ) ? __( 'Required Onboarding Step', 'goodbids' ) . ': <strong>' . $step . '</strong>' : $steps[ $step ]['validation_message'];
+
+						if ( $message ) {
+							$message .= '<br>';
+						}
+						$message .= $validation;
+					}
+				} else {
+					$message = __( 'Onboarding incomplete.', 'goodbids' );
+				}
+
+				if ( $message ) {
+					$fields[ self::STATUS_OPTION ]['after'] = '<span class="warning-message">' . $message . '</span>';
+				}
 
 				return $fields;
 			},
@@ -657,6 +738,17 @@ class Verification {
 					}
 
 					$prev_value = get_site_meta( $site_id, $meta_key, true );
+
+					// Prevent sites from switching Live without completing onboarding.
+					if ( self::STATUS_OPTION === $key && $meta_value === Nonprofit::STATUS_LIVE ) {
+						if ( ! goodbids()->network->nonprofits->is_onboarded( $site_id ) ) {
+							if ( Nonprofit::STATUS_LIVE === $prev_value ) {
+								$meta_value = Nonprofit::STATUS_PENDING;
+							} else {
+								$meta_value = $prev_value;
+							}
+						}
+					}
 
 					update_site_meta( $site_id, $meta_key, $meta_value );
 

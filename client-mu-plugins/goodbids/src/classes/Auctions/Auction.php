@@ -14,6 +14,8 @@ use Exception;
 use GoodBids\Nonprofits\Invoices;
 use GoodBids\Utilities\Log;
 use WC_Order;
+use WC_Product;
+use WP_Post;
 use WP_User;
 
 /**
@@ -67,6 +69,12 @@ class Auction {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const BID_LOCKED_META_KEY = '_goodbids_bid_locked';
+
+	/**
+	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
 
@@ -91,7 +99,23 @@ class Auction {
 	 * @since 1.0.0
 	 * @var ?int
 	 */
-	private ?int $auction_id;
+	private ?int $auction_id = null;
+
+	/**
+	 * The Auction ID.
+	 *
+	 * @since 1.0.0
+	 * @var ?WP_Post
+	 */
+	private ?WP_Post $post = null;
+
+	/**
+	 * Use metadata or get_field()
+	 *
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	private bool $use_meta = false;
 
 	/**
 	 * Initialize Auctions
@@ -105,7 +129,12 @@ class Auction {
 			$auction_id = goodbids()->auctions->get_auction_id();
 		}
 
+		if ( ! $auction_id ) {
+			return;
+		}
+
 		$this->auction_id = $auction_id;
+		$this->post       = get_post( $this->auction_id );
 	}
 
 	/**
@@ -119,6 +148,17 @@ class Auction {
 	}
 
 	/**
+	 * Check if Auction is Valid
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_valid(): bool {
+		return is_null( $this->post );
+	}
+
+	/**
 	 * Get the URL for the Auction
 	 *
 	 * @since 1.0.0
@@ -127,6 +167,19 @@ class Auction {
 	 */
 	public function get_url(): string {
 		return get_permalink( $this->get_id() );
+	}
+
+	/**
+	 * Get the URL to place a bid on the Auction
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool $is_free_bid
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url( bool $is_free_bid = false ): string {
+		return goodbids()->bids->get_place_bid_url( $this->get_id(), $is_free_bid );
 	}
 
 	/**
@@ -194,7 +247,29 @@ class Auction {
 	 * @return bool
 	 */
 	public function has_bid_product(): bool {
-		return boolval( goodbids()->bids->get_product_id( $this->get_id() ) );
+		return boolval( $this->get_product_id() );
+	}
+
+	/**
+	 * Get the Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_product_id(): ?int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get the Bid Product Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_variation_id(): ?int {
+		return goodbids()->bids->get_variation_id( $this->get_id() );
 	}
 
 	/**
@@ -225,6 +300,61 @@ class Auction {
 	}
 
 	/**
+	 * Get Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_bid_product_id(): int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Bid Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_bid_product(): ?WC_Product {
+		return goodbids()->bids->get_product( $this->get_id() );
+	}
+
+	/**
+	 * Get Reward Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_reward_id(): int {
+		return goodbids()->rewards->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Reward Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_reward(): ?WC_Product {
+		return goodbids()->rewards->get_product( $this->get_id() );
+	}
+
+	/**
+	 * Get Claim Reward URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_claim_reward_url(): int {
+		return goodbids()->rewards->get_claim_reward_url( $this->get_id() );
+	}
+
+	/**
 	 * Retrieves a setting for an Auction.
 	 *
 	 * @since 1.0.0
@@ -234,9 +364,32 @@ class Auction {
 	 * @return mixed
 	 */
 	public function get_setting( string $meta_key ): mixed {
-		$value = get_field( $meta_key, $this->get_id() );
+		if ( $this->use_meta ) {
+			$value = get_post_meta( $this->get_id(), $meta_key, true );
+		} else {
+			$value = get_field( $meta_key, $this->get_id() );
+		}
 
 		return apply_filters( 'goodbids_auction_setting', $value, $meta_key, $this->get_id() );
+	}
+
+	/**
+	 * Get the Auction Meta
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $meta_key
+	 *
+	 * @return mixed
+	 */
+	public function get_meta( string $meta_key ): mixed {
+		$this->use_meta = true;
+
+		if ( method_exists( $this, 'get_' . $meta_key ) ) {
+			return $this->{'get_' . $meta_key}();
+		}
+
+		return $this->get_setting( $meta_key );
 	}
 
 	/**
@@ -616,11 +769,13 @@ class Auction {
 	 * @since 1.0.0
 	 *
 	 * @param ?int   $user_id
-	 * @param string $description
+	 * @param string $details
+	 * @param string $type
+	 * @param bool   $notify_later
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $user_id = null, string $description = '' ): bool {
+	public function maybe_award_free_bid( ?int $user_id = null, string $details = '', string $type = FreeBid::TYPE_PAID_BID, bool $notify_later = false ): bool {
 		$free_bids = $this->get_free_bids_available();
 		if ( ! $free_bids ) {
 			return false;
@@ -630,7 +785,7 @@ class Auction {
 			$user_id = get_current_user_id();
 		}
 
-		if ( goodbids()->users->award_free_bid( $user_id, $this->get_id(), $description ) ) {
+		if ( goodbids()->users->award_free_bid( $user_id, $this->get_id(), $type, $details, $notify_later ) ) {
 			--$free_bids;
 			$this->update_free_bids( $free_bids );
 			return true;
@@ -653,6 +808,25 @@ class Auction {
 		return goodbids()->auctions->get_bid_order_ids( $this->get_id(), $limit, $user_id );
 	}
 
+	/**
+	 * Get the IDs of all users who have placed bid orders for this Auction.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $limit
+	 *
+	 * @return array
+	 */
+	public function get_bidder_ids( int $limit = -1 ): array {
+		$orders   = $this->get_bid_orders( $limit );
+		$user_ids = [];
+
+		foreach ( $orders as $order ) {
+			$user_ids[] = $order->get_user_id();
+		}
+
+		return array_unique( $user_ids );
+	}
 	/**
 	 * Get the User's last bid on this Auction
 	 *
@@ -956,6 +1130,10 @@ class Auction {
 		update_post_meta( $this->get_id(), self::AUCTION_STARTED_META_KEY, 1 );
 
 		/**
+		 * Called when an Auction has started.
+		 *
+		 * @since 1.0.0
+		 *
 		 * @param int $auction_id
 		 */
 		do_action( 'goodbids_auction_start', $this->get_id() );
@@ -993,7 +1171,11 @@ class Auction {
 		update_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, 1 );
 
 		/**
-		 * @param int $auction_id
+		 * Called when an Auction has ended.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int $auction_id The Closing Auction ID.
 		 */
 		do_action( 'goodbids_auction_end', $this->get_id() );
 
@@ -1067,7 +1249,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function increase_bid(): bool {
-		$bids = goodbids()->bids;
+		$bids = goodbids()->bids; // Easier to reference.
 
 		$bid_product   = $bids->get_product( $this->get_id() );
 		$bid_variation = $bids->get_variation( $this->get_id() );
@@ -1111,5 +1293,60 @@ class Auction {
 	 */
 	public function get_watch_count(): int {
 		return goodbids()->watchers->get_watcher_count( $this->get_id() );
+	}
+
+	/**
+	 * Final checks to ensure bid is allowed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $order_info
+	 *
+	 * @return bool
+	 */
+	public function bid_allowed( array $order_info ): bool {
+		$product = wc_get_product( $this->get_variation_id() );
+
+		if ( $order_info['variation_id'] !== $this->get_variation_id() ) {
+			return false;
+		}
+
+		if ( $product->get_stock_quantity() <= 0 ) {
+			return false;
+		}
+
+		if ( $this->bid_locked() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if the bid is currently locked.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function bid_locked(): bool {
+		$lock = get_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, true );
+
+		if ( ! $lock ) {
+			return false;
+		}
+
+		return get_current_user_id() !== $lock;
+	}
+
+	/**
+	 * Lock the bid to prevent duplicates
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function lock_bid(): void {
+		update_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, get_current_user_id() );
 	}
 }

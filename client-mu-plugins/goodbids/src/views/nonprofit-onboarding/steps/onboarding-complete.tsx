@@ -2,10 +2,11 @@ import { __ } from '@wordpress/i18n';
 import { ButtonLink } from '~/components/button-link';
 import { H1, P } from '~/components/typography';
 import { CoinManImage } from '~/components/images/coin-man';
+import { Wrapper } from '../wrapper';
 
 export function OnboardingCompleteStep() {
 	return (
-		<div className="flex flex-col items-center gap-8 p-10">
+		<Wrapper progress={100}>
 			<CoinManImage className="aspect-auto h-60 py-10" />
 
 			<div className="flex flex-col gap-3">
@@ -13,7 +14,7 @@ export function OnboardingCompleteStep() {
 
 				<P>
 					{__(
-						'Hooray! We’ve confirmed that you set up payments. You’ve now completed the required steps for onboarding and you’re ready to start customizing your site. Click the button below to turn on the lights and see our site setup dashboard, which will walk you through all the next steps to build out and launch your site. ',
+						'Hooray! You’ve completed the required steps for onboarding and you’re ready to start customizing your site. Click the button below to turn on the lights and see our site setup dashboard, which will walk you through all the next steps to build out and launch your site. ',
 						'goodbids',
 					)}
 				</P>
@@ -27,6 +28,6 @@ export function OnboardingCompleteStep() {
 					{__('Continue to site guide', 'goodbids')}
 				</ButtonLink>
 			</div>
-		</div>
+		</Wrapper>
 	);
 }
