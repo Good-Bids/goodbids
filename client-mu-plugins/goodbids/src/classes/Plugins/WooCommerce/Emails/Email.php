@@ -14,7 +14,6 @@ use GoodBids\Auctions\Auction;
 use GoodBids\Frontend\Request;
 use GoodBids\Users\FreeBid;
 use GoodBids\Users\Referrals\Referrer;
-use GoodBids\Utilities\Log;
 use WC_Email;
 use WC_Order;
 use WP_User;
