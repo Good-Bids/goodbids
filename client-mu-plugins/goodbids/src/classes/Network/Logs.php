@@ -222,7 +222,7 @@ class Logs {
 				$file_path = Log::get_logs_dir() . $file_name;
 
 				if ( ! file_exists( $file_path ) ) {
-					goodbids()->utilities->die( 'Error: File not found.' );
+					goodbids()->utilities->die( esc_html__( 'Error: File not found.', 'goodbids' ) );
 				}
 
 				header( 'Content-Description: File Transfer' );
