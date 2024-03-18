@@ -8,7 +8,7 @@
 
 namespace GoodBids\Plugins;
 
-use WP_User;
+use GoodBids\Frontend\Request;
 
 /**
  * This class handles Delete Me settings.
@@ -55,6 +55,7 @@ class DeleteMe {
 			'option_plugin_delete_me',
 			function ( mixed $value ): mixed {
 				if ( ! empty( $value['settings'] ) ) {
+					$value['settings']['shortcode_form_enabled'] = true;
 					$value['settings']['delete_comments']        = true;
 					$value['settings']['ms_delete_from_network'] = true;
 				}
@@ -117,6 +118,15 @@ class DeleteMe {
 				);
 
 				echo do_shortcode( '[plugin_delete_me]' ); // phpcs:ignore
+
+				printf(
+					'<p>%s %s <a href="%s">%s</a> %s</p>',
+					esc_html__( 'By deleting your account, you will lose access to your auction history, any Free Bids you\'ve earned, etc. Any Nonprofits you\'ve donated to will still see basic information from your account associated with any donations you\'ve placed.', 'goodbids' ),
+					esc_html__( 'Please', 'goodbids' ),
+					esc_url( goodbids()->support->get_form_url( [ 'type' => Request::TYPE_OTHER ] ) ),
+					esc_html__( 'submit a support request', 'goodbids' ),
+					esc_html__( 'if you would like us to erase all your personal data from GOODBIDS.', 'goodbids' )
+				);
 			}
 		);
 	}
