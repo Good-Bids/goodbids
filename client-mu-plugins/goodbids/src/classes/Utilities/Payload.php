@@ -89,7 +89,7 @@ class Payload {
 	 * @since 1.0.0
 	 * @var ?WP_User
 	 */
-	private ?int $last_bidder = null;
+	private ?WP_User $last_bidder = null;
 
 	/**
 	 * Initialize a new Payload
