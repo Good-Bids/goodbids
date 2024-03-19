@@ -1059,13 +1059,21 @@ class Auction {
 	 * @return ?WC_Order
 	 */
 	public function get_last_bid(): ?WC_Order {
-		$orders = $this->get_bid_orders( 1 );
+		$orders = $this->get_bid_orders( -1 );
 
 		if ( empty( $orders ) ) {
 			return null;
 		}
 
-		return $orders[0];
+		foreach ( $orders as $order ) {
+			if ( ! $order->get_user() ) {
+				continue;
+			}
+
+			return $order;
+		}
+
+		return null;
 	}
 
 	/**
