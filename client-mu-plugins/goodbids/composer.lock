@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "a1ba7e8123a81c991228a6e5b9cea46d",
-=======
-    "content-hash": "e9dc1229c43b742aaa5fda70ca293e33",
->>>>>>> main
+    "content-hash": "8be8d554f9e98176b311af13011fcd45",
     "packages": [
         {
             "name": "composer/installers",
@@ -1288,7 +1284,24 @@
             "homepage": "https://wordpress.org/plugins/svg-support/"
         },
         {
-<<<<<<< HEAD
+            "name": "wpackagist-plugin/tidio-live-chat",
+            "version": "6.0.16",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/tidio-live-chat/",
+                "reference": "tags/6.0.16"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.16.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/tidio-live-chat/"
+        },
+        {
             "name": "wpackagist-plugin/top-bar",
             "version": "3.0.6",
             "source": {
@@ -1305,28 +1318,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/top-bar/"
-        },
-        {
-            "name": "wpackagist-plugin/user-role-editor",
-            "version": "4.64.2",
-=======
-            "name": "wpackagist-plugin/tidio-live-chat",
-            "version": "6.0.16",
->>>>>>> main
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/tidio-live-chat/",
-                "reference": "tags/6.0.16"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.16.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/tidio-live-chat/"
         },
         {
             "name": "wpackagist-plugin/user-switching",
