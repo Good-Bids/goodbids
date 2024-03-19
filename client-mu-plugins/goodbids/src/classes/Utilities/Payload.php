@@ -76,12 +76,20 @@ class Payload {
 	private ?WC_Order $last_bid = null;
 
 	/**
+	 * The Last Bidder User ID
+	 *
+	 * @since 1.0.0
+	 * @var ?int
+	 */
+	private ?int $last_bidder_id = null;
+
+	/**
 	 * The Last Bidder User object
 	 *
 	 * @since 1.0.0
 	 * @var ?WP_User
 	 */
-	private ?WP_User $last_bidder = null;
+	private ?int $last_bidder = null;
 
 	/**
 	 * Initialize a new Payload
@@ -217,7 +225,7 @@ class Payload {
 			'freeBidsAllowed'   => $this->auction->are_free_bids_allowed(),
 			'isLastBidder'      => $this->is_user_last_bidder( $this->get_user_id() ),
 			'lastBid'           => $this->get_last_bid_amount(),
-			'lastBidder'        => $this->get_last_bidder(),
+			'lastBidder'        => $this->get_last_bidder_id(),
 			'requestTime'       => current_datetime()->format( 'c' ),
 			'rewardClaimed'     => $this->has_user_claimed_reward(),
 			'rewardUrl'         => goodbids()->rewards->get_claim_reward_url( $this->auction_id ),
@@ -294,12 +302,27 @@ class Payload {
 	 *
 	 * @return ?int
 	 */
-	private function get_last_bidder(): ?int {
+	private function get_last_bidder_id(): ?int {
+		if ( ! $this->last_bidder_id ) {
+			$this->last_bidder_id = $this->auction->get_last_bidder_id();
+		}
+
+		return $this->last_bidder_id;
+	}
+
+	/**
+	 * Get the last bidder User object
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WP_User
+	 */
+	private function get_last_bidder(): ?WP_User {
 		if ( ! $this->last_bidder ) {
 			$this->last_bidder = $this->auction->get_last_bidder();
 		}
 
-		return $this->last_bidder?->ID;
+		return $this->last_bidder;
 	}
 
 	/**
@@ -312,11 +335,11 @@ class Payload {
 	 * @return bool
 	 */
 	private function is_user_last_bidder( int $user_id ): bool {
-		if ( ! $this->last_bidder ) {
-			$this->last_bidder = $this->auction->get_last_bidder();
+		if ( ! $this->last_bidder_id ) {
+			$this->last_bidder_id = $this->auction->get_last_bidder_id();
 		}
 
-		return $this->last_bidder?->ID === $user_id;
+		return $this->last_bidder_id === $user_id;
 	}
 
 	/**
