@@ -19,6 +19,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionPaidBidPlaced extends Email {
 
 	/**
+	 * Set the unique Email ID
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $id = 'goodbids_auction_paid_bid_placed';
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -26,7 +34,6 @@ class AuctionPaidBidPlaced extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_paid_bid_placed';
 		$this->title          = __( 'Auction Paid Bid Placed', 'goodbids' );
 		$this->description    = __( 'Notification email sent to participant when a bid is placed on an auction.', 'goodbids' );
 		$this->template_html  = 'emails/auction-paid-bid-placed.php';

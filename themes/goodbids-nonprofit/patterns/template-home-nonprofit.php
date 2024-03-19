@@ -6,8 +6,10 @@
  * @package GoodBidsNonprofit
  */
 
+use GoodBids\Auctions\Auctions;
+
 ?>
-<!-- wp:group {"align":"full","layout":{"type":"constrained"}} -->
+<!-- wp:group {"align":"full","layout":{"type":"constrained"},"metadata":{"name":"Nonprofit Homepage"}} -->
 <div class="wp-block-group alignfull">
 	<!-- wp:media-text {"align":"wide","mediaPosition":"right","verticalAlignment":"top"} -->
 	<div class="wp-block-media-text alignwide has-media-on-the-right is-stacked-on-mobile is-vertically-aligned-top">
@@ -23,7 +25,7 @@
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
 			<div class="wp-block-buttons" style="margin-bottom:var(--wp--preset--spacing--40)">
 				<!-- wp:button -->
-				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_post_type_archive_link( goodbids()->auctions->get_post_type() ) ); ?>"><?php esc_html_e( 'See our live auctions', 'goodbids' ); ?></a>
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_post_type_archive_link( Auctions::POST_TYPE ) ); ?>"><?php esc_html_e( 'See our live auctions', 'goodbids' ); ?></a>
 				</div>
 				<!-- /wp:button -->
 			</div>
@@ -33,16 +35,16 @@
 	</div>
 	<!-- /wp:media-text -->
 
-	<!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"radius":"0px"}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" style="border-radius:0px;padding-top:0;padding-right:var(--wp--preset--spacing--40);padding-bottom:0;padding-left:var(--wp--preset--spacing--40)">
-		<!-- wp:video {"id":103,"align":"wide"} -->
-		<figure class="wp-block-video alignwide"></figure>
+	<!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}},"border":{"radius":"0px"}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide" style="border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+		<!-- wp:video {"id":103,"responsive":true,"align":"full","className":"alignfull"} -->
+		<figure class="wp-block-video alignfull"></figure>
 		<!-- /wp:video -->
 	</div>
 	<!-- /wp:group -->
 
-	<!-- wp:group {"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"},"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+	<!-- wp:group {"align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"},"padding":{"right":"0","left":"0"}}},"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:var(--wp--preset--spacing--50);padding-right:0;padding-left:0">
 		<!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"layout":{"type":"constrained","justifyContent":"center"}} -->
 		<div class="wp-block-group alignwide" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 			<!-- wp:heading {"align":"wide","fontSize":"xx-large"} -->

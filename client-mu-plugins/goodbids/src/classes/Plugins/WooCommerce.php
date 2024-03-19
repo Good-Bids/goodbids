@@ -157,9 +157,6 @@ class WooCommerce {
 		$this->modify_login_page();
 		$this->modify_register_page();
 
-		// Limit access to pages
-		$this->limit_access_to_pages();
-
 		// Skip some of the Setup Tasks
 		$this->skip_setup_tasks();
 	}
@@ -597,64 +594,6 @@ class WooCommerce {
 					);
 				}
 			}
-		);
-	}
-
-	/**
-	 * Limit access from WooCommerce pages for non-Super Admins.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function limit_access_to_pages(): void {
-		$pages = array_filter(
-			[
-				intval( get_option( 'woocommerce_cart_page_id' ) ),
-				intval( get_option( 'woocommerce_checkout_page_id' ) ),
-				intval( get_option( 'woocommerce_myaccount_page_id' ) ),
-				intval( get_option( 'woocommerce_shop_page_id' ) ),
-				intval( get_option( 'woocommerce_view_order_page_id' ) ),
-				intval( get_option( 'woocommerce_authentication_page_id' ) ),
-			]
-		);
-
-		// Block access to Specific Pages
-		add_filter(
-			'user_has_cap',
-			function ( array $all_caps, array $caps, array $args ) use ( $pages ) {
-				if ( is_super_admin() ) {
-					return $all_caps;
-				}
-
-				$post_id = get_the_ID();
-
-				if ( ! $post_id && isset( $args[2] ) ) {
-					$post_id = $args[2];
-				}
-
-				if ( ! $post_id || 'page' !== get_post_type( $post_id ) ) {
-					return $all_caps;
-				}
-
-				if ( ! in_array( $post_id, $pages, true ) ) {
-					return $all_caps;
-				}
-
-				$all_caps['publish_pages']          = false;
-				$all_caps['edit_pages']             = false;
-				$all_caps['edit_others_pages']      = false;
-				$all_caps['edit_published_pages']   = false;
-				$all_caps['edit_private_pages']     = false;
-				$all_caps['delete_pages']           = false;
-				$all_caps['delete_private_pages']   = false;
-				$all_caps['delete_others_pages']    = false;
-				$all_caps['delete_published_pages'] = false;
-
-				return $all_caps;
-			},
-			10,
-			3
 		);
 	}
 

@@ -81,7 +81,7 @@ class Invoices {
 		// Disable Bulk Actions.
 		$this->disable_bulk_actions();
 
-		// Add custom Admin Columns for Watchers.
+		// Add custom Admin Columns.
 		$this->add_admin_columns();
 
 		// Generate Invoice on Auction Close.

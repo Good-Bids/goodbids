@@ -19,6 +19,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
 use GoodBids\Plugins\WooCommerce\Emails\FreeBidEarned;
+use GoodBids\Plugins\WooCommerce\Emails\SupportRequestEmail;
 
 /**
  * Class for Email functions
@@ -35,6 +36,18 @@ class Emails {
 	 * @var array
 	 */
 	private array $email_classes = [];
+
+	/**
+	 * @since 1.0.0
+	 * @var bool
+	 */
+	private bool $did_init = false;
+
+	/**
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private array $initialized_emails = [];
 
 	/**
 	 * Initialize Email
@@ -101,6 +114,7 @@ class Emails {
 			'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
 			'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
 			'FreeBidEarned'             => new FreeBidEarned(),
+			'SupportRequestEmail'       => new SupportRequestEmail(),
 		];
 	}
 
@@ -120,6 +134,12 @@ class Emails {
 			}
 
 			require_once $wc_email_path;
+
+			// Initialize WC_Emails one time.
+			if ( ! $this->did_init ) {
+				\WC_Emails::instance();
+				$this->did_init = true;
+			}
 		}
 
 		return true;
@@ -143,6 +163,32 @@ class Emails {
 				return array_merge( $email_classes, $this->email_classes );
 			}
 		);
+	}
+
+	/**
+	 * Register that an email has been initialized
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $email_id
+	 *
+	 * @return void
+	 */
+	public function register_initialized( string $email_id ): void {
+		$this->initialized_emails[ $email_id ] = true;
+	}
+
+	/**
+	 * Check if an email has been initialized
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $email_id
+	 *
+	 * @return bool
+	 */
+	public function has_initialized( string $email_id ): bool {
+		return ! empty( $this->initialized_emails[ $email_id ] );
 	}
 
 	/**

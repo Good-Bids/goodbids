@@ -9,7 +9,6 @@
 namespace GoodBids\Users\Referrals;
 
 use GoodBids\Utilities\Cookies;
-use GoodBids\Utilities\Log;
 
 /**
  * Class for Tracking Referrals
@@ -196,6 +195,13 @@ class Track {
 
 				// No Free Bids for non-Paid-Bid Orders.
 				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) || goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
+					return;
+				}
+
+				$order = wc_get_order( $order_id );
+
+				// Don't award if payment didn't go through.
+				if ( $order->get_total( 'edit' ) > 0 && $order->needs_payment() ) {
 					return;
 				}
 

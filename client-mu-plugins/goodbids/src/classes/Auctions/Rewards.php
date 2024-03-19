@@ -398,7 +398,6 @@ class Rewards {
 				}
 
 				if ( ! goodbids()->woocommerce->orders->is_reward_order( $order_id ) ) {
-					Log::error( 'Not a reward order.' );
 					return;
 				}
 

@@ -19,6 +19,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionIsLiveAdmin extends Email {
 
 	/**
+	 * Set the unique Email ID
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $id = 'goodbids_auction_live_admin';
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -26,7 +34,6 @@ class AuctionIsLiveAdmin extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_live_admin';
 		$this->title          = __( 'Auction is Live (Admin)', 'goodbids' );
 		$this->description    = __( 'Notification email sent to all site admins when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live-admin.php';

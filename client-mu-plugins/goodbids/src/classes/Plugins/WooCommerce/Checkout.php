@@ -138,7 +138,7 @@ class Checkout {
 					}
 
 					// Make sure the current user has available Free Bids.
-					if ( ! goodbids()->users->get_available_free_bid_count() ) {
+					if ( ! goodbids()->free_bids->get_available_count() ) {
 						goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
 						return;
 					}
@@ -198,7 +198,7 @@ class Checkout {
 
 				$order = wc_get_order( $order_id );
 
-				if ( $order->needs_payment() ) {
+				if ( $order->get_total( 'edit' ) > 0 && $order->needs_payment() ) {
 					return;
 				}
 
@@ -230,9 +230,9 @@ class Checkout {
 						$nonprofit = new Nonprofit( get_current_blog_id() );
 
 						$block_content .= sprintf(
-							'<p class="mt-10 ml-10 font-bold">%s $%s %s %s. %s</p>',
+							'<p class="mt-10 ml-10 font-bold">%s %s %s %s. %s</p>',
 							__( 'By placing this bid, you are making a donation for your full bid amount of', 'goodbids' ),
-							esc_html( $bid_amount ),
+							wp_kses_post( wc_price( $bid_amount ) ),
 							__( 'to', 'goodbids' ),
 							esc_html( $nonprofit->get_name() ),
 							__( 'This is a non-refundable donation, and is in addition to any previous donations you\'ve made in this auction.', 'goodbids' )

@@ -157,7 +157,7 @@ class Products {
 
 				$auction = goodbids()->auctions->get( $post_id );
 
-				// Bail if the Auction doesn't have a Bid product.
+				// Bail if the Auction doesn't have a Bid product. This could be due to the Auction being first published.
 				if ( ! $auction->has_bid_product() ) {
 					Log::error( 'Auction does not have Bid Product', compact( 'post_id' ) );
 					return;

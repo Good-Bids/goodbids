@@ -1,5 +1,11 @@
 # Local Installation Guide
 
+## Pre Requisite
+
+-   [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+-   [npmjs.com](https://docs.npmjs.com/getting-started)
+-   [Composer](https://getcomposer.org/)
+
 > _If at any point you run into an issue, please refer back to the repo's [main README](../README.md) and follow the WP VIP Local Development Guidebook._
 
 1. Clone repo:  
@@ -50,8 +56,9 @@ Finally, run `npm install` from `client-mu-plugins/goodbids`
 Alternatively, running `bin/install` will install all composer and npm dependencies.
 
 ### Set up Environment Variables
+
 Duplicate the file `client-mu-plugins/vip-env-vars.example.php` and rename it to `vip-env-vars.local.php`. Fill in any
-env vars marked with `TODO`.  
+env vars marked with `TODO`.
 
 ## Local Environment URL
 

@@ -9,6 +9,7 @@
 namespace GoodBids\Network;
 
 use GoodBids\Admin\ScreenOptions;
+use WP_Screen;
 
 /**
  * Network Admin Nonprofits Class
@@ -96,14 +97,12 @@ class Nonprofits {
 
 		add_action(
 			'current_screen',
-			function () {
-				$current_screen = get_current_screen();
-
-				if ( ! str_contains( $current_screen->id, self::PAGE_SLUG ) ) {
+			function ( WP_Screen $screen ) {
+				if ( ! str_contains( $screen->id, self::PAGE_SLUG ) ) {
 					return;
 				}
 
-				$this->screen_options->init( $current_screen->id );
+				$this->screen_options->init( $screen->id );
 			}
 		);
 	}
