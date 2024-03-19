@@ -19,6 +19,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionSummaryAdmin extends Email {
 
 	/**
+	 * Set the unique Email ID
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $id = 'goodbids_auction_summary_admin';
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -26,7 +34,6 @@ class AuctionSummaryAdmin extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_summary_admin';
 		$this->title          = __( 'Auction Summary (Admin)', 'goodbids' );
 		$this->description    = __( 'Notification email sent to all site admins when an Auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-summary-admin.php';

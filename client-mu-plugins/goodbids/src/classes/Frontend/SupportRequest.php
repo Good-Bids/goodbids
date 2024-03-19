@@ -913,6 +913,7 @@ class SupportRequest {
 							Request::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 						],
 						'attr'    => [
+							'rows'         => 5,
 							'hx-trigger'   => 'change',
 							'hx-get'       => $current_url,
 							'hx-target'    => $hx_target,

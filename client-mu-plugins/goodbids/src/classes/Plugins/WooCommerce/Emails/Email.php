@@ -83,20 +83,15 @@ class Email extends WC_Email {
 	public $recipient = '';
 
 	/**
-	 * Check if this has been initialized yet.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var bool
-	 */
-	protected $did_init = false;
-
-	/**
 	 * Set default vars and placeholders
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		if ( $this->has_initialized() ) {
+			return;
+		}
+
 		// Set up empty placeholders.
 		$this->default_placeholders();
 		$this->init_placeholders();
@@ -110,6 +105,39 @@ class Email extends WC_Email {
 		if ( $this->get_default_button_text() ) {
 			$this->add_button_support();
 		}
+
+		// Make sure the email is initialized only once.
+		$this->register_initialized();
+	}
+
+	/**
+	 * Register this email has been initialized.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function register_initialized(): void {
+		if ( ! $this->id ) {
+			return;
+		}
+
+		goodbids()->woocommerce->emails->register_initialized( $this->id );
+	}
+
+	/**
+	 * Check if this email has been initialized.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	private function has_initialized(): bool {
+		if ( ! $this->id ) {
+			return false;
+		}
+
+		return goodbids()->woocommerce->emails->has_initialized( $this->id );
 	}
 
 	/**

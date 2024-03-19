@@ -16,7 +16,7 @@
  * @package GoodBids
  */
 
-$class = 'flex-1 block p-4 text-base bg-transparent border rounded-sm resize-y border-base focus:outline-contrast-3 placeholder:text-base';
+$class = 'flex-1 block p-4 text-base bg-transparent border rounded-sm resize-y border-base focus:outline-contrast-3 placeholder:text-base text-sm';
 
 if ( ! empty( $field['class'] ) ) {
 	$class .= ' ' . $field['class'];
@@ -40,6 +40,12 @@ if ( ! empty( $field['class'] ) ) {
 		endif;
 		?>
 
+		<style>
+			textarea {
+				font-family: var(--wp--preset--font-family--body);
+				min-height: 80px;
+			}
+		</style>
 		<textarea
 			name="<?php echo esc_attr( $name ); ?>"
 			type="<?php echo esc_attr( $field['type'] ); ?>"

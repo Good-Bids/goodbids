@@ -18,7 +18,15 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.0.0
  * @extends Email
  */
-class SupportRequest extends Email {
+class SupportRequestEmail extends Email {
+
+	/**
+	 * Set the unique Email ID
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $id = 'goodbids_support_request';
 
 	/**
 	 * Set email defaults
@@ -26,13 +34,8 @@ class SupportRequest extends Email {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		if ( $this->did_init ) {
-			return;
-		}
-
 		parent::__construct();
 
-		$this->id                 = 'goodbids_support_request';
 		$this->title              = __( 'Support Request', 'goodbids' );
 		$this->description        = __( 'Notification email sent to all site admins when a new support request is received.', 'goodbids' );
 		$this->template_html      = 'emails/support-request.php';
@@ -41,8 +44,6 @@ class SupportRequest extends Email {
 		$this->super_admins_email = true;
 
 		$this->trigger_on_new_support_request();
-
-		$this->did_init = true;
 	}
 
 	/**
