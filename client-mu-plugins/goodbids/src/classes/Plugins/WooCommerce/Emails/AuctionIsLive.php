@@ -19,6 +19,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionIsLive extends Email {
 
 	/**
+	 * Set the unique Email ID
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $id = 'goodbids_auction_live';
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -28,7 +36,6 @@ class AuctionIsLive extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_live';
 		$this->title          = __( 'Auction is Live', 'goodbids' );
 		$this->description    = __( 'Notification email sent to all Watchers when an Auction goes live.', 'goodbids' );
 		$this->template_html  = 'emails/auction-is-live.php';

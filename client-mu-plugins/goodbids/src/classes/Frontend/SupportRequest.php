@@ -87,6 +87,9 @@ class SupportRequest {
 		// Add custom Admin Columns.
 		$this->add_admin_columns();
 
+		// Make sure the user is logged in
+		$this->redirect_if_not_logged_in();
+
 		// Populate the Select Menus.
 		$this->insert_auction_options();
 		$this->insert_bid_options();
@@ -404,6 +407,34 @@ class SupportRequest {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Redirect if the user is not logged in
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function redirect_if_not_logged_in(): void {
+		add_action(
+			'template_redirect',
+			function () {
+				if ( get_queried_object_id() !== intval( get_option( Sites::SUPPORT_OPTION ) ) ) {
+					return;
+				}
+
+				if ( is_user_logged_in() ) {
+					return;
+				}
+
+				$auth_url    = wc_get_page_permalink( 'myaccount' );
+				$redirect_to = goodbids()->support->get_form_url();
+				$redirect    = add_query_arg( 'redirect-to', urlencode( $redirect_to ), $auth_url );
+				wp_safe_redirect( $redirect );
+				exit;
+			}
 		);
 	}
 
@@ -882,6 +913,7 @@ class SupportRequest {
 							Request::TYPE_OTHER   => __( 'Something else', 'goodbids' ),
 						],
 						'attr'    => [
+							'rows'         => 5,
 							'hx-trigger'   => 'change',
 							'hx-get'       => $current_url,
 							'hx-target'    => $hx_target,

@@ -19,6 +19,14 @@ defined( 'ABSPATH' ) || exit;
 class AuctionWinnerConfirmation extends Email {
 
 	/**
+	 * Set the unique Email ID
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	public $id = 'goodbids_auction_winner_confirmation';
+
+	/**
 	 * Set email defaults
 	 *
 	 * @since 1.0.0
@@ -26,7 +34,6 @@ class AuctionWinnerConfirmation extends Email {
 	public function __construct() {
 		parent::__construct();
 
-		$this->id             = 'goodbids_auction_winner_confirmation';
 		$this->title          = __( 'Auction Winner Confirmation', 'goodbids' );
 		$this->description    = __( 'Notification email sent to high bidder when an Auction closes.', 'goodbids' );
 		$this->template_html  = 'emails/auction-winner-confirmation.php';

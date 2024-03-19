@@ -16,7 +16,7 @@
  * @package GoodBids
  */
 
-$class = 'flex-1 block p-4 text-base bg-transparent border rounded-sm resize-y border-base focus:outline-contrast-3 placeholder:text-base';
+$class = 'flex-1 block p-4 text-base bg-transparent border rounded-sm resize-y border-base focus:outline-contrast-3 placeholder:text-base text-sm has-body-font-family min-h-20';
 
 if ( ! empty( $field['class'] ) ) {
 	$class .= ' ' . $field['class'];
