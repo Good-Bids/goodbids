@@ -1076,17 +1076,36 @@ class Auction {
 	 * @return ?WP_User
 	 */
 	public function get_last_bidder(): ?WP_User {
+		$last_bidder_id = $this->get_last_bidder_id();
+
+		if ( ! $last_bidder_id ) {
+			return null;
+		}
+
+		$last_bidder = get_user_by( 'ID', $last_bidder_id );
+
+		if ( ! $last_bidder ) {
+			return null;
+		}
+
+		return $last_bidder;
+	}
+
+	/**
+	 * Get the ID of the user who is the last bidder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_last_bidder_id(): ?int {
 		$last_bid = $this->get_last_bid();
 
 		if ( ! $last_bid ) {
 			return null;
 		}
 
-		if ( ! $last_bid->get_user() ) {
-			return null;
-		}
-
-		return $last_bid->get_user();
+		return $last_bid->get_user_id();
 	}
 
 	/**
@@ -1097,8 +1116,8 @@ class Auction {
 	 * @return bool
 	 */
 	public function is_current_user_winning(): bool {
-		$last_bidder = $this->get_last_bidder();
-		return $last_bidder?->ID === get_current_user_id();
+		$last_bidder_id = $this->get_last_bidder_id();
+		return $last_bidder_id === get_current_user_id();
 	}
 
 	/**
