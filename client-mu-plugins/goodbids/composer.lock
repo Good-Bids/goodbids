@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5856604c72040bce64ad4a5ccf6bfbf3",
+    "content-hash": "e9dc1229c43b742aaa5fda70ca293e33",
     "packages": [
         {
             "name": "composer/installers",
@@ -1268,6 +1268,22 @@
         {
             "name": "wpackagist-plugin/svg-support",
             "version": "2.5.5",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/svg-support/",
+                "reference": "tags/2.5.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/svg-support.2.5.5.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/svg-support/"
+        },
+        {
             "name": "wpackagist-plugin/tidio-live-chat",
             "version": "6.0.16",
             "source": {
@@ -1284,21 +1300,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/tidio-live-chat/"
-        },
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/svg-support/",
-                "reference": "tags/2.5.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/svg-support.2.5.5.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/svg-support/"
         },
         {
             "name": "wpackagist-plugin/user-switching",
@@ -1320,15 +1321,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce",
-            "version": "8.6.1",
+            "version": "8.7.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce/",
-                "reference": "tags/8.6.1"
+                "reference": "tags/8.7.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.6.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.7.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1565,22 +1566,22 @@
         },
         {
             "name": "phpcsstandards/phpcsutils",
-            "version": "1.0.9",
+            "version": "1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHPCSUtils.git",
-                "reference": "908247bc65010c7b7541a9551e002db12e9dae70"
+                "reference": "51609a5b89f928e0c463d6df80eb38eff1eaf544"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSUtils/zipball/908247bc65010c7b7541a9551e002db12e9dae70",
-                "reference": "908247bc65010c7b7541a9551e002db12e9dae70",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSUtils/zipball/51609a5b89f928e0c463d6df80eb38eff1eaf544",
+                "reference": "51609a5b89f928e0c463d6df80eb38eff1eaf544",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1 || ^0.5 || ^0.6.2 || ^0.7 || ^1.0",
                 "php": ">=5.4",
-                "squizlabs/php_codesniffer": "^3.8.0 || 4.0.x-dev@dev"
+                "squizlabs/php_codesniffer": "^3.9.0 || 4.0.x-dev@dev"
             },
             "require-dev": {
                 "ext-filter": "*",
@@ -1649,7 +1650,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2023-12-08T14:50:00+00:00"
+            "time": "2024-03-17T23:44:50+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
