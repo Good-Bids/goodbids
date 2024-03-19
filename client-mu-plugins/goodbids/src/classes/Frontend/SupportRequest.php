@@ -992,13 +992,6 @@ class SupportRequest {
 								'value' => __( 'Issue', 'goodbids' ),
 							],
 							[
-								'label' => __( 'Request a refund', 'goodbids' ),
-								'value' => __( 'Refund', 'goodbids' ),
-								'dependencies' => [
-									Request::FIELD_TYPE => Request::TYPE_BID,
-								],
-							],
-							[
 								'label' => __( 'Ask a question', 'goodbids' ),
 								'value' => __( 'Question', 'goodbids' ),
 							],
