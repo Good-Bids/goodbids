@@ -56,6 +56,8 @@
 		"wpackagist-plugin/accessibility-checker": "^1.9.3",
 		"wpackagist-plugin/delete-me": "^3.1",
 		"wpackagist-plugin/svg-support": "^2.5",
+		"wpackagist-plugin/tidio-live-chat": "*",
+		"wpackagist-plugin/top-bar": "^3.0",
 		"wpackagist-plugin/user-switching": "^1.7",
 		"wpackagist-plugin/woocommerce": "^8.6",
 		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.0",
