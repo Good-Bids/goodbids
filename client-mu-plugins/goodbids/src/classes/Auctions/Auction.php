@@ -1059,21 +1059,13 @@ class Auction {
 	 * @return ?WC_Order
 	 */
 	public function get_last_bid(): ?WC_Order {
-		$orders = $this->get_bid_orders( -1 );
+		$orders = $this->get_bid_orders( 1 );
 
 		if ( empty( $orders ) ) {
 			return null;
 		}
 
-		foreach ( $orders as $order ) {
-			if ( ! $order->get_user() ) {
-				continue;
-			}
-
-			return $order;
-		}
-
-		return null;
+		return $orders[0];
 	}
 
 	/**
@@ -1084,17 +1076,36 @@ class Auction {
 	 * @return ?WP_User
 	 */
 	public function get_last_bidder(): ?WP_User {
+		$last_bidder_id = $this->get_last_bidder_id();
+
+		if ( ! $last_bidder_id ) {
+			return null;
+		}
+
+		$last_bidder = get_user_by( 'ID', $last_bidder_id );
+
+		if ( ! $last_bidder ) {
+			return null;
+		}
+
+		return $last_bidder;
+	}
+
+	/**
+	 * Get the ID of the user who is the last bidder.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?int
+	 */
+	public function get_last_bidder_id(): ?int {
 		$last_bid = $this->get_last_bid();
 
 		if ( ! $last_bid ) {
 			return null;
 		}
 
-		if ( ! $last_bid->get_user() ) {
-			return null;
-		}
-
-		return $last_bid->get_user();
+		return $last_bid->get_user_id();
 	}
 
 	/**
