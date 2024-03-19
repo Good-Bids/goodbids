@@ -470,7 +470,12 @@ class Bids {
 			return null;
 		}
 
-		return wc_get_product( $bid_variation_id );
+		$product = wc_get_product( $bid_variation_id );
+		if ( ! $product ) {
+			return null;
+		}
+
+		return $product;
 	}
 
 	/**
