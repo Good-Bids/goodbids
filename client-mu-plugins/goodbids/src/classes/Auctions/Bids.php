@@ -688,6 +688,11 @@ class Bids {
 			function ( int $order_id, int $auction_id ) {
 				$auction = goodbids()->auctions->get( $auction_id );
 
+				// Only process Bid Orders.
+				if ( Bids::ITEM_TYPE !== goodbids()->woocommerce->orders->get_type( $order_id ) ) {
+					return;
+				}
+
 				// Do not award free bids if this order contains a free bid.
 				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order_id ) ) {
 					// Reduce the Free Bid Count for the user.
