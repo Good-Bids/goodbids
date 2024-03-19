@@ -1116,8 +1116,8 @@ class Auction {
 	 * @return bool
 	 */
 	public function is_current_user_winning(): bool {
-		$last_bidder = $this->get_last_bidder();
-		return $last_bidder?->ID === get_current_user_id();
+		$last_bidder_id = $this->get_last_bidder_id();
+		return $last_bidder_id === get_current_user_id();
 	}
 
 	/**
