@@ -60,6 +60,7 @@ module.exports = {
 					text: '#000',
 					bg: '#f87171',
 				},
+				//GoodBids Admin colors
 				gb: {
 					blue: {
 						300: '#2271b1',
@@ -128,7 +129,7 @@ module.exports = {
 		({ addComponents, addVariant }) => {
 			addVariant('tooltip-visible', '.tooltip-visible &');
 
-			//set up btn classes
+			//set up base btn classes
 			const buttonBase = {
 				'@apply rounded py-2 px-6 border border-solid border-transparent leading-normal no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2 hover:cursor-pointer':
 					{},
