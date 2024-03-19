@@ -17,13 +17,13 @@
 			@apply rounded border-solid border-base bg-contrast text-base-2 placeholder:text-base focus:outline-contrast-3;
 		}
 
-		.contact-form__select-wrapper:after {
-			@apply !bottom-0 !top-0 !m-auto;
-		}
-
 		.wp-block-button__link {
 			@apply btn-fill-secondary;
 		}
+	}
+
+	.contact-form .contact-form__select-wrapper:after {
+		@apply !bottom-0 !top-0 !m-auto;
 	}
 
 	/* WooCommerce Forms */
@@ -74,5 +74,15 @@
 		.wc-block-components-checkout-place-order-button,
 	.lost_reset_password {
 		@apply px-6 py-2;
+	}
+
+	#plugin_delete_me_shortcode_form label {
+		@apply block font-bold;
+	}
+	#plugin_delete_me_shortcode_form input[type='submit'] {
+		@apply btn-fill-secondary bg-gb-red-500 text-sm text-base-2 hover:bg-gb-red-500 hover:opacity-90;
+	}
+	input[name='plugin_delete_me_shortcode_password'] {
+		@apply block w-full rounded border-solid border-contrast p-4 text-sm;
 	}
 }

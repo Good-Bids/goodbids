@@ -23,6 +23,11 @@ class Account {
 	/**
 	 * @since 1.0.0
 	 */
+	const BIDS_SLUG = 'bids';
+
+	/**
+	 * @since 1.0.0
+	 */
 	const AUCTIONS_SLUG = 'my-auctions';
 
 	/**
@@ -50,20 +55,23 @@ class Account {
 		 * Note: Tabs will be added in reverse order.
 		 */
 
-		// 4. Custom My Account > Referrals page.
+		// 5. Custom My Account > Referrals page.
 		$this->add_referrals_tab();
 
-		// 3. Custom My Account > Rewards page.
+		// 4. Custom My Account > Rewards page.
 		$this->add_rewards_tab();
 
-		// 2. Custom My Account > Free Bids page.
+		// 3. Custom My Account > Free Bids page.
 		$this->add_free_bids_tab();
 
-		// 1. Custom My Account > Auctions page.
-		$this->add_my_auctions_tab();
+		// 2. Custom My Account > Auctions page.
+		$this->add_auctions_tab();
 
-		// 0. Rename "Orders" to "Bids"
-		$this->rename_orders_tab();
+		// 1. Custom My Account > Bids page.
+		$this->add_bids_tab();
+
+		// 0. Remove "Orders" tab
+		$this->remove_orders_tab();
 
 		// Remove "Order Again" button
 		$this->remove_order_again_button();
@@ -73,6 +81,59 @@ class Account {
 
 		// Remove Download Link
 		$this->remove_download_link();
+	}
+
+	/**
+	 * Create a new Bids tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_bids_tab(): void {
+		add_filter(
+			'goodbids_account_' . self::BIDS_SLUG . '_args',
+			function ( $args ) {
+				$bid_orders   = goodbids()->sites->get_user_bid_orders();
+				$total_orders = count( $bid_orders );
+				$current_page = max( intval( get_query_var( self::BIDS_SLUG ) ), 1 );
+
+				// Pagination
+				$max_per_page = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
+				$max_pages    = ceil( $total_orders / $max_per_page );
+				$offset       = ( $current_page - 1 ) * $max_per_page;
+				$bid_orders   = array_slice( $bid_orders, $offset, $max_per_page );
+
+				$args['bid_orders']   = $bid_orders;
+				$args['current_page'] = $current_page;
+				$args['has_orders']   = 0 < $total_orders;
+				$args['total_orders'] = $total_orders;
+				$args['max_pages']    = $max_pages;
+
+				return $args;
+			}
+		);
+
+		$this->init_new_account_page( self::BIDS_SLUG, __( 'Bids', 'goodbids' ) );
+	}
+
+	/**
+	 * Create a new Auctions tab on My Account page
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function add_auctions_tab(): void {
+		add_filter(
+			'goodbids_account_' . self::AUCTIONS_SLUG . '_args',
+			function ( $args ) {
+				$args['auctions'] = goodbids()->sites->get_user_participating_auctions();
+				return $args;
+			}
+		);
+
+		$this->init_new_account_page( self::AUCTIONS_SLUG, __( 'Auctions', 'goodbids' ) );
 	}
 
 	/**
@@ -86,7 +147,7 @@ class Account {
 		add_filter(
 			'goodbids_account_' . self::FREE_BIDS_SLUG . '_args',
 			function ( $args ) {
-				$args['free_bids'] = goodbids()->users->get_free_bids();
+				$args['free_bids'] = goodbids()->free_bids->get();
 				return $args;
 			}
 		);
@@ -95,43 +156,31 @@ class Account {
 	}
 
 	/**
-	 * Create a new Auctions tab on My Account page
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function add_my_auctions_tab(): void {
-		add_filter(
-			'goodbids_account_' . self::AUCTIONS_SLUG . '_args',
-			function ( $args ) {
-				$args['auctions'] = goodbids()->sites->get_user_participating_auctions();
-				return $args;
-			}
-		);
-
-		$this->init_new_account_page( self::AUCTIONS_SLUG, __( 'Auctions', 'goodbids' ) );
-	}
-
-	/**
 	 * Create a new Rewards tab on My Account page
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $current_page Current page number.
-	 *
 	 * @return void
 	 */
-	private function add_rewards_tab( int $current_page = 1 ): void {
+	private function add_rewards_tab(): void {
 		add_filter(
 			'goodbids_account_' . self::REWARDS_SLUG . '_args',
-			function ( $args ) use ( $current_page ) {
+			function ( $args ) {
 				$reward_orders = goodbids()->sites->get_user_reward_orders();
+				$total_orders  = count( $reward_orders );
+				$current_page = max( intval( get_query_var( self::REWARDS_SLUG ) ), 1 );
 
-				$args['reward_orders']   = $reward_orders;
-				$args['current_page']    = empty( $current_page ) ? 1 : absint( $current_page );
-				$args['has_orders']      = 0 < count( $reward_orders );
-				$args['wp_button_class'] = wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '';
+				// Pagination
+				$max_per_page  = goodbids()->get_config( 'woocommerce.account.default-orders-per-page' );
+				$max_pages     = ceil( $total_orders / $max_per_page );
+				$offset        = ( $current_page - 1 ) * $max_per_page;
+				$reward_orders = array_slice( $reward_orders, $offset, $max_per_page );
+
+				$args['reward_orders'] = $reward_orders;
+				$args['current_page']  = $current_page;
+				$args['has_orders']    = 0 < $total_orders;
+				$args['total_orders']  = $total_orders;
+				$args['max_pages']     = $max_pages;
 
 				return $args;
 			}
@@ -202,7 +251,7 @@ class Account {
 				foreach ( $items as $key => $value ) {
 					$new_items[ $key ] = $value;
 
-					if ( 'orders' === $key ) {
+					if ( 'dashboard' === $key ) {
 						$new_items[ $slug ] = $label;
 					}
 				}
@@ -228,17 +277,17 @@ class Account {
 	}
 
 	/**
-	 * Rename the Orders tab to Bids.
+	 * Remove the Orders tab in lieu of custom Bids tab.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function rename_orders_tab(): void {
+	private function remove_orders_tab(): void {
 		add_filter(
 			'woocommerce_account_menu_items',
 			function ( $items ) {
-				$items['orders'] = __( 'Bids', 'goodbids' );
+				unset( $items['orders'] );
 				return $items;
 			}
 		);
@@ -272,7 +321,7 @@ class Account {
 			'paginate' => false,
 		];
 
-		return wc_get_orders( array_merge( $args, $query_args ) );
+		return wc_get_orders( array_merge_recursive( $args, $query_args ) );
 	}
 
 	/**

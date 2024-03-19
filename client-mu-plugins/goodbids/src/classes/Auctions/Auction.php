@@ -12,6 +12,7 @@ use DateInterval;
 use DateTimeImmutable;
 use Exception;
 use GoodBids\Nonprofits\Invoices;
+use GoodBids\Users\FreeBid;
 use GoodBids\Utilities\Log;
 use WC_Order;
 use WC_Product;
@@ -66,6 +67,12 @@ class Auction {
 	 * @var string
 	 */
 	const AUCTION_EXTENSIONS_META_KEY = '_auction_extensions';
+
+	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const FREE_BIDS_META_KEY = '_goodbids_free_bids';
 
 	/**
 	 * @since 1.0.0
@@ -155,7 +162,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function is_valid(): bool {
-		return is_null( $this->post );
+		return ! is_null( $this->post );
 	}
 
 	/**
@@ -297,6 +304,28 @@ class Auction {
 	 */
 	public function set_bid_variation_id( int $bid_variation_id ): void {
 		update_post_meta( $this->get_id(), Bids::AUCTION_BID_VARIATION_META_KEY, $bid_variation_id );
+	}
+
+	/**
+	 * Get Bid Product ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return int
+	 */
+	public function get_bid_product_id(): int {
+		return goodbids()->bids->get_product_id( $this->get_id() );
+	}
+
+	/**
+	 * Get Bid Product
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?WC_Product
+	 */
+	public function get_bid_product(): ?WC_Product {
+		return goodbids()->bids->get_product( $this->get_id() );
 	}
 
 	/**
@@ -569,8 +598,51 @@ class Auction {
 		$sec = $seconds % MINUTE_IN_SECONDS;
 
 		if ( $seconds < HOUR_IN_SECONDS ) {
-			return sprintf(
-				'%d %s and %d %s',
+			$return = sprintf(
+				'%d %s',
+				$min,
+				_n( 'minute', 'minutes', $min, 'goodbids' )
+			);
+
+			if ( $sec ) {
+				$return .= sprintf(
+					' and %d %s',
+					$sec,
+					_n( 'second', 'seconds', $sec, 'goodbids' )
+				);
+			}
+
+			return $return;
+		}
+
+		$hr  = floor( $seconds / HOUR_IN_SECONDS );
+		$min = floor( ( $seconds % HOUR_IN_SECONDS ) / MINUTE_IN_SECONDS );
+
+		$return = sprintf(
+			'%d %s',
+			$hr,
+			_n( 'hour', 'hours', $hr, 'goodbids' )
+		);
+
+		if ( ! $min && ! $sec ) {
+			return $return;
+		}
+
+		if ( $min && ! $sec ) {
+			$return .= sprintf(
+				' and %d %s',
+				$min,
+				_n( 'minute', 'minutes', $min, 'goodbids' )
+			);
+		} else if ( ! $min && $sec ) {
+			$return .= sprintf(
+				' and %d %s',
+				$sec,
+				_n( 'second', 'seconds', $sec, 'goodbids' )
+			);
+		} else {
+			$return .= sprintf(
+				', %d %s, and %d %s',
 				$min,
 				_n( 'minute', 'minutes', $min, 'goodbids' ),
 				$sec,
@@ -578,18 +650,7 @@ class Auction {
 			);
 		}
 
-		$hr  = floor( $seconds / HOUR_IN_SECONDS );
-		$min = floor( ( $seconds % HOUR_IN_SECONDS ) / MINUTE_IN_SECONDS );
-
-		return sprintf(
-			'%d %s, %d %s, and %d %s',
-			$hr,
-			_n( 'hour', 'hours', $hr, 'goodbids' ),
-			$min,
-			_n( 'minute', 'minutes', $min, 'goodbids' ),
-			$sec,
-			_n( 'second', 'seconds', $sec, 'goodbids' )
-		);
+		return $return;
 	}
 
 	/**
@@ -717,12 +778,12 @@ class Auction {
 	 * @return int
 	 */
 	public function get_free_bids_available(): int {
-		$free_bids = get_post_meta( $this->get_id(), Bids::FREE_BIDS_META_KEY, true );
+		$free_bids = get_post_meta( $this->get_id(), self::FREE_BIDS_META_KEY, true );
 
 		// Return the default value if we have no value.
 		if ( ! $free_bids && 0 !== $free_bids && '0' !== $free_bids ) {
 			$free_bids = goodbids()->get_config( 'auctions.default-free-bids' );
-			update_post_meta( $this->get_id(), Bids::FREE_BIDS_META_KEY, $free_bids );
+			update_post_meta( $this->get_id(), self::FREE_BIDS_META_KEY, $free_bids );
 		}
 
 		return intval( $free_bids );
@@ -738,7 +799,7 @@ class Auction {
 	 * @return void
 	 */
 	public function update_free_bids( int $free_bids ): void {
-		update_post_meta( $this->get_id(), Bids::FREE_BIDS_META_KEY, $free_bids );
+		update_post_meta( $this->get_id(), self::FREE_BIDS_META_KEY, $free_bids );
 	}
 
 	/**
@@ -747,13 +808,14 @@ class Auction {
 	 * @since 1.0.0
 	 *
 	 * @param ?int   $user_id
-	 * @param string $description
+	 * @param string $details
+	 * @param bool   $notify_later
 	 *
 	 * @return bool
 	 */
-	public function maybe_award_free_bid( ?int $user_id = null, string $description = '' ): bool {
-		$free_bids = $this->get_free_bids_available();
-		if ( ! $free_bids ) {
+	public function maybe_award_free_bid( ?int $user_id = null, string $details = '', bool $notify_later = false ): bool {
+		$auction_free_bids = $this->get_free_bids_available();
+		if ( ! $auction_free_bids ) {
 			return false;
 		}
 
@@ -761,9 +823,10 @@ class Auction {
 			$user_id = get_current_user_id();
 		}
 
-		if ( goodbids()->users->award_free_bid( $user_id, $this->get_id(), $description ) ) {
-			--$free_bids;
-			$this->update_free_bids( $free_bids );
+		if ( goodbids()->free_bids->award( $user_id, $this->get_id(), FreeBid::TYPE_PAID_BID, $details, $notify_later ) ) {
+			// Update the Auction's available free bids.
+			--$auction_free_bids;
+			$this->update_free_bids( $auction_free_bids );
 			return true;
 		}
 
@@ -1167,7 +1230,7 @@ class Auction {
 	 * @return bool
 	 */
 	public function end_triggered(): bool {
-		return boolval( get_post_meta( $this->get_id(), self::AUCTION_CLOSE_META_KEY, true ) );
+		return boolval( get_post_meta( $this->get_id(), self::AUCTION_CLOSED_META_KEY, true ) );
 	}
 
 	/**

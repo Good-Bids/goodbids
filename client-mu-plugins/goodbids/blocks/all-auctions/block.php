@@ -112,7 +112,6 @@ class AllAuctions extends ACFBlock {
 		}
 
 		// default to get all auctions from the current site
-		// TODO: maybe good to make this a transient as well
 		return collect( ( goodbids()->auctions->get_all() )->posts )
 			->map(
 				fn ( int $post_id ) => [
@@ -247,12 +246,11 @@ class AllAuctions extends ACFBlock {
 			'starting' => 'calculate_starting_bid',
 			'ending'   => 'get_end_date_time',
 			'low_bid'  => 'bid_variation_price',
-			'popular'  => 'get_watch_count',
 			default    => false,
 		};
 
 		if ( $sort_method ) {
-			return collect( $auctions )
+			$auctions = collect( $auctions )
 				->sortBy(
 					fn( array $auction_data ) => goodbids()->sites->swap(
 						function () use ( $auction_data, $sort_method ) {
@@ -270,8 +268,14 @@ class AllAuctions extends ACFBlock {
 						},
 						$auction_data['site_id']
 					)
-				)
-				->all();
+				);
+
+			// if sorting by start date, reverse the auctions
+			if ( $sort_method === 'get_start_date_time' ) {
+				$auctions = $auctions->reverse();
+			}
+
+			return $auctions->all();
 		}
 
 		return $auctions;

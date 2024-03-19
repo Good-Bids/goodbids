@@ -8,6 +8,8 @@
 
 namespace GoodBids\Auctions;
 
+use WP_Screen;
+
 /**
  * Fundraising Fields Class
  *
@@ -36,16 +38,10 @@ class FundraisingFields {
 	private function disable_fundraising_fields(): void {
 		add_action(
 			'current_screen',
-			function(): void {
-				if ( is_super_admin() ) {
+			function( WP_Screen $screen ): void {
+				if ( goodbids()->auctions->get_post_type() !== $screen->id || is_super_admin() ) {
 					return;
 				}
-
-				$screen = get_current_screen();
-				if ( goodbids()->auctions->get_post_type() !== $screen->id ) {
-					return;
-				}
-
 				?>
 				<style>
 					div.acf-field[data-name="estimated_value"],

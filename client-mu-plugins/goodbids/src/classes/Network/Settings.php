@@ -234,7 +234,7 @@ class Settings {
 			$stored = boolval( $stored );
 		}
 
-		return $stored_has_value && $stored !== $config_value;
+		return $stored_has_value && $stored != $config_value;
 	}
 
 	/**

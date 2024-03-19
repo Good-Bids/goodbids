@@ -7,7 +7,7 @@
  * @package GoodBids
  */
 
-use GoodBids\Auctions\FreeBid;
+use GoodBids\Users\FreeBid;
 
 ?>
 <div class="goodbids-free-bids">

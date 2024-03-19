@@ -9,6 +9,7 @@ import { __ } from '@wordpress/i18n';
 import { ReviewAuction } from '../components/review-auction';
 import { ReviewProduct } from '../components/reward-product-review';
 import { Wrapper } from './wrapper';
+import { getContent } from './get-content';
 
 type ReviewStepProps = {
 	shippingClasses: ShippingClasses;
@@ -94,7 +95,7 @@ export function ReviewStep({
 		const base = {
 			name: product.name.value,
 			regular_price: product.regularPrice.value,
-			images: process.env.NODE_ENV === 'development' ? [] : images,
+			images,
 			categories: [{ id: category!.id }],
 		};
 
@@ -145,7 +146,10 @@ export function ReviewStep({
 	};
 
 	const handleAuctionContentUpdate = (id: number) => {
-		updateAuctionContent.mutate(id);
+		updateAuctionContent.mutate({
+			id,
+			content: getContent(id),
+		});
 	};
 
 	const completeAuctionWizard = (id: number) => {

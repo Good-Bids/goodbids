@@ -134,6 +134,12 @@ class Notices {
 	const ALREADY_HIGH_BIDDER = 'already-high-bidder';
 
 	/**
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const REQUEST_SUBMITTED = 'support-request-submitted';
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -256,6 +262,11 @@ class Notices {
 					'message' => __( 'It looks like you are already the current high bidder for this Auction.', 'goodbids' ),
 					'type'    => 'error',
 				],
+
+				self::REQUEST_SUBMITTED         => [
+					'message' => __( 'Your request has been submitted. We will respond as soon as we can.', 'goodbids' ),
+					'type'    => 'success',
+				],
 			]
 		);
 	}
@@ -292,7 +303,7 @@ class Notices {
 	public function add_notice( string $notice_id ) : void {
 		$notice = $this->get_notice( $notice_id );
 
-		if ( ! $notice ) {
+		if ( ! $notice || ! function_exists( 'wc_add_notice' ) ) {
 			return;
 		}
 
@@ -388,5 +399,24 @@ class Notices {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Display a notice by ID
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $notice_id
+	 *
+	 * @return void
+	 */
+	public function display_notice( string $notice_id ): void {
+		$notice = $this->get_notice( $notice_id );
+
+		if ( ! $notice || ! function_exists( 'wc_print_notice' ) ) {
+			return;
+		}
+
+		wc_print_notice( $notice['message'], $notice['type'] );
 	}
 }

@@ -70,6 +70,8 @@ export function handleSetSocketAuction(
 	message: SocketMessage,
 	userId: UserType['userId'],
 	setCountdownInterval: BiddingActions['setCountdownInterval'],
+	savedStartTime: TimingType['startTime'],
+	savedEndTime: TimingType['endTime'],
 ): Partial<TimingType & BidsType & FetchingType & UserType> {
 	if (message.type === 'not-found') {
 		return {
@@ -85,6 +87,16 @@ export function handleSetSocketAuction(
 
 		const startTime = new Date(message.payload.startTime);
 		const endTime = new Date(message.payload.endTime);
+
+		if (
+			(savedStartTime &&
+				startTime.getTime() < savedStartTime?.getTime()) ||
+			(savedEndTime && endTime.getTime() < savedEndTime?.getTime())
+		) {
+			return {
+				hasSocketError: true,
+			};
+		}
 
 		setCountdownInterval(startTime, endTime);
 

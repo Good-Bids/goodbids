@@ -6,6 +6,7 @@
   },
   "active-plugins": [
     "advanced-custom-fields-pro/acf.php",
+    "delete-me",
     "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
     "tidio-live-chat",
     "user-switching",
@@ -79,8 +80,8 @@
       "script-url": "https://cookie-cdn.cookiepro.com/consent/018db271-d57e-7feb-8af7-6abf9b08d9cc-test/OtAutoBlock.js"
     },
     "production": {
-      "domain-script": "018db277-8821-7adb-9a46-541376bb3a13",
-      "script-url": "https://cookie-cdn.cookiepro.com/consent/018db277-8821-7adb-9a46-541376bb3a13/OtAutoBlock.js"
+      "domain-script": "018e543d-de6c-7e88-ae43-7b9a1d04105e",
+      "script-url": "https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js"
     }
   },
   "taxes": {

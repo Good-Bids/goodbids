@@ -35,6 +35,7 @@ class Permissions {
 	/**
 	 * Increment this number whenever changes are made to this class.
 	 *
+	 * v5: Added plugin_delete_me capability for Customers. - 3/18/2024
 	 * v4: Fix for removed roles. - 3/8/2024
 	 * v3: Added Jr Admin role. - 3/8/2024
 	 * v2: Added BDP Admin role. - 2/26/2024
@@ -44,7 +45,7 @@ class Permissions {
 	 *
 	 * @var int $version
 	 */
-	private int $version = 4;
+	private int $version = 5;
 
 	/**
 	 * Constructor
@@ -69,6 +70,9 @@ class Permissions {
 
 		// Set the default role for new users.
 		$this->set_default_role();
+
+		// Set the default role for new users.
+		$this->adjust_customer_capabilities();
 
 		// Perform the update.
 		$this->maybe_do_update_version();
@@ -202,6 +206,32 @@ class Permissions {
 				);
 
 				$this->duplicate_role( 'administrator', self::JR_ADMIN_ROLE, $role_name, $cap_changes );
+			}
+		);
+	}
+
+	/**
+	 * Grant the Customer role the ability to delete their account.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_customer_capabilities(): void {
+		add_action(
+			'init',
+			function () {
+				if ( ! $this->needs_update() ) {
+					return;
+				}
+
+				$role = get_role( 'customer' );
+
+				if ( ! $role ) {
+					return;
+				}
+
+				$role->add_cap( 'plugin_delete_me' );
 			}
 		);
 	}

@@ -8,6 +8,8 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Nonprofits\Guide;
+
 /**
  * Network Class
  *
@@ -64,7 +66,6 @@ class Network {
 		$this->invoices   = new Invoices();
 		$this->auctions   = new Auctions();
 		$this->bidders    = new Bidders();
-
 		$this->logs       = new Logs();
 
 		// Setup API Endpoints.

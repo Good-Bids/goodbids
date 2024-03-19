@@ -8,6 +8,7 @@
 
 namespace GoodBids\Admin;
 
+use GoodBids\Network\Sites;
 use GoodBids\Users\Permissions;
 
 /**
@@ -31,6 +32,9 @@ class Admin {
 
 		// Remove Nav Items for Jr Admins
 		$this->jr_admin_nav_cleanup();
+
+		// Limit access to pages
+		$this->limit_access_to_pages();
 	}
 
 	/**
@@ -81,7 +85,7 @@ class Admin {
 	 * @return void
 	 */
 	public function render_field( string $key, array $field, string $prefix = '', array $data = [], bool $wrap = true ) : void {
-		$required    = ! empty( $field['required'] ) && true === $field['required'];
+		$required    = ! empty( $field['required'] );
 		$placeholder = $field['placeholder'] ?? '';
 		$field_id    = $prefix ? $prefix . '-' . $key : $key;
 		$value       = $data[ $key ] ?? '';
@@ -207,6 +211,67 @@ class Admin {
 				return array_filter(
 					$features,
 					fn( $feature ) => $feature !== 'marketing'
+				);
+			}
+		);
+	}
+
+	/**
+	 * Limit access to specific pages for non-Super Admins.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function limit_access_to_pages(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$pages = array_filter(
+					apply_filters(
+						'goodbids_restrict_pages',
+						[
+							intval( get_option( Sites::SUPPORT_OPTION ) ),
+						]
+					)
+				);
+
+				// Block access to Specific Pages
+				add_filter(
+					'user_has_cap',
+					function ( array $all_caps, array $caps, array $args ) use ( $pages ) {
+						if ( is_super_admin() ) {
+							return $all_caps;
+						}
+
+						$post_id = get_the_ID();
+
+						if ( ! $post_id && isset( $args[2] ) ) {
+							$post_id = $args[2];
+						}
+
+						if ( ! $post_id || 'page' !== get_post_type( $post_id ) ) {
+							return $all_caps;
+						}
+
+						if ( ! in_array( $post_id, $pages, true ) ) {
+							return $all_caps;
+						}
+
+						$all_caps['publish_pages']          = false;
+						$all_caps['edit_pages']             = false;
+						$all_caps['edit_others_pages']      = false;
+						$all_caps['edit_published_pages']   = false;
+						$all_caps['edit_private_pages']     = false;
+						$all_caps['delete_pages']           = false;
+						$all_caps['delete_private_pages']   = false;
+						$all_caps['delete_others_pages']    = false;
+						$all_caps['delete_published_pages'] = false;
+
+						return $all_caps;
+					},
+					10,
+					3
 				);
 			}
 		);
