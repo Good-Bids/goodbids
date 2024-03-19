@@ -233,31 +233,6 @@ class Admin {
 			200
 		);
 
-		// Remove WooCommerce Marketing Menu.
-		add_filter(
-			'woocommerce_admin_features',
-			function ( array $features ): array {
-				if ( ! is_main_site() ) {
-					return $features;
-				}
-
-				$keep = [
-					'homescreen',
-					'navigation',
-					'activity-panels',
-					'store-alerts',
-					'remote-inbox-notifications',
-					'woo-mobile-welcome',
-					'store-alert',
-				];
-
-				return array_filter(
-					$features,
-					fn( $feature ) => in_array( $feature, $keep, true )
-				);
-			}
-		);
-
 		// Remove WooCommerce Analytics Menu.
 		add_filter(
 			'option_woocommerce_analytics_enabled',
