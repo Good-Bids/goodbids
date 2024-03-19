@@ -8,6 +8,8 @@
 
 namespace GoodBids\Network;
 
+use GoodBids\Nonprofits\Guide;
+
 /**
  * Network Class
  *
