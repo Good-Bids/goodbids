@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9dc1229c43b742aaa5fda70ca293e33",
+    "content-hash": "8be8d554f9e98176b311af13011fcd45",
     "packages": [
         {
             "name": "composer/installers",
@@ -1300,6 +1300,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/tidio-live-chat/"
+        },
+        {
+            "name": "wpackagist-plugin/top-bar",
+            "version": "3.0.6",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/top-bar/",
+                "reference": "trunk"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/top-bar.zip?timestamp=1710338856"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/top-bar/"
         },
         {
             "name": "wpackagist-plugin/user-switching",
