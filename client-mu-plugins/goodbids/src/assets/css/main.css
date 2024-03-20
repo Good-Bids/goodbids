@@ -1,20 +1,21 @@
 /* Import any CSS from blocks before tailwind */
 @import '../../../blocks/reward-product-gallery/block.css';
 
+@import 'activate-page.css';
 @import 'global-forms.css';
 @import 'pagination.css';
-@import 'activate-page.css';
 
 /* Patterns */
 @import 'patterns/blocks.css';
 @import 'patterns/comments.css';
-@import 'patterns/nonprofit-interest-form.css';
 @import 'patterns/header.css';
+@import 'patterns/nonprofit-interest-form.css';
+@import 'patterns/reward-product-gallery.css';
 
 /* WooCommerce overrides */
+@import 'referral-copy-link.css';
 @import 'woocommerce/checkout.css';
 @import 'woocommerce/my-account.css';
-@import 'referral-copy-link.css';
 
 @tailwind base;
 @tailwind components;
