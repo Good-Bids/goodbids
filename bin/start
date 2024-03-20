@@ -11,4 +11,4 @@ cd "$(dirname "$0")/.."
 
 cd client-mu-plugins/goodbids && npm run build
 vip dev-env --slug=goodbids start
-echo "Don't forget to run bin/start-vite to start the Vite dev server"
+echo "Run bin/watch-assets to watch for JS / CSS changes in the client-mu-plugins/goodbids directory."

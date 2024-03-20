@@ -1,8 +1,8 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { apiHandler } from './api-handler';
 import { z } from 'zod';
 import { FetchingType, TimingType } from '../store/types';
-import { POLLING_INTERVAL } from './constants';
+import { POLLING_INTERVAL } from '../utils/constants';
+import apiFetch from '@wordpress/api-fetch';
 
 const auctionSchema = z.object({
 	socketUrl: z.string(),
@@ -22,10 +22,13 @@ const auctionSchema = z.object({
 export type AuctionResponse = z.infer<typeof auctionSchema>;
 
 async function getAuction(auctionId: number) {
-	const path = `/wp-json/wp/v2/auction/${auctionId}/details`;
+	const path = `/wp/v2/auction/${auctionId}/details`;
 
-	const response = await apiHandler({
+	const response = await apiFetch({
 		path,
+		headers: {
+			'Content-Type': 'application/json',
+		},
 	});
 
 	return auctionSchema.parse(response);

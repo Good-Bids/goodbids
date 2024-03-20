@@ -102,6 +102,7 @@ class User extends WC_REST_Controller {
 			'userId',
 			'userTotalBids',
 			'userTotalDonated',
+			'userReferralUrl',
 		];
 
 		$payload = new Payload( $request['id'], $payload_data );

@@ -10,6 +10,7 @@ namespace GoodBids\Utilities;
 
 use GoodBids\Auctions\Auction;
 use GoodBids\Users\FreeBids;
+use GoodBids\Users\Referrals\Referrer;
 use WC_Order;
 use WC_Product;
 use WP_User;
@@ -229,7 +230,6 @@ class Payload {
 			'requestTime'       => current_datetime()->format( 'c' ),
 			'rewardClaimed'     => $this->has_user_claimed_reward(),
 			'rewardUrl'         => goodbids()->rewards->get_claim_reward_url( $this->auction_id ),
-			'shareUrl'          => '', // TBD.
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => $this->auction->get_start_date_time( 'c' ),
 			'totalBids'         => $this->auction->get_bid_count(),
@@ -237,6 +237,7 @@ class Payload {
 			'useFreeBidParam'   => FreeBids::USE_FREE_BID_PARAM,
 			'userFreeBids'      => goodbids()->free_bids->get_available_count( $this->get_user_id() ),
 			'userId'            => $this->get_user_id(),
+			'userReferralUrl'   => $this->get_user_referral_url(),
 			'userTotalBids'     => $this->auction->get_user_bid_count( $this->get_user_id() ),
 			'userTotalDonated'  => $this->auction->get_user_total_donated( $this->get_user_id() ),
 			default             => null,
@@ -399,5 +400,22 @@ class Payload {
 		}
 
 		return goodbids()->rewards->is_redeemed( $auction->get_id() );
+	}
+
+	/**
+	 * Get the current User's Referral URL
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	public function get_user_referral_url(): string {
+		if ( ! $this->get_user_id() ) {
+			return '#';
+		}
+
+		$referrer = new Referrer( $this->get_user_id() );
+
+		return $referrer->get_link();
 	}
 }

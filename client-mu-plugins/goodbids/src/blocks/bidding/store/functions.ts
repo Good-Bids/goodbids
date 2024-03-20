@@ -1,6 +1,6 @@
-import { AuctionResponse } from '../utils/get-auction';
+import { AuctionResponse } from '../api/get-auction';
 import { getIsLastBidder } from '../utils/get-is-last-bidder';
-import { UserResponse } from '../utils/get-user';
+import { UserResponse } from '../api/get-user';
 import { client } from '../utils/query-client';
 import { SocketMessage } from '../utils/types';
 import { StatusAndTimeRemainingType } from './timing';

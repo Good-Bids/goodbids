@@ -1,7 +1,6 @@
 function copyToClipboard(text, element) {
-	navigator.clipboard
-		.writeText(text)
-		.then(() => {
+	try {
+		navigator.clipboard.writeText(text).then(() => {
 			if (!element) {
 				return;
 			}
@@ -14,10 +13,15 @@ function copyToClipboard(text, element) {
 			setTimeout(function () {
 				element.textContent = original;
 			}, 3000);
-		})
-		.catch((err) => {
-			console.log(err);
 		});
+	} catch (err) {
+		const tempTextArea = document.createElement('textarea');
+		tempTextArea.value = text;
+		document.body.appendChild(tempTextArea);
+		tempTextArea.select();
+		document.execCommand('copy');
+		document.body.removeChild(tempTextArea);
+	}
 }
 
 function maybeShowTooltip() {

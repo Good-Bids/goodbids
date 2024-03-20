@@ -1,11 +1,12 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { apiHandler } from './api-handler';
 import { z } from 'zod';
+import apiFetch from '@wordpress/api-fetch';
 
 const userSchema = z.object({
 	rewardUrl: z.string().optional(),
 	userId: z.number(),
 	userFreeBids: z.number().default(0),
+	userReferralUrl: z.string(),
 	userTotalBids: z.number().default(0),
 	userTotalDonated: z.number().default(0),
 	rewardClaimed: z.boolean().optional().default(false),
@@ -14,12 +15,15 @@ const userSchema = z.object({
 export type UserResponse = z.infer<typeof userSchema>;
 
 async function getUser(auctionId: number, cookie: string) {
-	const path = `/wp-json/wp/v2/auction/${auctionId}/user`;
+	const path = `/wp/v2/auction/${auctionId}/user`;
 
-	const response = await apiHandler({
+	const response = await apiFetch({
 		path,
 		method: 'POST',
-		body: { cookie },
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ cookie }),
 	});
 
 	return userSchema.parse(response);
