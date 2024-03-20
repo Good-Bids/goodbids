@@ -370,7 +370,7 @@ class Admin {
 
 		add_filter(
 			'manage_users_custom_column',
-			function ( string $value, string $column, int $user_id ) {
+			function ( ?string $value, string $column, ?int $user_id ) {
 				if ( ! $user_id ) {
 					return '&mdash;';
 				}
