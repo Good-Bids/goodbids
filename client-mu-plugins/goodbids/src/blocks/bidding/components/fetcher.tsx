@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { useGetAuction } from '../utils/get-auction';
+import { useGetAuction } from '../api/get-auction';
 import { useCookies } from 'react-cookie';
-import { useGetUser } from '../utils/get-user';
+import { useGetUser } from '../api/get-user';
 import { useBiddingState } from '../store';
 import { WarningIcon } from './icons/warning-icon';
 import { motion } from 'framer-motion';

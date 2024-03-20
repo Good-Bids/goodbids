@@ -33,6 +33,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	rewardUrl: undefined,
 	userId: undefined,
 	userFreeBids: 0,
+	userReferralUrl: '#',
 	userTotalBids: 0,
 	userTotalDonated: 0,
 	rewardClaimed: false,

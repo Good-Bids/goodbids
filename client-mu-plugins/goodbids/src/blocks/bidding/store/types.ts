@@ -1,5 +1,5 @@
-import { AuctionResponse } from '../utils/get-auction';
-import { UserResponse } from '../utils/get-user';
+import { AuctionResponse } from '../api/get-auction';
+import { UserResponse } from '../api/get-user';
 import { SocketMessage } from '../utils/types';
 import { StatusAndTimeRemainingType } from './timing';
 
@@ -42,6 +42,7 @@ export type UserType = {
 	rewardUrl?: string;
 	userId?: number;
 	userFreeBids: number;
+	userReferralUrl: string;
 	userTotalBids: number;
 	userTotalDonated: number;
 	rewardClaimed: boolean;
