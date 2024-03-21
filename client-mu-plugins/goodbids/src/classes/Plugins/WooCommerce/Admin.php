@@ -40,6 +40,9 @@ class Admin {
 		// Remove WooCommerce Features on Main site
 		$this->main_site_cleanup();
 
+		// Remove WooCommerce Features on Main site
+		$this->nonprofit_cleanup();
+
 		// Limit access to pages
 		$this->limit_access_to_pages();
 	}
@@ -281,6 +284,82 @@ class Admin {
 				unset( $tabs['tax'] );
 				unset( $tabs['shipping'] );
 				unset( $tabs['integration'] );
+				return $tabs;
+			},
+			100
+		);
+	}
+
+	/**
+	 * Remove Unneeded WooCommerce Features on Nonprofit Sites for non-Super Admins
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function nonprofit_cleanup(): void {
+		add_action(
+			'admin_menu',
+			function () {
+				if ( is_main_site() || is_super_admin() ) {
+					return;
+				}
+
+				// Remove Products Menu
+				remove_menu_page( 'edit.php?post_type=product' );
+
+				// Remove WooCommerce Submenus
+				remove_submenu_page( 'woocommerce', 'edit.php?post_type=shop_coupon' );
+				remove_submenu_page( 'woocommerce', 'wc-reports' );
+				remove_submenu_page( 'woocommerce', 'wc-status' );
+				remove_submenu_page( 'woocommerce', 'wc-admin&path=/extensions' );
+
+				// Remove Analytics Submenus
+				remove_submenu_page( 'wc-admin&path=/analytics/overview', 'wc-admin&path=/analytics/variations');
+				remove_submenu_page( 'wc-admin&path=/analytics/overview', 'wc-admin&path=/analytics/downloads' );
+				remove_submenu_page( 'wc-admin&path=/analytics/overview', 'wc-admin&path=/analytics/stock' );
+			},
+			200
+		);
+
+		// Disable WooCommerce Order Attribution
+		add_filter(
+			'option_woocommerce_feature_order_attribution_enabled',
+			function ( string $enabled ): string {
+				if ( is_main_site() || is_super_admin() ) {
+					return $enabled;
+				}
+
+				return 'no';
+			}
+		);
+
+		// Disable WooCommerce Marketplace Suggestions
+		add_filter(
+			'option_woocommerce_show_marketplace_suggestions',
+			function ( string $enabled ): string {
+				if ( is_main_site() || is_super_admin() ) {
+					return $enabled;
+				}
+
+				return 'no';
+			}
+		);
+
+		// Remove some of the Settings Tabs.
+		add_filter(
+			'woocommerce_settings_tabs_array',
+			function ( array $tabs ): array {
+				if ( is_main_site() || is_super_admin() ) {
+					return $tabs;
+				}
+
+				unset( $tabs['products'] );
+				unset( $tabs['tax'] );
+				unset( $tabs['account'] );
+				unset( $tabs['email'] );
+				unset( $tabs['integration'] );
+				unset( $tabs['advanced'] );
 				return $tabs;
 			},
 			100
