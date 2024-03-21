@@ -1,7 +1,5 @@
 /** Put Editor Specific Styles Here */
 /* Import any CSS from blocks before tailwind */
-@import '../../../blocks/reward-product-gallery/block.css';
-
 @import 'global-forms.css';
 
 @tailwind base;
