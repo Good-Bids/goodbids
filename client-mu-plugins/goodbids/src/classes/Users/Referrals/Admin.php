@@ -382,13 +382,13 @@ class Admin {
 				} elseif ( 'referred_by' === $column ) {
 					$referrer_id = goodbids()->referrals->get_referrer_id( $user_id );
 
-					if ( ! $referrer_id ) {
+					if ( ! $referrer_id || ! get_userdata( $referrer_id ) ) {
 						return '&mdash;';
 					}
 
 					$referrer_username = get_userdata( $referrer_id )->user_login;
 
-					if ( current_user_can( 'edit_user', $referrer_id ) ) {
+					if ( ! current_user_can( 'edit_user', $referrer_id ) ) {
 						return sprintf( '<strong>%s</strong>', esc_html( $referrer_username ) );
 					}
 
