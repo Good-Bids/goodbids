@@ -150,7 +150,6 @@ class FreeBids {
 		add_action(
 			'wp_ajax_goodbids_' . self::NONCE_ACTION,
 			function () {
-				Log::debug( 'Grant Free Bid AJAX Request' );
 				list( $user_id, $reason ) = $this->ajax_request_validation();
 
 				if ( $user_id === get_current_user_id() ) {
