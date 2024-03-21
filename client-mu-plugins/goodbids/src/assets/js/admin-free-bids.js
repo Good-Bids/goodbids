@@ -6,6 +6,10 @@ const $ = jQuery;
 
 $(() => {
 	const grantFreeBidButton = $('#goodbids-grant-free-bid-button');
+	if (!grantFreeBidButton.length) {
+		return;
+	}
+
 	grantFreeBidButton.attr('disabled', true); // disable by default
 	const freeBidReason = $('#' + goodbidsFreeBids.reasonFieldId);
 	freeBidReason.on('keyup', function () {

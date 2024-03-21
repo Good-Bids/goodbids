@@ -65,6 +65,10 @@ class FreeBids {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+
+		// Handle Free Bid via AJAX.
+		$this->grant_free_bid_ajax();
+
 		// Disable Free Bids on Main Site.
 		if ( is_main_site() && ! is_network_admin() ) {
 			return;
@@ -72,9 +76,6 @@ class FreeBids {
 
 		// Add UI for Super Admins to grant free bids to users.
 		$this->free_bid_user_fields();
-
-		// Handle Free Bid via AJAX.
-		$this->grant_free_bid_ajax();
 
 		// Set up JS Vars.
 		$this->free_bid_js_vars();
@@ -130,7 +131,7 @@ class FreeBids {
 							'title' => __( 'Success!', 'goodbids' ),
 							'text'  => __( 'The free bid was successfully granted.', 'goodbids' ),
 						],
-						'grantAction'     => 'goodbids_admin_grant_free_bid',
+						'grantAction'     => 'goodbids_' . self::NONCE_ACTION,
 						'nonceGrant'      => wp_create_nonce( self::NONCE_ACTION ),
 					]
 				);
@@ -147,8 +148,9 @@ class FreeBids {
 	 */
 	private function grant_free_bid_ajax(): void {
 		add_action(
-			'wp_ajax_goodbids_admin_grant_free_bid',
+			'wp_ajax_goodbids_' . self::NONCE_ACTION,
 			function () {
+				Log::debug( 'Grant Free Bid AJAX Request' );
 				list( $user_id, $reason ) = $this->ajax_request_validation();
 
 				if ( $user_id === get_current_user_id() ) {
