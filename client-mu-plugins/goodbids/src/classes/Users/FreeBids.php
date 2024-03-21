@@ -66,7 +66,7 @@ class FreeBids {
 	 */
 	public function __construct() {
 		// Disable Free Bids on Main Site.
-		if ( is_main_site() ) {
+		if ( is_main_site() && ! is_network_admin() ) {
 			return;
 		}
 
