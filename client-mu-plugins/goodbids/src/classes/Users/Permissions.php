@@ -436,9 +436,9 @@ class Permissions {
 				// This permanently removes the roles.
 				remove_role( 'subscriber' );
 				remove_role( 'contributor' );
-				remove_role( 'shop_manager' );
 				remove_role( 'author' );
 				remove_role( 'editor' );
+				remove_role( 'shop_manager' );
 				remove_role( 'vip_support' );
 				remove_role( 'vip_support_inactive' );
 			}
@@ -457,7 +457,11 @@ class Permissions {
 		add_filter(
 			'editable_roles',
 			function ( array $roles ): array {
-				// Disable the Shop Manager Role
+				// Disable the Unused Roles
+				unset( $roles['subscriber'] );
+				unset( $roles['contributor'] );
+				unset( $roles['author'] );
+				unset( $roles['editor'] );
 				unset( $roles['shop_manager'] );
 
 				if ( goodbids()->utilities->network_is_main_site() ) {
