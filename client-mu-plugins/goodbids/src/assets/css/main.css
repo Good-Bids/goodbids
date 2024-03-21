@@ -1,6 +1,4 @@
 /* Import any CSS from blocks before tailwind */
-@import '../../../blocks/reward-product-gallery/block.css';
-
 @import 'activate-page.css';
 @import 'global-forms.css';
 @import 'pagination.css';
