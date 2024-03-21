@@ -457,6 +457,9 @@ class Permissions {
 		add_filter(
 			'editable_roles',
 			function ( array $roles ): array {
+				// Disable the Shop Manager Role
+				unset( $roles['shop_manager'] );
+
 				if ( goodbids()->utilities->network_is_main_site() ) {
 					return $roles;
 				}
