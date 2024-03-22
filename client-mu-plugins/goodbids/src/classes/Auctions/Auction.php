@@ -1362,6 +1362,9 @@ class Auction {
 			return false;
 		}
 
+		$bid_author = get_post_field( 'post_author', $bid_product->get_id() );
+		$bids->set_variation_author( $new_variation, $bid_author );
+
 		// Set the Bid variation as a meta of the Auction.
 		$this->set_bid_variation_id( $new_variation->get_id() );
 

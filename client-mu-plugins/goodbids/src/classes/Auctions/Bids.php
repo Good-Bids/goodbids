@@ -91,6 +91,9 @@ class Bids {
 
 		// Reduce the current Bid Product stock to 0 when the Auction ends.
 		$this->disable_bid_product_on_auction_end();
+
+		// This ensures all Bid Variations have the same author as the Bid Product.
+		$this->update_bid_variation_authors();
 	}
 
 	/**
@@ -269,6 +272,9 @@ class Bids {
 					Log::error( 'There was a problem saving the Bid Variation', compact( 'post_id' ) );
 					return;
 				}
+
+				$bid_author = get_post_field( 'post_author', $bid_product->get_id() );
+				$this->set_variation_author( $variation, $bid_author );
 
 				// Set the Bid variation as a meta of the Auction.
 				$auction->set_bid_variation_id( $variation->get_id() );
@@ -460,7 +466,7 @@ class Bids {
 
 		$variation = wc_get_product( $variation_id );
 
-		if ( ! $variation ) {
+		if ( $variation_id && ! $variation ) {
 			if ( ! $this->reset_variation_id( $auction_id ) ) {
 				// This is bad.
 				return $this->get_product_id( $auction_id );
@@ -487,7 +493,7 @@ class Bids {
 		/** @var WC_Product_Variable $product */
 		$product = $auction->get_bid_product();
 
-		if ( ! $product->is_type( 'variable' ) ) {
+		if ( ! $product || ! $product->is_type( 'variable' ) ) {
 			return false;
 		}
 
@@ -535,10 +541,33 @@ class Bids {
 			return false;
 		}
 
+		$bid_author = get_post_field( 'post_author', $bid_product->get_id() );
+		$this->set_variation_author( $new_variation, $bid_author );
+
 		// Set the Bid variation as a meta of the Auction.
 		$auction->set_bid_variation_id( $new_variation->get_id() );
 
 		return true;
+	}
+
+	/**
+	 * Changes the Variation Author to prevent deletion when the user is deleted.
+	 *
+	 * @param WC_Product_Variation $variation
+	 * @param int $author_id
+	 *
+	 * @return void
+	 */
+	public function set_variation_author( WC_Product_Variation $variation, int $author_id = 1 ): void {
+		$update = [
+			'ID'          => $variation->get_id(),
+			'post_author' => $author_id,
+		];
+
+		$result = wp_update_post( $update );
+		if ( is_wp_error( $result ) ) {
+			Log::error( $result->get_error_message() );
+		}
 	}
 
 	/**
@@ -905,4 +934,49 @@ class Bids {
 		);
 	}
 
+	/**
+	 * Update all Bid Variation authors to match the Bid Product author.
+	 *
+	 * TODO: REMOVE ME AFTER 2024-04-30
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_bid_variation_authors(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$bid_products = wc_get_products(
+					[
+						'limit'    => -1,
+						'type'     => 'variable',
+						'category' => self::ITEM_TYPE,
+						'date_query' => [
+							'before' => [
+								'year'  => 2024,
+								'month' => 4,
+								'day'   => 30,
+							],
+						],
+					]
+				);
+
+				foreach ( $bid_products as $bid_product ) {
+					$author_id  = get_post_field( 'post_author', $bid_product->get_id() );
+					$variations = $bid_product->get_available_variations();
+
+					foreach ( $variations as $variation_data ) {
+						/** @var WC_Product_Variation $variation */
+						$variation = wc_get_product( $variation_data['variation_id'] );
+						$variation_author = get_post_field( 'post_author', $variation->get_id() );
+
+						if ( $variation_author !== $author_id ) {
+							$this->set_variation_author( $variation, $author_id );
+						}
+					}
+				}
+			}
+		);
+	}
 }
