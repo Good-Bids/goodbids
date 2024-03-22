@@ -69,14 +69,6 @@ class Payload {
 	private ?WC_Product $bid_variation = null;
 
 	/**
-	 * The Last Bid Order
-	 *
-	 * @since 1.0.0
-	 * @var ?WC_Order
-	 */
-	private ?WC_Order $last_bid = null;
-
-	/**
 	 * The Last Bidder User ID
 	 *
 	 * @since 1.0.0
@@ -285,15 +277,16 @@ class Payload {
 	 * @return ?float
 	 */
 	private function get_last_bid_amount(): ?float {
-		if ( ! $this->last_bid ) {
-			$this->last_bid = $this->auction->get_last_bid();
+		if ( ! $this->auction ) {
+			return 0;
 		}
 
-		if ( $this->last_bid ) {
-			return $this->last_bid->get_subtotal();
+		$last_amount = $this->auction->get_last_bid_value();
+		if ( ! $last_amount ) {
+			return 0;
 		}
 
-		return 0;
+		return $last_amount;
 	}
 
 	/**
@@ -305,7 +298,7 @@ class Payload {
 	 */
 	private function get_last_bidder_id(): ?int {
 		if ( ! $this->last_bidder_id ) {
-			$this->last_bidder_id = $this->auction->get_last_bidder_id();
+			$this->last_bidder_id = $this->auction?->get_last_bidder_id();
 		}
 
 		return $this->last_bidder_id;
@@ -320,7 +313,7 @@ class Payload {
 	 */
 	private function get_last_bidder(): ?WP_User {
 		if ( ! $this->last_bidder ) {
-			$this->last_bidder = $this->auction->get_last_bidder();
+			$this->last_bidder = $this->auction?->get_last_bidder();
 		}
 
 		return $this->last_bidder;
@@ -337,7 +330,7 @@ class Payload {
 	 */
 	private function is_user_last_bidder( int $user_id ): bool {
 		if ( ! $this->last_bidder_id ) {
-			$this->last_bidder_id = $this->auction->get_last_bidder_id();
+			$this->last_bidder_id = $this->auction?->get_last_bidder_id();
 		}
 
 		return $this->last_bidder_id === $user_id;

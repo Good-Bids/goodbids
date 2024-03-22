@@ -1069,6 +1069,26 @@ class Auction {
 	}
 
 	/**
+	 * Get the value of the last bid (regardless if free or not)
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?float
+	 */
+	public function get_last_bid_value(): ?float {
+		$last_bid = $this->get_last_bid();
+		if ( ! $last_bid ) {
+			return null;
+		}
+
+		if ( ! $last_bid->get_subtotal() ) {
+			return floatval( $last_bid->get_discount_total() );
+		}
+
+		return $last_bid->get_subtotal();
+	}
+
+	/**
 	 * Get the user that placed the last bid.
 	 *
 	 * @since 1.0.0
@@ -1309,16 +1329,26 @@ class Auction {
 	public function increase_bid(): bool {
 		$bids = goodbids()->bids; // Easier to reference.
 
-		$bid_product   = $bids->get_product( $this->get_id() );
-		$bid_variation = $bids->get_variation( $this->get_id() );
+		$bid_product = $bids->get_product( $this->get_id() );
 
-		if ( ! $bid_product || ! $bid_variation ) {
-			Log::error( 'Auction missing Bid Product or Variation', compact( 'this' ) );
+		if ( ! $bid_product ) {
+			Log::error( 'Auction missing Bid Product', [ 'auction' => $this->get_id() ] );
 			return false;
 		}
 
+		$bid_variation = $bids->get_variation( $this->get_id() );
+
+		if ( $bid_variation ) {
+			$current_price = floatval( $bid_variation->get_price( 'edit' ) );
+
+			// Disallow backorders on previous variation.
+			$bid_variation->set_backorders( 'no' );
+			$bid_variation->save();
+		} else {
+			$current_price = $this->get_last_bid_value();
+		}
+
 		$increment_amount = $this->get_bid_increment();
-		$current_price    = floatval( $bid_variation->get_regular_price( 'edit' ) );
 		$new_price        = $current_price + $increment_amount;
 
 		// Add support for new variation.
@@ -1332,12 +1362,11 @@ class Auction {
 			return false;
 		}
 
+		$bid_author = get_post_field( 'post_author', $bid_product->get_id() );
+		$bids->set_variation_author( $new_variation, $bid_author );
+
 		// Set the Bid variation as a meta of the Auction.
 		$this->set_bid_variation_id( $new_variation->get_id() );
-
-		// Disallow backorders on previous variation.
-		$bid_variation->set_backorders( 'no' );
-		$bid_variation->save();
 
 		return true;
 	}

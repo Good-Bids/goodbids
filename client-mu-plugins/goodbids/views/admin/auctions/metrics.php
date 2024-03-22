@@ -9,7 +9,7 @@
  */
 
 $auction     = goodbids()->auctions->get( $auction_id );
-$bid_product = wc_get_product( goodbids()->bids->get_product_id( $auction_id ) );
+$current_bid = wc_get_product( $auction->get_variation_id() );
 $last_bid    = $auction->get_last_bid();
 ?>
 <div class="gb-auction-metrics">
@@ -40,11 +40,11 @@ $last_bid    = $auction->get_last_bid();
 		wp_kses_post( wc_price( $auction->get_total_raised() ) )
 	);
 
-	if ( $bid_product ) :
+	if ( $current_bid ) :
 		printf(
 			'<p><strong>%s</strong><br>%s</p>',
 			esc_html__( 'Current Bid', 'goodbids' ),
-			wp_kses_post( wc_price( $bid_product->get_price() ) )
+			wp_kses_post( wc_price( $current_bid->get_price() ) )
 		);
 	endif;
 
@@ -55,7 +55,7 @@ $last_bid    = $auction->get_last_bid();
 			esc_html__( 'Last Bid', 'goodbids' ),
 			esc_url( $last_bid->get_edit_order_url() ),
 			wp_kses_post( wc_price( $last_bid_amount ) ),
-			! intval( $last_bid_amount ) ? sprintf( ' (%s)', wp_kses_post( wc_price( $last_bid->get_subtotal() ) ) ) : ''
+			! intval( $last_bid_amount ) ? sprintf( ' (%s)', wp_kses_post( wc_price( $auction->get_last_bid_value() ) ) ) : ''
 		);
 	endif;
 	?>

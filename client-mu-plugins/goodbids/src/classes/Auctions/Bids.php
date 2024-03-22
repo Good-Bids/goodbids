@@ -91,6 +91,9 @@ class Bids {
 
 		// Reduce the current Bid Product stock to 0 when the Auction ends.
 		$this->disable_bid_product_on_auction_end();
+
+		// This ensures all Bid Variations have the same author as the Bid Product.
+		$this->update_bid_variation_authors();
 	}
 
 	/**
@@ -270,6 +273,9 @@ class Bids {
 					return;
 				}
 
+				$bid_author = get_post_field( 'post_author', $bid_product->get_id() );
+				$this->set_variation_author( $variation, $bid_author );
+
 				// Set the Bid variation as a meta of the Auction.
 				$auction->set_bid_variation_id( $variation->get_id() );
 			},
@@ -425,7 +431,7 @@ class Bids {
 	 *
 	 * @param int $auction_id
 	 *
-	 * @return ?WC_Product
+	 * @return ?WC_Product_Variable
 	 */
 	public function get_product( int $auction_id ): ?WC_Product {
 		$bid_product_id = $this->get_product_id( $auction_id );
@@ -434,7 +440,12 @@ class Bids {
 			return null;
 		}
 
-		return wc_get_product( $bid_product_id );
+		$bid_product = wc_get_product( $bid_product_id );
+		if ( ! $bid_product ) {
+			return null;
+		}
+
+		return $bid_product;
 	}
 
 	/**
@@ -451,7 +462,112 @@ class Bids {
 			$auction_id = goodbids()->auctions->get_auction_id();
 		}
 
-		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, true ) );
+		$variation_id = intval( get_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, true ) );
+
+		$variation = wc_get_product( $variation_id );
+
+		if ( $variation_id && ! $variation ) {
+			if ( ! $this->reset_variation_id( $auction_id ) ) {
+				// This is bad.
+				return $this->get_product_id( $auction_id );
+			}
+
+			$variation_id = $this->get_variation_id( $auction_id );
+		}
+
+		return $variation_id;
+	}
+
+	/**
+	 * Failsafe to Reset the Bid Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function reset_variation_id( int $auction_id ): bool {
+		$auction = goodbids()->auctions->get( $auction_id );
+
+		/** @var WC_Product_Variable $product */
+		$product = $auction->get_bid_product();
+
+		if ( ! $product || ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
+		$variations = $product->get_available_variations();
+		$possibles  = [];
+		$highest    = 0;
+
+		foreach ( $variations as $variation_data ) {
+			$variation = wc_get_product( $variation_data['variation_id'] );
+
+			if ( floatval( $variation->get_price() ) > $highest ) {
+				$highest = floatval( $variation->get_price() );
+			}
+
+			if ( ! $variation->is_in_stock() ) {
+				continue;
+			}
+
+			$possibles[] = $variation;
+		}
+
+		if ( ! empty( $possibles ) && 1 === count( $possibles ) ) {
+			$restore_variation = $possibles[0];
+			if ( floatval( $restore_variation->get_price() ) === $highest ) {
+				// We found it, back in business!
+				$auction->set_bid_variation_id( $restore_variation->get_id() );
+				return true;
+			}
+		}
+
+		// Let's just make a new one based on the last bid.
+		$bid_product      = $auction->get_bid_product();
+		$last_bid_value   = $auction->get_last_bid_value();
+		$increment_amount = $auction->get_bid_increment();
+		$new_price        = $last_bid_value + $increment_amount;
+
+		// Add support for new variation.
+		$this->update_bid_product_attributes( $bid_product );
+
+		// Create the new Variation.
+		$new_variation = $this->create_new_bid_variation( $bid_product->get_id(), $new_price, $auction->get_id() );
+
+		if ( ! $new_variation->save() ) {
+			Log::error( 'There was a problem resetting the Bid Variation', compact( 'auction' ) );
+			return false;
+		}
+
+		$bid_author = get_post_field( 'post_author', $bid_product->get_id() );
+		$this->set_variation_author( $new_variation, $bid_author );
+
+		// Set the Bid variation as a meta of the Auction.
+		$auction->set_bid_variation_id( $new_variation->get_id() );
+
+		return true;
+	}
+
+	/**
+	 * Changes the Variation Author to prevent deletion when the user is deleted.
+	 *
+	 * @param WC_Product_Variation $variation
+	 * @param int $author_id
+	 *
+	 * @return void
+	 */
+	public function set_variation_author( WC_Product_Variation $variation, int $author_id = 1 ): void {
+		$update = [
+			'ID'          => $variation->get_id(),
+			'post_author' => $author_id,
+		];
+
+		$result = wp_update_post( $update );
+		if ( is_wp_error( $result ) ) {
+			Log::error( $result->get_error_message() );
+		}
 	}
 
 	/**
@@ -582,7 +698,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->bids->get_product_id( $post_id );
+				$bid_product_id = $this->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -810,7 +926,7 @@ class Bids {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ) {
-				$bid_variation = goodbids()->bids->get_variation( $auction_id );
+				$bid_variation = $this->get_variation( $auction_id );
 				$bid_variation->set_stock_quantity( 0 );
 				$bid_variation->save();
 			},
@@ -818,4 +934,49 @@ class Bids {
 		);
 	}
 
+	/**
+	 * Update all Bid Variation authors to match the Bid Product author.
+	 *
+	 * TODO: REMOVE ME AFTER 2024-04-30
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function update_bid_variation_authors(): void {
+		add_action(
+			'admin_init',
+			function () {
+				$bid_products = wc_get_products(
+					[
+						'limit'    => -1,
+						'type'     => 'variable',
+						'category' => self::ITEM_TYPE,
+						'date_query' => [
+							'before' => [
+								'year'  => 2024,
+								'month' => 4,
+								'day'   => 30,
+							],
+						],
+					]
+				);
+
+				foreach ( $bid_products as $bid_product ) {
+					$author_id  = get_post_field( 'post_author', $bid_product->get_id() );
+					$variations = $bid_product->get_available_variations();
+
+					foreach ( $variations as $variation_data ) {
+						/** @var WC_Product_Variation $variation */
+						$variation = wc_get_product( $variation_data['variation_id'] );
+						$variation_author = get_post_field( 'post_author', $variation->get_id() );
+
+						if ( $variation_author !== $author_id ) {
+							$this->set_variation_author( $variation, $author_id );
+						}
+					}
+				}
+			}
+		);
+	}
 }
