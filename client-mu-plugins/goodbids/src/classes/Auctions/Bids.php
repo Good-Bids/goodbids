@@ -493,9 +493,14 @@ class Bids {
 
 		$variations = $product->get_available_variations();
 		$possibles  = [];
+		$highest    = 0;
 
 		foreach ( $variations as $variation_data ) {
 			$variation = wc_get_product( $variation_data['variation_id'] );
+
+			if ( floatval( $variation->get_price() ) > $highest ) {
+				$highest = floatval( $variation->get_price() );
+			}
 
 			if ( ! $variation->is_in_stock() ) {
 				continue;
@@ -504,13 +509,16 @@ class Bids {
 			$possibles[] = $variation;
 		}
 
-		// We found it, back in business!
 		if ( ! empty( $possibles ) && 1 === count( $possibles ) ) {
-			$auction->set_bid_variation_id( $possibles[0]->get_id() );
-			return true;
+			$restore_variation = $possibles[0];
+			if ( floatval( $restore_variation->get_price() ) === $highest ) {
+				// We found it, back in business!
+				$auction->set_bid_variation_id( $restore_variation->get_id() );
+				return true;
+			}
 		}
 
-		// Let's just make a new one.
+		// Let's just make a new one based on the last bid.
 		$bid_product      = $auction->get_bid_product();
 		$last_bid_value   = $auction->get_last_bid_value();
 		$increment_amount = $auction->get_bid_increment();
