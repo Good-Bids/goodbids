@@ -105,8 +105,20 @@ class Admin {
 			'manage_' . goodbids()->auctions->get_post_type() . '_posts_columns',
 			function ( array $columns ): array {
 				$new_columns = [];
+				$remove_cols = [
+					'comments',
+					'edacp_passed_column',
+					'edacp_errors_column',
+					'edacp_contrast_column',
+					'edacp_warnings_column',
+					'edacp_ignored_column',
+				];
 
 				foreach ( $columns as $column => $label ) {
+					if ( in_array( $column, $remove_cols, true ) ) {
+						continue;
+					}
+
 					$new_columns[ $column ] = $label;
 
 					// Insert Custom Columns after the Title column.
@@ -122,7 +134,8 @@ class Admin {
 				}
 
 				return $new_columns;
-			}
+			},
+			30
 		);
 
 		add_action(
@@ -175,7 +188,20 @@ class Admin {
 					echo wp_kses_post( wc_price( $auction->get_total_raised() ) );
 				} elseif ( 'last_bid' === $column ) {
 					$last_bid = $auction->get_last_bid();
-					echo $last_bid ? wp_kses_post( wc_price( $last_bid->get_total() ) ) : '&mdash;';
+					if ( ! $last_bid ) {
+						echo '&mdash;';
+						return;
+					}
+
+					$last_bid_amount = floatval( $last_bid->get_total() );
+					echo wp_kses_post( wc_price( $last_bid_amount ) );
+
+					if ( ! $last_bid_amount && $auction->get_last_bid_value() ) {
+						echo sprintf(
+							'&nbsp;(%s)',
+							wp_kses_post( wc_price( $auction->get_last_bid_value() ) )
+						);
+					}
 				} elseif ( 'current_bid' === $column ) {
 					/** @var WC_Product_Variation $bid_variation */
 					$bid_variation = goodbids()->bids->get_variation( $post_id );

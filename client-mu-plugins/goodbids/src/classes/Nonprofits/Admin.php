@@ -57,9 +57,6 @@ class Admin {
 				// Remove Posts Admin Menu item
 				remove_menu_page( 'edit.php' );
 
-				// Remove Products Admin Menu item
-				remove_menu_page( 'edit.php?post_type=product' );
-
 				if ( is_super_admin() || current_user_can( Permissions::BDP_ADMIN_ROLE ) ) {
 					return;
 				}

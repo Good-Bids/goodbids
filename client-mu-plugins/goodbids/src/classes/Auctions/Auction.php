@@ -1069,6 +1069,26 @@ class Auction {
 	}
 
 	/**
+	 * Get the value of the last bid (regardless if free or not)
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return ?float
+	 */
+	public function get_last_bid_value(): ?float {
+		$last_bid = $this->get_last_bid();
+		if ( ! $last_bid ) {
+			return null;
+		}
+
+		if ( ! $last_bid->get_subtotal() ) {
+			return floatval( $last_bid->get_discount_total() );
+		}
+
+		return $last_bid->get_subtotal();
+	}
+
+	/**
 	 * Get the user that placed the last bid.
 	 *
 	 * @since 1.0.0

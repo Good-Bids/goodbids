@@ -51,7 +51,7 @@ class BidNow extends ACFBlock {
 
 		if ( $this->auction_id ) {
 			$this->auction          = goodbids()->auctions->get( $this->auction_id );
-			$this->bid_variation_id = goodbids()->bids->get_variation_id( $this->auction_id );
+			$this->bid_variation_id = $this->auction->get_variation_id();
 		}
 	}
 
@@ -105,10 +105,14 @@ class BidNow extends ACFBlock {
 
 		$bid_variation = wc_get_product( $this->bid_variation_id );
 
+		if ( ! $bid_variation ) {
+			return $button_text;
+		}
+
 		return sprintf(
 			/* translators: %s: Bid Price */
 			__( 'GOODBID %s Now', 'goodbids' ),
-			wc_price( $bid_variation->get_regular_price() )
+			wc_price( $bid_variation->get_price() )
 		);
 	}
 

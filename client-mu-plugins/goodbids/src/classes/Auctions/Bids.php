@@ -425,7 +425,7 @@ class Bids {
 	 *
 	 * @param int $auction_id
 	 *
-	 * @return ?WC_Product
+	 * @return ?WC_Product_Variable
 	 */
 	public function get_product( int $auction_id ): ?WC_Product {
 		$bid_product_id = $this->get_product_id( $auction_id );
@@ -434,7 +434,12 @@ class Bids {
 			return null;
 		}
 
-		return wc_get_product( $bid_product_id );
+		$bid_product = wc_get_product( $bid_product_id );
+		if ( ! $bid_product ) {
+			return null;
+		}
+
+		return $bid_product;
 	}
 
 	/**
@@ -451,7 +456,81 @@ class Bids {
 			$auction_id = goodbids()->auctions->get_auction_id();
 		}
 
-		return intval( get_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, true ) );
+		$variation_id = intval( get_post_meta( $auction_id, Bids::AUCTION_BID_VARIATION_META_KEY, true ) );
+
+		$variation = wc_get_product( $variation_id );
+
+		if ( ! $variation ) {
+			if ( ! $this->reset_variation_id( $auction_id ) ) {
+				// This is bad.
+				return $this->get_product_id( $auction_id );
+			}
+
+			$variation_id = $this->get_variation_id( $auction_id );
+		}
+
+		return $variation_id;
+	}
+
+	/**
+	 * Failsafe to Reset the Bid Variation
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $auction_id
+	 *
+	 * @return bool
+	 */
+	private function reset_variation_id( int $auction_id ): bool {
+		$auction = goodbids()->auctions->get( $auction_id );
+
+		/** @var WC_Product_Variable $product */
+		$product = $auction->get_bid_product();
+
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
+		$variations = $product->get_available_variations();
+		$possibles  = [];
+
+		foreach ( $variations as $variation_data ) {
+			$variation = wc_get_product( $variation_data['variation_id'] );
+
+			if ( ! $variation->is_in_stock() ) {
+				continue;
+			}
+
+			$possibles[] = $variation;
+		}
+
+		// We found it, back in business!
+		if ( ! empty( $possibles ) && 1 === count( $possibles ) ) {
+			$auction->set_bid_variation_id( $possibles[0]->get_id() );
+			return true;
+		}
+
+		// Let's just make a new one.
+		$bid_product      = $auction->get_bid_product();
+		$last_bid_value   = $auction->get_last_bid_value();
+		$increment_amount = $auction->get_bid_increment();
+		$new_price        = $last_bid_value + $increment_amount;
+
+		// Add support for new variation.
+		$this->update_bid_product_attributes( $bid_product );
+
+		// Create the new Variation.
+		$new_variation = $this->create_new_bid_variation( $bid_product->get_id(), $new_price, $auction->get_id() );
+
+		if ( ! $new_variation->save() ) {
+			Log::error( 'There was a problem resetting the Bid Variation', compact( 'auction' ) );
+			return false;
+		}
+
+		// Set the Bid variation as a meta of the Auction.
+		$auction->set_bid_variation_id( $new_variation->get_id() );
+
+		return true;
 	}
 
 	/**
@@ -582,7 +661,7 @@ class Bids {
 					return;
 				}
 
-				$bid_product_id = goodbids()->bids->get_product_id( $post_id );
+				$bid_product_id = $this->get_product_id( $post_id );
 
 				// Bail if the Auction doesn't have a Bid product.
 				if ( ! $bid_product_id ) {
@@ -810,7 +889,7 @@ class Bids {
 		add_action(
 			'goodbids_auction_end',
 			function ( int $auction_id ) {
-				$bid_variation = goodbids()->bids->get_variation( $auction_id );
+				$bid_variation = $this->get_variation( $auction_id );
 				$bid_variation->set_stock_quantity( 0 );
 				$bid_variation->save();
 			},
