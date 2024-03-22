@@ -1329,16 +1329,26 @@ class Auction {
 	public function increase_bid(): bool {
 		$bids = goodbids()->bids; // Easier to reference.
 
-		$bid_product   = $bids->get_product( $this->get_id() );
-		$bid_variation = $bids->get_variation( $this->get_id() );
+		$bid_product = $bids->get_product( $this->get_id() );
 
-		if ( ! $bid_product || ! $bid_variation ) {
-			Log::error( 'Auction missing Bid Product or Variation', compact( 'this' ) );
+		if ( ! $bid_product ) {
+			Log::error( 'Auction missing Bid Product', [ 'auction' => $this->get_id() ] );
 			return false;
 		}
 
+		$bid_variation = $bids->get_variation( $this->get_id() );
+
+		if ( $bid_variation ) {
+			$current_price = floatval( $bid_variation->get_price( 'edit' ) );
+
+			// Disallow backorders on previous variation.
+			$bid_variation->set_backorders( 'no' );
+			$bid_variation->save();
+		} else {
+			$current_price = $this->get_last_bid_value();
+		}
+
 		$increment_amount = $this->get_bid_increment();
-		$current_price    = floatval( $bid_variation->get_regular_price( 'edit' ) );
 		$new_price        = $current_price + $increment_amount;
 
 		// Add support for new variation.
@@ -1354,10 +1364,6 @@ class Auction {
 
 		// Set the Bid variation as a meta of the Auction.
 		$this->set_bid_variation_id( $new_variation->get_id() );
-
-		// Disallow backorders on previous variation.
-		$bid_variation->set_backorders( 'no' );
-		$bid_variation->save();
 
 		return true;
 	}
