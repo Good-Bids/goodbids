@@ -9,6 +9,7 @@
     "delete-me",
     "miniorange-oauth-20-server/mo_oauth_settings.php",
     "miniorange-oauth-oidc-single-sign-on/mo_oauth_settings.php",
+    "modal-block",
     "tidio-live-chat/tidio-elements.php",
     "top-bar/topbar.php",
     "user-switching",
