@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "453417cce7befe78b10fd3847ac99f61",
+    "content-hash": "39cb69af0a1c673d208d9b24bddd7e0f",
     "packages": [
         {
             "name": "composer/installers",
@@ -1264,6 +1264,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/delete-me/"
+        },
+        {
+            "name": "wpackagist-plugin/miniorange-oauth-20-server",
+            "version": "6.0.5",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/miniorange-oauth-20-server/",
+                "reference": "tags/6.0.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/miniorange-oauth-20-server.6.0.5.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/miniorange-oauth-20-server/"
         },
         {
             "name": "wpackagist-plugin/modal-block",
