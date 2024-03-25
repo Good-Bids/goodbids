@@ -55,6 +55,7 @@
 		"vlucas/phpdotenv": "^5.5",
 		"wpackagist-plugin/accessibility-checker": "^1.9.3",
 		"wpackagist-plugin/delete-me": "^3.1",
+		"wpackagist-plugin/modal-block": "^2.1",
 		"wpackagist-plugin/svg-support": "^2.5",
 		"wpackagist-plugin/tidio-live-chat": "*",
 		"wpackagist-plugin/top-bar": "^3.0",
