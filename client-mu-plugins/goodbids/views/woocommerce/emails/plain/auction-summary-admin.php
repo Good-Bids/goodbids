@@ -24,7 +24,7 @@ $instance->plain_text_header();
 
 printf(
 	/* translators: %1$s: Auction title, %2$s: Auction end time, %3$s: Auction total Bids, %4$s: Auction total Raised, %5$s: Site name  */
-	esc_html__( 'The %1$s GOODBIDS auction ended on %2$s with %3$s placed and %4$s raised for %5$s. Check out the summary below for key auction metrics.', 'goodbids' ),
+	esc_html__( 'The %1$s GOODBIDS auction ended on %2$s with %3$s bids placed and %4$s raised for %5$s. Check out the summary below for key auction metrics.', 'goodbids' ),
 	'{auction.title}',
 	'{auction.end_date_time}',
 	'{auction.bid_count}',
@@ -115,7 +115,7 @@ echo '{auction.high_bid}';
 
 echo "\n\n----------------------------------------\n\n";
 
-esc_html_e( 'The auction has ended. The auctioneer has chosen a winner. The winner will be notified by email and will be notified by text. The winner has 40 days to claim their reward. We will send you a confirmation email once the reward has been claimed.', 'goodbids' );
+esc_html_e( 'The auction has ended. The winner will be notified by email. The winner has 40 days to claim their reward.', 'goodbids' );
 
 echo "\n\n----------------------------------------\n\n";
 
