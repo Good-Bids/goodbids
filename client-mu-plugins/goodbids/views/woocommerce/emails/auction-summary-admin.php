@@ -113,7 +113,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 </div>
 
 <p>
-	<?php esc_html_e( 'The auction has ended. The winner will be notified by email and will be notified by text. The winner has 40 days to claim their reward. We will send you a confirmation email once the reward has been claimed.', 'goodbids' ); ?>
+	<?php esc_html_e( 'The auction has ended. The winner will be notified by email. The winner has 40 days to claim their reward.', 'goodbids' ); ?>
 </p>
 
 <p>
