@@ -27,7 +27,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 	<?php
 	printf(
 		/* translators: %1$s: Auction title, %2$s: Auction end time, %3$s: Auction total Bids, %4$s: Auction total Raised, %5$s: Site name  */
-		esc_html__( 'The %1$s GOODBIDS auction ended on %2$s with %3$s placed and %4$s raised for %5$s. Check out the summary below for key auction metrics.', 'goodbids' ),
+		esc_html__( 'The %1$s GOODBIDS auction ended on %2$s with %3$s bids placed and %4$s raised for %5$s. Check out the summary below for key auction metrics.', 'goodbids' ),
 		'{auction.title}',
 		'{auction.end_date_time}',
 		'{auction.bid_count}',
