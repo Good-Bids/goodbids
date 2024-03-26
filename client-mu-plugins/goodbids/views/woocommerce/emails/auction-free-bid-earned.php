@@ -23,10 +23,14 @@ do_action( 'woocommerce_email_header', $email_heading );
 <p>
 	<?php
 	printf(
-		/* translators: %1$s: Last Bid Amount, %2$s: View all Auctions */
+		/* translators: %1$s: Free Bid Type, %2$s: View all Auctions */
 		esc_html__( 'This is confirmation that your recent %1$s has earned you a new Free Bid. Way to go! %2$s on GOODBIDS to find your next great cause to support.', 'goodbids' ),
-		'{user.free_bid_type}',
-		'TODO View all Auctions',
+		'{free_bid.type_action}',
+		sprintf(
+			'<a href="%s">%s</a>',
+			'{auctions_url}',
+			esc_html__( 'View all Auctions', 'goodbids' )
+		),
 	);
 	?>
 </p>
