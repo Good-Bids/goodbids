@@ -96,7 +96,6 @@ class AuctionFreeBidEarned extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		// TODO update this the right link
-		return '{free_bids.url}';
+		return wc_get_endpoint_url( Account::FREE_BIDS_SLUG );
 	}
 }
