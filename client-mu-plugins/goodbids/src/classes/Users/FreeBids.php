@@ -9,6 +9,7 @@
 namespace GoodBids\Users;
 
 use GoodBids\Plugins\WooCommerce\Coupons;
+use GoodBids\Plugins\WooCommerce\Account;
 use GoodBids\Utilities\Log;
 use WP_User;
 
@@ -278,6 +279,17 @@ class FreeBids {
 	 */
 	public function get_available_count( ?int $user_id = null ): int {
 		return $this->get_count( $user_id, self::STATUS_UNUSED );
+	}
+
+	/**
+	 * Get the URL for My Account -> Free Bids
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return string
+	 */
+	public function get_free_bids_url(): string {
+		return wc_get_page_permalink( 'myaccount' ) . Account::FREE_BIDS_SLUG;
 	}
 
 	/**
