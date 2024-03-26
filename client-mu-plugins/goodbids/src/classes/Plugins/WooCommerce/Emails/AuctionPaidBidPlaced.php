@@ -77,7 +77,7 @@ class AuctionPaidBidPlaced extends Email {
 	public function get_default_subject(): string {
 		return sprintf(
 			/* translators: %1$s: site title, %2$s: auction title */
-			__( '[%1$s] %2$s Confirmation', 'goodbids' ),
+			__( '[%1$s] %2$s Bid Confirmation', 'goodbids' ),
 			'{site_title}',
 			'{auction.title}'
 		);

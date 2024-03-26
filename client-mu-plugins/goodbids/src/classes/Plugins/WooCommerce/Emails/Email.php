@@ -150,7 +150,7 @@ class Email extends WC_Email {
 	 */
 	private function add_button_support(): void {
 		/* translators: %s: list of placeholders */
-		$placeholder_text  = sprintf( __( 'Available placeholders: %s', 'goodbids' ), '<code>' . esc_html( implode( '</code>, <code>', array_keys( $this->placeholders ) ) ) . '</code>' );
+		$placeholder_text = sprintf( __( 'Available placeholders: %s', 'goodbids' ), '<code>' . esc_html( implode( '</code>, <code>', array_keys( $this->placeholders ) ) ) . '</code>' );
 
 		// Custom Fields
 		$this->set_form_field(
@@ -239,6 +239,7 @@ class Email extends WC_Email {
 	public function get_button_text(): string {
 		/**
 		 * Filter the button text.
+		 *
 		 * @since 1.0.0
 		 *
 		 * @param string $button_text The button text.
@@ -481,6 +482,7 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{user.name}', $this->get_user_name() );
 		$this->add_placeholder( '{user.account_url}', wc_get_page_permalink( 'myaccount' ) );
 		$this->add_placeholder( '{user.free_bid_count}', goodbids()->free_bids->get_available_count( $this->user_id ) );
+		$this->add_placeholder( '{user.free_bids_url}', goodbids()->free_bids->get_free_bids_url( $this->user_id ) );
 		$this->add_placeholder( '{user.referral_link}', $referrer->get_link() );
 
 		// Order Details
@@ -684,7 +686,7 @@ class Email extends WC_Email {
 	 * @since 1.0.0
 	 *
 	 * @param string $key
-	 * @param mixed $value
+	 * @param mixed  $value
 	 *
 	 * @return void
 	 */
@@ -734,6 +736,7 @@ class Email extends WC_Email {
 
 	/**
 	 * Add or change a form field.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $key
@@ -893,7 +896,12 @@ class Email extends WC_Email {
 	 * @return void
 	 */
 	public function send_to_admins( mixed $object ): void {
-		$admins = get_users( [ 'role' => 'administrator', 'fields' => 'ID' ] );
+		$admins = get_users(
+			[
+				'role'   => 'administrator',
+				'fields' => 'ID',
+			]
+		);
 
 		if ( $this->is_super_admins_email() ) {
 			$super_admins = get_super_admins();

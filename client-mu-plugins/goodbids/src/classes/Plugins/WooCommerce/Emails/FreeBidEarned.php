@@ -8,7 +8,6 @@
 
 namespace GoodBids\Plugins\WooCommerce\Emails;
 
-use GoodBids\Plugins\WooCommerce\Account;
 use GoodBids\Users\FreeBid;
 
 defined( 'ABSPATH' ) || exit;
@@ -102,6 +101,6 @@ class FreeBidEarned extends Email {
 	 * @return string
 	 */
 	public function get_button_url(): string {
-		return wc_get_endpoint_url( Account::FREE_BIDS_SLUG );
+		return '{user.free_bids_url}';
 	}
 }
