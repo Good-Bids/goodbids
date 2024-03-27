@@ -6,7 +6,7 @@ import { Wrapper } from '../wrapper';
 
 export function CreateStoreStep() {
 	return (
-		<Wrapper progress={50}>
+		<Wrapper progress={33}>
 			<PuzzleManImage className="aspect-auto h-50 self-center py-10" />
 
 			<div className="flex flex-col gap-3">

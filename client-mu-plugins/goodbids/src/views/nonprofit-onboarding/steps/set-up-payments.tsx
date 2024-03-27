@@ -6,7 +6,7 @@ import { Wrapper } from '../wrapper';
 
 export function SetUpPaymentsStep() {
 	return (
-		<Wrapper progress={75}>
+		<Wrapper progress={66}>
 			<CoinManImage className="aspect-auto h-60 py-10" />
 
 			<div className="flex flex-col gap-3">
