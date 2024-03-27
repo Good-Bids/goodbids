@@ -14,6 +14,7 @@
     "top-bar/topbar.php",
     "user-switching",
     "wp-mail-smtp-pro/wp_mail_smtp.php",
+    "wp-rest-api-authentication",
     "woocommerce",
     "woocommerce-gateway-stripe"
   ],
