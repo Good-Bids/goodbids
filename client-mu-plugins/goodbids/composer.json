@@ -18,7 +18,8 @@
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"cweagans/composer-patches": true,
 			"oomphinc/composer-installers-extender": true
-		}
+		},
+		"vendor-dir": "vendor"
 	},
 	"autoload": {
 		"psr-4": {
