@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "acaef0c8893ac10a4bffef3faeedfa7e",
+    "content-hash": "874fdfd4a90eb5432fd8bc87c6c4f0ab",
     "packages": [
         {
             "name": "composer/installers",
@@ -1282,24 +1282,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/miniorange-oauth-20-server/"
-        },
-        {
-            "name": "wpackagist-plugin/popup-maker",
-            "version": "1.18.5",
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/popup-maker/",
-                "reference": "tags/1.18.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/popup-maker.1.18.5.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/popup-maker/"
         },
         {
             "name": "wpackagist-plugin/svg-support",
