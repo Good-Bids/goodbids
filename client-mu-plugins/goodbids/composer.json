@@ -17,7 +17,9 @@
 			"composer/installers": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"cweagans/composer-patches": true,
-			"oomphinc/composer-installers-extender": true
+			"oomphinc/composer-installers-extender": true,
+			"bshaffer/oauth2-server-httpfoundation-bridge":true,
+			"bshaffer/oauth2-server-php":true
 		},
 		"vendor-dir": "vendor"
 	},
