@@ -19,7 +19,7 @@ class EqualizeDigital {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	private string $slug = 'accessibility-checker-pro';
+	private string $slug = 'accessibility-checker';
 
 	/**
 	 * Initialize the class.
@@ -30,9 +30,6 @@ class EqualizeDigital {
 		if ( ! goodbids()->is_plugin_active( $this->slug ) ) {
 			return;
 		}
-
-		// Set License key.
-		$this->set_license_key();
 
 		// Adjust Post Types
 		$this->set_default_settings();
@@ -57,10 +54,6 @@ class EqualizeDigital {
 
 			if ( ! in_array( 'page', $post_types, true ) ) {
 				$post_types[] = 'page';
-			}
-
-			if ( ! in_array( goodbids()->auctions->get_post_type(), $post_types, true ) ) {
-				$post_types[] = goodbids()->auctions->get_post_type();
 			}
 
 			return $post_types;
