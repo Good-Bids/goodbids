@@ -1,0 +1,87 @@
+/*css for admin page license expire notice*/
+
+.mo_security_banner {
+	position: relative;
+	font-family: Arial;
+	font-size: 1rem;
+	border:none;
+	background-color: #000000;
+	position: relative;
+	padding: 15px;
+  }
+
+  .mo_security_banner-content {
+	text-align: center;
+	color: white;
+}
+
+  .mo_security_banner-content#mo_security-warning-confirmation-admin p {
+	font-size: 1.125rem;
+  }
+
+.mo_security_banner .mo_banner-header {
+	font-weight: 600;
+	color: #d01013;
+	font-size: 1rem;
+  }
+
+  .mo_security_banner-header {
+	font-weight: 700;
+	font-size: 1rem;
+	margin: 10px 0;
+  }
+
+.mo_button-tab {
+	position: absolute;
+	display: inline-block;
+	top: 10px;
+	right: 10px;
+  }
+
+  #mo_admin_security_dismiss {
+	border: none;
+	background-color: #df1b2f;
+	color: #FFFFFF;
+	margin-right: 1rem;
+  }
+
+  #mo_admin_security_dismiss:hover {
+	background-color: #9b0916;
+  }
+
+  .mo_security_banner-content .mo_button-tab .mo_security_banner-close-admin {
+	margin-left: 1rem;
+	background: #df1b2f;
+	border: none;
+}
+
+.mo_security_banner-content .mo_button-tab .mo_security_banner-close-admin:hover {
+	background: #9b0916;
+  }
+
+.mo_security_banner .mo_notice-important {
+	font-size: 1.2rem;
+	color: #ffcf00;
+	text-align: center;
+}
+
+.mo_security_banner .mo_security_banner-content {
+	font-size: 1rem;
+}
+
+.mo_security_banner .mo_security_banner-footer p {
+	font-size: 1rem;
+	color: #f5eded;
+}
+
+.mo_security_banner-admin .mo_notice-important {
+	font-size: 1.2rem;
+}
+
+.mo_warning-icon {
+	  color: #d01013;
+}
+
+.mo_security_warning{
+	color: #d01013;
+}
