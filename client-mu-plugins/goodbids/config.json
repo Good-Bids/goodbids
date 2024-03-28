@@ -23,7 +23,6 @@
   "main-active-plugins": [],
   "post-install-plugins": [
     "accessibility-checker",
-    "accessibility-checker-pro",
     "svg-support"
   ],
   "vip-constants": {
