@@ -526,7 +526,6 @@ class Verification {
 					__( 'Diversity, Equity & Inclusion', 'goodbids' ),
 					__( 'Education/School', 'goodbids' ),
 					__( 'Environment & Sustainability', 'goodbids' ),
-					__( 'Faith-based & Religious', 'goodbids' ),
 					__( 'Food Insecurity', 'goodbids' ),
 					__( 'Health and Wellness', 'goodbids' ),
 					__( 'Housing & Homelessness', 'goodbids' ),
