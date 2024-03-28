@@ -57,10 +57,10 @@ class Admin {
 				// Remove Tidio Menu Item
 				remove_menu_page('tidio-live-chat');
 
-				// Remove miniorange OAuth Server
+				// Remove miniorange OAuth Server Menu Item
 				remove_menu_page('mo_oauth_server_settings');
 
-				// Remove miniorange OAuth Server
+				// Remove Top Bar Menu Item
 				remove_menu_page('topbar-options-menu');
 
 				// Remove Posts Admin Menu item
