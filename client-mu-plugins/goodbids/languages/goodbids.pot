@@ -1472,10 +1472,6 @@ msgstr ""
 msgid "Environment & Sustainability"
 msgstr ""
 
-#: src/classes/Nonprofits/Verification.php:416
-msgid "Faith-based & Religious"
-msgstr ""
-
 #: src/classes/Nonprofits/Verification.php:417
 msgid "Food Insecurity"
 msgstr ""
