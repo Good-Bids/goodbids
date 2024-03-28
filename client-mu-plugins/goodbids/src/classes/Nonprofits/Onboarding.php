@@ -89,12 +89,6 @@ class Onboarding {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const STEP_ACCESSIBILITY_CHECKER_LICENSE = 'activate-accessibility-checker';
-
-	/**
-	 * @since 1.0.0
-	 * @var string
-	 */
 	const STEP_ONBOARDING_COMPLETE = 'onboarding-complete';
 
 	/**
@@ -140,9 +134,6 @@ class Onboarding {
 
 		// Flag Onboarding as Completed.
 		$this->maybe_mark_onboarding_completed();
-
-		// Setup API Endpoints.
-		$this->setup_api_endpoints();
 	}
 
 	/**
@@ -222,13 +213,6 @@ class Onboarding {
 					'url'          => $init_onboarding_url,
 					'is_complete'  => get_transient( self::WELCOME_TRANSIENT ) || goodbids()->network->nonprofits->is_onboarded(), // phpcs:ignore
 					'is_step_page' => $this->is_get_started_url(),
-					'callback'     => null,
-					'skippable'    => false,
-				],
-				self::STEP_ACCESSIBILITY_CHECKER_LICENSE => [
-					'url'          => $accessibility_checker_url,
-					'is_complete'  => $this->completed_accessibility_license(),
-					'is_step_page' => goodbids()->accessibility->is_license_page(),
 					'callback'     => null,
 					'skippable'    => false,
 				],
@@ -470,7 +454,6 @@ class Onboarding {
 			'stepOptions'             => array_keys( $steps ),
 			'initOnboardingUrl'       => $steps[ self::STEP_INIT_ONBOARDING ]['url'],
 			'createStoreUrl'          => $steps[ self::STEP_CREATE_STORE ]['url'],
-			'accessibilityCheckerUrl' => $steps[ self::STEP_ACCESSIBILITY_CHECKER_LICENSE ]['url'],
 			'setUpPaymentsUrl'        => $steps[ self::STEP_SET_UP_PAYMENTS ]['url'],
 			'onboardingCompleteUrl'   => $steps[ self::STEP_ONBOARDING_COMPLETE ]['url'],
 
@@ -1148,17 +1131,6 @@ class Onboarding {
 	}
 
 	/**
-	 * Check if Accessibility Checker License is completed
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool
-	 */
-	private function completed_accessibility_license(): bool {
-		return ( defined( 'EDACP_KEY_VALID' ) && true === EDACP_KEY_VALID ) || 'valid' === get_option( 'edacp_license_status' );
-	}
-
-	/**
 	 * Maybe Mark Onboarding as Completed.
 	 *
 	 * @since 1.0.0
@@ -1227,22 +1199,6 @@ class Onboarding {
 			 */
 			do_action( 'goodbids_onboarding_completed', get_current_blog_id() );
 		}
-	}
-
-	/**
-	 * Register Auction REST API Endpoints
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return void
-	 */
-	private function setup_api_endpoints(): void {
-		add_action(
-			'rest_api_init',
-			function () {
-				( new API\Step() )->register_routes();
-			}
-		);
 	}
 
 	/**
