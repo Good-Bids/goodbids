@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dad788451329d73d28e2867b648780ce",
+    "content-hash": "acaef0c8893ac10a4bffef3faeedfa7e",
     "packages": [
         {
             "name": "composer/installers",
@@ -1264,6 +1264,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/delete-me/"
+        },
+        {
+            "name": "wpackagist-plugin/miniorange-oauth-20-server",
+            "version": "6.0.5",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/miniorange-oauth-20-server/",
+                "reference": "tags/6.0.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/miniorange-oauth-20-server.6.0.5.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/miniorange-oauth-20-server/"
         },
         {
             "name": "wpackagist-plugin/popup-maker",
