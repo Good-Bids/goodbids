@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "874fdfd4a90eb5432fd8bc87c6c4f0ab",
+    "content-hash": "dac106695f6601c12c112adf53229be5",
     "packages": [
         {
             "name": "composer/installers",
@@ -1282,6 +1282,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/miniorange-oauth-20-server/"
+        },
+        {
+            "name": "wpackagist-plugin/olympus-google-fonts",
+            "version": "3.6.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/olympus-google-fonts/",
+                "reference": "tags/3.6.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/olympus-google-fonts.3.6.0.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/olympus-google-fonts/"
         },
         {
             "name": "wpackagist-plugin/svg-support",
