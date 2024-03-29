@@ -63,6 +63,9 @@ class Admin {
 				// Remove Top Bar Menu Item
 				remove_menu_page('topbar-options-menu');
 
+				// Remove custom fonts Menu Item
+				remove_menu_page('olympus-google-fonts');
+
 				// Remove Posts Admin Menu item
 				remove_menu_page( 'edit.php' );
 
