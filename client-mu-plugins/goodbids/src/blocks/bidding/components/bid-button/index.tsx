@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { fadeAnimation } from '../../utils/animations';
 import { __ } from '@wordpress/i18n';
+import { FirstTimeDialog } from './first-time-dialog';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 const liveAndClosingStatuses: AuctionStatus[] = ['live', ...closingStatuses];
