@@ -1,9 +1,0 @@
-[
-	{
-		"name": "Accessibility Checker by Equalize Digital",
-		"host": "wordpress",
-		"slug": "accessibility-checker/accessibility-checker.php",
-		"uri": "https://wordpress.org/plugins/accessibility-checker/",
-		"required": true 
-	}
-]

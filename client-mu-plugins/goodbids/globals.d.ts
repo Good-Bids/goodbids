@@ -82,7 +82,6 @@ declare const gbNonprofitOnboarding: {
 	skipStepParam: string;
 	stepOptions: [
 		'init-onboarding',
-		'activate-accessibility-checker',
 		'create-store',
 		'set-up-payments',
 		'onboarding-complete',
