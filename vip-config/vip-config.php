@@ -100,9 +100,9 @@ if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
 	$http_host   = $_SERVER['HTTP_HOST']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	$request_uri = $_SERVER['REQUEST_URI']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-	$redirect_to_domain = 'www.goodbids.org';
+	$redirect_to_domain = 'production.goodbids.org';
 	$redirect_domains   = array(
-		'production.goodbids.org',
+		'www.goodbids.org',
 		'goodbids.org',
 	);
 
