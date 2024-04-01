@@ -11,6 +11,7 @@ import { ParticipationNotice } from './participation-notice';
 import { Fetcher } from './fetcher';
 import { Socket } from './socket';
 import { SocketError } from './socket-error';
+import { FirstTimeDialog } from './first-time-dialog';
 
 type DriverProps = {
 	auctionId: number;
@@ -36,6 +37,7 @@ export function Driver({ auctionId }: DriverProps) {
 						<ParticipationNotice />
 						<FreeBidsPromo />
 						<SocketError />
+						<FirstTimeDialog />
 					</LayoutGroup>
 				</motion.div>
 			</Fetcher>
