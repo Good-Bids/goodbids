@@ -1,6 +1,5 @@
 import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { WarningIconFilled } from '../icons/warning-icon-filled';
 
 export const FirstTimeDialog = () => {
@@ -18,7 +17,8 @@ export const FirstTimeDialog = () => {
 		}
 	}, []);
 
-	const handleSuccess = () => {
+	const handleSuccess = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
 		setHasSeenDialog(true);
 		localStorage.setItem(cookieString, 'true');
 	};
@@ -28,9 +28,9 @@ export const FirstTimeDialog = () => {
 	);
 
 	return (
-		<AnimatePresence>
-			{!hasSeenDialog && (
-				<motion.dialog className={dialogClasses} open={!hasSeenDialog}>
+		!hasSeenDialog && (
+			<div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+				<dialog className={dialogClasses} open={!hasSeenDialog}>
 					<div className="flex-col sm:flex sm:items-start">
 						<WarningIconFilled />
 						<div className="mt-3 text-center sm:mt-0 sm:text-left">
@@ -54,6 +54,7 @@ export const FirstTimeDialog = () => {
 						onSubmit={handleSuccess}
 					>
 						<input
+							autoFocus
 							required
 							pattern="DONATION"
 							placeholder="DONATION"
@@ -65,8 +66,8 @@ export const FirstTimeDialog = () => {
 							value="I understand"
 						></input>
 					</form>
-				</motion.dialog>
-			)}
-		</AnimatePresence>
+				</dialog>
+			</div>
+		)
 	);
 };
