@@ -11,7 +11,6 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { fadeAnimation } from '../../utils/animations';
 import { __ } from '@wordpress/i18n';
-import { FirstTimeDialog } from './first-time-dialog';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 const liveAndClosingStatuses: AuctionStatus[] = ['live', ...closingStatuses];
@@ -23,7 +22,7 @@ export function BidButton() {
 		<AnimatePresence>
 			{liveAndClosingStatuses.includes(auctionStatus) && (
 				<>
-					<FirstTimeDialog />
+					{/* <FirstTimeDialog /> */}
 					<LiveAndClosing />
 				</>
 			)}
@@ -51,7 +50,7 @@ function LiveAndClosing() {
 
 	const disabled = isLastBidder || closingStatuses.includes(auctionStatus);
 
-	const classes = clsx('btn-fill text-center transition-colors', {
+	const classes = clsx('sample btn-fill text-center transition-colors', {
 		'pointer-events-none cursor-not-allowed !bg-base-3 !text-contrast-4':
 			disabled,
 	});
