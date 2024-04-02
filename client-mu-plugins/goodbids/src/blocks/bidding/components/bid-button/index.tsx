@@ -21,7 +21,10 @@ export function BidButton() {
 	return (
 		<AnimatePresence>
 			{liveAndClosingStatuses.includes(auctionStatus) && (
-				<LiveAndClosing />
+				<>
+					{/* <FirstTimeDialog /> */}
+					<LiveAndClosing />
+				</>
 			)}
 
 			{auctionStatus === 'closed' && isLastBidder && !rewardClaimed && (
@@ -47,7 +50,7 @@ function LiveAndClosing() {
 
 	const disabled = isLastBidder || closingStatuses.includes(auctionStatus);
 
-	const classes = clsx('btn-fill text-center transition-colors', {
+	const classes = clsx('sample btn-fill text-center transition-colors', {
 		'pointer-events-none cursor-not-allowed !bg-base-3 !text-contrast-4':
 			disabled,
 	});

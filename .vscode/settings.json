@@ -15,5 +15,6 @@
   "tailwindCSS.experimental.classRegex": [
     ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
-  "cSpell.words": ["goodbids"]
+  "cSpell.words": ["goodbids"],
+  "prettier.configPath": "client-mu-plugins/goodbids/.prettierrc.js"
 }
