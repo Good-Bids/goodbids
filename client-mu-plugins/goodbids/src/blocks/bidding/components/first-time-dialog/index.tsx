@@ -50,7 +50,7 @@ export const FirstTimeDialog = () => {
 						</div>
 					</div>
 					<form
-						className="flex w-full flex-col gap-1"
+						className="flex w-full flex-col gap-4"
 						onSubmit={handleSuccess}
 					>
 						<input
