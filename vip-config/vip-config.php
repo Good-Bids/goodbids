@@ -102,7 +102,7 @@ if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
 
 	$redirect_to_domain = 'www.goodbids.org';
 	$redirect_domains   = array(
-		'production.goodbids.org',
+		// 'production.goodbids.org', TODO <-- add back in once miniorange key is switched over
 		'goodbids.org',
 	);
 
