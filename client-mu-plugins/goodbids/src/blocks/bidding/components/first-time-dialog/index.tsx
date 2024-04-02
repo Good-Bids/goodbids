@@ -56,7 +56,7 @@ export const FirstTimeDialog = () => {
 						<input
 							autoFocus
 							required
-							pattern="DONATION"
+							pattern="donation"
 							placeholder="DONATION"
 							className="rounded border border-solid border-transparent bg-gray-100 px-6 py-2 leading-normal no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2"
 						/>
