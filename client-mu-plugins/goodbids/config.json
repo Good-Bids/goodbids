@@ -12,17 +12,13 @@
     "tidio-live-chat/tidio-elements.php",
     "user-switching",
     "wp-mail-smtp-pro/wp_mail_smtp.php",
+    "wp-smushit/wp-smush.php",
     "woocommerce",
     "woocommerce-gateway-stripe"
   ],
-  "nonprofit-active-plugins": [
-    "woocommerce-services"
-  ],
+  "nonprofit-active-plugins": ["woocommerce-services"],
   "main-active-plugins": [],
-  "post-install-plugins": [
-    "accessibility-checker",
-    "svg-support"
-  ],
+  "post-install-plugins": ["accessibility-checker", "svg-support"],
   "vip-constants": {
     "auctioneer": {
       "urls": {
