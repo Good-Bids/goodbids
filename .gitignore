@@ -60,3 +60,4 @@ client-mu-plugins/goodbids/config.local.json
 !/client-mu-plugins/goodbids/vendor/bshaffer/
 !/plugins/wp-mail-smtp-pro/
 !/plugins/wp-mail-smtp-pro/vendor/
+!/plugins/batch-upload-plugin/
