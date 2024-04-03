@@ -27,7 +27,10 @@ class OneTrust {
 			return;
 		}
 
-		$this->load_assets();
+		// Check if the user has allowed all cookies before loading assets
+		if ( ! $this->user_has_allowed_cookies() ) {
+			$this->load_assets();
+		}
 	}
 
 	/**
@@ -56,5 +59,20 @@ class OneTrust {
 				);
 			}
 		);
+	}
+
+	/**
+	 * Check if the user has allowed all cookies.
+	 *
+	 * @since 1.0.0
+	 * @return bool True if user has allowed all cookies, false otherwise.
+	 */
+	private function user_has_allowed_cookies(): bool {
+		// Check if the user has previously accepted all cookies
+		if ( isset( $_COOKIE['onetrust_consent'] ) && $_COOKIE['onetrust_consent'] === 'true' ) {
+			return true;
+		}
+
+		return false;
 	}
 }
