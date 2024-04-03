@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useBiddingState } from '../store';
-import { WarningIcon } from './icons/warning-icon';
+import { ClockIcon } from './icons/clock-icon';
 
 export function SocketError() {
 	const { hasSocketError, auctionStatus } = useBiddingState();
@@ -13,20 +13,15 @@ export function SocketError() {
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
-					className="flex items-start gap-4 rounded bg-warning-bg p-4 text-warning-text"
+					className="flex items-start gap-4 rounded bg-gb-green-100 p-4 text-warning-text"
 				>
 					<div className="h-6 w-6">
-						<WarningIcon />
+						<ClockIcon />
 					</div>
 
 					<div className="flex flex-col gap-3" role="alert">
 						<p className="m-0">
-							<b>Live auction updates suspended</b>
-						</p>
-						<p>
-							We're having trouble fetching live updates for this
-							auctions. Updates will load every 30 seconds until
-							the issue is resolved.
+							<b>This auction is updating every 30 seconds</b>
 						</p>
 					</div>
 				</motion.div>
