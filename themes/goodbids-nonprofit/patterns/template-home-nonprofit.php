@@ -6,7 +6,6 @@
  * @package GoodBidsNonprofit
  */
 
-use GoodBids\Auctions\Auctions;
 use GoodBids\Network\Sites;
 
 ?>
@@ -26,7 +25,7 @@ use GoodBids\Network\Sites;
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
 			<div class="wp-block-buttons" style="margin-bottom:var(--wp--preset--spacing--40)">
 				<!-- wp:button -->
-				<div class="wp-block-button"><a href="<?php echo esc_url( get_permalink( get_option( Sites::AUCTIONS_OPTION ) ) ); ?>"><?php esc_html_e( 'Explore our auctions', 'goodbids' ); ?></a>
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button"  href="<?php echo esc_url( get_permalink( get_option( Sites::AUCTIONS_OPTION ) ) ); ?>"><?php esc_html_e( 'Explore our auctions', 'goodbids' ); ?></a>
 				</div>
 				<!-- /wp:button -->
 			</div>
