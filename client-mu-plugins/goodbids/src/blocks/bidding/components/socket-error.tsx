@@ -21,7 +21,10 @@ export function SocketError() {
 
 					<div className="flex flex-col gap-3" role="alert">
 						<p className="m-0">
-							<b>This auction is updating every 30 seconds</b>
+							<b>
+								Auction updating every 30 seconds - refresh the
+								page for the latest updates
+							</b>
 						</p>
 					</div>
 				</motion.div>
