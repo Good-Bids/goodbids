@@ -8,9 +8,10 @@ import {
 import { useBiddingState } from '../../store';
 import { AuctionStatus } from '../../store/types';
 import clsx from 'clsx';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fadeAnimation } from '../../utils/animations';
 import { __ } from '@wordpress/i18n';
+import { FirstTimeDialog } from '../first-time-dialog';
 
 const closingStatuses: AuctionStatus[] = ['closing', 'preclosing'];
 const liveAndClosingStatuses: AuctionStatus[] = ['live', ...closingStatuses];
@@ -22,7 +23,6 @@ export function BidButton() {
 		<AnimatePresence>
 			{liveAndClosingStatuses.includes(auctionStatus) && (
 				<>
-					{/* <FirstTimeDialog /> */}
 					<LiveAndClosing />
 				</>
 			)}
@@ -41,6 +41,8 @@ export function BidButton() {
 function LiveAndClosing() {
 	const { isLastBidder, currentBid, bidUrl, auctionStatus } =
 		useBiddingState();
+
+	const [showDialog, setShowDialog] = useState(false);
 
 	const motionValue = useMotionValue(currentBid);
 	const calculatedValue = useTransform(
@@ -65,16 +67,21 @@ function LiveAndClosing() {
 	}, [currentBid, motionValue]);
 
 	return (
-		<motion.a
-			layout
-			{...fadeAnimation}
-			className={classes}
-			href={isLastBidder ? '#' : bidUrl}
-			aria-live="polite"
-		>
-			{__('GOODBID', 'goodbids')}{' '}
-			<motion.span>{calculatedValue}</motion.span> {__('Now', 'goodbids')}
-		</motion.a>
+		<>
+			<motion.a
+				layout
+				{...fadeAnimation}
+				className={classes}
+				href={isLastBidder ? '#' : bidUrl}
+				aria-live="polite"
+				onClick={() => setShowDialog(true)}
+			>
+				{__('GOODBID', 'goodbids')}{' '}
+				<motion.span>{calculatedValue}</motion.span>{' '}
+				{__('Now', 'goodbids')}
+			</motion.a>
+			<FirstTimeDialog showDialog={showDialog} />
+		</>
 	);
 }
 
