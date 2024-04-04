@@ -439,9 +439,10 @@ class Email extends WC_Email {
 		$this->add_placeholder( '{auctions_url}', get_post_type_archive_link( goodbids()->auctions->get_post_type() ) );
 
 		// Auction Details.
+		$auction_title = $auction?->get_title() ?: '';
 		$this->add_placeholder( '{auction.url}', $auction?->get_url() );
 		$this->add_placeholder( '{auction.admin_url}', get_edit_post_link( $auction?->get_id() ) );
-		$this->add_placeholder( '{auction.title}', $auction?->get_title() );
+		$this->add_placeholder( '{auction.title}', htmlspecialchars( $auction_title ) );
 		$this->add_placeholder( '{auction.start_date_time}', $auction?->get_start_date_time( $datetime_format ) );
 		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( $datetime_format ) );
 
