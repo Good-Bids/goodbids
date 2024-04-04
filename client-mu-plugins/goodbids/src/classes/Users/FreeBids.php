@@ -322,9 +322,7 @@ class FreeBids {
 		$all_free_bids   = $this->get( $user_id );
 		$all_free_bids[] = $free_bid;
 
-		$result = $this->save( $user_id, $all_free_bids );
-
-		if ( ! $result ) {
+		if ( ! $this->save( $user_id, $all_free_bids ) ) {
 			return false;
 		}
 
