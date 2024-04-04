@@ -322,6 +322,12 @@ class FreeBids {
 		$all_free_bids   = $this->get( $user_id );
 		$all_free_bids[] = $free_bid;
 
+		$result = $this->save( $user_id, $all_free_bids );
+
+		if ( ! $result ) {
+			return false;
+		}
+
 		/**
 		 * Called when a Free Bid is awarded to a User
 		 *
@@ -332,7 +338,7 @@ class FreeBids {
 		 */
 		do_action( 'goodbids_award_free_bid', $free_bid, $user_id );
 
-		return $this->save( $user_id, $all_free_bids );
+		return true;
 	}
 
 	/**
