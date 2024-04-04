@@ -72,11 +72,11 @@
   },
   "onetrust": {
     "staging": {
-      "domain-script": "018db271-d57e-7feb-8af7-6abf9b08d9cc-test",
-      "script-url": "https://cookie-cdn.cookiepro.com/consent/018db271-d57e-7feb-8af7-6abf9b08d9cc-test/OtAutoBlock.js"
+      "domain-script": "018ea401-bafc-7a3e-b1c1-1b9f63e5605e-test",
+      "script-url": "https://cookie-cdn.cookiepro.com/consent/018ea401-bafc-7a3e-b1c1-1b9f63e5605e-test/otSDKStub.js"
     },
     "production": {
-      "domain-script": "018e543d-de6c-7e88-ae43-7b9a1d04105e",
+      "domain-script": "018ea401-bafc-7a3e-b1c1-1b9f63e5605e",
       "script-url": "https://cookie-cdn.cookiepro.com/scripttemplates/otSDKStub.js"
     }
   },
