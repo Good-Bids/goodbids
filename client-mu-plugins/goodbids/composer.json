@@ -65,7 +65,7 @@
 		"wpackagist-plugin/top-bar": "^3.0",
 		"wpackagist-plugin/user-switching": "^1.7",
 		"wpackagist-plugin/woocommerce": "^8.6",
-		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.0",
+		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.1",
 		"wpackagist-plugin/woocommerce-services": "^2.5",
 		"wpackagist-plugin/wp-smushit": "^3.15",
 		"wpackagist-plugin/zapier": "^1.0",
