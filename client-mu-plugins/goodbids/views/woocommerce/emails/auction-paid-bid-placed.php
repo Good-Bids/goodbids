@@ -27,7 +27,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 	<?php
 	printf(
 		/* translators: %1$s: Bid amount, %2$s: Auction Title, %3$s: Site title, %4$s: Bid date, %5$s: Site title %6$s: Bid amount */
-		esc_html__( 'This is confirmation of your bid for %1$s to the %2$s auction for %3$s on %4$s. You have supported %5$s on this auction with a total donation of %6$s.', 'goodbids' ),
+		esc_html__( 'This is confirmation of your bid for %1$s to the %2$s auction for %3$s on %4$s. You have supported %5$s on this auction with a total donation of %6$s. Save this for your records as proof of your donation.', 'goodbids' ),
 		'{order.total}',
 		'{auction.title}',
 		'{site_title}',
