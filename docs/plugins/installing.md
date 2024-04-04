@@ -5,6 +5,17 @@ We are using [Composer](https://getcomposer.org/) and [WPackagist](https://wpack
 ```sh
 composer require wpackagist-plugin/plugin-name
 ```
+#### Auto-activating
+To have a plugin auto-activated, add it to the `active-plugins` property in `client-mu-plugins/goodbids/config.json`. 
+
+If the filename is different from the plugin directory name, you will need to specify the directory and file:
+```json
+{
+    "active-plugins":[
+    "advanced-custom-fields-pro/acf.php",
+    ]
+}
+```
 
 ### Custom/Premium Plugins
 
