@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "680cca7e4e619c6a01185f9c4f583119",
+    "content-hash": "27b7cb3e1235e9b41784e60642194c80",
     "packages": [
         {
             "name": "composer/installers",
@@ -1231,15 +1231,15 @@
         },
         {
             "name": "wpackagist-plugin/accessibility-checker",
-            "version": "1.9.3",
+            "version": "1.10.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/accessibility-checker/",
-                "reference": "tags/1.9.3"
+                "reference": "tags/1.10.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.9.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.10.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1321,15 +1321,15 @@
         },
         {
             "name": "wpackagist-plugin/tidio-live-chat",
-            "version": "6.0.16",
+            "version": "6.0.17",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/tidio-live-chat/",
-                "reference": "tags/6.0.16"
+                "reference": "tags/6.0.17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.16.zip"
+                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.17.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1393,15 +1393,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce-gateway-stripe",
-            "version": "8.0.1",
+            "version": "8.1.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce-gateway-stripe/",
-                "reference": "tags/8.0.1"
+                "reference": "tags/8.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.8.0.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.8.1.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1411,15 +1411,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce-services",
-            "version": "2.5.3",
+            "version": "2.5.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce-services/",
-                "reference": "tags/2.5.3"
+                "reference": "tags/2.5.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce-services.2.5.3.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce-services.2.5.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1465,10 +1465,10 @@
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",
-            "version": "6.2.7",
+            "version": "6.2.8",
             "dist": {
                 "type": "zip",
-                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.7"
+                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.8"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
