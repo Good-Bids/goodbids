@@ -242,4 +242,18 @@ class Utilities {
 
 		return intval( sanitize_text_field( $_GET['id'] ) ); // phpcs:ignore
 	}
+
+	/**
+	 * Sanitize Special Characters from Email Subject
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param string $subject
+	 *
+	 * @return string
+	 */
+	public function sanitize_email_subject( string $subject ): string {
+		$subject = htmlspecialchars_decode( $subject );
+		return html_entity_decode( $subject );
+	}
 }

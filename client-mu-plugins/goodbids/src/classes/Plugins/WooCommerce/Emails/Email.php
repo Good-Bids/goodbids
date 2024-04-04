@@ -317,7 +317,7 @@ class Email extends WC_Email {
 		// Woohoo, send the email!
 		$this->send(
 			$this->get_recipient(),
-			$this->get_subject(),
+			goodbids()->utilities->sanitize_email_subject( $this->get_subject() ),
 			$this->get_content(),
 			$this->get_headers(),
 			$this->get_attachments()
