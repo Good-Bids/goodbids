@@ -33,9 +33,6 @@ function goodbids_batch_upload_page() {
 	$toEmail = 'partners@goodbids.org';
 	$ccEmail = 'seth@goodbids.org';
 
-	$toEmail = 'dejanmarkovic@gmail.com';
-	$ccEmail = 'tina@socialwebsuite.com';
-
 	if ( ! current_user_can( 'manage_network' ) ) {
 		wp_die( __( 'You do not have sufficient permissions to access this page.', 'goodbids' ) );
 	}
@@ -246,7 +243,10 @@ function goodbids_batch_upload_page() {
 					$message .= "\n\n";
 				}
 
-				wp_mail( $toEmail, $subject, $message, '', [ 'cc' => $ccEmail ] );
+				$headers = array(
+					'Cc: ' . $ccEmail
+				);
+				wp_mail($toEmail, $subject, $message, $headers);
 			}
 		}
 	}
