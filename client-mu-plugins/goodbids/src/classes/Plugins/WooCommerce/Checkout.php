@@ -43,6 +43,9 @@ class Checkout {
 		// Add additional terms & conditions to the Checkout page
 		$this->adjust_terms_block();
 
+		// Add additional terms & conditions to the Checkout page
+		$this->adjust_express_checkout_block();
+
 		// Add the Nonprofit name to the Checkout page title
 		$this->adjust_checkout_title();
 
@@ -227,16 +230,7 @@ class Checkout {
 				if ( goodbids()->woocommerce->cart->is_bid_order() ) {
 					$bid_amount = goodbids()->woocommerce->cart->get_total();
 					if ( $bid_amount ) {
-						$nonprofit = new Nonprofit( get_current_blog_id() );
-
-						$block_content .= sprintf(
-							'<p class="mt-10 ml-10 font-bold">%s %s %s %s. %s</p>',
-							__( 'By placing this bid, you are making a donation for your full bid amount of', 'goodbids' ),
-							wp_kses_post( wc_price( $bid_amount ) ),
-							__( 'to', 'goodbids' ),
-							esc_html( $nonprofit->get_name() ),
-							__( 'This is a non-refundable donation, and is in addition to any previous donations you\'ve made in this auction.', 'goodbids' )
-						);
+						$block_content .= $this->get_paid_bid_disclaimer( $bid_amount );
 					}
 				}
 
@@ -252,6 +246,64 @@ class Checkout {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Add terms & conditions and privacy policy text to checkout
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	private function adjust_express_checkout_block(): void {
+		add_filter(
+			'render_block',
+			function ( string $block_content, array $block ): string {
+				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'woocommerce/checkout-express-payment-block' !== $block['blockName'] || is_main_site() ) {
+					return $block_content;
+				}
+
+				if ( ! goodbids()->woocommerce->cart->is_bid_order() ) {
+					return $block_content;
+				}
+
+				$bid_amount = goodbids()->woocommerce->cart->get_total();
+				if ( ! $bid_amount ) {
+					return $block_content;
+				}
+
+				/**
+				The following line appends the disclaimer to the Express Checkout block content, which puts it below the "Or continue below" message. Ideally, the disclaimer should be above that message. In order to do that, the content from the get_paid_bid_disclaimer() method should be inserted via `preg_replace` or similar before the .wc-block-components-express-payment-continue-rule element.
+				**/
+//				$block_content .= $this->get_paid_bid_disclaimer( $bid_amount );
+
+				return $block_content;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Get the Nonprofit Checkout Disclaimer for Paid Bids
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param float $bid_amount
+	 *
+	 * @return string
+	 */
+	private function get_paid_bid_disclaimer( float $bid_amount ): string {
+		$nonprofit = new Nonprofit( get_current_blog_id() );
+
+		return sprintf(
+			'<p class="mt-10 ml-10"><strong>%s %s %s %s.</strong> <em>%s</em></p>',
+			__( 'By placing this bid, you are making a donation for your full bid amount of', 'goodbids' ),
+			wp_kses_post( wc_price( $bid_amount ) ),
+			__( 'to', 'goodbids' ),
+			esc_html( $nonprofit->get_name() ),
+			__( 'This is a non-refundable donation, and is in addition to any previous donations you\'ve made in this auction.', 'goodbids' )
 		);
 	}
 
