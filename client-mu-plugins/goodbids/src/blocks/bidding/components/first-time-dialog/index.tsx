@@ -2,7 +2,8 @@ import clsx from 'clsx';
 import { FormEvent, useEffect, useState } from 'react';
 import { WarningIconFilled } from '../icons/warning-icon-filled';
 
-export const FirstTimeDialog = () => {
+export const FirstTimeDialog = (props: { showDialog: boolean }) => {
+	const { showDialog } = props;
 	const [hasSeenDialog, setHasSeenDialog] = useState(true);
 
 	const cookieString = 'gb-has-seen-first-time-dialog';
@@ -28,6 +29,7 @@ export const FirstTimeDialog = () => {
 	);
 
 	return (
+		showDialog &&
 		!hasSeenDialog && (
 			<div className="fixed inset-0 left-0 top-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
 				<dialog className={dialogClasses} open={!hasSeenDialog}>
