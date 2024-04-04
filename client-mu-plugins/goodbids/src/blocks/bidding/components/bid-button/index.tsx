@@ -74,7 +74,7 @@ function LiveAndClosing() {
 				className={classes}
 				href={isLastBidder ? '#' : bidUrl}
 				aria-live="polite"
-				onClick={() => setShowDialog(true)}
+				onMouseOver={() => setShowDialog(true)}
 			>
 				{__('GOODBID', 'goodbids')}{' '}
 				<motion.span>{calculatedValue}</motion.span>{' '}
