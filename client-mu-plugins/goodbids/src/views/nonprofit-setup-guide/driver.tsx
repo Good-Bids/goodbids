@@ -19,7 +19,7 @@ export function Driver() {
 					<H1>{__('Site Setup', 'goodbids')}</H1>
 					<P>
 						{__(
-							'Please note: The Setup Guide is an online instructional manual. The box titled “Site Status” (on the top right) is the only section that will update based on your progress through the guide. The Site Status will update to reflect the current status of your Nonprofit Site, and will either read “Pending” or “Live,” along with information relevant to that status level.',
+							'This Site Setup section is an online instructional manual. Key actions for configuring, customizing, and managing your GOODBIDS Nonprofit Site are outlined below.',
 							'goodbids',
 						)}
 					</P>
