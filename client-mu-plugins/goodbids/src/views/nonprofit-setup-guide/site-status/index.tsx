@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { H1 } from '../../../components/typography';
+import { H1, P } from '~/components/typography';
 import { Pending } from './pending';
 import { useState } from 'react';
 import { Live } from './live';
