@@ -7,7 +7,7 @@ export function ManagePayments() {
 		<MultiStepHeading
 			title={__('Manage Payments', 'goodbids')}
 			content={__(
-				'If you skipped payment set up during onboarding, you can create or connect a Stripe account now using the button below.',
+				'You can manage your Stripe account connection with GOODBIDS using the button below. If you skipped payment setup during onboarding, you will need to create or connect a Stripe account before launching your site.',
 				'goodbids',
 			)}
 		>
@@ -17,7 +17,7 @@ export function ManagePayments() {
 					variant="solid"
 					href={gbNonprofitSetupGuide.connectStripeURL}
 				>
-					{__('Connect Stripe', 'goodbids')}
+					{__('Manage Stripe', 'goodbids')}
 				</ButtonLink>
 			</div>
 		</MultiStepHeading>
