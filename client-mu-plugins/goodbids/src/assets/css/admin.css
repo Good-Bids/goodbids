@@ -131,3 +131,7 @@ tr.separator td {
 	padding: 0;
 	pointer-events: none;
 }
+
+table.fixed {
+	position: static !important;
+}
