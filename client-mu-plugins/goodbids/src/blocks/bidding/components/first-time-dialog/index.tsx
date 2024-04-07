@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import { FormEvent, useEffect, useState } from 'react';
 import { WarningIconFilled } from '../icons/warning-icon-filled';
 
@@ -24,15 +23,14 @@ export const FirstTimeDialog = (props: { showDialog: boolean }) => {
 		localStorage.setItem(cookieString, 'true');
 	};
 
-	const dialogClasses = clsx(
-		'opacity-1 absolute overflow-hidden rounded-xl border-red-50 p-12 text-left shadow-xl sm:my-8 sm:w-[384px] sm:max-w-lg',
-	);
-
 	return (
 		showDialog &&
 		!hasSeenDialog && (
 			<div className="fixed inset-0 left-0 top-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
-				<dialog className={dialogClasses} open={!hasSeenDialog}>
+				<dialog
+					className="opacity-1 absolute overflow-hidden rounded-xl border-red-50 p-12 text-left shadow-xl sm:my-8 sm:w-[384px] sm:max-w-lg"
+					open={!hasSeenDialog}
+				>
 					<div className="flex-col sm:flex sm:items-start">
 						<WarningIconFilled />
 						<div className="mt-3 text-center sm:mt-0 sm:text-left">
