@@ -7,84 +7,84 @@ use MoOauthClient\StorageHandler;
 class StorageManager
 {
     private $storage_handler;
-    const PRETTY = "\160\x72\x65\x74\x74\x79";
-    const JSON = "\x6a\x73\x6f\156";
+    const PRETTY = "\160\162\145\164\164\171";
+    const JSON = "\152\x73\157\x6e";
     const RAW = "\x72\x61\x77";
-    public function __construct($OC = '')
+    public function __construct($Yw = '')
     {
-        $this->storage_handler = new StorageHandler(empty($OC) ? $OC : base64_decode($OC));
+        $this->storage_handler = new StorageHandler(empty($Yw) ? $Yw : base64_decode($Yw));
     }
-    private function decrypt($hH)
+    private function decrypt($P3)
     {
-        return empty($hH) || '' === $hH ? $hH : strtolower(hex2bin($hH));
+        return empty($P3) || '' === $P3 ? $P3 : strtolower(hex2bin($P3));
     }
-    private function encrypt($hH)
+    private function encrypt($P3)
     {
-        return empty($hH) || '' === $hH ? $hH : strtoupper(bin2hex($hH));
+        return empty($P3) || '' === $P3 ? $P3 : strtoupper(bin2hex($P3));
     }
     public function get_state()
     {
         return $this->storage_handler->stringify();
     }
-    public function add_replace_entry($cW, $LQ)
+    public function add_replace_entry($Mr, $t_)
     {
-        if ($LQ) {
-            goto TW;
+        if ($t_) {
+            goto Je;
         }
         return;
-        TW:
-        $LQ = is_string($LQ) ? $LQ : wp_json_encode($LQ);
-        $this->storage_handler->add_replace_entry(bin2hex($cW), bin2hex($LQ));
+        Je:
+        $t_ = is_string($t_) ? $t_ : wp_json_encode($t_);
+        $this->storage_handler->add_replace_entry(bin2hex($Mr), bin2hex($t_));
     }
-    public function get_value($cW)
+    public function get_value($Mr)
     {
-        $LQ = $this->storage_handler->get_value(bin2hex($cW));
-        if ($LQ) {
-            goto ek;
+        $t_ = $this->storage_handler->get_value(bin2hex($Mr));
+        if ($t_) {
+            goto fL;
         }
         return false;
-        ek:
-        $DP = json_decode(hex2bin($LQ), true);
-        return json_last_error() === JSON_ERROR_NONE ? $DP : hex2bin($LQ);
+        fL:
+        $x4 = json_decode(hex2bin($t_), true);
+        return json_last_error() === JSON_ERROR_NONE ? $x4 : hex2bin($t_);
     }
-    public function remove_key($cW)
+    public function remove_key($Mr)
     {
-        $LQ = $this->storage_handler->remove_key(bin2hex($cW));
+        $t_ = $this->storage_handler->remove_key(bin2hex($Mr));
     }
     public function validate()
     {
         return $this->storage_handler->validate();
     }
-    public function dump_all_storage($HW = self::RAW)
+    public function dump_all_storage($MP = self::RAW)
     {
-        $Nb = $this->storage_handler->get_storage();
-        $nh = [];
-        foreach ($Nb as $cW => $LQ) {
-            $ul = \hex2bin($cW);
-            if ($ul) {
-                goto PV;
+        $ob = $this->storage_handler->get_storage();
+        $DN = [];
+        foreach ($ob as $Mr => $t_) {
+            $FG = \hex2bin($Mr);
+            if ($FG) {
+                goto Ol;
             }
-            goto KP;
-            PV:
-            $nh[$ul] = $this->get_value($ul);
-            KP:
+            goto KW;
+            Ol:
+            $DN[$FG] = $this->get_value($FG);
+            KW:
         }
-        Oc:
-        switch ($HW) {
+        uI:
+        switch ($MP) {
             case self::PRETTY:
-                echo "\74\160\x72\x65\76";
-                print_r($nh);
-                echo "\74\x2f\160\x72\145\76";
-                goto sV;
+                echo "\74\160\162\145\x3e";
+                print_r($DN);
+                echo "\x3c\x2f\160\162\145\76";
+                goto Hg;
             case self::JSON:
-                echo \json_encode($nh);
-                goto sV;
+                echo \json_encode($DN);
+                goto Hg;
             default:
             case self::RAW:
-                print_r($nh);
-                goto sV;
+                print_r($DN);
+                goto Hg;
         }
-        bG:
-        sV:
+        XS:
+        Hg:
     }
 }

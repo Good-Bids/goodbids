@@ -1,339 +1,231 @@
 <?php
+
+
 namespace MoOauthClient\GrantTypes;
-/**
- * Random Number Generator
- *
- * The idea behind this function is that it can be easily replaced with your own crypt_random_string()
- * function. eg. maybe you have a better source of entropy for creating the initial states or whatever.
- *
- * PHP versions 4 and 5
- *
- * Here's a short example of how to use this library:
- * <code>
- * <?php
- *    include 'Crypt/Random.php';
- *
- *    echo bin2hex(crypt_random_string(8));
- * ?>
- * </code>
- *
- * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category  Crypt
- * @package   Crypt_Random
- * @author    Jim Wigginton <terrafrost@php.net>
- * @copyright 2007 Jim Wigginton
- * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link      http://phpseclib.sourceforge.net
- */
 
-// laravel is a PHP framework that utilizes phpseclib. laravel workbenches may, independently,
-// have phpseclib as a requirement as well. if you're developing such a program you may encounter
-// a "Cannot redeclare crypt_random_string()" error.
-if (!function_exists('crypt_random_string')) {
-    /**
-     * "Is Windows" test
-     *
-     * @access private
-     */
-    if(!defined('CRYPT_RANDOM_IS_WINDOWS'))
-    define('CRYPT_RANDOM_IS_WINDOWS', strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
-
-    /**
-     * Generate a random string.
-     *
-     * Although microoptimizations are generally discouraged as they impair readability this function is ripe with
-     * microoptimizations because this function has the potential of being called a huge number of times.
-     * eg. for RSA key generation.
-     *
-     * @param int $length
-     * @return string
-     * @access public
-     */
-    function crypt_random_string($length)
+if (!function_exists("\x63\x72\x79\160\x74\x5f\162\x61\156\144\x6f\x6d\137\163\164\162\151\x6e\147")) {
+    define("\x43\x52\x59\x50\124\137\x52\x41\x4e\x44\117\x4d\137\x49\123\x5f\127\111\116\104\117\127\123", strtoupper(substr(PHP_OS, 0, 3)) === "\x57\x49\116");
+    function crypt_random_string($F_)
     {
-        if (!$length) {
-            return '';
+        if ($F_) {
+            goto X2u;
         }
-
+        return '';
+        X2u:
         if (CRYPT_RANDOM_IS_WINDOWS) {
-            // method 1. prior to PHP 5.3, mcrypt_create_iv() would call rand() on windows
-            if (extension_loaded('mcrypt') && version_compare(PHP_VERSION, '5.3.0', '>=')) {
-                return @mcrypt_create_iv($length);
-            }
-            // method 2. openssl_random_pseudo_bytes was introduced in PHP 5.3.0 but prior to PHP 5.3.4 there was,
-            // to quote <http://php.net/ChangeLog-5.php#5.3.4>, "possible blocking behavior". as of 5.3.4
-            // openssl_random_pseudo_bytes and mcrypt_create_iv do the exact same thing on Windows. ie. they both
-            // call php_win32_get_random_bytes():
-            //
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/ext/openssl/openssl.c#L5008
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/ext/mcrypt/mcrypt.c#L1392
-            //
-            // php_win32_get_random_bytes() is defined thusly:
-            //
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/win32/winutil.c#L80
-            //
-            // we're calling it, all the same, in the off chance that the mcrypt extension is not available
-            if (extension_loaded('openssl') && version_compare(PHP_VERSION, '5.3.4', '>=')) {
-                return openssl_random_pseudo_bytes($length);
-            }
-        } else {
-            // method 1. the fastest
-            if (extension_loaded('openssl') && version_compare(PHP_VERSION, '5.3.0', '>=')) {
-                return openssl_random_pseudo_bytes($length);
-            }
-            // method 2
-            static $fp = true;
-            if ($fp === true) {
-                // warning's will be output unles the error suppression operator is used. errors such as
-                // "open_basedir restriction in effect", "Permission denied", "No such file or directory", etc.
-                $fp = @fopen('/dev/urandom', 'rb');
-            }
-            if ($fp !== true && $fp !== false) { // surprisingly faster than !is_bool() or is_resource()
-                return fread($fp, $length);
-            }
-            // method 3. pretty much does the same thing as method 2 per the following url:
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/ext/mcrypt/mcrypt.c#L1391
-            // surprisingly slower than method 2. maybe that's because mcrypt_create_iv does a bunch of error checking that we're
-            // not doing. regardless, this'll only be called if this PHP script couldn't open /dev/urandom due to open_basedir
-            // restrictions or some such
-            if (extension_loaded('mcrypt')) {
-                return @mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
-            }
+            goto fhN;
         }
-        // at this point we have no choice but to use a pure-PHP CSPRNG
-
-        // cascade entropy across multiple PHP instances by fixing the session and collecting all
-        // environmental variables, including the previous session data and the current session
-        // data.
-        //
-        // mt_rand seeds itself by looking at the PID and the time, both of which are (relatively)
-        // easy to guess at. linux uses mouse clicks, keyboard timings, etc, as entropy sources, but
-        // PHP isn't low level to be able to use those as sources and on a web server there's not likely
-        // going to be a ton of keyboard or mouse action. web servers do have one thing that we can use
-        // however, a ton of people visiting the website. obviously you don't want to base your seeding
-        // soley on parameters a potential attacker sends but (1) not everything in $_SERVER is controlled
-        // by the user and (2) this isn't just looking at the data sent by the current user - it's based
-        // on the data sent by all users. one user requests the page and a hash of their info is saved.
-        // another user visits the page and the serialization of their data is utilized along with the
-        // server envirnment stuff and a hash of the previous http request data (which itself utilizes
-        // a hash of the session data before that). certainly an attacker should be assumed to have
-        // full control over his own http requests. he, however, is not going to have control over
-        // everyone's http requests.
-        static $crypto = false, $v;
-        if ($crypto === false) {
-            // save old session data
-            $old_session_id = session_id();
-            $old_use_cookies = ini_get('session.use_cookies');
-            $old_session_cache_limiter = session_cache_limiter();
-            $_OLD_SESSION = isset($_SESSION) ? $_SESSION : false;
-            if ($old_session_id != '') {
-                session_write_close();
-            }
-
-            session_id(1);
-            ini_set('session.use_cookies', 0);
-            session_cache_limiter('');
-            session_start( [ 'read_and_close' => true, ] );
-
-            $v = $seed = $_SESSION['seed'] = pack('H*', sha1(
-                (isset($_SERVER) ? phpseclib_safe_serialize($_SERVER) : '') .
-                (isset($_POST) ? phpseclib_safe_serialize($_POST) : '') .
-                (isset($_GET) ? phpseclib_safe_serialize($_GET) : '') .
-                (isset($_COOKIE) ? phpseclib_safe_serialize($_COOKIE) : '') .
-                phpseclib_safe_serialize($GLOBALS) .
-                phpseclib_safe_serialize($_SESSION) .
-                phpseclib_safe_serialize($_OLD_SESSION)
-            ));
-            if (!isset($_SESSION['count'])) {
-                $_SESSION['count'] = 0;
-            }
-            $_SESSION['count']++;
-
-            session_write_close();
-
-            // restore old session data
-            if ($old_session_id != '') {
-                session_id($old_session_id);
-                session_start( [ 'read_and_close' => true, ] );
-                ini_set('session.use_cookies', $old_use_cookies);
-                session_cache_limiter($old_session_cache_limiter);
-            } else {
-                if ($_OLD_SESSION !== false) {
-                    $_SESSION = $_OLD_SESSION;
-                    unset($_OLD_SESSION);
-                } else {
-                    unset($_SESSION);
+        if (!(extension_loaded("\x6f\160\x65\x6e\163\x73\154") && version_compare(PHP_VERSION, "\65\56\63\x2e\x30", "\76\x3d"))) {
+            goto Qkr;
+        }
+        return openssl_random_pseudo_bytes($F_);
+        Qkr:
+        static $R6 = true;
+        if (!($R6 === true)) {
+            goto e_i;
+        }
+        $R6 = @fopen("\57\144\x65\x76\x2f\165\162\x61\156\x64\157\x6d", "\x72\x62");
+        e_i:
+        if (!($R6 !== true && $R6 !== false)) {
+            goto SU7;
+        }
+        return fread($R6, $F_);
+        SU7:
+        if (!extension_loaded("\x6d\143\x72\x79\160\x74")) {
+            goto gcp;
+        }
+        return @mcrypt_create_iv($F_, MCRYPT_DEV_URANDOM);
+        gcp:
+        goto gk7;
+        fhN:
+        if (!(extension_loaded("\x6d\143\x72\171\x70\164") && version_compare(PHP_VERSION, "\x35\56\63\56\60", "\76\x3d"))) {
+            goto fY6;
+        }
+        return @mcrypt_create_iv($F_);
+        fY6:
+        if (!(extension_loaded("\157\160\x65\156\x73\163\x6c") && version_compare(PHP_VERSION, "\x35\56\x33\x2e\x34", "\x3e\x3d"))) {
+            goto fKE;
+        }
+        return openssl_random_pseudo_bytes($F_);
+        fKE:
+        gk7:
+        static $R3 = false, $zs;
+        if (!($R3 === false)) {
+            goto e2T;
+        }
+        $H0 = session_id();
+        $Yf = ini_get("\x73\x65\163\x73\151\157\156\x2e\165\x73\x65\137\x63\157\157\153\x69\145\163");
+        $o7 = session_cache_limiter();
+        $hw = isset($_SESSION) ? $_SESSION : false;
+        if (!($H0 != '')) {
+            goto EZw;
+        }
+        session_write_close();
+        EZw:
+        session_id(1);
+        ini_set("\x73\145\163\163\151\157\x6e\x2e\x75\x73\x65\137\x63\157\157\x6b\151\145\163", 0);
+        session_cache_limiter('');
+        session_start(["\162\x65\141\144\x5f\141\156\144\137\x63\154\157\163\145" => true]);
+        $zs = $XR = $_SESSION["\x73\x65\x65\144"] = pack("\110\52", sha1((isset($_SERVER) ? phpseclib_safe_serialize($_SERVER) : '') . (isset($_POST) ? phpseclib_safe_serialize($_POST) : '') . (isset($_GET) ? phpseclib_safe_serialize($_GET) : '') . (isset($_COOKIE) ? phpseclib_safe_serialize($_COOKIE) : '') . phpseclib_safe_serialize($GLOBALS) . phpseclib_safe_serialize($_SESSION) . phpseclib_safe_serialize($hw)));
+        if (isset($_SESSION["\x63\x6f\165\x6e\x74"])) {
+            goto mRZ;
+        }
+        $_SESSION["\x63\157\x75\156\x74"] = 0;
+        mRZ:
+        $_SESSION["\143\x6f\165\156\x74"]++;
+        session_write_close();
+        if ($H0 != '') {
+            goto YmO;
+        }
+        if ($hw !== false) {
+            goto UhS;
+        }
+        unset($_SESSION);
+        goto gtD;
+        UhS:
+        $_SESSION = $hw;
+        unset($hw);
+        gtD:
+        goto qYu;
+        YmO:
+        session_id($H0);
+        session_start(["\162\x65\141\x64\137\x61\x6e\x64\137\143\x6c\157\x73\x65" => true]);
+        ini_set("\163\145\163\x73\151\157\x6e\x2e\x75\163\145\x5f\143\157\157\x6b\x69\145\163", $Yf);
+        session_cache_limiter($o7);
+        qYu:
+        $Mr = pack("\110\x2a", sha1($XR . "\x41"));
+        $X0 = pack("\x48\x2a", sha1($XR . "\103"));
+        switch (true) {
+            case phpseclib_resolve_include_path("\103\162\171\160\x74\57\101\x45\x53\x2e\160\150\x70"):
+                if (class_exists("\103\162\171\x70\x74\137\x41\105\123")) {
+                    goto OoR;
                 }
-            }
-
-            // in SSH2 a shared secret and an exchange hash are generated through the key exchange process.
-            // the IV client to server is the hash of that "nonce" with the letter A and for the encryption key it's the letter C.
-            // if the hash doesn't produce enough a key or an IV that's long enough concat successive hashes of the
-            // original hash and the current hash. we'll be emulating that. for more info see the following URL:
-            //
-            // http://tools.ietf.org/html/rfc4253#section-7.2
-            //
-            // see the is_string($crypto) part for an example of how to expand the keys
-            $key = pack('H*', sha1($seed . 'A'));
-            $iv = pack('H*', sha1($seed . 'C'));
-
-            // ciphers are used as per the nist.gov link below. also, see this link:
-            //
-            // http://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator#Designs_based_on_cryptographic_primitives
-            switch (true) {
-                case phpseclib_resolve_include_path('Crypt/AES.php'):
-                    if (!class_exists('Crypt_AES')) {
-                        include_once 'AES.php';
-                    }
-                    $crypto = new Crypt_AES(CRYPT_AES_MODE_CTR);
-                    break;
-                case phpseclib_resolve_include_path('Crypt/Twofish.php'):
-                    if (!class_exists('Crypt_Twofish')) {
-                        include_once 'Twofish.php';
-                    }
-                    $crypto = new Crypt_Twofish(CRYPT_TWOFISH_MODE_CTR);
-                    break;
-                case phpseclib_resolve_include_path('Crypt/Blowfish.php'):
-                    if (!class_exists('Crypt_Blowfish')) {
-                        include_once 'Blowfish.php';
-                    }
-                    $crypto = new Crypt_Blowfish(CRYPT_BLOWFISH_MODE_CTR);
-                    break;
-                case phpseclib_resolve_include_path('Crypt/TripleDES.php'):
-                    if (!class_exists('Crypt_TripleDES')) {
-                        include_once 'TripleDES.php';
-                    }
-                    $crypto = new Crypt_TripleDES(CRYPT_DES_MODE_CTR);
-                    break;
-                case phpseclib_resolve_include_path('Crypt/DES.php'):
-                    if (!class_exists('Crypt_DES')) {
-                        include_once 'DES.php';
-                    }
-                    $crypto = new Crypt_DES(CRYPT_DES_MODE_CTR);
-                    break;
-                case phpseclib_resolve_include_path('Crypt/RC4.php'):
-                    if (!class_exists('Crypt_RC4')) {
-                        include_once 'RC4.php';
-                    }
-                    $crypto = new Crypt_RC4();
-                    break;
-                default:
-                    user_error('crypt_random_string requires at least one symmetric cipher be loaded');
-                    return false;
-            }
-
-            $crypto->setKey($key);
-            $crypto->setIV($iv);
-            $crypto->enableContinuousBuffer();
+                include_once "\101\x45\x53\x2e\x70\x68\160";
+                OoR:
+                $R3 = new Crypt_AES(CRYPT_AES_MODE_CTR);
+                goto hP0;
+            case phpseclib_resolve_include_path("\x43\162\x79\160\x74\x2f\x54\167\x6f\146\x69\x73\150\x2e\160\x68\160"):
+                if (class_exists("\x43\x72\x79\x70\164\137\x54\167\x6f\x66\x69\163\150")) {
+                    goto jHe;
+                }
+                include_once "\124\167\x6f\146\151\x73\150\56\x70\x68\160";
+                jHe:
+                $R3 = new Crypt_Twofish(CRYPT_TWOFISH_MODE_CTR);
+                goto hP0;
+            case phpseclib_resolve_include_path("\x43\162\171\x70\x74\x2f\102\x6c\157\167\146\x69\163\150\x2e\160\x68\160"):
+                if (class_exists("\x43\x72\x79\160\164\x5f\x42\x6c\x6f\x77\146\x69\163\x68")) {
+                    goto K3A;
+                }
+                include_once "\102\154\157\x77\x66\151\163\x68\x2e\x70\x68\160";
+                K3A:
+                $R3 = new Crypt_Blowfish(CRYPT_BLOWFISH_MODE_CTR);
+                goto hP0;
+            case phpseclib_resolve_include_path("\x43\x72\x79\x70\x74\x2f\x54\x72\x69\x70\x6c\145\104\105\x53\x2e\160\150\x70"):
+                if (class_exists("\x43\162\171\x70\x74\137\x54\162\x69\160\x6c\145\x44\x45\123")) {
+                    goto egn;
+                }
+                include_once "\124\x72\151\x70\x6c\145\104\x45\x53\56\160\x68\x70";
+                egn:
+                $R3 = new Crypt_TripleDES(CRYPT_DES_MODE_CTR);
+                goto hP0;
+            case phpseclib_resolve_include_path("\x43\x72\171\x70\x74\x2f\x44\x45\123\56\160\150\x70"):
+                if (class_exists("\103\162\x79\160\x74\x5f\104\105\x53")) {
+                    goto gMY;
+                }
+                include_once "\104\105\123\56\x70\x68\160";
+                gMY:
+                $R3 = new Crypt_DES(CRYPT_DES_MODE_CTR);
+                goto hP0;
+            case phpseclib_resolve_include_path("\103\x72\171\160\x74\x2f\x52\x43\64\56\x70\x68\160"):
+                if (class_exists("\103\162\171\160\x74\137\x52\103\x34")) {
+                    goto T1V;
+                }
+                include_once "\122\x43\64\56\160\x68\x70";
+                T1V:
+                $R3 = new Crypt_RC4();
+                goto hP0;
+            default:
+                user_error("\143\162\x79\x70\x74\137\x72\141\156\x64\x6f\x6d\137\163\164\162\151\156\x67\x20\x72\x65\x71\x75\151\162\x65\163\x20\x61\x74\x20\x6c\x65\x61\163\164\40\157\156\x65\x20\163\171\x6d\155\x65\x74\x72\151\x63\x20\x63\151\160\x68\x65\162\x20\x62\145\40\x6c\x6f\x61\144\145\x64");
+                return false;
         }
-
-        //return $crypto->encrypt(str_repeat("\0", $length));
-
-        // the following is based off of ANSI X9.31:
-        //
-        // http://csrc.nist.gov/groups/STM/cavp/documents/rng/931rngext.pdf
-        //
-        // OpenSSL uses that same standard for it's random numbers:
-        //
-        // http://www.opensource.apple.com/source/OpenSSL/OpenSSL-38/openssl/fips-1.0/rand/fips_rand.c
-        // (do a search for "ANS X9.31 A.2.4")
-        $result = '';
-        while (strlen($result) < $length) {
-            $i = $crypto->encrypt(microtime()); // strlen(microtime()) == 21
-            $r = $crypto->encrypt($i ^ $v); // strlen($v) == 20
-            $v = $crypto->encrypt($r ^ $i); // strlen($r) == 20
-            $result.= $r;
+        Zej:
+        hP0:
+        $R3->setKey($Mr);
+        $R3->setIV($X0);
+        $R3->enableContinuousBuffer();
+        e2T:
+        $DE = '';
+        qFN:
+        if (!(strlen($DE) < $F_)) {
+            goto rni;
         }
-        return substr($result, 0, $length);
+        $zY = $R3->encrypt(microtime());
+        $lO = $R3->encrypt($zY ^ $zs);
+        $zs = $R3->encrypt($lO ^ $zY);
+        $DE .= $lO;
+        goto qFN;
+        rni:
+        return substr($DE, 0, $F_);
     }
 }
-
-if (!function_exists('phpseclib_safe_serialize')) {
-    /**
-     * Safely serialize variables
-     *
-     * If a class has a private __sleep() method it'll give a fatal error on PHP 5.2 and earlier.
-     * PHP 5.3 will emit a warning.
-     *
-     * @param mixed $arr
-     * @access public
-     */
-    function phpseclib_safe_serialize(&$arr)
+if (!function_exists("\160\x68\x70\x73\x65\143\x6c\x69\142\137\x73\141\146\x65\x5f\x73\x65\162\151\x61\154\x69\x7a\145")) {
+    function phpseclib_safe_serialize(&$Ge)
     {
-        if (is_object($arr)) {
-            return '';
+        if (!is_object($Ge)) {
+            goto wR9;
         }
-        if (!is_array($arr)) {
-            return serialize($arr);
+        return '';
+        wR9:
+        if (is_array($Ge)) {
+            goto efi;
         }
-        // prevent circular array recursion
-        if (isset($arr['__phpseclib_marker'])) {
-            return '';
+        return serialize($Ge);
+        efi:
+        if (!isset($Ge["\x5f\x5f\x70\x68\160\163\x65\x63\x6c\x69\142\x5f\x6d\141\162\153\x65\x72"])) {
+            goto BiD;
         }
-        $safearr = array();
-        $arr['__phpseclib_marker'] = true;
-        foreach (array_keys($arr) as $key) {
-            // do not recurse on the '__phpseclib_marker' key itself, for smaller memory usage
-            if ($key !== '__phpseclib_marker') {
-                $safearr[$key] = phpseclib_safe_serialize($arr[$key]);
+        return '';
+        BiD:
+        $xG = array();
+        $Ge["\x5f\137\160\x68\160\x73\x65\143\x6c\151\x62\137\x6d\x61\162\153\145\x72"] = true;
+        foreach (array_keys($Ge) as $Mr) {
+            if (!($Mr !== "\x5f\137\x70\150\160\x73\x65\143\154\151\142\137\155\x61\162\153\145\162")) {
+                goto MP6;
             }
+            $xG[$Mr] = phpseclib_safe_serialize($Ge[$Mr]);
+            MP6:
+            K9n:
         }
-        unset($arr['__phpseclib_marker']);
-        return serialize($safearr);
+        AAh:
+        unset($Ge["\x5f\x5f\x70\x68\x70\x73\x65\x63\x6c\151\x62\137\x6d\141\162\153\145\x72"]);
+        return serialize($xG);
     }
 }
-
-if (!function_exists('phpseclib_resolve_include_path')) {
-    /**
-     * Resolve filename against the include path.
-     *
-     * Wrapper around stream_resolve_include_path() (which was introduced in
-     * PHP 5.3.2) with fallback implementation for earlier PHP versions.
-     *
-     * @param string $filename
-     * @return string|false
-     * @access public
-     */
-    function phpseclib_resolve_include_path($filename)
+if (!function_exists("\x70\150\x70\x73\x65\x63\x6c\151\142\x5f\162\x65\163\x6f\154\x76\145\x5f\x69\156\x63\154\x75\144\145\137\160\x61\x74\x68")) {
+    function phpseclib_resolve_include_path($aO)
     {
-        if (function_exists('stream_resolve_include_path')) {
-            return stream_resolve_include_path($filename);
+        if (!function_exists("\x73\x74\162\145\x61\155\x5f\162\145\x73\x6f\154\166\x65\137\151\156\x63\154\165\x64\145\x5f\160\x61\164\x68")) {
+            goto LY5;
         }
-
-        // handle non-relative paths
-        if (file_exists($filename)) {
-            return realpath($filename);
+        return stream_resolve_include_path($aO);
+        LY5:
+        if (!file_exists($aO)) {
+            goto IoI;
         }
-
-        $paths = PATH_SEPARATOR == ':' ?
-            preg_split('#(?<!phar):#', get_include_path()) :
-            explode(PATH_SEPARATOR, get_include_path());
-        foreach ($paths as $prefix) {
-            // path's specified in include_path don't always end in /
-            $ds = substr($prefix, -1) == DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR;
-            $file = $prefix . $ds . $filename;
-            if (file_exists($file)) {
-                return realpath($file);
+        return realpath($aO);
+        IoI:
+        $ni = PATH_SEPARATOR == "\72" ? preg_split("\43\50\77\74\41\x70\x68\141\162\51\72\x23", get_include_path()) : explode(PATH_SEPARATOR, get_include_path());
+        foreach ($ni as $Lh) {
+            $Vn = substr($Lh, -1) == DIRECTORY_SEPARATOR ? '' : DIRECTORY_SEPARATOR;
+            $aS = $Lh . $Vn . $aO;
+            if (!file_exists($aS)) {
+                goto wBB;
             }
+            return realpath($aS);
+            wBB:
+            vDG:
         }
-
+        wm4:
         return false;
     }
 }

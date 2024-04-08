@@ -6,51 +6,51 @@ namespace MoOauthClient;
 class StorageHandler
 {
     private $storage;
-    public function __construct($OC = '')
+    public function __construct($Yw = '')
     {
-        $df = empty($OC) || '' === $OC ? json_encode([]) : sanitize_text_field(wp_unslash($OC));
-        $this->storage = json_decode($df, true);
+        $Rp = empty($Yw) || '' === $Yw ? json_encode([]) : sanitize_text_field(wp_unslash($Yw));
+        $this->storage = json_decode($Rp, true);
     }
-    public function add_replace_entry($cW, $LQ)
+    public function add_replace_entry($Mr, $t_)
     {
-        $this->storage[$cW]["\x56"] = $LQ;
-        $this->storage[$cW]["\x48"] = md5($LQ);
+        $this->storage[$Mr]["\x56"] = $t_;
+        $this->storage[$Mr]["\x48"] = md5($t_);
     }
-    public function get_value($cW)
+    public function get_value($Mr)
     {
-        if (isset($this->storage[$cW])) {
-            goto pp;
+        if (isset($this->storage[$Mr])) {
+            goto MY;
         }
         return false;
-        pp:
-        $LQ = $this->storage[$cW];
-        if (!(!is_array($LQ) || !isset($LQ["\126"]) || !isset($LQ["\110"]))) {
-            goto bF;
+        MY:
+        $t_ = $this->storage[$Mr];
+        if (!(!is_array($t_) || !isset($t_["\126"]) || !isset($t_["\110"]))) {
+            goto Vd;
         }
         return false;
-        bF:
-        if (!(md5($LQ["\126"]) !== $LQ["\x48"])) {
-            goto Ee;
+        Vd:
+        if (!(md5($t_["\126"]) !== $t_["\x48"])) {
+            goto JL;
         }
         return false;
-        Ee:
-        return $LQ["\126"];
+        JL:
+        return $t_["\126"];
     }
-    public function remove_key($cW)
+    public function remove_key($Mr)
     {
-        if (!isset($this->storage[$cW])) {
-            goto w1;
+        if (!isset($this->storage[$Mr])) {
+            goto Bt;
         }
-        unset($this->storage[$cW]);
-        w1:
+        unset($this->storage[$Mr]);
+        Bt:
     }
     public function stringify()
     {
-        global $Yh;
-        $Nb = $this->storage;
-        $Nb[\bin2hex("\x75\151\144")]["\126"] = bin2hex(MO_UID);
-        $Nb[\bin2hex("\165\x69\x64")]["\x48"] = md5($Nb[\bin2hex("\165\x69\x64")]["\x56"]);
-        return $Yh->base64url_encode(wp_json_encode($Nb));
+        global $Uj;
+        $ob = $this->storage;
+        $ob[\bin2hex("\x75\151\x64")]["\126"] = bin2hex(MO_UID);
+        $ob[\bin2hex("\165\151\144")]["\x48"] = md5($ob[\bin2hex("\165\x69\144")]["\126"]);
+        return $Uj->base64url_encode(wp_json_encode($ob));
     }
     public function get_storage()
     {

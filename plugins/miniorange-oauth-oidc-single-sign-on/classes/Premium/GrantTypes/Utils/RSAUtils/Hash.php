@@ -1,867 +1,530 @@
 <?php
+
+
 namespace MoOauthClient\GrantTypes;
-/**
- * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.
- *
- * Uses hash() or mhash() if available and an internal implementation, otherwise.  Currently supports the following:
- *
- * md2, md5, md5-96, sha1, sha1-96, sha256, sha256-96, sha384, and sha512, sha512-96
- *
- * If {@link self::setKey() setKey()} is called, {@link self::hash() hash()} will return the HMAC as opposed to
- * the hash.  If no valid algorithm is provided, sha1 will be used.
- *
- * PHP versions 4 and 5
- *
- * {@internal The variable names are the same as those in
- * {@link http://tools.ietf.org/html/rfc2104#section-2 RFC2104}.}}
- *
- * Here's a short example of how to use this library:
- * <code>
- * <?php
- *    include 'Crypt/Hash.php';
- *
- *    $hash = new Crypt_Hash('sha1');
- *
- *    $hash->setKey('abcdefg');
- *
- *    echo base64_encode($hash->hash('abcdefg'));
- * ?>
- * </code>
- *
- * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @category  Crypt
- * @package   Crypt_Hash
- * @author    Jim Wigginton <terrafrost@php.net>
- * @copyright 2007 Jim Wigginton
- * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link      http://phpseclib.sourceforge.net
- */
 
-/**#@+
- * @access private
- * @see self::Crypt_Hash()
- */
-/**
- * Toggles the internal implementation
- */
-if(!defined('CRYPT_HASH_MODE_INTERNAL'))
-define('CRYPT_HASH_MODE_INTERNAL', 1);
-/**
- * Toggles the mhash() implementation, which has been deprecated on PHP 5.3.0+.
- */
-if(!defined('CRYPT_HASH_MODE_MHASH'))
-define('CRYPT_HASH_MODE_MHASH',    2);
-/**
- * Toggles the hash() implementation, which works on PHP 5.1.2+.
- */
-if(!defined('CRYPT_HASH_MODE_HASH'))
-define('CRYPT_HASH_MODE_HASH',     3);
-/**#@-*/
-
-/**
- * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.
- *
- * @package Crypt_Hash
- * @author  Jim Wigginton <terrafrost@php.net>
- * @access  public
- */
+define("\103\122\131\x50\x54\x5f\x48\x41\123\110\x5f\x4d\117\x44\x45\x5f\111\x4e\x54\105\x52\116\x41\114", 1);
+define("\103\x52\x59\x50\x54\x5f\x48\x41\123\110\x5f\x4d\x4f\104\x45\x5f\115\x48\x41\x53\110", 2);
+define("\103\x52\x59\120\x54\x5f\x48\101\x53\110\x5f\x4d\117\x44\105\x5f\110\101\123\x48", 3);
 class Crypt_Hash
 {
-    /**
-     * Hash Parameter
-     *
-     * @see self::setHash()
-     * @var int
-     * @access private
-     */
     var $hashParam;
-
-    /**
-     * Byte-length of compression blocks / key (Internal HMAC)
-     *
-     * @see self::setAlgorithm()
-     * @var int
-     * @access private
-     */
     var $b;
-
-    /**
-     * Byte-length of hash output (Internal HMAC)
-     *
-     * @see self::setHash()
-     * @var int
-     * @access private
-     */
     var $l = false;
-
-    /**
-     * Hash Algorithm
-     *
-     * @see self::setHash()
-     * @var string
-     * @access private
-     */
     var $hash;
-
-    /**
-     * Key
-     *
-     * @see self::setKey()
-     * @var string
-     * @access private
-     */
     var $key = false;
-
-    /**
-     * Outer XOR (Internal HMAC)
-     *
-     * @see self::setKey()
-     * @var string
-     * @access private
-     */
     var $opad;
-
-    /**
-     * Inner XOR (Internal HMAC)
-     *
-     * @see self::setKey()
-     * @var string
-     * @access private
-     */
     var $ipad;
-
-    /**
-     * Default Constructor.
-     *
-     * @param string $hash
-     * @return Crypt_Hash
-     * @access public
-     */
-    function __construct($hash = 'sha1')
+    function __construct($H2 = "\163\150\141\x31")
     {
-        if (!defined('CRYPT_HASH_MODE')) {
-            switch (true) {
-                case extension_loaded('hash'):
-                    define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_HASH);
-                    break;
-                case extension_loaded('mhash'):
-                    define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_MHASH);
-                    break;
-                default:
-                    define('CRYPT_HASH_MODE', CRYPT_HASH_MODE_INTERNAL);
-            }
+        if (defined("\103\x52\131\x50\x54\x5f\110\101\123\x48\x5f\115\x4f\104\105")) {
+            goto oo;
         }
-
-        $this->setHash($hash);
+        switch (true) {
+            case extension_loaded("\150\x61\x73\150"):
+                define("\103\122\x59\120\124\x5f\x48\101\x53\110\x5f\115\x4f\x44\105", CRYPT_HASH_MODE_HASH);
+                goto zP;
+            case extension_loaded("\x6d\150\x61\x73\150"):
+                define("\x43\122\131\x50\124\x5f\x48\101\x53\x48\x5f\x4d\117\x44\105", CRYPT_HASH_MODE_MHASH);
+                goto zP;
+            default:
+                define("\103\122\131\x50\124\x5f\x48\101\x53\110\137\x4d\117\x44\105", CRYPT_HASH_MODE_INTERNAL);
+        }
+        vP:
+        zP:
+        oo:
+        $this->setHash($H2);
     }
-
-    /**
-     * PHP4 compatible Default Constructor.
-     *
-     * @see self::__construct()
-     * @param int $mode
-     * @access public
-     */
-    function Crypt_Hash($hash = 'sha1')
+    function Crypt_Hash($H2 = "\x73\150\141\x31")
     {
-        $this->__construct($hash);
+        $this->__construct($H2);
     }
-
-    /**
-     * Sets the key for HMACs
-     *
-     * Keys can be of any length.
-     *
-     * @access public
-     * @param string $key
-     */
-    function setKey($key = false)
+    function setKey($Mr = false)
     {
-        $this->key = $key;
+        $this->key = $Mr;
     }
-
-    /**
-     * Gets the hash function.
-     *
-     * As set by the constructor or by the setHash() method.
-     *
-     * @access public
-     * @return string
-     */
     function getHash()
     {
         return $this->hashParam;
     }
-
-    /**
-     * Sets the hash function.
-     *
-     * @access public
-     * @param string $hash
-     */
-    function setHash($hash)
+    function setHash($H2)
     {
-        $this->hashParam = $hash = strtolower($hash);
-        switch ($hash) {
-            case 'md5-96':
-            case 'sha1-96':
-            case 'sha256-96':
-            case 'sha512-96':
-                $hash = substr($hash, 0, -3);
-                $this->l = 12; // 96 / 8 = 12
-                break;
-            case 'md2':
-            case 'md5':
+        $this->hashParam = $H2 = strtolower($H2);
+        switch ($H2) {
+            case "\155\144\65\55\x39\x36":
+            case "\163\x68\x61\61\x2d\71\x36":
+            case "\163\x68\141\62\x35\66\x2d\x39\x36":
+            case "\x73\150\141\65\61\x32\55\71\x36":
+                $H2 = substr($H2, 0, -3);
+                $this->l = 12;
+                goto Ji;
+            case "\155\x64\62":
+            case "\155\x64\x35":
                 $this->l = 16;
-                break;
-            case 'sha1':
+                goto Ji;
+            case "\x73\150\141\x31":
                 $this->l = 20;
-                break;
-            case 'sha256':
+                goto Ji;
+            case "\x73\150\141\x32\x35\66":
                 $this->l = 32;
-                break;
-            case 'sha384':
+                goto Ji;
+            case "\163\150\141\63\x38\x34":
                 $this->l = 48;
-                break;
-            case 'sha512':
+                goto Ji;
+            case "\x73\150\141\x35\x31\62":
                 $this->l = 64;
         }
-
-        switch ($hash) {
-            case 'md2':
-                $mode = CRYPT_HASH_MODE == CRYPT_HASH_MODE_HASH && in_array('md2', hash_algos()) ?
-                    CRYPT_HASH_MODE_HASH : CRYPT_HASH_MODE_INTERNAL;
-                break;
-            case 'sha384':
-            case 'sha512':
-                $mode = CRYPT_HASH_MODE == CRYPT_HASH_MODE_MHASH ? CRYPT_HASH_MODE_INTERNAL : CRYPT_HASH_MODE;
-                break;
+        Z9:
+        Ji:
+        switch ($H2) {
+            case "\x6d\x64\62":
+                $pU = CRYPT_HASH_MODE == CRYPT_HASH_MODE_HASH && in_array("\x6d\144\62", hash_algos()) ? CRYPT_HASH_MODE_HASH : CRYPT_HASH_MODE_INTERNAL;
+                goto Z2;
+            case "\x73\150\x61\x33\70\64":
+            case "\x73\150\141\x35\x31\62":
+                $pU = CRYPT_HASH_MODE == CRYPT_HASH_MODE_MHASH ? CRYPT_HASH_MODE_INTERNAL : CRYPT_HASH_MODE;
+                goto Z2;
             default:
-                $mode = CRYPT_HASH_MODE;
+                $pU = CRYPT_HASH_MODE;
         }
-
-        switch ($mode) {
+        Wc:
+        Z2:
+        switch ($pU) {
             case CRYPT_HASH_MODE_MHASH:
-                switch ($hash) {
-                    case 'md5':
+                switch ($H2) {
+                    case "\x6d\x64\x35":
                         $this->hash = MHASH_MD5;
-                        break;
-                    case 'sha256':
+                        goto oz;
+                    case "\x73\150\141\x32\x35\x36":
                         $this->hash = MHASH_SHA256;
-                        break;
-                    case 'sha1':
+                        goto oz;
+                    case "\163\x68\141\61":
                     default:
                         $this->hash = MHASH_SHA1;
                 }
+                MC:
+                oz:
                 return;
             case CRYPT_HASH_MODE_HASH:
-                switch ($hash) {
-                    case 'md5':
-                        $this->hash = 'md5';
+                switch ($H2) {
+                    case "\155\144\65":
+                        $this->hash = "\155\x64\65";
                         return;
-                    case 'md2':
-                    case 'sha256':
-                    case 'sha384':
-                    case 'sha512':
-                        $this->hash = $hash;
+                    case "\155\x64\x32":
+                    case "\x73\150\141\x32\x35\66":
+                    case "\163\x68\x61\63\x38\x34":
+                    case "\163\x68\x61\x35\x31\62":
+                        $this->hash = $H2;
                         return;
-                    case 'sha1':
+                    case "\163\150\141\x31":
                     default:
-                        $this->hash = 'sha1';
+                        $this->hash = "\163\x68\x61\x31";
                 }
+                HT:
+                Vj:
                 return;
         }
-
-        switch ($hash) {
-            case 'md2':
+        CJ:
+        Tj:
+        switch ($H2) {
+            case "\x6d\144\x32":
                 $this->b = 16;
-                $this->hash = array($this, '_md2');
-                break;
-            case 'md5':
+                $this->hash = array($this, "\137\155\x64\x32");
+                goto mi;
+            case "\155\144\65":
                 $this->b = 64;
-                $this->hash = array($this, '_md5');
-                break;
-            case 'sha256':
+                $this->hash = array($this, "\137\155\x64\65");
+                goto mi;
+            case "\x73\x68\x61\x32\65\66":
                 $this->b = 64;
-                $this->hash = array($this, '_sha256');
-                break;
-            case 'sha384':
-            case 'sha512':
+                $this->hash = array($this, "\x5f\x73\150\x61\x32\65\66");
+                goto mi;
+            case "\163\150\x61\63\x38\64":
+            case "\x73\x68\x61\x35\61\62":
                 $this->b = 128;
-                $this->hash = array($this, '_sha512');
-                break;
-            case 'sha1':
+                $this->hash = array($this, "\x5f\x73\x68\x61\x35\61\x32");
+                goto mi;
+            case "\163\150\x61\61":
             default:
                 $this->b = 64;
-                $this->hash = array($this, '_sha1');
+                $this->hash = array($this, "\137\x73\150\x61\x31");
         }
-
+        H5:
+        mi:
         $this->ipad = str_repeat(chr(0x36), $this->b);
-        $this->opad = str_repeat(chr(0x5C), $this->b);
+        $this->opad = str_repeat(chr(0x5c), $this->b);
     }
-
-    /**
-     * Compute the HMAC.
-     *
-     * @access public
-     * @param string $text
-     * @return string
-     */
-    function hash($text)
+    function hash($UH)
     {
-        $mode = is_array($this->hash) ? CRYPT_HASH_MODE_INTERNAL : CRYPT_HASH_MODE;
-
+        $pU = is_array($this->hash) ? CRYPT_HASH_MODE_INTERNAL : CRYPT_HASH_MODE;
         if (!empty($this->key) || is_string($this->key)) {
-            switch ($mode) {
-                case CRYPT_HASH_MODE_MHASH:
-                    $output = mhash($this->hash, $text, $this->key);
-                    break;
-                case CRYPT_HASH_MODE_HASH:
-                    $output = hash_hmac($this->hash, $text, $this->key, true);
-                    break;
-                case CRYPT_HASH_MODE_INTERNAL:
-                    /* "Applications that use keys longer than B bytes will first hash the key using H and then use the
-                        resultant L byte string as the actual key to HMAC."
-
-                        -- http://tools.ietf.org/html/rfc2104#section-2 */
-                    $key = strlen($this->key) > $this->b ? call_user_func($this->hash, $this->key) : $this->key;
-
-                    $key    = str_pad($key, $this->b, chr(0));      // step 1
-                    $temp   = $this->ipad ^ $key;                   // step 2
-                    $temp  .= $text;                                // step 3
-                    $temp   = call_user_func($this->hash, $temp);   // step 4
-                    $output = $this->opad ^ $key;                   // step 5
-                    $output.= $temp;                                // step 6
-                    $output = call_user_func($this->hash, $output); // step 7
-            }
-        } else {
-            switch ($mode) {
-                case CRYPT_HASH_MODE_MHASH:
-                    $output = mhash($this->hash, $text);
-                    break;
-                case CRYPT_HASH_MODE_HASH:
-                    $output = hash($this->hash, $text, true);
-                    break;
-                case CRYPT_HASH_MODE_INTERNAL:
-                    $output = call_user_func($this->hash, $text);
-            }
+            goto gm;
         }
-
-        return substr($output, 0, $this->l);
+        switch ($pU) {
+            case CRYPT_HASH_MODE_MHASH:
+                $Rv = mhash($this->hash, $UH);
+                goto Xm;
+            case CRYPT_HASH_MODE_HASH:
+                $Rv = hash($this->hash, $UH, true);
+                goto Xm;
+            case CRYPT_HASH_MODE_INTERNAL:
+                $Rv = call_user_func($this->hash, $UH);
+        }
+        uL:
+        Xm:
+        goto oc;
+        gm:
+        switch ($pU) {
+            case CRYPT_HASH_MODE_MHASH:
+                $Rv = mhash($this->hash, $UH, $this->key);
+                goto Qc;
+            case CRYPT_HASH_MODE_HASH:
+                $Rv = hash_hmac($this->hash, $UH, $this->key, true);
+                goto Qc;
+            case CRYPT_HASH_MODE_INTERNAL:
+                $Mr = strlen($this->key) > $this->b ? call_user_func($this->hash, $this->key) : $this->key;
+                $Mr = str_pad($Mr, $this->b, chr(0));
+                $zn = $this->ipad ^ $Mr;
+                $zn .= $UH;
+                $zn = call_user_func($this->hash, $zn);
+                $Rv = $this->opad ^ $Mr;
+                $Rv .= $zn;
+                $Rv = call_user_func($this->hash, $Rv);
+        }
+        m9:
+        Qc:
+        oc:
+        return substr($Rv, 0, $this->l);
     }
-
-    /**
-     * Returns the hash length (in bytes)
-     *
-     * @access public
-     * @return int
-     */
     function getLength()
     {
         return $this->l;
     }
-
-    /**
-     * Wrapper for MD5
-     *
-     * @access private
-     * @param string $m
-     */
-    function _md5($m)
+    function _md5($X3)
     {
-        return pack('H*', md5($m));
+        return pack("\110\x2a", md5($X3));
     }
-
-    /**
-     * Wrapper for SHA1
-     *
-     * @access private
-     * @param string $m
-     */
-    function _sha1($m)
+    function _sha1($X3)
     {
-        return pack('H*', sha1($m));
+        return pack("\x48\52", sha1($X3));
     }
-
-    /**
-     * Pure-PHP implementation of MD2
-     *
-     * See {@link http://tools.ietf.org/html/rfc1319 RFC1319}.
-     *
-     * @access private
-     * @param string $m
-     */
-    function _md2($m)
+    function _md2($X3)
     {
-        static $s = array(
-             41,  46,  67, 201, 162, 216, 124,   1,  61,  54,  84, 161, 236, 240, 6,
-             19,  98, 167,   5, 243, 192, 199, 115, 140, 152, 147,  43, 217, 188,
-             76, 130, 202,  30, 155,  87,  60, 253, 212, 224,  22, 103,  66, 111, 24,
-            138,  23, 229,  18, 190,  78, 196, 214, 218, 158, 222,  73, 160, 251,
-            245, 142, 187,  47, 238, 122, 169, 104, 121, 145,  21, 178,   7,  63,
-            148, 194,  16, 137,  11,  34,  95,  33, 128, 127,  93, 154,  90, 144, 50,
-             39,  53,  62, 204, 231, 191, 247, 151,   3, 255,  25,  48, 179,  72, 165,
-            181, 209, 215,  94, 146,  42, 172,  86, 170, 198,  79, 184,  56, 210,
-            150, 164, 125, 182, 118, 252, 107, 226, 156, 116,   4, 241,  69, 157,
-            112,  89, 100, 113, 135,  32, 134,  91, 207, 101, 230,  45, 168,   2, 27,
-             96,  37, 173, 174, 176, 185, 246,  28,  70,  97, 105,  52,  64, 126, 15,
-             85,  71, 163,  35, 221,  81, 175,  58, 195,  92, 249, 206, 186, 197,
-            234,  38,  44,  83,  13, 110, 133,  40, 132,   9, 211, 223, 205, 244, 65,
-            129,  77,  82, 106, 220,  55, 200, 108, 193, 171, 250,  36, 225, 123,
-              8,  12, 189, 177,  74, 120, 136, 149, 139, 227,  99, 232, 109, 233,
-            203, 213, 254,  59,   0,  29,  57, 242, 239, 183,  14, 102,  88, 208, 228,
-            166, 119, 114, 248, 235, 117,  75,  10,  49,  68,  80, 180, 143, 237,
-             31,  26, 219, 153, 141,  51, 159,  17, 131, 20
-        );
-
-        // Step 1. Append Padding Bytes
-        $pad = 16 - (strlen($m) & 0xF);
-        $m.= str_repeat(chr($pad), $pad);
-
-        $length = strlen($m);
-
-        // Step 2. Append Checksum
-        $c = str_repeat(chr(0), 16);
-        $l = chr(0);
-        for ($i = 0; $i < $length; $i+= 16) {
-            for ($j = 0; $j < 16; $j++) {
-                // RFC1319 incorrectly states that C[j] should be set to S[c xor L]
-                //$c[$j] = chr($s[ord($m[$i + $j] ^ $l)]);
-                // per <http://www.rfc-editor.org/errata_search.php?rfc=1319>, however, C[j] should be set to S[c xor L] xor C[j]
-                $c[$j] = chr($s[ord($m[$i + $j] ^ $l)] ^ ord($c[$j]));
-                $l = $c[$j];
-            }
+        static $Z7 = array(41, 46, 67, 201, 162, 216, 124, 1, 61, 54, 84, 161, 236, 240, 6, 19, 98, 167, 5, 243, 192, 199, 115, 140, 152, 147, 43, 217, 188, 76, 130, 202, 30, 155, 87, 60, 253, 212, 224, 22, 103, 66, 111, 24, 138, 23, 229, 18, 190, 78, 196, 214, 218, 158, 222, 73, 160, 251, 245, 142, 187, 47, 238, 122, 169, 104, 121, 145, 21, 178, 7, 63, 148, 194, 16, 137, 11, 34, 95, 33, 128, 127, 93, 154, 90, 144, 50, 39, 53, 62, 204, 231, 191, 247, 151, 3, 255, 25, 48, 179, 72, 165, 181, 209, 215, 94, 146, 42, 172, 86, 170, 198, 79, 184, 56, 210, 150, 164, 125, 182, 118, 252, 107, 226, 156, 116, 4, 241, 69, 157, 112, 89, 100, 113, 135, 32, 134, 91, 207, 101, 230, 45, 168, 2, 27, 96, 37, 173, 174, 176, 185, 246, 28, 70, 97, 105, 52, 64, 126, 15, 85, 71, 163, 35, 221, 81, 175, 58, 195, 92, 249, 206, 186, 197, 234, 38, 44, 83, 13, 110, 133, 40, 132, 9, 211, 223, 205, 244, 65, 129, 77, 82, 106, 220, 55, 200, 108, 193, 171, 250, 36, 225, 123, 8, 12, 189, 177, 74, 120, 136, 149, 139, 227, 99, 232, 109, 233, 203, 213, 254, 59, 0, 29, 57, 242, 239, 183, 14, 102, 88, 208, 228, 166, 119, 114, 248, 235, 117, 75, 10, 49, 68, 80, 180, 143, 237, 31, 26, 219, 153, 141, 51, 159, 17, 131, 20);
+        $ql = 16 - (strlen($X3) & 0xf);
+        $X3 .= str_repeat(chr($ql), $ql);
+        $F_ = strlen($X3);
+        $eo = str_repeat(chr(0), 16);
+        $O7 = chr(0);
+        $zY = 0;
+        Tc:
+        if (!($zY < $F_)) {
+            goto Qs;
         }
-        $m.= $c;
-
-        $length+= 16;
-
-        // Step 3. Initialize MD Buffer
-        $x = str_repeat(chr(0), 48);
-
-        // Step 4. Process Message in 16-Byte Blocks
-        for ($i = 0; $i < $length; $i+= 16) {
-            for ($j = 0; $j < 16; $j++) {
-                $x[$j + 16] = $m[$i + $j];
-                $x[$j + 32] = $x[$j + 16] ^ $x[$j];
-            }
-            $t = chr(0);
-            for ($j = 0; $j < 18; $j++) {
-                for ($k = 0; $k < 48; $k++) {
-                    $x[$k] = $t = $x[$k] ^ chr($s[ord($t)]);
-                    //$t = $x[$k] = $x[$k] ^ chr($s[ord($t)]);
-                }
-                $t = chr(ord($t) + $j);
-            }
+        $cu = 0;
+        FO:
+        if (!($cu < 16)) {
+            goto Pn;
         }
-
-        // Step 5. Output
-        return substr($x, 0, 16);
+        $eo[$cu] = chr($Z7[ord($X3[$zY + $cu] ^ $O7)] ^ ord($eo[$cu]));
+        $O7 = $eo[$cu];
+        Rl:
+        $cu++;
+        goto FO;
+        Pn:
+        pY:
+        $zY += 16;
+        goto Tc;
+        Qs:
+        $X3 .= $eo;
+        $F_ += 16;
+        $k5 = str_repeat(chr(0), 48);
+        $zY = 0;
+        eb:
+        if (!($zY < $F_)) {
+            goto nh;
+        }
+        $cu = 0;
+        Hm:
+        if (!($cu < 16)) {
+            goto n1;
+        }
+        $k5[$cu + 16] = $X3[$zY + $cu];
+        $k5[$cu + 32] = $k5[$cu + 16] ^ $k5[$cu];
+        Kh:
+        $cu++;
+        goto Hm;
+        n1:
+        $sl = chr(0);
+        $cu = 0;
+        bX:
+        if (!($cu < 18)) {
+            goto BA;
+        }
+        $Wu = 0;
+        v6:
+        if (!($Wu < 48)) {
+            goto hI;
+        }
+        $k5[$Wu] = $sl = $k5[$Wu] ^ chr($Z7[ord($sl)]);
+        lX:
+        $Wu++;
+        goto v6;
+        hI:
+        $sl = chr(ord($sl) + $cu);
+        mT:
+        $cu++;
+        goto bX;
+        BA:
+        iP:
+        $zY += 16;
+        goto eb;
+        nh:
+        return substr($k5, 0, 16);
     }
-
-    /**
-     * Pure-PHP implementation of SHA256
-     *
-     * See {@link http://en.wikipedia.org/wiki/SHA_hash_functions#SHA-256_.28a_SHA-2_variant.29_pseudocode SHA-256 (a SHA-2 variant) pseudocode - Wikipedia}.
-     *
-     * @access private
-     * @param string $m
-     */
-    function _sha256($m)
+    function _sha256($X3)
     {
-        if (extension_loaded('suhosin')) {
-            return pack('H*', sha256($m));
+        if (!extension_loaded("\163\165\150\x6f\x73\x69\x6e")) {
+            goto Eo;
         }
-
-        // Initialize variables
-        $hash = array(
-            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
-        );
-        // Initialize table of round constants
-        // (first 32 bits of the fractional parts of the cube roots of the first 64 primes 2..311)
-        static $k = array(
-            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-        );
-
-        // Pre-processing
-        $length = strlen($m);
-        // to round to nearest 56 mod 64, we'll add 64 - (length + (64 - 56)) % 64
-        $m.= str_repeat(chr(0), 64 - (($length + 8) & 0x3F));
-        $m[$length] = chr(0x80);
-        // we don't support hashing strings 512MB long
-        $m.= pack('N2', 0, $length << 3);
-
-        // Process the message in successive 512-bit chunks
-        $chunks = str_split($m, 64);
-        foreach ($chunks as $chunk) {
-            $w = array();
-            for ($i = 0; $i < 16; $i++) {
-                extract(unpack('Ntemp', $this->_string_shift($chunk, 4)));
-                $w[] = $temp;
+        return pack("\110\52", sha256($X3));
+        Eo:
+        $H2 = array(0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19);
+        static $Wu = array(0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0xfc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x6ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2);
+        $F_ = strlen($X3);
+        $X3 .= str_repeat(chr(0), 64 - ($F_ + 8 & 0x3f));
+        $X3[$F_] = chr(0x80);
+        $X3 .= pack("\116\62", 0, $F_ << 3);
+        $Dl = str_split($X3, 64);
+        foreach ($Dl as $cB) {
+            $j0 = array();
+            $zY = 0;
+            la:
+            if (!($zY < 16)) {
+                goto Iy;
             }
-
-            // Extend the sixteen 32-bit words into sixty-four 32-bit words
-            for ($i = 16; $i < 64; $i++) {
-                // @codingStandardsIgnoreStart
-                $s0 = $this->_rightRotate($w[$i - 15],  7) ^
-                      $this->_rightRotate($w[$i - 15], 18) ^
-                      $this->_rightShift( $w[$i - 15],  3);
-                $s1 = $this->_rightRotate($w[$i - 2], 17) ^
-                      $this->_rightRotate($w[$i - 2], 19) ^
-                      $this->_rightShift( $w[$i - 2], 10);
-                // @codingStandardsIgnoreEnd
-                $w[$i] = $this->_add($w[$i - 16], $s0, $w[$i - 7], $s1);
+            extract(unpack("\x4e\164\x65\x6d\x70", $this->_string_shift($cB, 4)));
+            $j0[] = $zn;
+            YJ:
+            $zY++;
+            goto la;
+            Iy:
+            $zY = 16;
+            nV:
+            if (!($zY < 64)) {
+                goto yo;
             }
-
-            // Initialize hash value for this chunk
-            list($a, $b, $c, $d, $e, $f, $g, $h) = $hash;
-
-            // Main loop
-            for ($i = 0; $i < 64; $i++) {
-                $s0 = $this->_rightRotate($a,  2) ^
-                      $this->_rightRotate($a, 13) ^
-                      $this->_rightRotate($a, 22);
-                $maj = ($a & $b) ^
-                       ($a & $c) ^
-                       ($b & $c);
-                $t2 = $this->_add($s0, $maj);
-
-                $s1 = $this->_rightRotate($e,  6) ^
-                      $this->_rightRotate($e, 11) ^
-                      $this->_rightRotate($e, 25);
-                $ch = ($e & $f) ^
-                      ($this->_not($e) & $g);
-                $t1 = $this->_add($h, $s1, $ch, $k[$i], $w[$i]);
-
-                $h = $g;
-                $g = $f;
-                $f = $e;
-                $e = $this->_add($d, $t1);
-                $d = $c;
-                $c = $b;
-                $b = $a;
-                $a = $this->_add($t1, $t2);
+            $OS = $this->_rightRotate($j0[$zY - 15], 7) ^ $this->_rightRotate($j0[$zY - 15], 18) ^ $this->_rightShift($j0[$zY - 15], 3);
+            $tc = $this->_rightRotate($j0[$zY - 2], 17) ^ $this->_rightRotate($j0[$zY - 2], 19) ^ $this->_rightShift($j0[$zY - 2], 10);
+            $j0[$zY] = $this->_add($j0[$zY - 16], $OS, $j0[$zY - 7], $tc);
+            rJ:
+            $zY++;
+            goto nV;
+            yo:
+            list($hP, $fM, $eo, $qa, $mP, $du, $Sm, $AX) = $H2;
+            $zY = 0;
+            Rz:
+            if (!($zY < 64)) {
+                goto JI;
             }
-
-            // Add this chunk's hash to result so far
-            $hash = array(
-                $this->_add($hash[0], $a),
-                $this->_add($hash[1], $b),
-                $this->_add($hash[2], $c),
-                $this->_add($hash[3], $d),
-                $this->_add($hash[4], $e),
-                $this->_add($hash[5], $f),
-                $this->_add($hash[6], $g),
-                $this->_add($hash[7], $h)
-            );
+            $OS = $this->_rightRotate($hP, 2) ^ $this->_rightRotate($hP, 13) ^ $this->_rightRotate($hP, 22);
+            $oK = $hP & $fM ^ $hP & $eo ^ $fM & $eo;
+            $s9 = $this->_add($OS, $oK);
+            $tc = $this->_rightRotate($mP, 6) ^ $this->_rightRotate($mP, 11) ^ $this->_rightRotate($mP, 25);
+            $bV = $mP & $du ^ $this->_not($mP) & $Sm;
+            $Sx = $this->_add($AX, $tc, $bV, $Wu[$zY], $j0[$zY]);
+            $AX = $Sm;
+            $Sm = $du;
+            $du = $mP;
+            $mP = $this->_add($qa, $Sx);
+            $qa = $eo;
+            $eo = $fM;
+            $fM = $hP;
+            $hP = $this->_add($Sx, $s9);
+            Jy:
+            $zY++;
+            goto Rz;
+            JI:
+            $H2 = array($this->_add($H2[0], $hP), $this->_add($H2[1], $fM), $this->_add($H2[2], $eo), $this->_add($H2[3], $qa), $this->_add($H2[4], $mP), $this->_add($H2[5], $du), $this->_add($H2[6], $Sm), $this->_add($H2[7], $AX));
+            kf:
         }
-
-        // Produce the final hash value (big-endian)
-        return pack('N8', $hash[0], $hash[1], $hash[2], $hash[3], $hash[4], $hash[5], $hash[6], $hash[7]);
+        kU:
+        return pack("\116\70", $H2[0], $H2[1], $H2[2], $H2[3], $H2[4], $H2[5], $H2[6], $H2[7]);
     }
-
-    /**
-     * Pure-PHP implementation of SHA384 and SHA512
-     *
-     * @access private
-     * @param string $m
-     */
-    function _sha512($m)
+    function _sha512($X3)
     {
-        if (!class_exists('Math_BigInteger')) {
-            include_once 'Math/BigInteger.php';
+        if (class_exists("\115\x61\164\150\x5f\x42\151\x67\x49\156\x74\145\x67\x65\162")) {
+            goto E9;
         }
-
-        static $init384, $init512, $k;
-
-        if (!isset($k)) {
-            // Initialize variables
-            $init384 = array( // initial values for SHA384
-                'cbbb9d5dc1059ed8', '629a292a367cd507', '9159015a3070dd17', '152fecd8f70e5939',
-                '67332667ffc00b31', '8eb44a8768581511', 'db0c2e0d64f98fa7', '47b5481dbefa4fa4'
-            );
-            $init512 = array( // initial values for SHA512
-                '6a09e667f3bcc908', 'bb67ae8584caa73b', '3c6ef372fe94f82b', 'a54ff53a5f1d36f1',
-                '510e527fade682d1', '9b05688c2b3e6c1f', '1f83d9abfb41bd6b', '5be0cd19137e2179'
-            );
-
-            for ($i = 0; $i < 8; $i++) {
-                $init384[$i] = new Math_BigInteger($init384[$i], 16);
-                $init384[$i]->setPrecision(64);
-                $init512[$i] = new Math_BigInteger($init512[$i], 16);
-                $init512[$i]->setPrecision(64);
-            }
-
-            // Initialize table of round constants
-            // (first 64 bits of the fractional parts of the cube roots of the first 80 primes 2..409)
-            $k = array(
-                '428a2f98d728ae22', '7137449123ef65cd', 'b5c0fbcfec4d3b2f', 'e9b5dba58189dbbc',
-                '3956c25bf348b538', '59f111f1b605d019', '923f82a4af194f9b', 'ab1c5ed5da6d8118',
-                'd807aa98a3030242', '12835b0145706fbe', '243185be4ee4b28c', '550c7dc3d5ffb4e2',
-                '72be5d74f27b896f', '80deb1fe3b1696b1', '9bdc06a725c71235', 'c19bf174cf692694',
-                'e49b69c19ef14ad2', 'efbe4786384f25e3', '0fc19dc68b8cd5b5', '240ca1cc77ac9c65',
-                '2de92c6f592b0275', '4a7484aa6ea6e483', '5cb0a9dcbd41fbd4', '76f988da831153b5',
-                '983e5152ee66dfab', 'a831c66d2db43210', 'b00327c898fb213f', 'bf597fc7beef0ee4',
-                'c6e00bf33da88fc2', 'd5a79147930aa725', '06ca6351e003826f', '142929670a0e6e70',
-                '27b70a8546d22ffc', '2e1b21385c26c926', '4d2c6dfc5ac42aed', '53380d139d95b3df',
-                '650a73548baf63de', '766a0abb3c77b2a8', '81c2c92e47edaee6', '92722c851482353b',
-                'a2bfe8a14cf10364', 'a81a664bbc423001', 'c24b8b70d0f89791', 'c76c51a30654be30',
-                'd192e819d6ef5218', 'd69906245565a910', 'f40e35855771202a', '106aa07032bbd1b8',
-                '19a4c116b8d2d0c8', '1e376c085141ab53', '2748774cdf8eeb99', '34b0bcb5e19b48a8',
-                '391c0cb3c5c95a63', '4ed8aa4ae3418acb', '5b9cca4f7763e373', '682e6ff3d6b2b8a3',
-                '748f82ee5defb2fc', '78a5636f43172f60', '84c87814a1f0ab72', '8cc702081a6439ec',
-                '90befffa23631e28', 'a4506cebde82bde9', 'bef9a3f7b2c67915', 'c67178f2e372532b',
-                'ca273eceea26619c', 'd186b8c721c0c207', 'eada7dd6cde0eb1e', 'f57d4f7fee6ed178',
-                '06f067aa72176fba', '0a637dc5a2c898a6', '113f9804bef90dae', '1b710b35131c471b',
-                '28db77f523047d84', '32caab7b40c72493', '3c9ebe0a15c9bebc', '431d67c49c100d4c',
-                '4cc5d4becb3e42b6', '597f299cfc657e2a', '5fcb6fab3ad6faec', '6c44198c4a475817'
-            );
-
-            for ($i = 0; $i < 80; $i++) {
-                $k[$i] = new Math_BigInteger($k[$i], 16);
-            }
+        include_once "\115\x61\164\x68\x2f\x42\x69\147\111\156\164\x65\x67\145\x72\x2e\160\150\x70";
+        E9:
+        static $Xl, $Rk, $Wu;
+        if (isset($Wu)) {
+            goto Ix;
         }
-
-        $hash = $this->l == 48 ? $init384 : $init512;
-
-        // Pre-processing
-        $length = strlen($m);
-        // to round to nearest 112 mod 128, we'll add 128 - (length + (128 - 112)) % 128
-        $m.= str_repeat(chr(0), 128 - (($length + 16) & 0x7F));
-        $m[$length] = chr(0x80);
-        // we don't support hashing strings 512MB long
-        $m.= pack('N4', 0, 0, 0, $length << 3);
-
-        // Process the message in successive 1024-bit chunks
-        $chunks = str_split($m, 128);
-        foreach ($chunks as $chunk) {
-            $w = array();
-            for ($i = 0; $i < 16; $i++) {
-                $temp = new Math_BigInteger($this->_string_shift($chunk, 8), 256);
-                $temp->setPrecision(64);
-                $w[] = $temp;
-            }
-
-            // Extend the sixteen 32-bit words into eighty 32-bit words
-            for ($i = 16; $i < 80; $i++) {
-                $temp = array(
-                          $w[$i - 15]->bitwise_rightRotate(1),
-                          $w[$i - 15]->bitwise_rightRotate(8),
-                          $w[$i - 15]->bitwise_rightShift(7)
-                );
-                $s0 = $temp[0]->bitwise_xor($temp[1]);
-                $s0 = $s0->bitwise_xor($temp[2]);
-                $temp = array(
-                          $w[$i - 2]->bitwise_rightRotate(19),
-                          $w[$i - 2]->bitwise_rightRotate(61),
-                          $w[$i - 2]->bitwise_rightShift(6)
-                );
-                $s1 = $temp[0]->bitwise_xor($temp[1]);
-                $s1 = $s1->bitwise_xor($temp[2]);
-                $w[$i] = $w[$i - 16]->copy();
-                $w[$i] = $w[$i]->add($s0);
-                $w[$i] = $w[$i]->add($w[$i - 7]);
-                $w[$i] = $w[$i]->add($s1);
-            }
-
-            // Initialize hash value for this chunk
-            $a = $hash[0]->copy();
-            $b = $hash[1]->copy();
-            $c = $hash[2]->copy();
-            $d = $hash[3]->copy();
-            $e = $hash[4]->copy();
-            $f = $hash[5]->copy();
-            $g = $hash[6]->copy();
-            $h = $hash[7]->copy();
-
-            // Main loop
-            for ($i = 0; $i < 80; $i++) {
-                $temp = array(
-                    $a->bitwise_rightRotate(28),
-                    $a->bitwise_rightRotate(34),
-                    $a->bitwise_rightRotate(39)
-                );
-                $s0 = $temp[0]->bitwise_xor($temp[1]);
-                $s0 = $s0->bitwise_xor($temp[2]);
-                $temp = array(
-                    $a->bitwise_and($b),
-                    $a->bitwise_and($c),
-                    $b->bitwise_and($c)
-                );
-                $maj = $temp[0]->bitwise_xor($temp[1]);
-                $maj = $maj->bitwise_xor($temp[2]);
-                $t2 = $s0->add($maj);
-
-                $temp = array(
-                    $e->bitwise_rightRotate(14),
-                    $e->bitwise_rightRotate(18),
-                    $e->bitwise_rightRotate(41)
-                );
-                $s1 = $temp[0]->bitwise_xor($temp[1]);
-                $s1 = $s1->bitwise_xor($temp[2]);
-                $temp = array(
-                    $e->bitwise_and($f),
-                    $g->bitwise_and($e->bitwise_not())
-                );
-                $ch = $temp[0]->bitwise_xor($temp[1]);
-                $t1 = $h->add($s1);
-                $t1 = $t1->add($ch);
-                $t1 = $t1->add($k[$i]);
-                $t1 = $t1->add($w[$i]);
-
-                $h = $g->copy();
-                $g = $f->copy();
-                $f = $e->copy();
-                $e = $d->add($t1);
-                $d = $c->copy();
-                $c = $b->copy();
-                $b = $a->copy();
-                $a = $t1->add($t2);
-            }
-
-            // Add this chunk's hash to result so far
-            $hash = array(
-                $hash[0]->add($a),
-                $hash[1]->add($b),
-                $hash[2]->add($c),
-                $hash[3]->add($d),
-                $hash[4]->add($e),
-                $hash[5]->add($f),
-                $hash[6]->add($g),
-                $hash[7]->add($h)
-            );
+        $Xl = array("\143\x62\142\x62\71\x64\65\144\143\61\x30\x35\71\x65\144\70", "\66\x32\x39\x61\x32\71\62\141\x33\x36\67\143\x64\x35\x30\67", "\71\x31\x35\x39\x30\x31\x35\141\63\60\x37\x30\144\144\x31\x37", "\61\65\x32\x66\x65\143\144\x38\146\67\60\x65\65\x39\x33\x39", "\x36\x37\x33\x33\62\x36\66\67\x66\146\143\x30\x30\142\63\x31", "\x38\x65\142\64\64\141\70\67\x36\70\x35\70\x31\x35\61\x31", "\144\x62\60\143\x32\145\60\144\x36\x34\146\x39\x38\x66\x61\x37", "\64\x37\142\65\x34\70\x31\x64\142\145\146\141\x34\x66\141\64");
+        $Rk = array("\66\141\60\x39\145\66\66\x37\x66\x33\x62\143\143\x39\60\70", "\142\x62\66\67\x61\x65\70\65\70\64\143\141\141\x37\x33\x62", "\x33\x63\x36\x65\x66\63\x37\x32\146\145\x39\x34\146\x38\x32\142", "\x61\x35\64\x66\146\65\63\141\x35\x66\61\x64\x33\x36\x66\61", "\65\61\x30\x65\x35\x32\67\x66\x61\144\145\66\70\62\x64\x31", "\71\x62\60\x35\x36\x38\x38\143\62\x62\x33\145\66\143\61\146", "\61\x66\70\x33\x64\x39\x61\x62\146\x62\x34\61\x62\144\66\x62", "\65\x62\145\60\x63\144\x31\x39\x31\x33\x37\x65\62\61\67\71");
+        $zY = 0;
+        hC:
+        if (!($zY < 8)) {
+            goto B_;
         }
-
-        // Produce the final hash value (big-endian)
-        // (Crypt_Hash::hash() trims the output for hashes but not for HMACs.  as such, we trim the output here)
-        $temp = $hash[0]->toBytes() . $hash[1]->toBytes() . $hash[2]->toBytes() . $hash[3]->toBytes() .
-                $hash[4]->toBytes() . $hash[5]->toBytes();
-        if ($this->l != 48) {
-            $temp.= $hash[6]->toBytes() . $hash[7]->toBytes();
+        $Xl[$zY] = new Math_BigInteger($Xl[$zY], 16);
+        $Xl[$zY]->setPrecision(64);
+        $Rk[$zY] = new Math_BigInteger($Rk[$zY], 16);
+        $Rk[$zY]->setPrecision(64);
+        F5:
+        $zY++;
+        goto hC;
+        B_:
+        $Wu = array("\x34\x32\70\x61\62\x66\x39\x38\144\x37\x32\70\141\145\x32\x32", "\x37\61\63\67\x34\x34\71\61\x32\63\x65\146\66\65\143\x64", "\142\x35\143\x30\146\x62\x63\146\145\x63\64\x64\x33\x62\62\146", "\x65\71\142\x35\x64\142\x61\65\70\x31\70\71\x64\142\x62\x63", "\63\x39\x35\x36\x63\x32\65\x62\146\x33\x34\70\142\65\x33\70", "\65\71\x66\x31\61\x31\x66\x31\x62\x36\60\65\x64\x30\x31\x39", "\71\62\63\146\x38\62\x61\64\141\x66\x31\71\64\146\x39\x62", "\x61\142\x31\x63\x35\x65\144\65\144\x61\66\144\70\x31\x31\x38", "\x64\x38\60\x37\141\141\71\x38\x61\x33\60\63\x30\x32\x34\62", "\61\62\x38\x33\x35\x62\60\x31\x34\x35\67\x30\66\x66\x62\x65", "\62\x34\63\61\x38\65\142\x65\x34\145\x65\64\x62\62\x38\x63", "\65\x35\x30\143\x37\x64\143\63\x64\x35\146\x66\142\64\145\x32", "\x37\x32\x62\145\65\144\67\64\x66\62\67\142\x38\71\66\146", "\x38\x30\144\x65\x62\61\x66\x65\63\142\x31\x36\71\66\x62\61", "\71\142\144\143\60\66\141\x37\x32\x35\143\x37\61\62\63\x35", "\143\61\71\142\x66\x31\67\64\143\146\x36\71\62\66\x39\x34", "\x65\x34\71\x62\x36\71\x63\x31\71\145\146\x31\64\141\144\62", "\145\146\142\145\64\x37\70\x36\63\x38\x34\x66\62\65\145\x33", "\x30\x66\143\61\x39\x64\x63\66\70\x62\70\143\x64\65\x62\x35", "\x32\x34\60\143\141\x31\143\x63\67\67\141\143\x39\143\66\x35", "\62\144\145\71\x32\143\x36\x66\x35\71\62\142\x30\62\x37\65", "\64\141\x37\x34\x38\x34\141\141\x36\x65\141\x36\x65\x34\x38\x33", "\65\x63\x62\60\141\71\144\143\142\x64\x34\x31\x66\x62\x64\x34", "\x37\66\x66\71\70\70\x64\x61\70\x33\x31\61\65\63\x62\x35", "\x39\x38\63\145\65\x31\x35\62\x65\145\x36\66\x64\x66\141\x62", "\x61\70\63\x31\x63\x36\66\x64\x32\x64\x62\x34\x33\62\61\60", "\x62\60\60\x33\62\67\143\x38\71\70\x66\x62\62\x31\63\146", "\x62\146\65\x39\67\146\143\67\x62\145\145\146\60\145\145\x34", "\x63\66\145\60\x30\x62\x66\63\x33\x64\141\70\70\x66\143\x32", "\144\x35\x61\x37\x39\x31\x34\67\71\x33\60\141\x61\x37\62\x35", "\x30\66\143\141\x36\x33\65\x31\145\60\60\63\x38\62\66\x66", "\x31\x34\62\x39\62\x39\x36\67\x30\141\x30\x65\x36\x65\67\x30", "\x32\x37\x62\x37\x30\141\x38\x35\x34\66\x64\62\x32\146\146\143", "\62\x65\61\142\62\61\x33\x38\x35\x63\62\x36\143\x39\62\x36", "\64\x64\62\x63\66\144\x66\143\65\x61\x63\64\62\141\x65\x64", "\65\x33\63\70\x30\x64\61\x33\71\x64\x39\x35\142\63\x64\146", "\66\x35\x30\x61\67\63\65\x34\70\x62\141\146\x36\63\x64\x65", "\67\66\x36\x61\60\x61\142\142\63\143\67\67\x62\x32\x61\70", "\x38\x31\143\x32\143\71\62\x65\64\x37\145\x64\141\x65\145\66", "\x39\x32\67\62\x32\143\x38\x35\61\64\70\62\x33\x35\63\x62", "\141\62\x62\x66\x65\x38\141\x31\64\x63\x66\x31\x30\63\66\x34", "\x61\70\61\x61\x36\66\64\142\142\143\64\62\63\60\60\x31", "\x63\62\x34\142\x38\142\x37\60\144\x30\x66\x38\71\67\71\61", "\x63\x37\66\143\65\x31\141\x33\60\66\x35\x34\x62\145\x33\60", "\144\x31\x39\62\x65\x38\61\x39\x64\66\145\146\65\62\x31\x38", "\x64\66\71\x39\x30\x36\x32\64\65\x35\66\65\141\71\x31\x30", "\x66\64\60\145\x33\x35\70\x35\65\x37\67\61\x32\x30\x32\141", "\x31\x30\x36\x61\141\60\x37\x30\63\x32\142\142\x64\61\x62\70", "\61\71\x61\x34\x63\61\x31\x36\142\x38\144\x32\144\x30\143\x38", "\x31\x65\63\x37\66\143\60\70\65\x31\64\x31\x61\142\x35\63", "\x32\x37\64\x38\x37\x37\64\143\144\x66\70\145\145\142\71\x39", "\63\x34\x62\x30\142\143\x62\x35\x65\61\71\x62\64\70\141\x38", "\x33\71\61\x63\x30\143\x62\63\x63\65\143\x39\x35\141\66\63", "\x34\x65\x64\70\x61\141\x34\x61\145\x33\64\x31\70\x61\x63\142", "\65\142\x39\143\x63\x61\64\146\x37\x37\x36\63\145\63\x37\63", "\66\70\x32\x65\66\146\x66\x33\x64\66\x62\62\142\x38\x61\63", "\x37\x34\x38\x66\x38\62\145\145\x35\144\x65\146\142\x32\x66\x63", "\x37\x38\141\65\x36\63\x36\x66\x34\x33\61\x37\x32\146\66\60", "\x38\64\143\x38\x37\x38\61\x34\141\61\146\x30\x61\x62\x37\62", "\x38\x63\143\x37\60\x32\60\70\x31\141\x36\x34\63\x39\145\x63", "\x39\x30\x62\x65\146\146\x66\x61\62\63\x36\x33\61\x65\x32\70", "\141\x34\65\60\x36\x63\145\142\144\145\70\x32\x62\x64\x65\x39", "\x62\x65\x66\x39\141\63\x66\x37\x62\62\x63\x36\x37\x39\61\65", "\x63\66\x37\x31\x37\70\x66\62\x65\63\x37\x32\65\x33\62\142", "\x63\x61\62\x37\63\145\143\145\x65\x61\x32\66\66\x31\x39\143", "\144\61\70\x36\142\x38\143\x37\x32\61\143\x30\143\x32\60\x37", "\145\141\144\141\x37\144\x64\x36\143\144\145\60\x65\142\x31\145", "\x66\x35\67\144\x34\x66\x37\x66\x65\145\66\145\x64\61\67\x38", "\60\66\x66\60\x36\x37\x61\141\67\x32\61\x37\x36\146\142\141", "\x30\141\x36\63\67\144\x63\65\x61\x32\x63\x38\x39\x38\x61\x36", "\61\x31\63\146\71\x38\60\x34\142\x65\146\71\x30\144\141\x65", "\x31\x62\67\61\60\142\x33\65\x31\x33\61\x63\x34\67\61\x62", "\x32\x38\144\142\x37\x37\146\x35\62\x33\60\x34\67\x64\x38\64", "\x33\x32\143\141\x61\x62\67\x62\x34\x30\143\67\x32\64\71\x33", "\x33\x63\x39\145\x62\145\60\141\x31\65\143\x39\142\x65\x62\x63", "\x34\63\x31\144\66\67\143\64\71\x63\x31\x30\x30\x64\x34\x63", "\64\x63\x63\65\x64\x34\142\x65\x63\x62\63\145\64\62\142\x36", "\65\x39\67\x66\62\x39\71\x63\x66\x63\x36\65\x37\145\62\141", "\65\x66\x63\x62\x36\x66\x61\x62\63\141\144\66\146\x61\145\143", "\66\x63\x34\x34\x31\x39\70\143\x34\141\x34\x37\65\x38\x31\67");
+        $zY = 0;
+        Rx:
+        if (!($zY < 80)) {
+            goto BE;
         }
-
-        return $temp;
+        $Wu[$zY] = new Math_BigInteger($Wu[$zY], 16);
+        Tr:
+        $zY++;
+        goto Rx;
+        BE:
+        Ix:
+        $H2 = $this->l == 48 ? $Xl : $Rk;
+        $F_ = strlen($X3);
+        $X3 .= str_repeat(chr(0), 128 - ($F_ + 16 & 0x7f));
+        $X3[$F_] = chr(0x80);
+        $X3 .= pack("\x4e\64", 0, 0, 0, $F_ << 3);
+        $Dl = str_split($X3, 128);
+        foreach ($Dl as $cB) {
+            $j0 = array();
+            $zY = 0;
+            gR:
+            if (!($zY < 16)) {
+                goto Mc;
+            }
+            $zn = new Math_BigInteger($this->_string_shift($cB, 8), 256);
+            $zn->setPrecision(64);
+            $j0[] = $zn;
+            IK:
+            $zY++;
+            goto gR;
+            Mc:
+            $zY = 16;
+            wC:
+            if (!($zY < 80)) {
+                goto OG;
+            }
+            $zn = array($j0[$zY - 15]->bitwise_rightRotate(1), $j0[$zY - 15]->bitwise_rightRotate(8), $j0[$zY - 15]->bitwise_rightShift(7));
+            $OS = $zn[0]->bitwise_xor($zn[1]);
+            $OS = $OS->bitwise_xor($zn[2]);
+            $zn = array($j0[$zY - 2]->bitwise_rightRotate(19), $j0[$zY - 2]->bitwise_rightRotate(61), $j0[$zY - 2]->bitwise_rightShift(6));
+            $tc = $zn[0]->bitwise_xor($zn[1]);
+            $tc = $tc->bitwise_xor($zn[2]);
+            $j0[$zY] = $j0[$zY - 16]->copy();
+            $j0[$zY] = $j0[$zY]->add($OS);
+            $j0[$zY] = $j0[$zY]->add($j0[$zY - 7]);
+            $j0[$zY] = $j0[$zY]->add($tc);
+            mj:
+            $zY++;
+            goto wC;
+            OG:
+            $hP = $H2[0]->copy();
+            $fM = $H2[1]->copy();
+            $eo = $H2[2]->copy();
+            $qa = $H2[3]->copy();
+            $mP = $H2[4]->copy();
+            $du = $H2[5]->copy();
+            $Sm = $H2[6]->copy();
+            $AX = $H2[7]->copy();
+            $zY = 0;
+            J6:
+            if (!($zY < 80)) {
+                goto Ll;
+            }
+            $zn = array($hP->bitwise_rightRotate(28), $hP->bitwise_rightRotate(34), $hP->bitwise_rightRotate(39));
+            $OS = $zn[0]->bitwise_xor($zn[1]);
+            $OS = $OS->bitwise_xor($zn[2]);
+            $zn = array($hP->bitwise_and($fM), $hP->bitwise_and($eo), $fM->bitwise_and($eo));
+            $oK = $zn[0]->bitwise_xor($zn[1]);
+            $oK = $oK->bitwise_xor($zn[2]);
+            $s9 = $OS->add($oK);
+            $zn = array($mP->bitwise_rightRotate(14), $mP->bitwise_rightRotate(18), $mP->bitwise_rightRotate(41));
+            $tc = $zn[0]->bitwise_xor($zn[1]);
+            $tc = $tc->bitwise_xor($zn[2]);
+            $zn = array($mP->bitwise_and($du), $Sm->bitwise_and($mP->bitwise_not()));
+            $bV = $zn[0]->bitwise_xor($zn[1]);
+            $Sx = $AX->add($tc);
+            $Sx = $Sx->add($bV);
+            $Sx = $Sx->add($Wu[$zY]);
+            $Sx = $Sx->add($j0[$zY]);
+            $AX = $Sm->copy();
+            $Sm = $du->copy();
+            $du = $mP->copy();
+            $mP = $qa->add($Sx);
+            $qa = $eo->copy();
+            $eo = $fM->copy();
+            $fM = $hP->copy();
+            $hP = $Sx->add($s9);
+            Th:
+            $zY++;
+            goto J6;
+            Ll:
+            $H2 = array($H2[0]->add($hP), $H2[1]->add($fM), $H2[2]->add($eo), $H2[3]->add($qa), $H2[4]->add($mP), $H2[5]->add($du), $H2[6]->add($Sm), $H2[7]->add($AX));
+            EA:
+        }
+        Xw:
+        $zn = $H2[0]->toBytes() . $H2[1]->toBytes() . $H2[2]->toBytes() . $H2[3]->toBytes() . $H2[4]->toBytes() . $H2[5]->toBytes();
+        if (!($this->l != 48)) {
+            goto fU;
+        }
+        $zn .= $H2[6]->toBytes() . $H2[7]->toBytes();
+        fU:
+        return $zn;
     }
-
-    /**
-     * Right Rotate
-     *
-     * @access private
-     * @param int $int
-     * @param int $amt
-     * @see self::_sha256()
-     * @return int
-     */
-    function _rightRotate($int, $amt)
+    function _rightRotate($LW, $hl)
     {
-        $invamt = 32 - $amt;
-        $mask = (1 << $invamt) - 1;
-        return (($int << $invamt) & 0xFFFFFFFF) | (($int >> $amt) & $mask);
+        $C6 = 32 - $hl;
+        $aE = (1 << $C6) - 1;
+        return $LW << $C6 & 0xffffffff | $LW >> $hl & $aE;
     }
-
-    /**
-     * Right Shift
-     *
-     * @access private
-     * @param int $int
-     * @param int $amt
-     * @see self::_sha256()
-     * @return int
-     */
-    function _rightShift($int, $amt)
+    function _rightShift($LW, $hl)
     {
-        $mask = (1 << (32 - $amt)) - 1;
-        return ($int >> $amt) & $mask;
+        $aE = (1 << 32 - $hl) - 1;
+        return $LW >> $hl & $aE;
     }
-
-    /**
-     * Not
-     *
-     * @access private
-     * @param int $int
-     * @see self::_sha256()
-     * @return int
-     */
-    function _not($int)
+    function _not($LW)
     {
-        return ~$int & 0xFFFFFFFF;
+        return ~$LW & 0xffffffff;
     }
-
-    /**
-     * Add
-     *
-     * _sha256() adds multiple unsigned 32-bit integers.  Since PHP doesn't support unsigned integers and since the
-     * possibility of overflow exists, care has to be taken.  Math_BigInteger() could be used but this should be faster.
-     *
-     * @param int $...
-     * @return int
-     * @see self::_sha256()
-     * @access private
-     */
     function _add()
     {
-        static $mod;
-        if (!isset($mod)) {
-            $mod = pow(2, 32);
+        static $cU;
+        if (isset($cU)) {
+            goto Mf;
         }
-
-        $result = 0;
-        $arguments = func_get_args();
-        foreach ($arguments as $argument) {
-            $result+= $argument < 0 ? ($argument & 0x7FFFFFFF) + 0x80000000 : $argument;
+        $cU = pow(2, 32);
+        Mf:
+        $DE = 0;
+        $Nu = func_get_args();
+        foreach ($Nu as $f7) {
+            $DE += $f7 < 0 ? ($f7 & 0x7fffffff) + 0x80000000 : $f7;
+            wO:
         }
-
+        AO:
         switch (true) {
-            case is_int($result):
-            // PHP 5.3, per http://php.net/releases/5_3_0.php, introduced "more consistent float rounding"
-            case version_compare(PHP_VERSION, '5.3.0') >= 0 && (php_uname('m') & "\xDF\xDF\xDF") != 'ARM':
-            // PHP_OS & "\xDF\xDF\xDF" == strtoupper(substr(PHP_OS, 0, 3)), but a lot faster
-            case (PHP_OS & "\xDF\xDF\xDF") === 'WIN':
-                return fmod($result, $mod);
+            case is_int($DE):
+            case version_compare(PHP_VERSION, "\x35\x2e\63\x2e\x30") >= 0 && (php_uname("\155") & "\xdf\xdf\337") != "\101\x52\x4d":
+            case (PHP_OS & "\xdf\xdf\337") === "\127\111\x4e":
+                return fmod($DE, $cU);
         }
-
-        return (fmod($result, 0x80000000) & 0x7FFFFFFF) |
-            ((fmod(floor($result / 0x80000000), 2) & 1) << 31);
+        wk:
+        xz:
+        return fmod($DE, 0x80000000) & 0x7fffffff | (fmod(floor($DE / 0x80000000), 2) & 1) << 31;
     }
-
-    /**
-     * String Shift
-     *
-     * Inspired by array_shift
-     *
-     * @param string $string
-     * @param int $index
-     * @return string
-     * @access private
-     */
-    function _string_shift(&$string, $index = 1)
+    function _string_shift(&$P3, $Vo = 1)
     {
-        $substr = substr($string, 0, $index);
-        $string = substr($string, $index);
-        return $substr;
+        $r3 = substr($P3, 0, $Vo);
+        $P3 = substr($P3, $Vo);
+        return $r3;
     }
 }
