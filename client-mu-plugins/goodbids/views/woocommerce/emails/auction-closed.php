@@ -39,11 +39,10 @@ do_action( 'woocommerce_email_header', $email_heading );
 <p>
 	<?php
 	printf(
-		'%s <a href="%s">%s</a> %s!',
-		esc_html__( 'Check your email or', 'goodbids' ),
-		'{auction.url}',
-		esc_html__( 'visit the auction page', 'goodbids' ),
-		esc_html__( 'to see if you won!', 'goodbids' )
+		'%s <a href="%s">%s</a>.',
+		esc_html__( 'Thank you for being a supporter. Please check our other auctions at', 'goodbids' ),
+		'{site_url}/explore-auctions',
+		esc_html__( 'goodbids.org/explore-auctions', 'goodbids' ),
 	);
 	?>
 </p>
