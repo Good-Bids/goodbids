@@ -13,6 +13,7 @@ use GoodBids\Frontend\Notices;
 use GoodBids\Network\Nonprofit;
 use GoodBids\Plugins\WooCommerce;
 use GoodBids\Utilities\Log;
+use WC_Order;
 use WP_Block;
 
 /**
@@ -30,6 +31,9 @@ class Checkout {
 	public function __construct() {
 		// Track Auction info for the order during checkout.
 		$this->store_auction_info_on_checkout();
+
+		// Unlock the bid product when the payment fails.
+		$this->unlock_bid_on_payment_failure();
 
 		// Validate Bids during checkout.
 		$this->validate_bid();
@@ -93,6 +97,36 @@ class Checkout {
 	}
 
 	/**
+	 * Unlock the bid product when the payment fails.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function unlock_bid_on_payment_failure(): void {
+		add_action(
+			'woocommerce_order_status_failed',
+			function ( int $order_id ): void {
+				$info = goodbids()->woocommerce->orders->get_auction_info( $order_id );
+
+				if ( ! $info ) {
+					Log::warning( 'Unable to retrieve Auction info from Order Meta.', compact( 'order_id' ) );
+					return;
+				}
+
+				if ( Bids::ITEM_TYPE !== $info['order_type'] ) {
+					return;
+				}
+
+				$auction = goodbids()->auctions->get( $info['auction_id'] );
+
+				$auction->unlock_bid();
+			},
+			50
+		);
+	}
+
+	/**
 	 * Validate Bids during checkout
 	 *
 	 * @since 1.0.0
@@ -102,11 +136,7 @@ class Checkout {
 	private function validate_bid(): void {
 		add_action(
 			'woocommerce_store_api_checkout_update_order_from_request',
-			function ( $order, $request = [] ) {
-				if ( empty( $request ) ) {
-					return;
-				}
-
+			function ( WC_Order $order ): void {
 				$info = goodbids()->woocommerce->orders->get_auction_info( $order->get_id() );
 
 				if ( ! $info ) {
@@ -129,6 +159,7 @@ class Checkout {
 				// Make sure Auction has not ended.
 				if ( $auction->has_ended() ) {
 					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
+					goodbids()->woocommerce->orders->delete( $order->get_id(), true );
 					return;
 				}
 
@@ -149,16 +180,15 @@ class Checkout {
 
 				// Perform this check last to ensure the bid hasn't already been placed.
 				if ( ! $auction->bid_allowed( $info ) ) {
+					goodbids()->woocommerce->orders->delete( $order->get_id(), true );
 					goodbids()->notices->add_notice( Notices::BID_ALREADY_PLACED );
-					WC()->cart->empty_cart();
 					return;
 				}
 
 				// Lock the Bid.
 				$auction->lock_bid();
 			},
-			50,
-			2
+			50
 		);
 	}
 

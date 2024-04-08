@@ -143,6 +143,8 @@ class Bids {
 					return;
 				}
 
+				nocache_headers();
+
 				$auction_id = get_queried_object_id();
 				$auction    = new Auction( $auction_id );
 

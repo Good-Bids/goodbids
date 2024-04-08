@@ -424,4 +424,27 @@ class Orders {
 			}
 		);
 	}
+
+	/**
+	 * Delete an Order
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param int $order_id
+	 * @param bool $force
+	 *
+	 * @return void
+	 */
+	public function delete( int $order_id, bool $force = false ): void {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return;
+		}
+
+		Log::debug( 'Deleting order: ' . $order_id );
+
+		$order->delete( $force );
+		wp_delete_post( $order->get_id(),$force );
+	}
 }

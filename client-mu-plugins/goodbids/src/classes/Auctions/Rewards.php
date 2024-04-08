@@ -138,6 +138,8 @@ class Rewards {
 					return;
 				}
 
+				nocache_headers();
+
 				$auction_id = get_queried_object_id();
 				$auction    = new Auction( $auction_id );
 				$reward_id  = $auction->get_reward_id();
