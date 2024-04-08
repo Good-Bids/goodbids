@@ -442,9 +442,14 @@ class Orders {
 			return;
 		}
 
-		Log::debug( 'Deleting order: ' . $order_id );
-
 		$order->delete( $force );
 		wp_delete_post( $order->get_id(),$force );
+
+		if ( $force ) {
+			global $wpdb;
+			$wpdb->delete( $wpdb->prefix . 'woocommerce_order_items', [ 'order_id' => $order_id ] );
+			$wpdb->delete( $wpdb->prefix . 'wc_orders_meta', [ 'order_id' => $order_id ] );
+			$wpdb->delete( $wpdb->prefix . 'wc_orders', [ 'id' => $order_id ] );
+		}
 	}
 }
