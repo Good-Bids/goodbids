@@ -476,7 +476,7 @@ class Permissions {
 	}
 
 	/**
-	 * Set the default role for Nonprofits to Administrator.
+	 * Set the default role for Nonprofits to Customer.
 	 *
 	 * @since 1.0.0
 	 *
