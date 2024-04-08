@@ -73,20 +73,26 @@ class MiniOrange {
 
 				// Source: plugins/miniorange-oauth-oidc-single-sign-on/classes/Premium/Multisite/class-multisitesettings.php
 				// Method: save_multisite_settings
-				// Encoded Option Name: Look for $Yh->mo_oauth_client_update_option() in the method
+				// Encoded Option Name: Look for $mo_global->mo_oauth_client_update_option() in the method
 
 				// Decrypt: json_decode( ( new MOUtils() )->mooauthdecrypt( $value ) )
-				// Encrypt: $Yh->mooauthencrypt( json_encode( $value ) )
+				// Encrypt: $mo_global->mooauthencrypt( json_encode( $value ) )
 
 				// Class: MOUtils
 				// Path: plugins/miniorange-oauth-oidc-single-sign-on/classes/common/class-moutils.php
-				// Access: global $Yh;
+				// Access: global $Yh; or similar
 
-				global $Yh;
+				global $Uj; // This has potential to change when the MO plugin is updated.
+
+				if ( ! $Uj ) {
+					return;
+				}
+
+				$mo_global = $Uj;
 
 				$sites_key = 'mo_oauth_c3Vic2l0ZXNzZWxlY3RlZA';
-				$sites_val = $Yh->mo_oauth_client_get_option( $sites_key );
-				$sites     = json_decode( $Yh->mooauthdecrypt( $sites_val ) );
+				$sites_val = $mo_global->mo_oauth_client_get_option( $sites_key );
+				$sites     = json_decode( $mo_global->mooauthdecrypt( $sites_val ) );
 
 				if ( ! $sites || ! is_array( $sites ) ) {
 					Log::error( 'Unable to decode the SSO settings.', compact( 'sites_val', 'sites' ) );
@@ -102,7 +108,7 @@ class MiniOrange {
 
 				// Make sure they don't exceed their limit.
 				$no_of_sites_key = 'noOfSubSites';
-				$no_of_sites     = intval( $Yh->mo_oauth_client_get_option( $no_of_sites_key ) );
+				$no_of_sites     = intval( $mo_global->mo_oauth_client_get_option( $no_of_sites_key ) );
 
 				if ( count( $sites ) + 1 > $no_of_sites ) {
 					Log::warning( 'You have reached the limit of sub-sites allowed for SSO.', compact( 'sites', 'no_of_sites' ) );
@@ -110,9 +116,9 @@ class MiniOrange {
 				}
 
 				$sites[] = $site_id;
-				$updated = $Yh->mooauthencrypt( json_encode( $sites ) ); // phpcs:ignore
+				$updated = $mo_global->mooauthencrypt( json_encode( $sites ) ); // phpcs:ignore
 
-				$Yh->mo_oauth_client_update_option( $sites_key, $updated );
+				$mo_global->mo_oauth_client_update_option( $sites_key, $updated );
 
 				// :crossed_fingers:
 			}
