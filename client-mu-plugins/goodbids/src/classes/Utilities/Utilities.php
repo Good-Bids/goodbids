@@ -244,16 +244,16 @@ class Utilities {
 	}
 
 	/**
-	 * Sanitize Special Characters from Email Subject
+	 * Sanitize Special Characters in Emails
 	 *
 	 * @since 1.0.1
 	 *
-	 * @param string $subject
+	 * @param string $string
 	 *
 	 * @return string
 	 */
-	public function sanitize_email_subject( string $subject ): string {
-		$subject = htmlspecialchars_decode( $subject );
-		return html_entity_decode( $subject );
+	public function sanitize_email_special_chars( string $string ): string {
+		$string = htmlspecialchars_decode( $string );
+		return html_entity_decode( $string );
 	}
 }

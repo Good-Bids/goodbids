@@ -317,7 +317,7 @@ class Email extends WC_Email {
 		// Woohoo, send the email!
 		$this->send(
 			$this->get_recipient(),
-			goodbids()->utilities->sanitize_email_subject( $this->get_subject() ),
+			goodbids()->utilities->sanitize_email_special_chars( $this->get_subject() ),
 			$this->get_content(),
 			$this->get_headers(),
 			$this->get_attachments()
@@ -442,7 +442,7 @@ class Email extends WC_Email {
 		$auction_title = $auction?->get_title() ?: '';
 		$this->add_placeholder( '{auction.url}', $auction?->get_url() );
 		$this->add_placeholder( '{auction.admin_url}', get_edit_post_link( $auction?->get_id() ) );
-		$this->add_placeholder( '{auction.title}', htmlspecialchars( $auction_title ) );
+		$this->add_placeholder( '{auction.title}', goodbids()->utilities->sanitize_email_special_chars( $auction_title ) );
 		$this->add_placeholder( '{auction.start_date_time}', $auction?->get_start_date_time( $datetime_format ) );
 		$this->add_placeholder( '{auction.end_date_time}', $auction?->get_end_date_time( $datetime_format ) );
 
