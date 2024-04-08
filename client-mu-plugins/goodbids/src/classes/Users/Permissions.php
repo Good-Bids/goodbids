@@ -490,7 +490,7 @@ class Permissions {
 					return $role;
 				}
 
-				return 'administrator';
+				return 'customer';
 			}
 		);
 	}
