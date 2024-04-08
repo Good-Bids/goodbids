@@ -349,7 +349,6 @@ class Referrals {
 		$referral_id = $this->get_referral( $referrer_id, $user_id );
 
 		if ( is_null( $referral_id ) ) {
-			Log::warning( 'Referral not found', compact( 'user_id', 'referrer_id' ) );
 			return false;
 		}
 
