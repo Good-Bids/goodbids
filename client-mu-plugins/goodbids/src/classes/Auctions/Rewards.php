@@ -460,7 +460,7 @@ class Rewards {
 		$winning_bid = $auction->get_last_bid();
 
 		if ( ! $winning_bid ) {
-			Log::error( 'No winning bid not found.', compact( 'auction_id' ) );
+			Log::error( 'No winning bid found.', compact( 'auction_id' ) );
 			return;
 		}
 
