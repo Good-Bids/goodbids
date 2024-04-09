@@ -39,10 +39,10 @@ do_action( 'woocommerce_email_header', $email_heading );
 <p>
 	<?php
 	printf(
-		'%s <a href="%s">%s</a>.',
+		'%s <a href="%s">goodbids.org/%s</a>.',
 		esc_html__( 'Thank you for being a supporter. Please check our other auctions at', 'goodbids' ),
 		'{auctions_url}',
-		esc_html__( 'goodbids.org/explore-auctions', 'goodbids' ),
+		esc_html( Sites::ALL_AUCTIONS_SLUG )
 	);
 	?>
 </p>
