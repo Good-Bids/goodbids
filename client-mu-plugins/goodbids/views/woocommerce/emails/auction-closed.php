@@ -41,7 +41,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 	printf(
 		'%s <a href="%s">%s</a>.',
 		esc_html__( 'Thank you for being a supporter. Please check our other auctions at', 'goodbids' ),
-		'{site_url}/explore-auctions',
+		'{auctions_url}',
 		esc_html__( 'goodbids.org/explore-auctions', 'goodbids' ),
 	);
 	?>
