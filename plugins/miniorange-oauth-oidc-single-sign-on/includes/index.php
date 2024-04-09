@@ -1,8 +1,8 @@
 <?php
 
 
-if (defined("\127\120\x49\116\103")) {
-    goto L4G;
+if (defined("\127\120\111\x4e\x43")) {
+    goto DMg;
 }
 die;
-L4G:
+DMg:

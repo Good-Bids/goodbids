@@ -7,33 +7,33 @@ abstract class MoOAuthClientBasicEnum
     public static function getConstants()
     {
         if (!(self::$constCacheArray == NULL)) {
-            goto oM2;
+            goto BcP;
         }
         self::$constCacheArray = [];
-        oM2:
-        $o2 = get_called_class();
-        if (array_key_exists($o2, self::$constCacheArray)) {
-            goto pIP;
+        BcP:
+        $JM = get_called_class();
+        if (array_key_exists($JM, self::$constCacheArray)) {
+            goto KYX;
         }
-        $Qm = new ReflectionClass($o2);
-        self::$constCacheArray[$o2] = $Qm->getConstants();
-        pIP:
-        return self::$constCacheArray[$o2];
+        $Rs = new ReflectionClass($JM);
+        self::$constCacheArray[$JM] = $Rs->getConstants();
+        KYX:
+        return self::$constCacheArray[$JM];
     }
-    public static function isValidName($uQ, $le = false)
+    public static function isValidName($un, $iu = false)
     {
-        $tG = self::getConstants();
-        if (!$le) {
-            goto hit;
+        $WQ = self::getConstants();
+        if (!$iu) {
+            goto p3L;
         }
-        return array_key_exists($uQ, $tG);
-        hit:
-        $nR = array_map("\163\164\x72\164\x6f\x6c\157\167\x65\x72", array_keys($tG));
-        return in_array(strtolower($uQ), $nR);
+        return array_key_exists($un, $WQ);
+        p3L:
+        $gv = array_map("\163\x74\162\164\157\154\157\x77\145\162", array_keys($WQ));
+        return in_array(strtolower($un), $gv);
     }
-    public static function isValidValue($t_, $le = true)
+    public static function isValidValue($LQ, $iu = true)
     {
-        $EI = array_values(self::getConstants());
-        return in_array($t_, $EI, $le);
+        $mR = array_values(self::getConstants());
+        return in_array($LQ, $mR, $iu);
     }
 }

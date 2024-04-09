@@ -27,10 +27,10 @@ function showClientSecret(){
     var show_button = document.getElementById("show_button");
     if(field.type == "password"){
         field.type = "text";
-        show_button.className = "fa fa-eye-slash";
+        show_button.className = "mofa fa-eye-slash";
     }
    else{
         field.type = "password";
-        show_button.className = "fa fa-eye";
+        show_button.className = "mofa fa-eye";
     }
 }

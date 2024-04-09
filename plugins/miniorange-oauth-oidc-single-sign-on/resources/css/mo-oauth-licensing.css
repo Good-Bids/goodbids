@@ -94,6 +94,7 @@
                 font-weight: 500;   
             }
             .moc-licensing-plan {
+                position: relative;
                 border-radius: 1rem;
                 border: 1px solid #00788E;
                 margin: 0.5rem 0;
@@ -189,9 +190,70 @@
     }
      .cd-currency,
     .cd-value {
-    font-size: 4rem;
-    font-weight: 300;
-    }       
+        font-size: 3rem;
+        font-weight: 500;
+    }
+
+    .mo-oauth-flex-value {
+        color: #0E1D35;
+    }  
+
+    
+    #flex-container {
+        display: flex;
+        justify-content: center;
+      }
+
+     
+    .mo-oauth-flex-policy {
+        font-size:3rem;
+      }
+
+    .mo-oauth-btn-block{
+        background-color:#2B3D5B;
+        border-width: 2px;
+        border-color:#2b3d5b !important;
+        text-decoration: none;
+        transition: all 0.5s ease-out;
+        /* 3D transition -> */
+        box-shadow: 0px 10px 5px -5px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        -webkit-transition: all ease-in-out 300ms;
+    }
+
+    .mo-oauth-btn-block:hover,
+    .mo-oauth-btn-block:focus {
+        background-color: #d8e5ff;
+        color: #0E1D35;
+        /* 3D transition -> */
+        box-shadow: 0px 20px 10px -10px rgba(0, 0, 0, 0.1);
+        -webkit-transform: translate(0px, -5px) scale(1.0);
+        transform: translate(0px, -5px) scale(1.0);
+    }
+
+    .mo-oauth-btn-block-black{
+        background-color:#191E23;
+        border-width: 2px;
+        border-color: #191E23 !important;
+        text-decoration: none;
+        transition: all 0.5s ease-out;
+        /* 3D transition -> */
+        box-shadow: 0px 10px 5px -5px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        -webkit-transition: all ease-in-out 300ms;
+    }
+
+    .mo-oauth-btn-block-black:hover,
+    .mo-oauth-btn-block-black:focus {
+        background-color: #e2e8ee;
+        color: #191E23;
+        /* 3D transition -> */
+        box-shadow: 0px 20px 10px -10px rgba(0, 0, 0, 0);
+        -webkit-transform: translate(0px, -5px) scale(1.0);
+        transform: translate(0px, -5px) scale(1.0);
+
+    }
+
 
     .cd-currency,
     .cd-duration {
@@ -209,16 +271,11 @@
     .cd-secondary-theme .cd-popular .cd-duration {
         color: #ba6453;
     }
-    .cd-currency {
-        display: inline-block;
-        vertical-align: top;
-        font-size: 2rem;
-        font-weight: 700;
-    }
+
     .cd-duration {
         font-size: 1.4rem;
     }
-}
+
 .cd-pricing-body {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -283,9 +340,9 @@
     }
 
     @media only screen and (min-width: 768px) {
-    .cd-value {
-        font-size: 4rem;
-        font-weight: 400;
+    .cd-value, .cd-currency {
+        font-size: 3rem;
+        font-weight: 500;
     }
     .cd-contact {
         font-size: 3rem;
@@ -307,10 +364,10 @@
         color: #ba6453;
     }
     .cd-currency {
-        display: inline-block;
-        vertical-align: top;
-        font-size: 2rem;
-        font-weight: 700;
+        /* display: inline-block; */
+        /* vertical-align: top; */
+        font-size: 3rem;
+        font-weight: 400;
     }
     .cd-duration {
         font-size: 1.4rem;
@@ -864,4 +921,69 @@
 }
 .mo-btn-upgrade-pro2{
     background-color: black;
+}
+
+.mo-oauth-notice{
+    text-align: center;
+    border: 1px #00788e;  
+    border-style:solid ;
+    margin: 20px 50px ;
+    padding: 15px 15px ;
+    background-color: #0935530f ;
+    border-radius: 5px; 
+}
+
+}
+ .mo-oauth-notice-dismiss{
+    font-family: "dashicons";
+    content: "\f153";
+    color: #FFFFFF;
+    background: none;
+    border: none;
+    font-size: 20px;
+    margin-right: 8px;
+    display:inline-block;
+}
+.mo-oauth-notice-dismiss:hover{
+color:#cae5f6;
+cursor: pointer;
+outline: none;
+}
+
+.mo-oauth-licencing-tooltip {
+    display: inline-flex;
+}
+
+.mo-oauth-licencing-tooltip .mo-oauth-licencing-tooltiptext {
+    visibility: hidden;
+    width: 260px;
+    background-color: #2B3D5B;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    left: 0px;
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    margin-top: 25px;
+    margin: 25px auto;
+}
+
+.mo-oauth-licencing-tooltip:hover .mo-oauth-licencing-tooltiptext {
+  visibility: visible;
+}
+
+.mo-oauth-tooltip-licence-img{
+    width: 20px;
+    margin-top: -4px;
+}
+
+.mo-oauth-licencing-no-style-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+.mo-oauth-licencing-no-style-link:hover {
+    color: inherit;
 }
