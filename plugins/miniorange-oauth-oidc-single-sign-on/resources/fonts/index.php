@@ -1,8 +1,8 @@
 <?php
 
 
-if (defined("\127\120\111\x4e\x43")) {
-    goto Pva;
+if (defined("\x57\x50\x49\116\103")) {
+    goto WOx;
 }
 die;
-Pva:
+WOx:

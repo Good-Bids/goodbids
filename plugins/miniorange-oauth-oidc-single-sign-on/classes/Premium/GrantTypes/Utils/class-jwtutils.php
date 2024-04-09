@@ -8,157 +8,158 @@ use MoOauthClient\GrantTypes\Crypt_RSA;
 use MoOauthClient\GrantTypes\Math_BigInteger;
 class JWTUtils
 {
-    const HEADER = "\110\x45\x41\x44\x45\x52";
-    const PAYLOAD = "\x50\101\131\x4c\117\101\x44";
-    const SIGN = "\123\111\107\116";
+    const HEADER = "\110\105\101\x44\x45\122";
+    const PAYLOAD = "\x50\x41\131\114\117\101\x44";
+    const SIGN = "\x53\x49\107\116";
     private $jwt;
     private $decoded_jwt;
-    public function __construct($Ju)
+    public function __construct($gK)
     {
-        $Ju = \explode("\56", $Ju);
-        if (!(3 > count($Ju))) {
-            goto ZE;
+        $gK = \explode("\56", $gK);
+        if (!(3 > count($gK))) {
+            goto Df;
         }
-        return new \WP_Error("\x69\x6e\166\x61\154\x69\x64\x5f\x6a\x77\164", __("\x4a\127\124\x20\122\x65\x63\x65\x69\166\x65\x64\40\151\163\40\x6e\x6f\x74\40\141\x20\166\141\154\x69\x64\x20\112\x57\x54"));
-        ZE:
-        $this->jwt = $Ju;
-        $oh = $this->get_jwt_claim('', self::HEADER);
-        $fE = $this->get_jwt_claim('', self::PAYLOAD);
-        $this->decoded_jwt = array("\x68\x65\x61\144\145\162" => $oh, "\x70\x61\171\154\x6f\x61\x64" => $fE);
+        return new \WP_Error("\x69\156\x76\141\154\151\144\x5f\152\x77\164", __("\112\127\124\40\122\145\x63\145\151\x76\x65\x64\40\151\x73\40\x6e\157\x74\40\x61\x20\166\x61\x6c\151\144\40\112\127\124"));
+        Df:
+        $this->jwt = $gK;
+        $jH = $this->get_jwt_claim('', self::HEADER);
+        $Er = $this->get_jwt_claim('', self::PAYLOAD);
+        $this->decoded_jwt = array("\x68\x65\141\x64\145\x72" => $jH, "\160\141\171\154\x6f\141\x64" => $Er);
     }
-    private function get_jwt_claim($Gg = '', $xt = '')
+    private function get_jwt_claim($Oj = '', $l5 = '')
     {
-        global $Uj;
-        $Xy = '';
-        switch ($xt) {
+        global $Yh;
+        $IK = '';
+        switch ($l5) {
             case self::HEADER:
-                $Xy = $this->jwt[0];
-                goto KP;
+                $IK = $this->jwt[0];
+                goto ug;
             case self::PAYLOAD:
-                $Xy = $this->jwt[1];
-                goto KP;
+                $IK = $this->jwt[1];
+                goto ug;
             case self::SIGN:
                 return $this->jwt[2];
             default:
-                $Uj->handle_error("\x43\141\x6e\x6e\x6f\x74\x20\106\x69\156\x64\40" . $xt . "\40\151\156\40\x74\x68\x65\x20\112\x57\124");
-                wp_die(wp_kses("\103\x61\156\156\157\x74\40\x46\151\x6e\144\x20" . $xt . "\x20\x69\x6e\x20\x74\x68\x65\40\112\x57\x54", \mo_oauth_get_valid_html()));
+                $Yh->handle_error("\103\x61\156\x6e\x6f\164\40\106\x69\x6e\x64\x20" . $l5 . "\x20\151\x6e\40\164\150\x65\x20\112\127\x54");
+                $N5 = "\103\141\156\156\157\x74\x20\x46\151\x6e\x64\40" . $l5 . "\40\x69\156\40\x74\x68\x65\40\x4a\x57\124";
+                wp_die(wp_kses($N5, \mo_oauth_get_valid_html()));
         }
-        SP:
-        KP:
-        $Xy = json_decode($Uj->base64url_decode($Xy), true);
-        if (!(!$Xy || empty($Xy))) {
-            goto u4;
+        xJ:
+        ug:
+        $IK = json_decode($Yh->base64url_decode($IK), true);
+        if (!(!$IK || empty($IK))) {
+            goto nb;
         }
         return null;
-        u4:
-        return empty($Gg) ? $Xy : (isset($Xy[$Gg]) ? $Xy[$Gg] : null);
+        nb:
+        return empty($Oj) ? $IK : (isset($IK[$Oj]) ? $IK[$Oj] : null);
     }
-    public function check_algo($QX = '')
+    public function check_algo($xt = '')
     {
-        global $Uj;
-        $vE = $this->get_jwt_claim("\x61\154\x67", self::HEADER);
-        $vE = explode("\123", $vE);
-        if (isset($vE[0])) {
-            goto nE;
+        global $Yh;
+        $Yb = $this->get_jwt_claim("\141\154\147", self::HEADER);
+        $Yb = explode("\x53", $Yb);
+        if (isset($Yb[0])) {
+            goto cI;
         }
-        $Bl = "\111\156\x76\x61\x6c\x69\x64\40\x52\145\163\x70\x6f\x6e\x73\x65\x20\x52\145\143\145\x69\166\x65\144\40\x66\x72\157\155\x20\x4f\101\165\x74\150\57\117\x70\x65\156\111\104\40\120\x72\x6f\166\x69\144\145\x72\56";
-        $Uj->handle_error($Bl);
-        wp_die(wp_kses($Bl, \mo_oauth_get_valid_html()));
-        nE:
-        switch ($vE[0]) {
-            case "\x48":
-                return "\110\x53\x41" === $QX;
-            case "\x52":
-                return "\x52\123\101" === $QX;
+        $N5 = "\111\156\x76\141\154\151\144\40\x52\145\163\x70\x6f\156\163\145\x20\x52\145\x63\145\151\x76\145\144\x20\x66\162\x6f\x6d\x20\117\x41\165\x74\x68\57\117\x70\x65\156\x49\104\x20\120\x72\157\x76\151\144\x65\x72\56";
+        $Yh->handle_error($N5);
+        wp_die(wp_kses($N5, \mo_oauth_get_valid_html()));
+        cI:
+        switch ($Yb[0]) {
+            case "\110":
+                return "\110\123\101" === $xt;
+            case "\122":
+                return "\122\123\101" === $xt;
             default:
                 return false;
         }
-        ub:
-        Ym:
+        dP:
+        oS:
     }
-    public function verify($cH = '')
+    public function verify($Ju = '')
     {
-        global $Uj;
-        if (!empty($cH)) {
-            goto in;
+        global $Yh;
+        if (!empty($Ju)) {
+            goto wK;
         }
         return false;
-        in:
-        $At = $this->get_jwt_claim("\145\170\x70", self::PAYLOAD);
-        if (!(is_null($At) || time() > $At)) {
-            goto EY;
+        wK:
+        $F4 = $this->get_jwt_claim("\x65\x78\160", self::PAYLOAD);
+        if (!(is_null($F4) || time() > $F4)) {
+            goto rv;
         }
-        $LG = "\112\127\x54\x20\150\141\163\40\x62\x65\145\x6e\x20\x65\x78\160\x69\x72\145\x64\x2e\40\x50\154\145\141\163\145\40\164\162\x79\x20\x4c\157\x67\147\151\x6e\147\x20\151\156\40\141\147\x61\151\156\x2e";
-        $Uj->handle_error($LG);
-        wp_die(wp_kses($LG, \mo_oauth_get_valid_html()));
-        EY:
-        $Nz = $this->get_jwt_claim("\x6e\x62\146", self::PAYLOAD);
+        $XO = "\x4a\x57\x54\x20\150\141\x73\40\x62\x65\x65\156\40\x65\170\160\x69\x72\145\144\56\40\120\x6c\145\x61\163\x65\40\x74\162\171\x20\x4c\157\147\x67\x69\x6e\147\40\151\x6e\x20\x61\147\141\x69\x6e\x2e";
+        $Yh->handle_error($XO);
+        wp_die(wp_kses($XO, \mo_oauth_get_valid_html()));
+        rv:
+        $Nz = $this->get_jwt_claim("\x6e\142\x66", self::PAYLOAD);
         if (!(!is_null($Nz) || time() < $Nz)) {
-            goto Vq;
+            goto fq;
         }
-        $Em = "\111\164\x20\x69\163\x20\164\x6f\157\40\x65\141\162\x6c\x79\40\x74\x6f\40\x75\x73\145\x20\x74\150\151\163\x20\112\127\x54\56\40\120\x6c\145\141\163\x65\40\164\162\171\40\x4c\x6f\147\x67\151\x6e\147\40\x69\x6e\40\141\147\x61\x69\x6e\56";
-        $Uj->handle_error($Em);
-        wp_die(wp_kses($Em, \mo_oauth_get_valid_html()));
-        Vq:
-        $RL = new JWSVerify($this->get_jwt_claim("\x61\x6c\x67", self::HEADER));
-        $Lr = $this->get_header() . "\x2e" . $this->get_payload();
-        return $RL->verify(\utf8_decode($Lr), $cH, base64_decode(strtr($this->get_jwt_claim(false, self::SIGN), "\x2d\137", "\x2b\x2f")));
+        $Gs = "\111\164\x20\x69\163\x20\x74\157\x6f\40\x65\x61\162\x6c\171\x20\164\x6f\x20\x75\x73\145\40\x74\x68\x69\163\x20\112\127\x54\x2e\x20\120\x6c\145\141\163\x65\x20\164\x72\x79\40\x4c\x6f\147\x67\151\156\x67\x20\151\156\x20\x61\x67\x61\x69\x6e\56";
+        $Yh->handle_error($Gs);
+        wp_die(wp_kses($Gs, \mo_oauth_get_valid_html()));
+        fq:
+        $Q_ = new JWSVerify($this->get_jwt_claim("\141\154\147", self::HEADER));
+        $UP = $this->get_header() . "\x2e" . $this->get_payload();
+        return $Q_->verify(\utf8_decode($UP), $Ju, base64_decode(strtr($this->get_jwt_claim(false, self::SIGN), "\55\137", "\53\57")));
     }
-    public function verify_from_jwks($zV = '', $vE = "\122\x53\62\65\x36")
+    public function verify_from_jwks($GY = '', $Yb = "\x52\x53\x32\65\66")
     {
-        global $Uj;
-        $cw = wp_remote_get($zV);
-        if (!is_wp_error($cw)) {
-            goto jr;
+        global $Yh;
+        $ZK = wp_remote_get($GY);
+        if (!is_wp_error($ZK)) {
+            goto zk;
         }
         return false;
-        jr:
-        $cw = json_decode($cw["\142\157\144\171"], true);
-        $C2 = false;
+        zk:
+        $ZK = json_decode($ZK["\x62\157\x64\x79"], true);
+        $WJ = false;
         if (!(json_last_error() !== JSON_ERROR_NONE)) {
-            goto Vh;
+            goto f3;
         }
-        return $C2;
-        Vh:
-        if (isset($cw["\153\x65\x79\163"])) {
-            goto c2;
+        return $WJ;
+        f3:
+        if (isset($ZK["\x6b\145\x79\163"])) {
+            goto Ah;
         }
-        return $C2;
-        c2:
-        foreach ($cw["\x6b\x65\171\163"] as $Mr => $t_) {
-            if (!(!isset($t_["\x6b\164\x79"]) || "\122\x53\101" !== $t_["\x6b\x74\171"] || !isset($t_["\145"]) || !isset($t_["\156"]))) {
-                goto vZ;
+        return $WJ;
+        Ah:
+        foreach ($ZK["\153\145\171\x73"] as $cW => $LQ) {
+            if (!(!isset($LQ["\153\x74\x79"]) || "\122\x53\101" !== $LQ["\153\x74\x79"] || !isset($LQ["\x65"]) || !isset($LQ["\x6e"]))) {
+                goto Hd;
             }
-            goto kW;
-            vZ:
-            $C2 = $C2 || $this->verify($this->jwks_to_pem(["\x6e" => new Math_BigInteger($Uj->base64url_decode($t_["\x6e"]), 256), "\x65" => new Math_BigInteger($Uj->base64url_decode($t_["\x65"]), 256)]));
-            if (!(true === $C2)) {
-                goto CF;
+            goto ts;
+            Hd:
+            $WJ = $WJ || $this->verify($this->jwks_to_pem(["\156" => new Math_BigInteger($Yh->base64url_decode($LQ["\156"]), 256), "\x65" => new Math_BigInteger($Yh->base64url_decode($LQ["\x65"]), 256)]));
+            if (!(true === $WJ)) {
+                goto Iw;
             }
-            goto t2;
-            CF:
-            kW:
+            goto OC;
+            Iw:
+            ts:
         }
-        t2:
-        return $C2;
+        OC:
+        return $WJ;
     }
-    private function jwks_to_pem($T2 = array())
+    private function jwks_to_pem($VO = array())
     {
-        $se = new Crypt_RSA();
-        $se->loadKey($T2);
-        return $se->getPublicKey();
+        $Hf = new Crypt_RSA();
+        $Hf->loadKey($VO);
+        return $Hf->getPublicKey();
     }
     public function get_decoded_header()
     {
-        return $this->decoded_jwt["\x68\145\x61\144\145\x72"];
+        return $this->decoded_jwt["\150\145\x61\x64\145\x72"];
     }
     public function get_decoded_payload()
     {
-        if (!isset($this->decoded_jwt["\x70\141\171\154\157\x61\x64"])) {
-            goto CH;
+        if (!isset($this->decoded_jwt["\160\141\x79\154\157\141\144"])) {
+            goto uy;
         }
-        return $this->decoded_jwt["\160\141\171\x6c\157\141\x64"];
-        CH:
+        return $this->decoded_jwt["\x70\141\x79\154\157\x61\144"];
+        uy:
     }
     public function get_header()
     {
