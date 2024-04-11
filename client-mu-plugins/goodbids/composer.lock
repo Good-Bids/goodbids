@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "27b7cb3e1235e9b41784e60642194c80",
+    "content-hash": "795cfa67cb4390b27dde4c139482d2bd",
     "packages": [
         {
             "name": "composer/installers",
@@ -1426,24 +1426,6 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/woocommerce-services/"
-        },
-        {
-            "name": "wpackagist-plugin/wp-smushit",
-            "version": "3.15.5",
-            "source": {
-                "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/wp-smushit/",
-                "reference": "tags/3.15.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-smushit.3.15.5.zip"
-            },
-            "require": {
-                "composer/installers": "^1.0 || ^2.0"
-            },
-            "type": "wordpress-plugin",
-            "homepage": "https://wordpress.org/plugins/wp-smushit/"
         },
         {
             "name": "wpackagist-plugin/zapier",

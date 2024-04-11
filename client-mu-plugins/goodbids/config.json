@@ -12,7 +12,6 @@
     "tidio-live-chat/tidio-elements.php",
     "user-switching",
     "wp-mail-smtp-pro/wp_mail_smtp.php",
-    "wp-smushit/wp-smush.php",
     "woocommerce",
     "woocommerce-gateway-stripe"
   ],

@@ -28,7 +28,7 @@ if ( $auction->has_started() ) {
 	}
 	$remaining_time = $current_date->diff( $end_date );
 
-	$time = __( 'Ending ', 'goodbids' ) . $auction->get_end_date_time( 'M d' );
+	$time = __( 'Ending ', 'goodbids' ) . $auction->get_end_date_time( 'M d' ) . ' if nobody else bids';
 
 
 	if ( $remaining_time->d < 1 && $remaining_time->h >= 1 ) {
