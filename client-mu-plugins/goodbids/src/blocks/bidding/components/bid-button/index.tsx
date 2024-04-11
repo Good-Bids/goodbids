@@ -68,6 +68,15 @@ function LiveAndClosing() {
 
 	return (
 		<>
+			<div className="flex flex-col items-center justify-center">
+				<p>
+					<p className="inline font-bold">
+						LAST MINUTE BIDS automatically extend this auction's
+						close date -{' '}
+					</p>
+					Smart bidders bid early.
+				</p>
+			</div>
 			<motion.a
 				layout
 				{...fadeAnimation}
