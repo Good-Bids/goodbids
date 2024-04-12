@@ -10,7 +10,7 @@ import { LayoutGroup, motion } from 'framer-motion';
 import { ParticipationNotice } from './participation-notice';
 import { Fetcher } from './fetcher';
 import { Socket } from './socket';
-import { SocketError } from './socket-error';
+// import { SocketError } from './socket-error';
 
 type DriverProps = {
 	auctionId: number;
@@ -35,7 +35,7 @@ export function Driver({ auctionId }: DriverProps) {
 						<FreeBidButton />
 						<ParticipationNotice />
 						<FreeBidsPromo />
-						<SocketError />
+						{/* <SocketError /> */}
 					</LayoutGroup>
 				</motion.div>
 			</Fetcher>
