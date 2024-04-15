@@ -273,12 +273,10 @@ class Checkout {
 					return $block_content;
 				}
 
-				/**
-				The following line appends the disclaimer to the Express Checkout block content, which puts it below the "Or continue below" message. Ideally, the disclaimer should be above that message. In order to do that, the content from the get_paid_bid_disclaimer() method should be inserted via `preg_replace` or similar before the .wc-block-components-express-payment-continue-rule element.
-				**/
-//				$block_content .= $this->get_paid_bid_disclaimer( $bid_amount );
+				$pattern    = '/(<[^>]*class="[^"]*wc-block-components-express-payment-continue-rule[^"]*"[^>]*>)/';
+				$disclaimer = $this->get_paid_bid_disclaimer( $bid_amount ) . '$1';
 
-				return $block_content;
+				return preg_replace( $pattern, $disclaimer, $block_content );
 			},
 			10,
 			2

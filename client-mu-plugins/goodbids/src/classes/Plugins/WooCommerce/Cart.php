@@ -149,6 +149,10 @@ class Cart {
 	 * @return ?string
 	 */
 	public function get_order_type(): ?string {
+		if ( ! WC()->cart ) {
+			return null;
+		}
+
 		$cart = WC()->cart->get_cart_contents();
 
 		foreach ( $cart as $cart_item ) {
@@ -169,6 +173,10 @@ class Cart {
 	 * @return float
 	 */
 	public function get_total(): float {
+		if ( ! WC()->cart ) {
+			return 0;
+		}
+
 		return WC()->cart->get_total( 'edit' );
 	}
 }
