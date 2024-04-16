@@ -67,7 +67,7 @@ class AuctionIsEndingSoon extends Email {
 					$this->send_to_watchers( $auction );
 				}
 			}
-		)
+		);
 	}
 
 	/**

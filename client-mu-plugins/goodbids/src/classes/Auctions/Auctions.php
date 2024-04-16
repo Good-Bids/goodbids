@@ -72,7 +72,7 @@ class Auctions {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const CRON_AUCTION_ENDING_SOON_CHECK_HOOK = 'goodbids_auction_ending_soon_event'
+	const CRON_AUCTION_ENDING_SOON_CHECK_HOOK = 'goodbids_auction_ending_soon_event';
 
 	/**
 	 * @since 1.0.0
@@ -426,7 +426,7 @@ class Auctions {
 					'compare'=>'<='
 				],
 				]
-			]
+			];
 		$ending_soon = $this->get_all( $query_args );
 
 		return $ending_soon-> posts;
@@ -441,13 +441,16 @@ class Auctions {
 	 * @return array
 	 */
 	public function get_auctions_ending_soon_emails(): array {
-		$threshold_start = new DateTime()->modify('+3 hours') // TODO update to dynamic values (1/3 of auction extension window)
-		$threshold_end = new DateTime()->modify('+4 hours') // TODO update to dynamic values (1/3 of auction extension window)
+		$threshold_start = new DateTime(); // Create a new DateTime object with the current time
+		$threshold_start->modify('+3 hours'); // Modify the DateTime object by adding 3 hours
+		$threshold_end = new DateTime(); // Create a new DateTime object with the current time
+		$threshold_end->modify('+4 hours'); // Modify the DateTime object by adding 3 hours
+
 		$ending_soon_emails = [];
 
-		$ending_soon = $this->get_auctions_ending_soon($threshold_start, $threshold_end)
+		$ending_soon = $this->get_auctions_ending_soon($threshold_start, $threshold_end);
 
-		if (count($ending_soon)){
+		if (count($ending_soon)) {
 			array_push( $ending_soon_emails, ...$ending_soon );
 		}
 		return $ending_soon_emails;
