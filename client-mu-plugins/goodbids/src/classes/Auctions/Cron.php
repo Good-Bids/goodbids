@@ -49,16 +49,24 @@ class Cron {
 		}
 
 		// Set up Cron Schedules.
-		$this->cron_intervals['1min']  = [
-			'interval' => MINUTE_IN_SECONDS,
-			'name'     => '1min',
-			'display'  => __( 'Once Every Minute', 'goodbids' ),
-		];
 		$this->cron_intervals['30sec'] = [
 			'interval' => 30,
 			'name'     => '30sec',
 			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
 		];
+		$this->cron_intervals['1min']  = [
+			'interval' => MINUTE_IN_SECONDS,
+			'name'     => '1min',
+			'display'  => __( 'Once Every Minute', 'goodbids' ),
+		];
+		$this->cron_intervals['30min'] = [
+			'interval'=> 30 * MINUTE_IN_SECONDS,
+			'name' => '30min',
+			'display'=> __('Once Every 30 Minutes', 'goodbids')];
+		$this->cron_intervals['1hr'] = [
+			'interval'=> 60 * MINUTE_IN_SECONDS,
+			'name' => '1hr',
+			'display'=> __('Every Hour', 'goodbids')];
 		$this->cron_intervals['daily'] = [
 			'interval' => DAY_IN_SECONDS,
 			'name'     => 'Daily',
@@ -187,6 +195,29 @@ class Cron {
 					strtotime( current_time( 'mysql' ) ),
 					$this->cron_intervals['daily']['name'],
 					Rewards::CRON_UNCLAIMED_REMINDER_HOOK
+				);
+			}
+		);
+	}
+
+	/**
+	 * Schedule a cron job that runs every 30 minutes to see if there are any auctions ending soon
+	 * 
+	 * @since 1.0.0
+	 * 
+	 * @return void
+	 */
+	private function schedule_auction_ending_soon_check(): void {
+		add_action(
+			'init',
+			function (): void {
+				if (wp_next_scheduled(Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK)){
+					return;
+				}
+				wp_schedule_event(
+					strtotime( current_time( 'mysql') ),
+					$this->cron_intervals['1hr']['name'],
+					Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK
 				);
 			}
 		);

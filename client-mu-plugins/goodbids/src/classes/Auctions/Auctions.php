@@ -70,6 +70,12 @@ class Auctions {
 
 	/**
 	 * @since 1.0.0
+	 * @var string
+	 */
+	const CRON_AUCTION_ENDING_SOON_CHECK_HOOK = 'goodbids_auction_ending_soon_event'
+
+	/**
+	 * @since 1.0.0
 	 * @var Wizard
 	 */
 	public Wizard $wizard;
@@ -388,6 +394,63 @@ class Auctions {
 		}
 
 		return $reminder_emails;
+	}
+
+	/**
+	 * Get any live auctions that are within a given range of their extension time of closing.
+	 * 
+	 * @since 1.0.0
+	 * 
+	 * @param Date $threshold_start
+	 * @param Date $threshold_end
+	 * 
+	 * 
+	 * @return array
+	 */
+	public function get_auctions_ending_soon($threshold_start, $threshold_end): array {
+		$query_args = 
+			[
+				'meta_query'=>[
+					[
+						'key'=> self::AUCTION_CLOSED_META_KEY,
+						'value'=>'0',
+						'compare'=>'='
+					],
+					[
+						'key'=> self::AUCTION_CLOSE_META_KEY,
+						'value'=> $threshold_start,
+						'compare'=> '>='
+					],
+					['key'=> self::AUCTION_CLOSE_META_KEY,
+					'value'=> $threshold_end ,
+					'compare'=>'<='
+				],
+				]
+			]
+		$ending_soon = $this->get_all( $query_args );
+
+		return $ending_soon-> posts;
+
+	}
+
+	/**
+	 * Send emails for any auctions ending in a certain window of time
+	 * 
+	 * @since 1.0.0
+	 * 
+	 * @return array
+	 */
+	public function get_auctions_ending_soon_emails(): array {
+		$threshold_start = new DateTime()->modify('+3 hours') // TODO update to dynamic values (1/3 of auction extension window)
+		$threshold_end = new DateTime()->modify('+4 hours') // TODO update to dynamic values (1/3 of auction extension window)
+		$ending_soon_emails = [];
+
+		$ending_soon = $this->get_auctions_ending_soon($threshold_start, $threshold_end)
+
+		if (count($ending_soon)){
+			array_push( $ending_soon_emails, ...$ending_soon );
+		}
+		return $ending_soon_emails;
 	}
 
 	/**
