@@ -57,7 +57,7 @@ export const FirstTimeDialog = (props: { showDialog: boolean }) => {
 							autoFocus
 							required
 							pattern="[Dd][Oo][Nn][Aa][Tt][Ii][Oo][Nn]"
-							placeholder="DONATION"
+							placeholder="type DONATION in this field to proceed"
 							className="rounded border border-solid border-transparent bg-gray-100 px-6 py-2 leading-normal no-underline focus:outline-dotted focus:outline-1 focus:outline-offset-2"
 						/>
 						<input
