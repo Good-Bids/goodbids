@@ -460,6 +460,25 @@ class Auction {
 	}
 
 	/**
+	 * Get the Original Auction End Date/Time
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param string $format
+	 *
+	 * @return string
+	 */
+	public function get_original_end_date_time( string $format = '' ): string {
+		$end = get_post_meta( $this->get_id(), 'auction_end', true );
+
+		if ( ! $end ) {
+			return '';
+		}
+
+		return goodbids()->utilities->format_date_time( $end, $format );
+	}
+
+	/**
 	 * Check if an Auction has started.
 	 *
 	 * @since 1.0.0
