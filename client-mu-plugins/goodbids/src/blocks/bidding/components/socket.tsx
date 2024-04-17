@@ -21,15 +21,20 @@ export function Socket({ auctionId }: SocketProps) {
 }
 
 function SocketHandler({ auctionId }: SocketProps) {
-	const { socketUrl, setSocketError, setSocketAuction, auctionStatus } =
-		useBiddingState();
+	const {
+		siteId,
+		socketUrl,
+		setSocketError,
+		setSocketAuction,
+		auctionStatus,
+	} = useBiddingState();
 
 	const { lastJsonMessage } = useWebSocket<SocketMessage>(
 		`${
 			process.env.NODE_ENV === 'development'
 				? socketUrlOverride
 				: socketUrl
-		}/${auctionId}`,
+		}/${siteId}-${auctionId}`,
 		{
 			onError: () => {
 				setSocketError();

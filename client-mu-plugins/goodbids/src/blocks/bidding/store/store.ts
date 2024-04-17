@@ -14,6 +14,7 @@ export const useBiddingStore = create<BiddingState & BiddingActions>((set) => ({
 	socketUrl: '',
 	accountUrl: '',
 	bidUrl: '',
+	siteId: 1,
 
 	auctionStatus: 'initializing',
 	timeRemainingMs: undefined,
