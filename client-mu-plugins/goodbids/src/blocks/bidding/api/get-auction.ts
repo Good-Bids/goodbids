@@ -8,6 +8,7 @@ const auctionSchema = z.object({
 	socketUrl: z.string(),
 	accountUrl: z.string(),
 	bidUrl: z.string(),
+	siteId: z.number(),
 	startTime: z.string(),
 	endTime: z.string(),
 	totalBids: z.number(),

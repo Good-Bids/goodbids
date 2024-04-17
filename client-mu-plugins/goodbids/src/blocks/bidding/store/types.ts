@@ -17,6 +17,7 @@ export type UrlsType = {
 	socketUrl: string;
 	accountUrl: string;
 	bidUrl: string;
+	siteId: number;
 };
 
 export type TimingType = {
