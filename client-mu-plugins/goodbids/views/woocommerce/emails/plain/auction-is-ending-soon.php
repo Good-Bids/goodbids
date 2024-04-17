@@ -30,9 +30,9 @@ printf(
 
 echo "\n\n----------------------------------------\n\n";
 
-esc_html_e( 'Auction', 'goodbids' ) . ': ' . '{auction.title}' . "\n";
-esc_html_e( 'Total Raised', 'goodbids' ) . ': ' . '{auction.total_raised}' . "\n";
-esc_html_e( 'High Bid', 'goodbids' ) . ': ' . '{auction.high_bid}' . "\n";
+echo esc_html__( 'Auction', 'goodbids' ) . ': {auction.title}' . "\n";
+echo esc_html__( 'Total Raised', 'goodbids' ) . ': {auction.total_raised}' . "\n";
+echo esc_html__( 'High Bid', 'goodbids' ) . ': {auction.high_bid}' . "\n";
 
 echo "\n\n----------------------------------------\n\n";
 

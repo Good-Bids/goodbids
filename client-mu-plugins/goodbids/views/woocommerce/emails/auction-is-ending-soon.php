@@ -41,7 +41,7 @@ do_action( 'woocommerce_email_header', $email_heading );
 
 		// After.
 		sprintf(
-			/* translators: %1$s: Site Title, Reward Product Title */
+			/* translators: %1$s: Site Title, %2$s: Reward Product Title */
 			esc_html__( 'to support %1$s\'s mission and place a bid for your chance to win the %2$s!', 'goodbids' ),
 			'{site_title}',
 			'{reward.title}'
@@ -54,11 +54,10 @@ do_action( 'woocommerce_email_header', $email_heading );
 	<?php
 	printf(
 		'%s %s %s <strong>%s</strong> %s',
-		/* translators: %1$s: Auction total raised, %2$s: current high bid */
-		esc_html__( 'We\ve already raised', 'goodbids' ),
+		esc_html__( 'We\'ve already raised', 'goodbids' ),
 		'{auction.total_raised}',
 		esc_html__( 'and the', 'goodbids' ),
-		esc_html__( 'current high bid is ', 'goodbids' ),
+		esc_html__( 'current high bid is', 'goodbids' ),
 		'{auction.high_bid}'
 	);
 	?>
