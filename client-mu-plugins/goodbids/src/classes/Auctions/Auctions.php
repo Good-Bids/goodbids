@@ -423,7 +423,7 @@ class Auctions {
 
 		$ending_soon = [];
 
-		foreach ( $live_auctions as $auction_id ) {
+		foreach ( $live_auctions->posts as $auction_id ) {
 			$auction = $this->get( $auction_id );
 			if ( $auction->is_ending_soon() ) {
 				$ending_soon[] = $auction->get_id();

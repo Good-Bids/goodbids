@@ -530,12 +530,13 @@ class Auction {
 		}
 
 		$extension = $this->get_bid_extension();
+
 		if ( ! $extension ) {
 			return false;
 		}
 
 		// Set threshold to be 1/3 of bid extension window.
-		$threshold = $extension / 3;
+		$threshold = intval( round( $extension * .3 ) );
 
 		try {
 			$end  = new DateTimeImmutable( $end_date_time, wp_timezone() );
@@ -544,11 +545,14 @@ class Auction {
 			return false;
 		}
 
-		$now  = current_datetime();
-		$diff = $end->diff( $now );
+		$diff = $end->getTimestamp() - current_datetime()->getTimestamp();
+
+		if ( $diff <= 0 ) {
+			return false;
+		}
 
 		// If the Auction ends in less than the extension threshold, it is ending soon.
-		return $diff->days === 0 && $diff->h === 0 && $diff->i < $threshold;
+		return $diff < $threshold;
 	}
 
 	/**
@@ -617,7 +621,17 @@ class Auction {
 		$bid_extension = $this->get_setting( 'bid_extension' );
 
 		if ( ! $bid_extension ) {
-			return null;
+			$bid_extension_minutes = $this->get_setting( 'bid_extension_minutes' );
+			$bid_extension_seconds = $this->get_setting( 'bid_extension_seconds' );
+
+			if ( ! $bid_extension_minutes && ! $bid_extension_seconds ) {
+				return null;
+			}
+
+			$bid_extension = [
+				'minutes' => $bid_extension_minutes,
+				'seconds' => $bid_extension_seconds,
+			];
 		}
 
 		$minutes = ! empty( $bid_extension['minutes'] ) ? intval( $bid_extension['minutes'] ) : 0;
