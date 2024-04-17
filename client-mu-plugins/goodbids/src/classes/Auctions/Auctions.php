@@ -401,59 +401,50 @@ class Auctions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Date $threshold_start
-	 * @param Date $threshold_end
+	 * @param string $threshold_start
+	 * @param string $threshold_end
 	 *
 	 *
 	 * @return array
 	 */
-	public function get_auctions_ending_soon($threshold_start, $threshold_end): array {
-		$query_args =
-			[
-				'meta_query'=>[
-					[
-						'key'=> self::AUCTION_CLOSED_META_KEY,
-						'value'=>'0',
-						'compare'=>'='
-					],
-					[
-						'key'=> self::AUCTION_CLOSE_META_KEY,
-						'value'=> $threshold_start,
-						'compare'=> '>='
-					],
-					['key'=> self::AUCTION_CLOSE_META_KEY,
-					'value'=> $threshold_end ,
-					'compare'=>'<='
+	public function get_auctions_by_close_date( string $threshold_start, string $threshold_end ): array {
+		$query_args = [
+			'meta_query' => [
+				[
+					'key'     => self::AUCTION_CLOSED_META_KEY,
+					'value'   => '0',
+					'compare' => '=',
 				],
-				]
-			];
-		$ending_soon = $this->get_all( $query_args );
+				[
+					'key'     => self::AUCTION_CLOSE_META_KEY,
+					'value'   => $threshold_start,
+					'compare' => '>=',
+				],
+				[
+					'key'     => self::AUCTION_CLOSE_META_KEY,
+					'value'   => $threshold_end,
+					'compare' =>'<=',
+				],
+			]
+		];
 
-		return $ending_soon-> posts;
+		$auctions = $this->get_all( $query_args );
 
+		return $auctions->posts;
 	}
 
 	/**
-	 * Send emails for any auctions ending in a certain window of time
+	 * Gets auctions ending in specific timeframe
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_auctions_ending_soon_emails(): array {
-		$threshold_start = new DateTime(); // Create a new DateTime object with the current time
-		$threshold_start->modify('+3 hours'); // Modify the DateTime object by adding 3 hours
-		$threshold_end = new DateTime(); // Create a new DateTime object with the current time
-		$threshold_end->modify('+4 hours'); // Modify the DateTime object by adding 3 hours
+	public function get_auctions_ending_soon(): array {
+		$threshold_start = current_datetime()->add( new DateInterval( 'PT3H' ) )->format( 'Y-m-d h:i:00' );
+		$threshold_end   = current_datetime()->add( new DateInterval( 'PT4H' ) )->format( 'Y-m-d h:i:59' );
 
-		$ending_soon_emails = [];
-
-		$ending_soon = $this->get_auctions_ending_soon($threshold_start, $threshold_end);
-
-		if (count($ending_soon)) {
-			array_push( $ending_soon_emails, ...$ending_soon );
-		}
-		return $ending_soon_emails;
+		return $this->get_auctions_by_close_date( $threshold_start, $threshold_end );
 	}
 
 	/**
