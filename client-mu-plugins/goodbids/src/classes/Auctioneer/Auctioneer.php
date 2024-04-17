@@ -160,6 +160,9 @@ class Auctioneer {
 		// Tell Auctioneer when Auction has closed.
 		$this->send_auctioneer_close_event();
 
+		// Tell Auctioneer when Auction has been extended.
+		$this->send_auctioneer_extend_event();
+
 		$this->initialized = true;
 	}
 
@@ -493,6 +496,21 @@ class Auctioneer {
 		add_action(
 			'goodbids_auction_end',
 			fn ( int $auction_id ) => $this->auctions->end( $auction_id ),
+			200
+		);
+	}
+
+	/**
+	 * Sends an event to Auctioneer when an Auction is extended.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function send_auctioneer_extend_event(): void {
+		add_action(
+			'goodbids_auction_extended',
+			fn ( int $auction_id ) => $this->auctions->update( $auction_id ),
 			200
 		);
 	}

@@ -397,63 +397,40 @@ class Auctions {
 	}
 
 	/**
-	 * Get any live auctions that are within a given range of their extension time of closing.
+	 * Gets auctions ending in specific timeframe
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Date $threshold_start
-	 * @param Date $threshold_end
-	 *
-	 *
 	 * @return array
 	 */
-	public function get_auctions_ending_soon($threshold_start, $threshold_end): array {
-		$query_args =
+	public function get_ending_soon(): array {
+		$live_auctions = $this->get_all(
 			[
-				'meta_query'=>[
+				'meta_query' => [
 					[
-						'key'=> self::AUCTION_CLOSED_META_KEY,
-						'value'=>'0',
-						'compare'=>'='
+						'key'     => self::AUCTION_CLOSED_META_KEY,
+						'value'   => '0',
+						'compare' => '=',
 					],
 					[
-						'key'=> self::AUCTION_CLOSE_META_KEY,
-						'value'=> $threshold_start,
-						'compare'=> '>='
+						'key'     => self::AUCTION_STARTED_META_KEY,
+						'value'   => '1',
+						'compare' => '=',
 					],
-					['key'=> self::AUCTION_CLOSE_META_KEY,
-					'value'=> $threshold_end ,
-					'compare'=>'<='
 				],
-				]
-			];
-		$ending_soon = $this->get_all( $query_args );
+			]
+		);
 
-		return $ending_soon-> posts;
+		$ending_soon = [];
 
-	}
-
-	/**
-	 * Send emails for any auctions ending in a certain window of time
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	public function get_auctions_ending_soon_emails(): array {
-		$threshold_start = new DateTime(); // Create a new DateTime object with the current time
-		$threshold_start->modify('+3 hours'); // Modify the DateTime object by adding 3 hours
-		$threshold_end = new DateTime(); // Create a new DateTime object with the current time
-		$threshold_end->modify('+4 hours'); // Modify the DateTime object by adding 3 hours
-
-		$ending_soon_emails = [];
-
-		$ending_soon = $this->get_auctions_ending_soon($threshold_start, $threshold_end);
-
-		if (count($ending_soon)) {
-			array_push( $ending_soon_emails, ...$ending_soon );
+		foreach ( $live_auctions->posts as $auction_id ) {
+			$auction = $this->get( $auction_id );
+			if ( $auction->is_ending_soon() ) {
+				$ending_soon[] = $auction->get_id();
+			}
 		}
-		return $ending_soon_emails;
+
+		return $ending_soon;
 	}
 
 	/**

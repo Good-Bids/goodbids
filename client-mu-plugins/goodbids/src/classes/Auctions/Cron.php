@@ -54,33 +54,32 @@ class Cron {
 			'name'     => '30sec',
 			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
 		];
-		$this->cron_intervals['1min']  = [
+		$this->cron_intervals['every_minute']  = [
 			'interval' => MINUTE_IN_SECONDS,
-			'name'     => '1min',
-			'display'  => __( 'Once Every Minute', 'goodbids' ),
+			'name'     => 'every_minute',
+			'display'  => __( 'Every Minute', 'goodbids' ),
 		];
 		$this->cron_intervals['30min'] = [
-			'interval'=> 30 * MINUTE_IN_SECONDS,
-			'name' => '30min',
-			'display'=> __('Once Every 30 Minutes', 'goodbids')];
-		$this->cron_intervals['1hr'] = [
-			'interval'=> 60 * MINUTE_IN_SECONDS,
-			'name' => '1hr',
-			'display'=> __('Every Hour', 'goodbids')];
+			'interval' => 30 * MINUTE_IN_SECONDS,
+			'name'     => '30min',
+			'display'  => __( 'Once Every 30 Minutes', 'goodbids' ),
+		];
+		$this->cron_intervals['hourly']   = [
+			'interval' => HOUR_IN_SECONDS,
+			'name'     => 'hourly',
+			'display'  => __( 'Once Hourly', 'goodbids' ),
+		];
 		$this->cron_intervals['daily'] = [
 			'interval' => DAY_IN_SECONDS,
-			'name'     => 'Daily',
-			'display'  => __( 'Every Day', 'goodbids' ),
+			'name'     => 'daily',
+			'display'  => __( 'Once Daily', 'goodbids' ),
 		];
 
 		// Attempt to trigger events for opened/closed auctions.
 		$this->maybe_trigger_events();
 
 		// Set up 1min Cron Job Schedule.
-		$this->add_one_min_cron_schedule();
-
-		// Set up 1hr Cron Job Schedule
-		$this->add_one_hour_cron_schedule();
+		$this->add_custom_cron_schedules();
 
 		// Schedule a cron job to trigger the start of auctions.
 		$this->schedule_auction_start_cron();
@@ -98,24 +97,24 @@ class Cron {
 		$this->cron_check_for_closing_auctions();
 
     	// Schedule a cron job to check for auctions ending soon.
-    	$this->schedule_auction_ending_soon_check(); 
+    	$this->schedule_auction_ending_soon_check();
 	}
 
 	/**
-	 * Add a 1min Cron Job Schedule.
+	 * Add custom Cron Job Schedules.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
-	private function add_one_min_cron_schedule(): void {
+	private function add_custom_cron_schedules(): void {
 		add_filter(
 			'cron_schedules', // phpcs:ignore
 			function ( array $schedules ): array {
 				foreach ( $this->cron_intervals as $id => $props ) {
 					// If one is already set, confirm it matches our schedule.
 					if ( ! empty( $schedules[ $props['name'] ] ) ) {
-						if ( MINUTE_IN_SECONDS === $schedules[ $props['name'] ] ) {
+						if ( $props['interval'] === $schedules[ $props['name'] ] ) {
 							continue;
 						}
 
@@ -123,31 +122,6 @@ class Cron {
 					}
 
 					// Adds every minute cron schedule.
-					$schedules[ $this->cron_intervals[ $id ]['name'] ] = [
-						'interval' => $this->cron_intervals[ $id ]['interval'],
-						'display'  => $this->cron_intervals[ $id ]['display'],
-					];
-				}
-
-				return $schedules;
-			}
-		);
-	}
-	private function add_one_hour_cron_schedule(): void {
-		add_filter(
-			'cron_schedules', // phpcs:ignore
-			function ( array $schedules ): array {
-				foreach ( $this->cron_intervals as $id => $props ) {
-					// If one is already set, confirm it matches our schedule.
-					if ( ! empty( $schedules[ $props['name'] ] ) ) {
-						if ( MINUTE_IN_SECONDS * 60 === $schedules[ $props['name'] ] ) {
-							continue;
-						}
-
-						$this->cron_intervals[ $id ]['name'] .= '_goodbids';
-					}
-
-					// Adds every hourly cron schedule.
 					$schedules[ $this->cron_intervals[ $id ]['name'] ] = [
 						'interval' => $this->cron_intervals[ $id ]['interval'],
 						'display'  => $this->cron_intervals[ $id ]['display'],
@@ -233,23 +207,25 @@ class Cron {
 
 	/**
 	 * Schedule a cron job that runs every 60 minutes to see if there are any auctions ending soon
-	 * 
-	 * @since 1.0.0
-	 * 
+	 *
+	 * @since 1.0.1
+	 *
 	 * @return void
 	 */
 	private function schedule_auction_ending_soon_check(): void {
 		add_action(
 			'init',
 			function (): void {
-				if (false === wp_next_scheduled(Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK)){
-					// Event is not scheduled, so schedule it.
-					wp_schedule_event(
-						strtotime( current_time( 'mysql') ),
-						$this->cron_intervals['1hr']['name'],
-						Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK
-					);
+				if ( wp_next_scheduled( Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK ) ) {
+					return;
 				}
+
+				// Event is not scheduled, so schedule it.
+				wp_schedule_event(
+					strtotime( current_time( 'mysql' ) ),
+					$this->cron_intervals['hourly']['name'],
+					Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK
+				);
 			}
 		);
 	}

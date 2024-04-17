@@ -517,6 +517,45 @@ class Auction {
 	}
 
 	/**
+	 * Check if an Auction is Ending Soon
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return bool
+	 */
+	public function is_ending_soon(): bool {
+		$end_date_time = $this->get_end_date_time();
+		if ( ! $end_date_time ) {
+			return false;
+		}
+
+		$extension = $this->get_bid_extension();
+
+		if ( ! $extension ) {
+			return false;
+		}
+
+		// Set threshold to be 1/3 of bid extension window.
+		$threshold = intval( round( $extension * .3 ) );
+
+		try {
+			$end  = new DateTimeImmutable( $end_date_time, wp_timezone() );
+		} catch ( Exception $e ) {
+			Log::error( $e->getMessage(), compact( 'end_date_time' ) );
+			return false;
+		}
+
+		$diff = $end->getTimestamp() - current_datetime()->getTimestamp();
+
+		if ( $diff <= 0 ) {
+			return false;
+		}
+
+		// If the Auction ends in less than the extension threshold, it is ending soon.
+		return $diff < $threshold;
+	}
+
+	/**
 	 * Get number of auction extensions
 	 *
 	 * @since 1.0.0
@@ -582,7 +621,17 @@ class Auction {
 		$bid_extension = $this->get_setting( 'bid_extension' );
 
 		if ( ! $bid_extension ) {
-			return null;
+			$bid_extension_minutes = $this->get_setting( 'bid_extension_minutes' );
+			$bid_extension_seconds = $this->get_setting( 'bid_extension_seconds' );
+
+			if ( ! $bid_extension_minutes && ! $bid_extension_seconds ) {
+				return null;
+			}
+
+			$bid_extension = [
+				'minutes' => $bid_extension_minutes,
+				'seconds' => $bid_extension_seconds,
+			];
 		}
 
 		$minutes = ! empty( $bid_extension['minutes'] ) ? intval( $bid_extension['minutes'] ) : 0;
@@ -1332,8 +1381,14 @@ class Auction {
 		++$extensions;
 		update_post_meta( $this->get_id(), self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
-		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auctions->update( $this->get_id() );
+		/**
+		 * Action triggered when an Auction is Extended.
+		 *
+		 * @since 1.0.1
+		 *
+		 * @param int $auction_id
+		 */
+		do_action( 'goodbids_auction_extended', $this->get_id() );
 
 		return true;
 	}
