@@ -4,11 +4,21 @@
  *
  * Used inside of auction loop.
  *
+ * @global int $auction_id
+ *
  * @since 1.0.0
  * @package GoodBids
  */
 
+use GoodBids\Auctions\Auctions;
 use GoodBids\Utilities\Log;
+
+global $post;
+
+if ( ! empty( $auction_id ) ) {
+	$post = get_post( $auction_id ); // phpcs:ignore
+	setup_postdata( $post );
+}
 
 $auction      = goodbids()->auctions->get();
 $url          = is_admin() ? '#' : $auction->get_url();
@@ -26,6 +36,7 @@ if ( $auction->has_started() ) {
 		Log::error( $e->getMessage() );
 		$end_date = $auction->get_end_date_time();
 	}
+
 	$remaining_time = $current_date->diff( $end_date );
 
 	$time = sprintf(
@@ -35,14 +46,21 @@ if ( $auction->has_started() ) {
 		__( 'if nobody else bids', 'goodbids' )
 	);
 
-	if ( $remaining_time->d < 1 && $remaining_time->h >= 1 ) {
-		$clock_svg = true;
-		$time      = $remaining_time->format( '%hh %im' );
-	}
-	if ( $remaining_time->d < 1 && $remaining_time->h < 1 ) {
-		$time_class .= 'text-gb-red-500';
-		$clock_svg   = true;
-		$time        = $remaining_time->format( '%im' );
+	if ( $remaining_time->d < 1 ) { // Less than 1 day remaining.
+		if ( $remaining_time->h >= 1 ) {
+			$time      = $remaining_time->format( '%hh %im' );
+			$clock_svg = true;
+		} elseif ( $remaining_time->h <= 0 && $remaining_time->i >= 1 ) { // Less than 1 hour remaining.
+			$time_class .= 'text-gb-red-500';
+			$time        = $remaining_time->format( '%im' );
+			$clock_svg   = true;
+		} elseif ( $remaining_time->i <= 0 && $remaining_time->s >= 1 ) { // Less than 1 minute remaining.
+			$time_class .= 'text-gb-red-500';
+			$time        = $remaining_time->format( '%ss' );
+			$clock_svg   = true;
+		} else { // Auction has ended.
+			$time = __( 'Ended', 'goodbids' );
+		}
 	}
 } else {
 	try {
@@ -89,9 +107,9 @@ if ( $auction->has_started() ) {
 	</a>
 
 	<a href="<?php echo esc_url( $url ); ?>" class="no-underline hover:underline">
-		<?php if ( get_the_title() ) : ?>
+		<?php if ( $auction->get_title() ) : ?>
 			<h2 class="mt-4 mb-0 normal-case wp-block-post-title has-large-font-size line-clamp-3">
-				<?php the_title(); ?>
+				<?php echo esc_html( $auction->get_title() ); ?>
 			</h2>
 		<?php endif; ?>
 	</a>
@@ -113,4 +131,14 @@ if ( $auction->has_started() ) {
 			<?php echo esc_html( $auction->get_watch_count() ); ?>
 		</div>
 	</div>
+	<div style="font-size:11px">
+		<div>End Date/Time: <?php echo esc_html( $auction->get_end_date_time() ); ?></div>
+		<div>End Date/Time (Original): <?php echo esc_html( $auction->get_original_end_date_time() ); ?></div>
+		<div>Close Date/Time: <?php echo esc_html( get_post_meta( $auction->get_id(), Auctions::AUCTION_CLOSE_META_KEY, true ) ); ?></div>
+		<div>Extensions: <?php echo esc_html( $auction->get_extensions() ); ?></div>
+		<div>Extension Window: <?php echo esc_html( $auction->get_bid_extension_formatted() ); ?></div>
+		<div>Site ID: <?php echo esc_html( get_current_blog_id() ); ?></div>
+	</div>
 </li>
+<?php
+wp_reset_postdata();
