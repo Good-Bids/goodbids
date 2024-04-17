@@ -507,7 +507,7 @@ class Auctioneer {
 	 *
 	 * @return void
 	 */
-	private function send_auctioneer_Extend_event(): void {
+	private function send_auctioneer_extend_event(): void {
 		add_action(
 			'goodbids_auction_extended',
 			fn ( int $auction_id ) => $this->auctions->update( $auction_id ),
