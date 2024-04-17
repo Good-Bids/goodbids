@@ -1293,20 +1293,20 @@ class Auction {
 		}
 
 		try {
-			$close      = current_datetime()->add( new DateInterval( 'PT' . $extension . 'S' ) );
-			$close_time = $close->format( 'Y-m-d H:i:s' );
+			$extended_close      = current_datetime()->add( new DateInterval( 'PT' . $extension . 'S' ) );
+			$extended_close_time = $extended_close->format( 'Y-m-d H:i:s' );
 		} catch ( Exception $e ) {
 			Log::error( $e->getMessage(), compact( 'extension' ) );
 			return false;
 		}
 
 		// Be sure to extend, not shorten.
-		if ( $close_time < $this->get_end_date_time() ) {
+		if ( $extended_close_time < $this->get_end_date_time() ) {
 			return false;
 		}
 
 		// Update the Auction Close Date/Time
-		update_post_meta( $this->get_id(), self::AUCTION_CLOSE_META_KEY, $close_time );
+		update_post_meta( $this->get_id(), self::AUCTION_CLOSE_META_KEY, $extended_close_time );
 
 		// Update Extensions
 		$extensions = $this->get_extensions();
