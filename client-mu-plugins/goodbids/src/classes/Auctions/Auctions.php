@@ -594,8 +594,8 @@ class Auctions {
 	private function override_end_date_time(): void {
 		add_filter(
 			'goodbids_auction_setting',
-			function ( mixed $value, string $meta_key, int $auction_id ): mixed {
-				if ( 'auction_end' !== $meta_key ) {
+			function ( mixed $value, string $meta_key, ?int $auction_id ): mixed {
+				if ( 'auction_end' !== $meta_key || ! $auction_id ) {
 					return $value;
 				}
 
