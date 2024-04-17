@@ -93,6 +93,9 @@ class Cron {
 
 		// Use cron action to close auctions.
 		$this->cron_check_for_closing_auctions();
+
+    	// Schedule a cron job to check for auctions ending soon.
+    	$this->schedule_auction_ending_soon_check(); 
 	}
 
 	/**
