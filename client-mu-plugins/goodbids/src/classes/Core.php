@@ -314,8 +314,7 @@ class Core {
 				if ( empty( $local['version'] ) || version_compare( $json['version'], $local['version'], '!=' ) ) {
 					Log::warning( 'Local config file version mismatch.' );
 				}
-
-				$json = array_merge_recursive( $json, $local );
+				$json = array_merge( $json, $local );
 			}
 		}
 
