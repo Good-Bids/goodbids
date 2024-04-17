@@ -242,14 +242,14 @@ class Cron {
 		add_action(
 			'init',
 			function (): void {
-				if (wp_next_scheduled(Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK)){
-					return;
+				if (false === wp_next_scheduled(Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK)){
+					// Event is not scheduled, so schedule it.
+					wp_schedule_event(
+						strtotime( current_time( 'mysql') ),
+						$this->cron_intervals['1hr']['name'],
+						Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK
+					);
 				}
-				wp_schedule_event(
-					strtotime( current_time( 'mysql') ),
-					$this->cron_intervals['1hr']['name'],
-					Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK
-				);
 			}
 		);
 	}
