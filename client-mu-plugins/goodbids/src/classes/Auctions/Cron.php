@@ -127,6 +127,31 @@ class Cron {
 			}
 		);
 	}
+	private function add_one_hour_cron_schedule(): void {
+		add_filter(
+			'cron_schedules', // phpcs:ignore
+			function ( array $schedules ): array {
+				foreach ( $this->cron_intervals as $id => $props ) {
+					// If one is already set, confirm it matches our schedule.
+					if ( ! empty( $schedules[ $props['name'] ] ) ) {
+						if ( MINUTE_IN_SECONDS * 60 === $schedules[ $props['name'] ] ) {
+							continue;
+						}
+
+						$this->cron_intervals[ $id ]['name'] .= '_goodbids';
+					}
+
+					// Adds every hourly cron schedule.
+					$schedules[ $this->cron_intervals[ $id ]['name'] ] = [
+						'interval' => $this->cron_intervals[ $id ]['interval'],
+						'display'  => $this->cron_intervals[ $id ]['display'],
+					];
+				}
+
+				return $schedules;
+			}
+		);
+	}
 
 	/**
 	 * Schedule a cron job that runs every minute to trigger auctions to start.
