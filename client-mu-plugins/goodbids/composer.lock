@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "795cfa67cb4390b27dde4c139482d2bd",
+    "content-hash": "6645bd3fc046ac4a22bd138fab126064",
     "packages": [
         {
             "name": "composer/installers",
@@ -1231,15 +1231,15 @@
         },
         {
             "name": "wpackagist-plugin/accessibility-checker",
-            "version": "1.10.1",
+            "version": "1.10.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/accessibility-checker/",
-                "reference": "tags/1.10.1"
+                "reference": "tags/1.10.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.10.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/accessibility-checker.1.10.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1285,15 +1285,15 @@
         },
         {
             "name": "wpackagist-plugin/olympus-google-fonts",
-            "version": "3.6.0",
+            "version": "3.6.31",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/olympus-google-fonts/",
-                "reference": "tags/3.6.0"
+                "reference": "tags/3.6.31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/olympus-google-fonts.3.6.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/olympus-google-fonts.3.6.31.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1321,15 +1321,15 @@
         },
         {
             "name": "wpackagist-plugin/tidio-live-chat",
-            "version": "6.0.17",
+            "version": "6.0.19",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/tidio-live-chat/",
-                "reference": "tags/6.0.17"
+                "reference": "tags/6.0.19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.17.zip"
+                "url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.19.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1393,15 +1393,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce-gateway-stripe",
-            "version": "8.1.0",
+            "version": "8.2.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce-gateway-stripe/",
-                "reference": "tags/8.1.0"
+                "reference": "tags/8.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.8.1.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.8.2.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1429,15 +1429,15 @@
         },
         {
             "name": "wpackagist-plugin/zapier",
-            "version": "1.0.6",
+            "version": "1.0.7",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/zapier/",
-                "reference": "tags/1.0.6"
+                "reference": "tags/1.0.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/zapier.1.0.6.zip"
+                "url": "https://downloads.wordpress.org/plugin/zapier.1.0.7.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -1447,10 +1447,10 @@
         },
         {
             "name": "wpengine/advanced-custom-fields-pro",
-            "version": "6.2.8",
+            "version": "6.2.9",
             "dist": {
                 "type": "zip",
-                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.8"
+                "url": "https://connect.advancedcustomfields.com/v2/plugins/composer_download?p=pro&t=6.2.9"
             },
             "require": {
                 "composer/installers": "~1.0 || ~2.0"
