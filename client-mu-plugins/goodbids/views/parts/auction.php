@@ -52,7 +52,7 @@ if ( $auction->has_started() ) {
 			$clock_svg = true;
 		} elseif ( $remaining_time->h <= 0 && $remaining_time->i >= 1 ) { // Less than 1 hour remaining.
 			$time_class .= 'text-gb-red-500';
-			$time        = $remaining_time->format( '%im' );
+			$time        = $remaining_time->format( '%im %ss' );
 			$clock_svg   = true;
 		} elseif ( $remaining_time->i <= 0 && $remaining_time->s >= 1 ) { // Less than 1 minute remaining.
 			$time_class .= 'text-gb-red-500';
@@ -130,14 +130,6 @@ if ( $auction->has_started() ) {
 			</svg>
 			<?php echo esc_html( $auction->get_watch_count() ); ?>
 		</div>
-	</div>
-	<div style="font-size:11px">
-		<div>End Date/Time: <?php echo esc_html( $auction->get_end_date_time() ); ?></div>
-		<div>End Date/Time (Original): <?php echo esc_html( $auction->get_original_end_date_time() ); ?></div>
-		<div>Close Date/Time: <?php echo esc_html( get_post_meta( $auction->get_id(), Auctions::AUCTION_CLOSE_META_KEY, true ) ); ?></div>
-		<div>Extensions: <?php echo esc_html( $auction->get_extensions() ); ?></div>
-		<div>Extension Window: <?php echo esc_html( $auction->get_bid_extension_formatted() ); ?></div>
-		<div>Site ID: <?php echo esc_html( get_current_blog_id() ); ?></div>
 	</div>
 </li>
 <?php
