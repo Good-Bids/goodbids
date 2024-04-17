@@ -398,17 +398,17 @@ class Auctions {
 
 	/**
 	 * Get any live auctions that are within a given range of their extension time of closing.
-	 * 
+	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @param Date $threshold_start
 	 * @param Date $threshold_end
-	 * 
-	 * 
+	 *
+	 *
 	 * @return array
 	 */
 	public function get_auctions_ending_soon($threshold_start, $threshold_end): array {
-		$query_args = 
+		$query_args =
 			[
 				'meta_query'=>[
 					[
@@ -435,9 +435,9 @@ class Auctions {
 
 	/**
 	 * Send emails for any auctions ending in a certain window of time
-	 * 
+	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_auctions_ending_soon_emails(): array {
@@ -588,12 +588,13 @@ class Auctions {
 	 * Use Auction close date/time when asked for Auction End Date/Time.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return void
 	 */
 	private function override_end_date_time(): void {
 		add_filter(
 			'goodbids_auction_setting',
-			function ( $value, $meta_key, $auction_id ) {
+			function ( mixed $value, string $meta_key, int $auction_id ): mixed {
 				if ( 'auction_end' !== $meta_key ) {
 					return $value;
 				}
