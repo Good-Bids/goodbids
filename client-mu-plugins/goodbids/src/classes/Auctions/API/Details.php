@@ -110,6 +110,7 @@ class Details extends WC_REST_Controller {
 			'lastBidder',
 			'freeBidsAvailable',
 			'freeBidsAllowed',
+			'siteId',
 		];
 
 		$data = ( new Payload( $request['id'], $payload_data ) )->get_data();
