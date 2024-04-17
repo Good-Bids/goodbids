@@ -106,37 +106,17 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	public function get_all_auctions(): array {
-		// if on the main site, get all auctions from all site
 		if ( is_main_site() ) {
-			return goodbids()->sites->get_all_open_auctions();
+			return goodbids()->sites->get_all_auctions();
 		}
 
-		// default to get all auctions from the current site
-		return collect( ( goodbids()->auctions->get_all() )->posts )
-			->map(
-				fn ( int $post_id ) => [
-					'post_id' => $post_id,
-					'site_id' => get_current_blog_id(),
-				]
-			)
-			->filter(
-				fn ( array $auction_data ) => goodbids()->sites->swap(
-					function () use ( $auction_data ) {
-							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-							return ! $auction->has_ended();
-						},
-					$auction_data['site_id']
+		return collect( goodbids()->auctions->get_all()->posts )
+				->map(
+					fn ( int $post_id ) => [
+						'post_id' => $post_id,
+						'site_id' => get_current_blog_id(),
+					]
 				)
-			)
-			->sortByDesc(
-				function ( array $auction_data ): array {
-					$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-					return [
-						'bid_count'    => $auction->get_bid_count(),
-						'total_raised' => $auction->get_total_raised(),
-					];
-				}
-			)
 			->all();
 	}
 
@@ -173,7 +153,7 @@ class AllAuctions extends ACFBlock {
 					fn ( array $auction_data ) => goodbids()->sites->swap(
 						function () use ( $auction_data ) {
 							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
-							return $auction->has_started() && ! $auction->has_ended();
+							return Auction::STATUS_LIVE === $auction->get_status();
 						},
 						$auction_data['site_id']
 					)
@@ -240,45 +220,40 @@ class AllAuctions extends ACFBlock {
 	 * @return array
 	 */
 	private function sort_auctions_by( string $sort, array $auctions = [] ): array {
-
 		$sort_method = match ( $sort ) {
 			'newest'   => 'get_start_date_time',
 			'starting' => 'calculate_starting_bid',
 			'ending'   => 'get_end_date_time',
 			'low_bid'  => 'bid_variation_price',
-			default    => false,
+			default    => 'get_bid_count',
 		};
 
-		if ( $sort_method ) {
-			$auctions = collect( $auctions )
-				->sortBy(
-					fn( array $auction_data ) => goodbids()->sites->swap(
-						function () use ( $auction_data, $sort_method ) {
-							$auction = goodbids()->auctions->get( $auction_data['post_id'] );
+		$auctions = collect( $auctions )
+			->sortBy(
+				fn( array $auction_data ) => goodbids()->sites->swap(
+					function () use ( $auction_data, $sort_method ) {
+						$auction = goodbids()->auctions->get( $auction_data['post_id'] );
 
-							if ( method_exists( $auction, $sort_method ) ) {
-								return $auction->$sort_method();
-							}
+						if ( method_exists( $auction, $sort_method ) ) {
+							return $auction->$sort_method();
+						}
 
-							if ( 'bid_variation_price' === $sort_method ) {
-								return goodbids()->bids->get_variation( $auction->get_id() )?->get_price( 'edit' );
-							}
+						if ( 'bid_variation_price' === $sort_method ) {
+							return goodbids()->bids->get_variation( $auction->get_id() )?->get_price( 'edit' );
+						}
 
-							return null;
-						},
-						$auction_data['site_id']
-					)
-				);
+						return null;
+					},
+					$auction_data['site_id']
+				)
+			);
 
-			// if sorting by start date, reverse the auctions
-			if ( $sort_method === 'get_start_date_time' ) {
-				$auctions = $auctions->reverse();
-			}
-
-			return $auctions->all();
+		// if sorting by start date, reverse the auctions
+		if ( in_array( $sort_method, [ 'get_start_date_time', 'get_bid_count' ], true ) ) {
+			$auctions = $auctions->reverse();
 		}
 
-		return $auctions;
+		return $auctions->toArray();
 	}
 
 	/**
