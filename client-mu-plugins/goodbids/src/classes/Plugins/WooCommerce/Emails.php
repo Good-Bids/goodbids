@@ -10,6 +10,7 @@ namespace GoodBids\Plugins\WooCommerce;
 
 use GoodBids\Plugins\WooCommerce\Emails\AuctionClosed;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionFreeBidUsed;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionIsEndingSoon;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLive;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
@@ -105,6 +106,7 @@ class Emails {
 		$this->email_classes = [
 			'AuctionClosed'             => new AuctionClosed(),
 			'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
+			'AuctionIsEndingSoon'		=> new AuctionIsEndingSoon(),
 			'AuctionIsLive'             => new AuctionIsLive(),
 			'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
 			'AuctionOutbid'             => new AuctionOutbid(),
