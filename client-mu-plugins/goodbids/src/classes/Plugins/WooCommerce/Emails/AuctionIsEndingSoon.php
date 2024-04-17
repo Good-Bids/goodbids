@@ -50,9 +50,9 @@ class AuctionIsEndingSoon extends Email {
 
 	/**
 	 * Trigger this email when an Auction is within 4 hours of closing
-	 * 
+	 *
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @return void
 	 */
 	private function cron_check_for_auctions_ending_soon(): void {
@@ -60,10 +60,11 @@ class AuctionIsEndingSoon extends Email {
 			Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK,
 			function (): void {
 				$auctions = goodbids()->auctions->get_auctions_ending_soon_emails();
-				if (! $auctions){
+				if ( ! $auctions ) {
 					return;
 				}
-				foreach ($auctions as $auction_id){
+
+				foreach ( $auctions as $auction_id ) {
 					$auction = goodbids()->auctions->get( $auction_id );
 					$this->send_to_bidders( $auction );
 					$this->send_to_watchers( $auction );
@@ -117,6 +118,5 @@ class AuctionIsEndingSoon extends Email {
 	public function get_button_url(): string {
 		return '{auction.url}';
 	}
-
 
 }
