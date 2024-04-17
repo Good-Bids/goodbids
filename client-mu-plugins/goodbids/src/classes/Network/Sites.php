@@ -746,6 +746,8 @@ class Sites {
 	/**
 	 * Returns an array of all published auctions across all sites
 	 *
+	 * Note: Transient disabled for now
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param array $query_args
@@ -753,13 +755,13 @@ class Sites {
 	 * @return array
 	 */
 	public function get_all_auctions( array $query_args = [] ): array {
-		$auctions = empty( $query_args ) ? get_transient( self::ALL_AUCTIONS_TRANSIENT ) : false;
+//		$auctions = empty( $query_args ) ? get_transient( self::ALL_AUCTIONS_TRANSIENT ) : false;
+//
+//		if ( $auctions ) {
+//			return $auctions;
+//		}
 
-		if ( $auctions ) {
-			return $auctions;
-		}
-
-		$auctions = $this->loop(
+		return $this->loop(
 			fn ( int $site_id ) => collect( ( goodbids()->auctions->get_all( $query_args ) )->posts )
 				->map(
 					fn ( int $post_id ) => [
@@ -783,11 +785,11 @@ class Sites {
 				->all()
 		);
 
-		if ( empty( $query_args ) ) {
-			set_transient( self::ALL_AUCTIONS_TRANSIENT, $auctions, DAY_IN_SECONDS );
-		}
-
-		return $auctions;
+//		if ( empty( $query_args ) ) {
+//			set_transient( self::ALL_AUCTIONS_TRANSIENT, $auctions, DAY_IN_SECONDS );
+//		}
+//
+//		return $auctions;
 	}
 
 	/**
