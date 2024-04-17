@@ -79,6 +79,9 @@ class Cron {
 		// Set up 1min Cron Job Schedule.
 		$this->add_one_min_cron_schedule();
 
+		// Set up 1hr Cron Job Schedule
+		$this->add_one_hour_cron_schedule();
+
 		// Schedule a cron job to trigger the start of auctions.
 		$this->schedule_auction_start_cron();
 
@@ -229,7 +232,7 @@ class Cron {
 	}
 
 	/**
-	 * Schedule a cron job that runs every 30 minutes to see if there are any auctions ending soon
+	 * Schedule a cron job that runs every 60 minutes to see if there are any auctions ending soon
 	 * 
 	 * @since 1.0.0
 	 * 
