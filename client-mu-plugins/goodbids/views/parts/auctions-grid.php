@@ -20,13 +20,7 @@ endif;
 	foreach ( $auctions as $auction ) :
 		goodbids()->sites->swap(
 			function () use ( $auction ) {
-				global $post;
-				$og_post = $post;
-				$post    = get_post( $auction['post_id'] ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-
-				goodbids()->load_view( 'parts/auction.php', compact( 'post' ) );
-
-				$post = $og_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				goodbids()->load_view( 'parts/auction.php', [ 'auction_id' => $auction['post_id'] ] );
 			},
 			$auction['site_id']
 		);
