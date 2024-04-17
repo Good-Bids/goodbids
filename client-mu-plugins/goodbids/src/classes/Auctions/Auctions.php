@@ -86,8 +86,11 @@ class Auctions {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Disable Auctions on Main Site, but not locally for debugging.
-		if ( is_main_site() && ! Core::is_local_env() ) {
+		// Override End Date/Time (used in All Auctions block).
+		$this->override_end_date_time();
+
+		// Disable Auctions on Main Site.
+		if ( is_main_site() ) {
 			return;
 		}
 
@@ -117,9 +120,6 @@ class Auctions {
 
 		// Clear metric transients on new Bid Order.
 		$this->maybe_clear_metric_transients();
-
-		// Override End Date/Time.
-		$this->override_end_date_time();
 
 		// Extend the Auction time after bids within extension window.
 		$this->maybe_extend_auction_on_order_complete();
