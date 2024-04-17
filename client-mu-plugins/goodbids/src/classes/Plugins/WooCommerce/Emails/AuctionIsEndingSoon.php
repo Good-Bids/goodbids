@@ -1,6 +1,6 @@
 <?php
 /**
- * Auction is Ending Soon: Email the Watchers when an Auction is 1 hour from closing.
+ * Auction is Ending Soon: Email the Watchers when an Auction is close to closing.
  *
  * @since 1.0.0
  * @package GoodBids
