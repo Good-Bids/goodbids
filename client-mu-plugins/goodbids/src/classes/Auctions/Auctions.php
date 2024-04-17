@@ -412,6 +412,11 @@ class Auctions {
 						'value'   => '0',
 						'compare' => '=',
 					],
+					[
+						'key'     => self::AUCTION_STARTED_META_KEY,
+						'value'   => '1',
+						'compare' => '=',
+					],
 				],
 			]
 		);
