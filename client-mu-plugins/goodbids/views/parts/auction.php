@@ -52,7 +52,7 @@ if ( $auction->has_started() ) {
 			$clock_svg = true;
 		} elseif ( $remaining_time->h <= 0 && $remaining_time->i >= 1 ) { // Less than 1 hour remaining.
 			$time_class .= 'text-gb-red-500';
-			$time        = $remaining_time->format( '%im' );
+			$time        = $remaining_time->format( '%im %ss' );
 			$clock_svg   = true;
 		} elseif ( $remaining_time->i <= 0 && $remaining_time->s >= 1 ) { // Less than 1 minute remaining.
 			$time_class .= 'text-gb-red-500';
