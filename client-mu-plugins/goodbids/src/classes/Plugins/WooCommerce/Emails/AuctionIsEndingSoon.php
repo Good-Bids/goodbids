@@ -59,7 +59,7 @@ class AuctionIsEndingSoon extends Email {
 		add_action(
 			Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK,
 			function (): void {
-				$auctions = goodbids()->auctions->get_auctions_ending_soon();
+				$auctions = goodbids()->auctions->get_ending_soon();
 				if ( ! $auctions ) {
 					return;
 				}

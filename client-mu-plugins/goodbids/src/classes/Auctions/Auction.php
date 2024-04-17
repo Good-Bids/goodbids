@@ -517,6 +517,41 @@ class Auction {
 	}
 
 	/**
+	 * Check if an Auction is Ending Soon
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return bool
+	 */
+	public function is_ending_soon(): bool {
+		$end_date_time = $this->get_end_date_time();
+		if ( ! $end_date_time ) {
+			return false;
+		}
+
+		$extension = $this->get_bid_extension();
+		if ( ! $extension ) {
+			return false;
+		}
+
+		// Set threshold to be 1/3 of bid extension window.
+		$threshold = $extension / 3;
+
+		try {
+			$end  = new DateTimeImmutable( $end_date_time, wp_timezone() );
+		} catch ( Exception $e ) {
+			Log::error( $e->getMessage(), compact( 'end_date_time' ) );
+			return false;
+		}
+
+		$now  = current_datetime();
+		$diff = $end->diff( $now );
+
+		// If the Auction ends in less than the extension threshold, it is ending soon.
+		return $diff->days === 0 && $diff->h === 0 && $diff->i < $threshold;
+	}
+
+	/**
 	 * Get number of auction extensions
 	 *
 	 * @since 1.0.0

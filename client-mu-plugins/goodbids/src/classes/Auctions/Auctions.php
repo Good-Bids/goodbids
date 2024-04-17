@@ -397,54 +397,35 @@ class Auctions {
 	}
 
 	/**
-	 * Get any live auctions that are within a given range of their extension time of closing.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $threshold_start
-	 * @param string $threshold_end
-	 *
-	 *
-	 * @return array
-	 */
-	public function get_auctions_by_close_date( string $threshold_start, string $threshold_end ): array {
-		$query_args = [
-			'meta_query' => [
-				[
-					'key'     => self::AUCTION_CLOSED_META_KEY,
-					'value'   => '0',
-					'compare' => '=',
-				],
-				[
-					'key'     => self::AUCTION_CLOSE_META_KEY,
-					'value'   => $threshold_start,
-					'compare' => '>=',
-				],
-				[
-					'key'     => self::AUCTION_CLOSE_META_KEY,
-					'value'   => $threshold_end,
-					'compare' =>'<=',
-				],
-			]
-		];
-
-		$auctions = $this->get_all( $query_args );
-
-		return $auctions->posts;
-	}
-
-	/**
 	 * Gets auctions ending in specific timeframe
 	 *
 	 * @since 1.0.0
 	 *
 	 * @return array
 	 */
-	public function get_auctions_ending_soon(): array {
-		$threshold_start = current_datetime()->add( new DateInterval( 'PT3H' ) )->format( 'Y-m-d h:i:00' );
-		$threshold_end   = current_datetime()->add( new DateInterval( 'PT4H' ) )->format( 'Y-m-d h:i:59' );
+	public function get_ending_soon(): array {
+		$live_auctions = $this->get_all(
+			[
+				'meta_query' => [
+					[
+						'key'     => self::AUCTION_CLOSED_META_KEY,
+						'value'   => '0',
+						'compare' => '=',
+					],
+				],
+			]
+		);
 
-		return $this->get_auctions_by_close_date( $threshold_start, $threshold_end );
+		$ending_soon = [];
+
+		foreach ( $live_auctions as $auction_id ) {
+			$auction = $this->get( $auction_id );
+			if ( $auction->is_ending_soon() ) {
+				$ending_soon[] = $auction->get_id();
+			}
+		}
+
+		return $ending_soon;
 	}
 
 	/**
