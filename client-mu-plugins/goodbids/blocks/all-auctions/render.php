@@ -46,7 +46,7 @@ $active_class = 'btn-fill-secondary outline-dotted outline-1 outline-offset-2 ho
 		</ul>
 
 		<?php if ( $total_count > 1 ) : ?>
-			<div class="flex justify-end">
+			<div class="flex justify-end relative z-50">
 				<select
 					aria-label="<?php esc_attr_e( 'Sort Auctions', 'goodbids' ); ?>"
 					class="p-3 pr-10 bg-[right_0.5rem_center] bg-no-repeat border-transparent rounded appearance-none bg-contrast-3 text-contrast bg-select-arrow bg-[length:20px_20px]"
