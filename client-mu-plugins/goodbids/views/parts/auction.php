@@ -136,6 +136,7 @@ if ( $auction->has_started() ) {
 		<div>End Date/Time (Original): <?php echo esc_html( $auction->get_original_end_date_time() ); ?></div>
 		<div>Close Date/Time: <?php echo esc_html( get_post_meta( $auction->get_id(), Auctions::AUCTION_CLOSE_META_KEY, true ) ); ?></div>
 		<div>Extensions: <?php echo esc_html( $auction->get_extensions() ); ?></div>
+		<div>Extension Window: <?php echo esc_html( $auction->get_bid_extension_formatted() ); ?></div>
 		<div>Site ID: <?php echo esc_html( get_current_blog_id() ); ?></div>
 	</div>
 </li>
