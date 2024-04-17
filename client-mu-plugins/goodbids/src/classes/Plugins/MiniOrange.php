@@ -82,13 +82,13 @@ class MiniOrange {
 				// Path: plugins/miniorange-oauth-oidc-single-sign-on/classes/common/class-moutils.php
 				// Access: global $Yh; or similar
 
-				global $Uj; // This has potential to change when the MO plugin is updated.
+				global $Yh, $Uj; // This has potential to change when the MO plugin is updated.
 
-				if ( ! $Uj ) {
+				if ( empty( $Yh ) && empty( $Uj ) ) {
 					return;
 				}
 
-				$mo_global = $Uj;
+				$mo_global = ! empty( $Yh ) ? $Yh : $Uj;
 
 				$sites_key = 'mo_oauth_c3Vic2l0ZXNzZWxlY3RlZA';
 				$sites_val = $mo_global->mo_oauth_client_get_option( $sites_key );
