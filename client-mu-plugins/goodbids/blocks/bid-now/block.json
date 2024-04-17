@@ -6,6 +6,8 @@
   "category": "goodbids",
   "textdomain": "goodbids",
   "keywords": ["bid", "purchase", "donate", "button", "submit", "cart"],
+  "viewScript": [ "goodbids-bid-now" ],
+  "viewStyle": [ "goodbids-bid-now" ],
   "acf": {
     "mode": "preview"
   },

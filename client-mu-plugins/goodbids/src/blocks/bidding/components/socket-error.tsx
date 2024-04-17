@@ -14,6 +14,7 @@ export function SocketError() {
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.2 }}
 					className="flex items-start gap-4 rounded bg-gb-green-100 p-4 text-warning-text"
+					id="goodbids-socket-error"
 				>
 					<div className="h-6 w-6">
 						<ClockIcon />

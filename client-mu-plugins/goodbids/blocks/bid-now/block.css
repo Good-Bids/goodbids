@@ -1,0 +1,7 @@
+.bid-now.active {
+	display: block;
+}
+.bid-now.standby:not(.active),
+.bid-now.active:not(.standby) + #goodbids-bidding {
+	display: none;
+}

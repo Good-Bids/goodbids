@@ -53,6 +53,8 @@ class BidNow extends ACFBlock {
 			$this->auction          = goodbids()->auctions->get( $this->auction_id );
 			$this->bid_variation_id = $this->auction->get_variation_id();
 		}
+
+		$this->register_assets();
 	}
 
 	/**
@@ -158,7 +160,7 @@ class BidNow extends ACFBlock {
 	 * @return string
 	 */
 	public function get_block_classes(): string {
-		return 'wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex';
+		return 'wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex standby';
 	}
 
 	/**
@@ -222,5 +224,41 @@ class BidNow extends ACFBlock {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Register Bid Block Assets
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function register_assets(): void {
+		if ( is_admin() ) {
+			return;
+		}
+
+		wp_register_style(
+			'goodbids-bid-now',
+			plugins_url( 'block.css', __FILE__ ),
+			[],
+			goodbids()->get_version()
+		);
+
+		wp_register_script(
+			'goodbids-bid-now',
+			plugins_url( 'block.js', __FILE__ ),
+			[],
+			goodbids()->get_version()
+		);
+
+		wp_localize_script(
+			'goodbids-bid-now',
+			'goodbidsBidNow',
+			[
+				'auctionId' => goodbids()->auctions->get_auction_id(),
+				'ajaxURL'   => admin_url( 'admin-ajax.php' ),
+			]
+		);
 	}
 }

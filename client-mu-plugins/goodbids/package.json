@@ -14,6 +14,8 @@
     "dev": "NODE_ENV=develop webpack serve",
     "format": "prettier \"./src/**/*.{css,ts,tsx,js}\" --check",
     "format:fix": "prettier \"./src/**/*.{css,ts,tsx,js}\" --write",
+    "format-blocks": "prettier \"./blocks/**/*.{css,ts,tsx,js}\" --check",
+    "format-blocks:fix": "prettier \"./blocks/**/*.{css,ts,tsx,js}\" --write",
     "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint:css": "wp-scripts lint-style",
     "lint:fix": "eslint --fix ./src/**/*.{ts,tsx}",

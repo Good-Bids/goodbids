@@ -46,6 +46,9 @@ class Admin {
 
 		// Hide Reward Product field when Auction is published.
 		$this->disable_reward_on_published_auctions();
+
+		// Let the Auctioneer know when an Auction is updated.
+		$this->update_auctioneer_on_update();
 	}
 
 	/**
@@ -241,6 +244,9 @@ class Admin {
 				// Get raw End Date/Time, do not use get_setting().
 				$end_date = get_field( 'auction_end', $auction_id );
 				update_post_meta( $auction_id, Auctions::AUCTION_CLOSE_META_KEY, $end_date );
+
+				// Trigger Node to update the Auction.
+				goodbids()->auctioneer->auctions->update( $auction_id );
 
 				wp_send_json_success(
 					[
@@ -563,6 +569,11 @@ class Admin {
 				$start_field_key = 'field_6570c1fb429a8';
 
 				if ( 'auction_start' === $field['name'] ) {
+					// Ignore if left unchanged.
+					if ( $value === get_field( 'auction_start' ) ) {
+						return $valid;
+					}
+
 					if ( $value <= current_time( 'mysql' ) ) {
 						return __( 'Auction Start Date/Time must be in the future.', 'goodbids' );
 					}
@@ -577,6 +588,11 @@ class Admin {
 						return __( 'Auction Start Date/Time must be before End Date/Time.', 'goodbids' );
 					}
 				} elseif ( 'auction_end' === $field['name'] ) {
+					// Ignore if left unchanged.
+					if ( $value === get_field( 'auction_end' ) ) {
+						return $valid;
+					}
+
 					if ( empty( $_POST['acf'][ $start_field_key ] ) ) { // phpcs:ignore
 						return $valid;
 					}
@@ -616,6 +632,29 @@ class Admin {
 					}
 				</style>
 				<?php
+			}
+		);
+	}
+
+	/**
+	 * Trigger an Auctioneer update when an Auction is updated.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function update_auctioneer_on_update(): void {
+		add_action(
+			'post_updated',
+			function ( int $post_id ) {
+				$auction = goodbids()->auctions->get( $post_id );
+
+				if ( Auction::STATUS_LIVE !== $auction->get_status() ) {
+					return;
+				}
+
+				// Trigger Node to update the Auction.
+				goodbids()->auctioneer->auctions->update( $auction->get_id() );
 			}
 		);
 	}
