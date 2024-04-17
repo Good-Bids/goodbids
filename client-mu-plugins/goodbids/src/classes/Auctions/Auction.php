@@ -1381,8 +1381,14 @@ class Auction {
 		++$extensions;
 		update_post_meta( $this->get_id(), self::AUCTION_EXTENSIONS_META_KEY, $extensions );
 
-		// Trigger Node to update the Auction.
-		goodbids()->auctioneer->auctions->update( $this->get_id() );
+		/**
+		 * Action triggered when an Auction is Extended.
+		 *
+		 * @since 1.0.1
+		 *
+		 * @param int $auction_id
+		 */
+		do_action( 'goodbids_auction_extended', $this->get_id() );
 
 		return true;
 	}
