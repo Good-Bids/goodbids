@@ -145,6 +145,7 @@ class Auctions {
 	private function setup_payload_data( array $payload_data, array $extra_data = [] ): array {
 		$defaults = [
 			'requestTime',
+			'siteId',
 		];
 
 		return array_filter(

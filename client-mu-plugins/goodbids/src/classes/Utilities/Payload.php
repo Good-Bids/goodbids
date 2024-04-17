@@ -222,6 +222,7 @@ class Payload {
 			'requestTime'       => current_datetime()->format( 'c' ),
 			'rewardClaimed'     => $this->has_user_claimed_reward(),
 			'rewardUrl'         => goodbids()->rewards->get_claim_reward_url( $this->auction_id ),
+			'siteId'            => get_current_blog_id(),
 			'socketUrl'         => $this->get_socket_url(),
 			'startTime'         => $this->auction->get_start_date_time( 'c' ),
 			'totalBids'         => $this->auction->get_bid_count(),
