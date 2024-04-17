@@ -508,6 +508,10 @@ class Auctions {
 			$auction_id = intval( sanitize_text_field( $_GET['post'] ) ); // phpcs:ignore
 		}
 
+		if ( ! $auction_id && ! empty( $_REQUEST['post_id'] ) ) { // phpcs:ignore
+			$auction_id = intval( sanitize_text_field( $_REQUEST['post_id'] ) ); // phpcs:ignore
+		}
+
 		if ( $this->get_post_type() !== get_post_type( $auction_id ) ) {
 			return null;
 		}

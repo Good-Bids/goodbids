@@ -12,7 +12,10 @@ function toggleBidBlocks() {
 // Create an observer for the socket error.
 const observer = new MutationObserver(function (mutations, observerInstance) {
 	// Check for the socket error.
-	if (document.getElementById('goodbids-socket-error')) {
+	if (
+		document.getElementById('goodbids-socket-error') ||
+		document.getElementById('goodbids-fetch-error')
+	) {
 		// Fallback to PHP block.
 		toggleBidBlocks();
 		observerInstance.disconnect();

@@ -457,6 +457,10 @@ class Rewards {
 
 		$winning_bid = $auction->get_last_bid();
 
+		if ( ! $winning_bid ) {
+			return;
+		}
+
 		if ( floatval( $reward->get_price( 'edit' ) ) === $winning_bid->get_subtotal() ) {
 			return;
 		}

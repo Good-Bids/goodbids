@@ -564,13 +564,19 @@ class Admin {
 		add_filter(
 			'acf/validate_value',
 			function ( bool|string $valid, mixed $value, array $field ): mixed {
+				if ( ! in_array( $field['name'], [ 'auction_start', 'auction_end' ], true ) ) {
+					return $valid;
+				}
+
 				// Keys found in acf-json/group_6570c1fa76181.json
 				$end_field_key   = 'field_65822160b4398';
 				$start_field_key = 'field_6570c1fb429a8';
 
+				$auction_id = goodbids()->auctions->get_auction_id();
+
 				if ( 'auction_start' === $field['name'] ) {
 					// Ignore if left unchanged.
-					if ( $value === get_field( 'auction_start' ) ) {
+					if ( $value === get_field( 'auction_start', $auction_id ) ) {
 						return $valid;
 					}
 
@@ -589,7 +595,7 @@ class Admin {
 					}
 				} elseif ( 'auction_end' === $field['name'] ) {
 					// Ignore if left unchanged.
-					if ( $value === get_field( 'auction_end' ) ) {
+					if ( $value === get_field( 'auction_end', $auction_id ) ) {
 						return $valid;
 					}
 
