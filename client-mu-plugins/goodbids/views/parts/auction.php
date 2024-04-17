@@ -28,8 +28,12 @@ if ( $auction->has_started() ) {
 	}
 	$remaining_time = $current_date->diff( $end_date );
 
-	$time = __( 'Ending ', 'goodbids' ) . $auction->get_end_date_time( 'M d' ) . ' if nobody else bids';
-
+	$time = sprintf(
+		'%s %s %s',
+		__( 'Ending', 'goodbids' ),
+		$auction->get_end_date_time( 'M d' ),
+		__( 'if nobody else bids', 'goodbids' )
+	);
 
 	if ( $remaining_time->d < 1 && $remaining_time->h >= 1 ) {
 		$clock_svg = true;
