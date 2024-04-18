@@ -49,17 +49,20 @@ printf(
 );
 
 if ( $reward_product ) {
+	$reward_title = $reward_product->get_name();
+	$reward_title = wp_trim_words( $reward_title, 10, '...' );
+
 	if ( in_array( $auction->get_status(), [ Auction::STATUS_LIVE, Auction::STATUS_CLOSED ] ) && ! is_super_admin() ) {
 		printf(
 			'<p><strong>%s</strong><br>%s</p>',
 			esc_html__( 'Reward Product', 'goodbids' ),
-			esc_html( $reward_product->get_name() )
+			esc_html( $reward_title )
 		);
 	} else {
 		printf(
 			'<p><strong>%s</strong><br>%s (<a href="%s">%s</a>)</p>',
 			esc_html__( 'Reward Product', 'goodbids' ),
-			esc_html( $reward_product->get_name() ),
+			esc_html( $reward_title ),
 			esc_html( goodbids()->auctions->wizard->get_wizard_url( Wizard::EDIT_MODE_OPTION, $auction_id, $reward_product->get_id() ) ),
 			esc_html__( 'Edit', 'goodbids' )
 		);
