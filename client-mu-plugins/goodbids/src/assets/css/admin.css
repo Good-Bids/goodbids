@@ -135,3 +135,10 @@ tr.separator td {
 table.fixed {
 	position: static !important;
 }
+
+.gb-auction-metrics p,
+.gb-auction-debug-info p {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 0.15rem;
+}

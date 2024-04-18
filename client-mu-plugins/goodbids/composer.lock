@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6645bd3fc046ac4a22bd138fab126064",
+    "content-hash": "73c7f35c06e441373a208dba119d7bb0",
     "packages": [
         {
             "name": "composer/installers",
@@ -1426,6 +1426,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/woocommerce-services/"
+        },
+        {
+            "name": "wpackagist-plugin/wp-crontrol",
+            "version": "1.16.2",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wp-crontrol/",
+                "reference": "tags/1.16.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.16.2.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/wp-crontrol/"
         },
         {
             "name": "wpackagist-plugin/zapier",

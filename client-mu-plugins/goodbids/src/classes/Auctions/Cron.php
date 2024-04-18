@@ -43,36 +43,38 @@ class Cron {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Disable Auctions on Main Site.
+		// Disable Cron on Main Site.
 		if ( is_main_site() ) {
 			return;
 		}
 
 		// Set up Cron Schedules.
-		$this->cron_intervals['30sec'] = [
-			'interval' => 30,
-			'name'     => '30sec',
-			'display'  => __( 'Every 30 Seconds', 'goodbids' ),
-		];
-		$this->cron_intervals['every_minute']  = [
-			'interval' => MINUTE_IN_SECONDS,
-			'name'     => 'every_minute',
-			'display'  => __( 'Every Minute', 'goodbids' ),
-		];
-		$this->cron_intervals['30min'] = [
-			'interval' => 30 * MINUTE_IN_SECONDS,
-			'name'     => '30min',
-			'display'  => __( 'Once Every 30 Minutes', 'goodbids' ),
-		];
-		$this->cron_intervals['hourly']   = [
-			'interval' => HOUR_IN_SECONDS,
-			'name'     => 'hourly',
-			'display'  => __( 'Once Hourly', 'goodbids' ),
-		];
-		$this->cron_intervals['daily'] = [
-			'interval' => DAY_IN_SECONDS,
-			'name'     => 'daily',
-			'display'  => __( 'Once Daily', 'goodbids' ),
+		$this->cron_intervals = [
+			'30sec'        => [
+				'interval' => 30,
+				'name'     => '30sec',
+				'display'  => __( 'Every 30 Seconds', 'goodbids' ),
+			],
+			'every_minute' => [
+				'interval' => MINUTE_IN_SECONDS,
+				'name'     => 'every_minute',
+				'display'  => __( 'Every Minute', 'goodbids' ),
+			],
+			'30min'        => [
+				'interval' => 30 * MINUTE_IN_SECONDS,
+				'name'     => '30min',
+				'display'  => __( 'Once Every 30 Minutes', 'goodbids' ),
+			],
+			'hourly'       => [
+				'interval' => HOUR_IN_SECONDS,
+				'name'     => 'hourly',
+				'display'  => __( 'Once Hourly', 'goodbids' ),
+			],
+			'daily'        => [
+				'interval' => DAY_IN_SECONDS,
+				'name'     => 'daily',
+				'display'  => __( 'Once Daily', 'goodbids' ),
+			],
 		];
 
 		// Attempt to trigger events for opened/closed auctions.
@@ -90,14 +92,14 @@ class Cron {
 		// Schedule a cron job to remind users to claim their rewards.
 		$this->schedule_reward_claim_reminder();
 
+		// Schedule a cron job to check for auctions ending soon.
+		$this->schedule_auction_ending_soon_check();
+
 		// Use cron action to start auctions.
 		$this->cron_check_for_starting_auctions();
 
 		// Use cron action to close auctions.
 		$this->cron_check_for_closing_auctions();
-
-    	// Schedule a cron job to check for auctions ending soon.
-    	$this->schedule_auction_ending_soon_check();
 	}
 
 	/**
@@ -217,8 +219,11 @@ class Cron {
 			'init',
 			function (): void {
 				if ( wp_next_scheduled( Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK ) ) {
+					Log::debug( 'Auction Ending Soon Cron Check already scheduled' );
 					return;
 				}
+
+				Log::debug( 'Scheduling Auction Ending Soon Cron Check' );
 
 				// Event is not scheduled, so schedule it.
 				wp_schedule_event(
