@@ -1272,6 +1272,10 @@ class Auction {
 	 * @return bool
 	 */
 	public function trigger_start(): bool {
+		if ( 'publish' !== get_post_status( $this->get_id() ) ) {
+			return false;
+		}
+
 		if ( ! $this->has_started() || $this->start_triggered() ) {
 			return false;
 		}
