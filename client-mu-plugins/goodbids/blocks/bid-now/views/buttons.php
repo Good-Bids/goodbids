@@ -1,6 +1,6 @@
 <?php
 /**
- * Bid Buttons View
+ * Buttons View
  *
  * @global BidNow $bid_now
  *

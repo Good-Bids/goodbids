@@ -21,8 +21,8 @@ use GoodBids\Blocks\BidNow;
 	// Starting/Ending Clock/Timer.
 	$bid_now->load_view( 'clock' );
 
-	// Bid Buttons.
-	$bid_now->load_view( 'bid-buttons' );
+	// Bid/Reward Buttons.
+	$bid_now->load_view( 'buttons' );
 
 	// Bid Status.
 	$bid_now->load_view( 'status' );

@@ -127,7 +127,12 @@ class BidNow extends ACFBlock {
 	 */
 	public function get_place_bid_text(): string {
 		$bid_variation = goodbids()->bids->get_variation( $this->auction_id );
-		$current_bid   = floatval( $bid_variation?->get_price( 'edit' ) );
+
+		if ( ! $bid_variation ) {
+			return __( 'GOODBID Now', 'goodbids' );
+		}
+
+		$current_bid = floatval( $bid_variation->get_price( 'edit' ) );
 
 		return sprintf(
 			/* translators: %s: Bid Price */
