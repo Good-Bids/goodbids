@@ -69,7 +69,7 @@ class Auctions {
 	const AUCTION_CLOSE_META_KEY = '_auction_close';
 
 	/**
-	 * @since 1.0.0
+	 * @since 1.0.1
 	 * @var string
 	 */
 	const CRON_AUCTION_ENDING_SOON_CHECK_HOOK = 'goodbids_auction_ending_soon_event';
@@ -399,7 +399,7 @@ class Auctions {
 	/**
 	 * Gets auctions ending in specific timeframe
 	 *
-	 * @since 1.0.0
+	 * @since 1.0.1
 	 *
 	 * @return array
 	 */
@@ -408,20 +408,20 @@ class Auctions {
 			[
 				'meta_query' => [
 					[
-						'key'     => self::AUCTION_CLOSED_META_KEY,
-						'value'   => '0',
-						'compare' => '=',
+						'key'   => self::AUCTION_CLOSED_META_KEY,
+						'value' => '0',
 					],
 					[
-						'key'     => self::AUCTION_STARTED_META_KEY,
-						'value'   => '1',
-						'compare' => '=',
+						'key'   => self::AUCTION_STARTED_META_KEY,
+						'value' => '1',
 					],
 				],
 			]
 		);
 
 		$ending_soon = [];
+
+		Log::debug( 'Checking ' . count( $live_auctions->posts ) . ' Auctions if they are ending soon' );
 
 		foreach ( $live_auctions->posts as $auction_id ) {
 			$auction = $this->get( $auction_id );

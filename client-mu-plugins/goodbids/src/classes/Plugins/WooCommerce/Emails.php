@@ -106,7 +106,7 @@ class Emails {
 		$this->email_classes = [
 			'AuctionClosed'             => new AuctionClosed(),
 			'AuctionFreeBidUsed'        => new AuctionFreeBidUsed(),
-			'AuctionIsEndingSoon'		=> new AuctionIsEndingSoon(),
+			'AuctionIsEndingSoon'       => new AuctionIsEndingSoon(),
 			'AuctionIsLive'             => new AuctionIsLive(),
 			'AuctionIsLiveAdmin'        => new AuctionIsLiveAdmin(),
 			'AuctionOutbid'             => new AuctionOutbid(),
