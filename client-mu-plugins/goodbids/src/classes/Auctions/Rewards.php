@@ -138,6 +138,8 @@ class Rewards {
 					return;
 				}
 
+				nocache_headers();
+
 				$auction_id = get_queried_object_id();
 				$auction    = new Auction( $auction_id );
 				$reward_id  = $auction->get_reward_id();
@@ -456,6 +458,11 @@ class Rewards {
 		}
 
 		$winning_bid = $auction->get_last_bid();
+
+		if ( ! $winning_bid ) {
+			Log::error( 'No winning bid found.', compact( 'auction_id' ) );
+			return;
+		}
 
 		if ( floatval( $reward->get_price( 'edit' ) ) === $winning_bid->get_subtotal() ) {
 			return;

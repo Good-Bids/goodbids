@@ -1510,4 +1510,15 @@ class Auction {
 	public function lock_bid(): void {
 		update_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY, get_current_user_id() );
 	}
+
+	/**
+	 * Unlock the bid in the event checkout fails.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function unlock_bid(): void {
+		delete_post_meta( $this->get_variation_id(), self::BID_LOCKED_META_KEY );
+	}
 }
