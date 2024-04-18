@@ -67,6 +67,7 @@
 		"wpackagist-plugin/woocommerce": "^8.6",
 		"wpackagist-plugin/woocommerce-gateway-stripe": "^8.2",
 		"wpackagist-plugin/woocommerce-services": "^2.5",
+		"wpackagist-plugin/wp-crontrol": "^1.16",
 		"wpackagist-plugin/zapier": "^1.0",
 		"wpengine/advanced-custom-fields-pro": "^6.2"
 	},
