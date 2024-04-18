@@ -486,6 +486,10 @@ class Auction {
 	 * @return bool
 	 */
 	public function has_started(): bool {
+		if ( 'publish' !== get_post_status( $this->get_id() ) ) {
+			return false;
+		}
+
 		$start_date_time = $this->get_start_date_time();
 
 		if ( ! $start_date_time ) {
