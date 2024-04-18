@@ -119,6 +119,24 @@ class BidNow extends ACFBlock {
 	}
 
 	/**
+	 * Returns the text for the Place Bid button
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_text(): string {
+		$bid_variation = goodbids()->bids->get_variation( $this->auction_id );
+		$current_bid   = floatval( $bid_variation?->get_price( 'edit' ) );
+
+		return sprintf(
+			/* translators: %s: Bid Price */
+			__( 'GOODBID %s Now', 'goodbids' ),
+			wc_price( $current_bid )
+		);
+	}
+
+	/**
 	 * Returns the URL for the Bid Now button
 	 *
 	 * @since 1.0.0
@@ -153,6 +171,17 @@ class BidNow extends ACFBlock {
 	}
 
 	/**
+	 * Get the URL for placing a bid
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return string
+	 */
+	public function get_place_bid_url(): string {
+		return $this->auction->get_place_bid_url();
+	}
+
+	/**
 	 * Returns the classes for the block
 	 *
 	 * @since 1.0.0
@@ -160,7 +189,7 @@ class BidNow extends ACFBlock {
 	 * @return string
 	 */
 	public function get_block_classes(): string {
-		return 'wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex standby';
+		return 'wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex wp-block-goodbids-bidding standby';
 	}
 
 	/**
@@ -260,5 +289,29 @@ class BidNow extends ACFBlock {
 				'ajaxURL'   => admin_url( 'admin-ajax.php' ),
 			]
 		);
+	}
+
+	/**
+	 * Load a View File
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param string $_view
+	 * @param array $_vars
+	 *
+	 * @return void
+	 */
+	public function load_view( string $_view, array $_vars = [] ): void {
+		$_view_path = __DIR__ . '/views/' . $_view . '.php';
+
+		if ( ! file_exists( $_view_path ) ) {
+			return;
+		}
+
+		extract( $_vars );
+
+		$bid_now = $this;
+
+		include $_view_path;
 	}
 }

@@ -3,8 +3,8 @@
  * Block: Bid Now
  *
  * @global array $block
- *
  * @since 1.0.0
+ *
  * @package GoodBids
  */
 
@@ -22,26 +22,5 @@ if ( ! $bid_now->has_auction_started() ) :
 endif;
 ?>
 <div <?php block_attr( $block, $bid_now->get_block_classes() ); ?>>
-
-	<div class="wp-block-buttons is-vertical is-content-justification-center is-layout-flex wp-block-buttons-is-layout-flex flex-col" style="flex-direction: column;">
-		<div class="wp-block-button">
-			<a
-				href="<?php echo esc_url( $bid_now->get_button_url() ); ?>"
-				class="wp-block-button__link wp-element-button w-full block text-center"
-			>
-				<?php echo wp_kses_post( $bid_now->get_button_text() ); ?>
-			</a>
-		</div>
-
-		<?php if ( $bid_now->show_free_bid_button() ) : ?>
-			<div class="wp-block-button">
-				<a
-					href="<?php echo esc_url( $bid_now->get_button_url( true ) ); ?>"
-					class="wp-block-button__link wp-element-button w-full block text-center"
-				>
-					<?php echo wp_kses_post( $bid_now->get_button_text( true ) ); ?>
-				</a>
-			</div>
-		<?php endif; ?>
-	</div>
+	<?php $bid_now->load_view( 'template' ); ?>
 </div>
