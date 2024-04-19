@@ -560,8 +560,13 @@ class Auction {
 			return false;
 		}
 
-		// If the Auction ends in less than the extension threshold, it is ending soon.
-		return $static_threshold_min < $diff < $static_threshold_max;
+		// if the diff is less than the max for the threshold 
+		// and the diff is more than the min for the threshold
+		// (i.e., if it falls within the threshold),
+		// then it's ending soon.
+		$ending_soon = $static_threshold_max > $diff && $static_threshold_min < $diff;
+
+		return $ending_soon;
 	}
 
 	/**
