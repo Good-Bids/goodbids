@@ -130,7 +130,7 @@ class Referrer {
 		}
 
 		$code = strtoupper( $this->get_code() );
-		$base = wp_registration_url();
+		$base = goodbids()->referrals->get_base_share_url();
 
 		return add_query_arg( [ Track::REFERRAL_CODE_QUERY_ARG => $code ], $base );
 	}

@@ -74,8 +74,8 @@ class Track {
 					}
 				}
 
-				// Remove referral code from URL.
-				wp_safe_redirect( remove_query_arg( self::REFERRAL_CODE_QUERY_ARG ) );
+				// Redirect to default base share URL.
+				wp_safe_redirect( goodbids()->referrals->get_base_share_url() );
 				exit;
 			},
 			2

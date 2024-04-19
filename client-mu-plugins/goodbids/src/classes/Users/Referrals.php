@@ -9,6 +9,7 @@
 namespace GoodBids\Users;
 
 use GoodBids\Core;
+use GoodBids\Network\Sites;
 use GoodBids\Users\Referrals\Admin;
 use GoodBids\Users\Referrals\Generator;
 use GoodBids\Users\Referrals\Referral;
@@ -428,6 +429,33 @@ class Referrals {
 				10
 			),
 			ARRAY_A
+		);
+	}
+
+	/**
+	 * Get the base share URL
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return string
+	 */
+	public function get_base_share_url(): string {
+		return goodbids()->sites->main(
+			function () {
+				$share_page_id = get_option( Sites::AUCTIONS_OPTION );
+
+				if ( $share_page_id ) {
+					return get_permalink( $share_page_id );
+				}
+
+				$share_page = get_page_by_path( Sites::ALL_AUCTIONS_SLUG );
+
+				if ( $share_page ) {
+					return get_permalink( $share_page );
+				}
+
+				return site_url(); // Default to the main site Home page.
+			}
 		);
 	}
 }

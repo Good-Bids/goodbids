@@ -48,6 +48,12 @@ class Sites {
 	const AUCTIONS_OPTION = 'gb_auctions_page';
 
 	/**
+	 * @since 1.0.1
+	 * @var string
+	 */
+	const ALL_AUCTIONS_SLUG = 'explore-auctions';
+
+	/**
 	 * @since 1.0.0
 	 * @var string
 	 */
@@ -539,7 +545,7 @@ class Sites {
 		add_action(
 			'goodbids_initialize_site',
 			function (): void {
-				$auctions_slug = 'explore-auctions';
+				$auctions_slug = self::ALL_AUCTIONS_SLUG;
 				$existing      = get_option( self::AUCTIONS_OPTION );
 
 				// Make sure it doesn't already exist.

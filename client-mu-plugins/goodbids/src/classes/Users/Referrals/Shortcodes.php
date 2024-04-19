@@ -8,8 +8,6 @@
 
 namespace GoodBids\Users\Referrals;
 
-use GoodBids\Users\Referrals;
-
 /**
  * Class for Referral Shortcodes
  *
