@@ -533,14 +533,19 @@ class Auction {
 			return false;
 		}
 
-		$extension = $this->get_bid_extension();
+		// commenting out extension logic for now
+		// TODO add a variable in the UI for 'ending soon notification threshold'
+		// $extension = $this->get_bid_extension();
 
-		if ( ! $extension ) {
-			return false;
-		}
+		$static_threshold_min = 60*60; // 60 minutes
+		$static_threshold_max = 60*115; // 115 minutes
 
-		// Set threshold to be 1/3 of bid extension window.
-		$threshold = intval( round( $extension * .3 ) );
+		// if ( ! $extension ) {
+		// 	return false;
+		// }
+
+		// Set threshold to be static
+		// $threshold = intval( round( $extension * .3 ) );
 
 		try {
 			$end  = new DateTimeImmutable( $end_date_time, wp_timezone() );
@@ -556,7 +561,7 @@ class Auction {
 		}
 
 		// If the Auction ends in less than the extension threshold, it is ending soon.
-		return $diff < $threshold;
+		return $static_threshold_min < $diff < $static_threshold_max;
 	}
 
 	/**
