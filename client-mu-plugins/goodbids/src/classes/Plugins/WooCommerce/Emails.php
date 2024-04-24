@@ -16,6 +16,7 @@ use GoodBids\Plugins\WooCommerce\Emails\AuctionIsLiveAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionOutbid;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionPaidBidPlaced;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardClaimed;
+use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardClaimedAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionRewardReminder;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionSummaryAdmin;
 use GoodBids\Plugins\WooCommerce\Emails\AuctionWinnerConfirmation;
