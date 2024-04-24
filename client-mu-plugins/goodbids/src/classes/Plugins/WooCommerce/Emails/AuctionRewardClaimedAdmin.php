@@ -38,7 +38,7 @@ class AuctionRewardClaimedAdmin extends Email {
 		$this->description    = __( 'Notification email sent to site admins when a reward is claimed', 'goodbids' );
 		$this->template_html  = 'emails/auction-reward-claimed-admin.php';
 		$this->template_plain = 'emails/plain/auction-reward-claimed-admin.php';
-		$this->bidder_email   = true;
+		$this->admin_email    = true;
 
 		$this->trigger_on_reward_claimed();
 	}
