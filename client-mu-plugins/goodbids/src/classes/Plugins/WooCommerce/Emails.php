@@ -113,6 +113,7 @@ class Emails {
 			'AuctionOutbid'             => new AuctionOutbid(),
 			'AuctionPaidBidPlaced'      => new AuctionPaidBidPlaced(),
 			'AuctionRewardClaimed'      => new AuctionRewardClaimed(),
+			'AuctionRewardClaimedAdmin' => new AuctionRewardClaimedAdmin(),
 			'AuctionRewardReminder'     => new AuctionRewardReminder(),
 			'AuctionSummaryAdmin'       => new AuctionSummaryAdmin(),
 			'AuctionWinnerConfirmation' => new AuctionWinnerConfirmation(),
