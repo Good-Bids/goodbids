@@ -584,7 +584,6 @@ class Auctions {
 	 * @return int[]
 	 */
 	private function sort_orders_by_subtotal( array $orders ): array {
-		$sorted = [];
 		$totals = [];
 
 		foreach ( $orders as $order_id ) {
@@ -594,11 +593,7 @@ class Auctions {
 
 		arsort( $totals );
 
-		foreach ( $totals as $order_id => $total ) {
-			$sorted[] = $order_id;
-		}
-
-		return $sorted;
+		return array_keys( $totals );
 	}
 
 	/**
