@@ -561,7 +561,44 @@ class Auctions {
 			];
 		}
 
-		return wc_get_orders( $args );
+		$orders = wc_get_orders( $args );
+
+		if ( ! $orders || ! is_array( $orders ) ) {
+			return [];
+		}
+
+		if ( count( $orders ) <= 1 ) {
+			return $orders;
+		}
+
+		return $this->sort_orders_by_subtotal( $orders );
+	}
+
+	/**
+	 * Sort Orders by Subtotal
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param array $orders
+	 *
+	 * @return int[]
+	 */
+	private function sort_orders_by_subtotal( array $orders ): array {
+		$sorted = [];
+		$totals = [];
+
+		foreach ( $orders as $order_id ) {
+			$order = wc_get_order( $order_id );
+			$totals[ $order_id ] = $order->get_subtotal();
+		}
+
+		arsort( $totals );
+
+		foreach ( $totals as $order_id => $total ) {
+			$sorted[] = $order_id;
+		}
+
+		return $sorted;
 	}
 
 	/**
