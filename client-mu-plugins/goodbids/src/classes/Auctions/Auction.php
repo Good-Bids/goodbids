@@ -544,7 +544,7 @@ class Auction {
 		// $extension = $this->get_bid_extension();
 
 		$static_threshold_min = 60*60; // 60 minutes
-		$static_threshold_max = 60*115; // 115 minutes
+		$static_threshold_max = 60*120; // 120 minutes
 
 		// if ( ! $extension ) {
 		// 	return false;
@@ -570,7 +570,7 @@ class Auction {
 		// and the diff is more than the min for the threshold
 		// (i.e., if it falls within the threshold),
 		// then it's ending soon.
-		$ending_soon = $static_threshold_max > $diff && $static_threshold_min < $diff;
+		$ending_soon = $static_threshold_max > $diff && $static_threshold_min <= $diff;
 
 		return $ending_soon;
 	}
