@@ -81,6 +81,12 @@ class Auction {
 	const BID_LOCKED_META_KEY = '_goodbids_bid_locked';
 
 	/**
+	 * @since 1.0.1
+	 * @var string
+	 */
+	const LAST_BID_ORDER_META_KEY = '_goodbids_last_bid_order_id';
+
+	/**
 	 * @since 1.0.0
 	 */
 	const STATUS_DRAFT = 'Draft';
@@ -560,7 +566,7 @@ class Auction {
 			return false;
 		}
 
-		// if the diff is less than the max for the threshold 
+		// if the diff is less than the max for the threshold
 		// and the diff is more than the min for the threshold
 		// (i.e., if it falls within the threshold),
 		// then it's ending soon.
@@ -1141,6 +1147,12 @@ class Auction {
 	 * @return ?WC_Order
 	 */
 	public function get_last_bid(): ?WC_Order {
+		$last_order = get_post_meta( $this->get_id(), self::LAST_BID_ORDER_META_KEY, true );
+
+		if ( $last_order ) {
+			return wc_get_order( $last_order );
+		}
+
 		$orders = $this->get_bid_orders( 1 );
 
 		if ( empty( $orders ) ) {
