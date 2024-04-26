@@ -426,30 +426,21 @@ class Orders {
 	}
 
 	/**
-	 * Delete an Order
+	 * Change an order status to "Cancelled"
 	 *
 	 * @since 1.0.1
 	 *
 	 * @param int $order_id
-	 * @param bool $force
 	 *
 	 * @return void
 	 */
-	public function delete( int $order_id, bool $force = false ): void {
+	public function cancel( int $order_id ): void {
 		$order = wc_get_order( $order_id );
 
 		if ( ! $order ) {
 			return;
 		}
 
-		$order->delete( $force );
-		wp_delete_post( $order->get_id(),$force );
-
-		if ( $force ) {
-			global $wpdb;
-			$wpdb->delete( $wpdb->prefix . 'woocommerce_order_items', [ 'order_id' => $order_id ] );
-			$wpdb->delete( $wpdb->prefix . 'wc_orders_meta', [ 'order_id' => $order_id ] );
-			$wpdb->delete( $wpdb->prefix . 'wc_orders', [ 'id' => $order_id ] );
-		}
+		$order->update_status( 'cancelled' );
 	}
 }

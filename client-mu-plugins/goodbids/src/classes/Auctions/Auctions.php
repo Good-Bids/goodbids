@@ -118,6 +118,9 @@ class Auctions {
 		// Configure some values for new Auction posts.
 		$this->new_auction_post_init();
 
+		// Save the highest bid order ID in Auction Meta.
+		$this->store_highest_bid_order();
+
 		// Clear metric transients on new Bid Order.
 		$this->maybe_clear_metric_transients();
 
@@ -644,7 +647,30 @@ class Auctions {
 
 				$this->clear_transients( $auction_id );
 			},
-			11,
+			15,
+			2
+		);
+	}
+
+	/**
+	 * Store the Highest Bid Order ID in Auction Meta.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function store_highest_bid_order(): void {
+		add_action(
+			'goodbids_order_payment_complete',
+			function ( int $order_id, int $auction_id ) {
+				// Bail early if this isn't a Bid order.
+				if ( ! goodbids()->woocommerce->orders->is_bid_order( $order_id ) ) {
+					return;
+				}
+
+				update_post_meta( $auction_id, Auction::LAST_BID_ORDER_META_KEY, $order_id );
+			},
+			10,
 			2
 		);
 	}
@@ -699,7 +725,7 @@ class Auctions {
 					Log::error( 'There was a problem extending the Auction', compact( 'auction_id' ) );
 				}
 			},
-			10,
+			13,
 			2
 		);
 	}

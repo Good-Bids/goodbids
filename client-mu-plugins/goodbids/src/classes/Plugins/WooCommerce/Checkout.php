@@ -159,7 +159,7 @@ class Checkout {
 				// Make sure Auction has not ended.
 				if ( $auction->has_ended() ) {
 					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
-					goodbids()->woocommerce->orders->delete( $order->get_id(), true );
+					goodbids()->woocommerce->orders->cancel( $order->get_id() );
 					return;
 				}
 
@@ -180,7 +180,7 @@ class Checkout {
 
 				// Perform this check last to ensure the bid hasn't already been placed.
 				if ( ! $auction->bid_allowed( $info ) ) {
-					goodbids()->woocommerce->orders->delete( $order->get_id(), true );
+					goodbids()->woocommerce->orders->cancel( $order->get_id() );
 					goodbids()->notices->add_notice( Notices::BID_ALREADY_PLACED );
 					return;
 				}
