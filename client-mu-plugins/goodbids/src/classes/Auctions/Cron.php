@@ -219,11 +219,8 @@ class Cron {
 			'init',
 			function (): void {
 				if ( wp_next_scheduled( Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK ) ) {
-					Log::debug( 'Auction Ending Soon Cron Check already scheduled' );
 					return;
 				}
-
-				Log::debug( 'Scheduling Auction Ending Soon Cron Check' );
 
 				// Event is not scheduled, so schedule it.
 				wp_schedule_event(

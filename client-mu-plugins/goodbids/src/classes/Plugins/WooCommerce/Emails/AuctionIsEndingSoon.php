@@ -57,7 +57,6 @@ class AuctionIsEndingSoon extends Email {
 	 * @return void
 	 */
 	private function cron_check_for_auctions_ending_soon(): void {
-		Log::debug( 'Init: Check for Auctions Ending Soon' );
 		add_action(
 			Auctions::CRON_AUCTION_ENDING_SOON_CHECK_HOOK,
 			function (): void {

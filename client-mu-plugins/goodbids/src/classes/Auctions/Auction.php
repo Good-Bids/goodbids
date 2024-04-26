@@ -1444,10 +1444,6 @@ class Auction {
 
 		if ( $bid_variation ) {
 			$current_price = floatval( $bid_variation->get_price( 'edit' ) );
-
-			// Disallow backorders on previous variation.
-			$bid_variation->set_backorders( 'no' );
-			$bid_variation->save();
 		} else {
 			$current_price = $this->get_last_bid_value();
 		}
