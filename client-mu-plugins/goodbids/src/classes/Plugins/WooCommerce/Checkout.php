@@ -312,7 +312,6 @@ class Checkout {
 				echo <<<SCRIPT
 <script>
 (function() {
-	// Add observer when the DOM is ready
 	document.addEventListener( 'DOMContentLoaded', function() {
 
 		const goodbidsExpressCheckoutDisclaimer = function() {
