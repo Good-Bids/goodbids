@@ -363,7 +363,7 @@ class Bids {
 		// Stock Management, Somewhat locked down.
 		$variation->set_manage_stock( true );
 		$variation->set_stock_quantity( 1 );
-		$variation->set_backorders( 'yes' ); // This resolves a cart conflict.
+		$variation->set_backorders( 'no' );
 		$variation->set_sold_individually( true );
 		$variation->set_virtual( true );
 

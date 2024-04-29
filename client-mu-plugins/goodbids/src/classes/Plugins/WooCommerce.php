@@ -144,6 +144,9 @@ class WooCommerce {
 		$this->redirect_after_login();
 		$this->redirect_after_registration();
 
+		// Disable WooCommerce ReserveStock functionality.
+		$this->disable_reserve_stock();
+
 		// Adjust Out of Stock Error to reflect Duplicate Bids.
 		$this->adjust_out_of_stock_error();
 
@@ -451,6 +454,39 @@ class WooCommerce {
 				return sanitize_text_field( urldecode( wp_unslash( $_REQUEST['redirect-to'] ) ) ); // phpcs:ignore
 			},
 			5
+		);
+	}
+
+	/**
+	 * Disable WooCommerce ReserveStock functionality.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function disable_reserve_stock(): void {
+		add_filter(
+			'query',
+			function ( string $query ): string {
+				global $wpdb;
+				if ( ! str_contains( $query, $wpdb->wc_reserved_stock ) || ! str_contains( $query, 'INSERT INTO' ) ) {
+					return $query;
+				}
+
+				return 'SELECT 1';
+			}
+		);
+
+		remove_action( 'woocommerce_checkout_order_created', 'wc_reserve_stock_for_order' );
+
+		add_filter(
+			'woocommerce_hold_stock_for_checkout',
+			fn () => 'no'
+		);
+
+		add_filter(
+			'option_woocommerce_hold_stock_minutes',
+			fn () => 0
 		);
 	}
 
