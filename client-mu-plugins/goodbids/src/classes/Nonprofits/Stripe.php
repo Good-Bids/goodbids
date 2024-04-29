@@ -185,7 +185,7 @@ class Stripe {
 			return null;
 		}
 
-		$customer_id = get_site_option( self::STRIPE_CUSTOMER_ID_OPT );
+		$customer_id = get_option( self::STRIPE_CUSTOMER_ID_OPT );
 
 		if ( ! $customer_id ) {
 			return null;
@@ -236,7 +236,7 @@ class Stripe {
 		}
 
 		$this->customer_id = $customer_id;
-		update_site_option( self::STRIPE_CUSTOMER_ID_OPT, $this->customer_id );
+		update_option( self::STRIPE_CUSTOMER_ID_OPT, $this->customer_id );
 
 		return true;
 	}

@@ -30,7 +30,7 @@ class Admin {
 		$this->add_admin_columns();
 
 		// Allow admins to force update the close date to the Auction End Date.
-		$this->force_update_close_date();
+		$this->ajax_force_update_close_date();
 
 		// Restrict certain edits from Live Auctions
 		$this->live_auction_restrictions();
@@ -46,6 +46,12 @@ class Admin {
 
 		// Hide Reward Product field when Auction is published.
 		$this->disable_reward_on_published_auctions();
+
+		// Generate the Auction Invoice.
+		$this->ajax_generate_invoice();
+
+		// Create the Stripe Invoice.
+		$this->ajax_create_stripe_invoice();
 	}
 
 	/**
@@ -93,6 +99,11 @@ class Admin {
 		goodbids()->load_view( 'admin/auctions/metrics.php', compact( 'auction_id' ) );
 
 		if ( is_super_admin() ) {
+			echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
+
+			// Display the Auction Invoice Status.
+			goodbids()->load_view( 'admin/auctions/invoice.php', compact( 'auction_id' ) );
+
 			echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
 
 			// Display the Auction Debug Info.
@@ -227,7 +238,7 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	private function force_update_close_date(): void {
+	private function ajax_force_update_close_date(): void {
 		add_action(
 			'wp_ajax_goodbids_force_auction_close_date',
 			function () {
@@ -623,6 +634,81 @@ class Admin {
 					}
 				</style>
 				<?php
+			}
+		);
+	}
+
+	/**
+	 * Admin AJAX Action from the Auction Edit screen to generate the Auction Invoice.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function ajax_generate_invoice(): void {
+		add_action(
+			'wp_ajax_goodbids_generate_invoice',
+			function () {
+				if ( empty( $_REQUEST['gb_nonce'] ) ) {
+					wp_send_json_error( __( 'Missing nonce.', 'goodbids' ) );
+				}
+
+				if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['gb_nonce'] ), 'gb-generate-invoice' ) ) {
+					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
+				}
+
+				$auction_id = isset( $_POST['auction_id'] ) ? intval( $_POST['auction_id'] ) : 0;
+
+				if ( ! $auction_id ) {
+					wp_send_json_error( __( 'Invalid Auction ID.', 'goodbids' ) );
+				}
+
+				goodbids()->invoices->generate( $auction_id );
+
+				$auction = goodbids()->auctions->get( $auction_id );
+
+				if ( ! $auction->get_invoice_id() ) {
+					wp_send_json_error( __( 'Invoice not generated.', 'goodbids' ) );
+				}
+
+				wp_send_json_success();
+			}
+		);
+	}
+
+	/**
+	 * Admin AJAX Action from the Invoices screen to generate the Stripe Invoice.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function ajax_create_stripe_invoice(): void {
+		add_action(
+			'wp_ajax_goodbids_create_stripe_invoice',
+			function () {
+				if ( empty( $_REQUEST['gb_nonce'] ) ) {
+					wp_send_json_error( __( 'Missing nonce.', 'goodbids' ) );
+				}
+
+				if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['gb_nonce'] ), 'gb-create-stripe-invoice' ) ) {
+					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
+				}
+
+				$invoice_id = isset( $_POST['invoice_id'] ) ? intval( $_POST['invoice_id'] ) : 0;
+
+				if ( ! $invoice_id ) {
+					wp_send_json_error( __( 'Invalid Invoice ID.', 'goodbids' ) );
+				}
+
+				$invoice = goodbids()->invoices->get_invoice( $invoice_id );
+				goodbids()->invoices->stripe->create_invoice( $invoice );
+
+				if ( ! $invoice->get_stripe_invoice_id() ) {
+					wp_send_json_error( __( 'Invoice not created.', 'goodbids' ) );
+				}
+
+				wp_send_json_success();
 			}
 		);
 	}

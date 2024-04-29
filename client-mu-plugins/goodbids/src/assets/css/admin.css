@@ -137,6 +137,7 @@ table.fixed {
 }
 
 .gb-auction-metrics p,
+.gb-auction-invoice p,
 .gb-auction-debug-info p {
 	display: flex;
 	gap: 1rem;

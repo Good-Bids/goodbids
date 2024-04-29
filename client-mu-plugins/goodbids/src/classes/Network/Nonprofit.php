@@ -370,7 +370,10 @@ class Nonprofit {
 	 * @return ?string
 	 */
 	public function get_stripe_customer_id(): ?string {
-		return get_blog_option( $this->get_id(), Stripe::STRIPE_CUSTOMER_ID_OPT, null );
+		return goodbids()->sites->swap(
+			fn () => goodbids()->invoices->stripe->get_customer_id(),
+			$this->get_id()
+		);
 	}
 
 	/**

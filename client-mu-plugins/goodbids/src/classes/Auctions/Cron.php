@@ -152,7 +152,7 @@ class Cron {
 
 				wp_schedule_event(
 					strtotime( current_time( 'mysql' ) ),
-					$this->cron_intervals['1min']['name'],
+					$this->cron_intervals['every_minute']['name'],
 					self::CRON_AUCTION_START_HOOK
 				);
 			}
