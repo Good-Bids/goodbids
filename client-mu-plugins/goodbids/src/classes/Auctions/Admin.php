@@ -95,6 +95,11 @@ class Admin {
 		if ( is_super_admin() ) {
 			echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
 
+			// Display the Auction Invoice Status.
+			goodbids()->load_view( 'admin/auctions/invoice.php', compact( 'auction_id' ) );
+
+			echo '<hr style="margin-left:-1.5rem;width:calc(100% + 3rem);" />';
+
 			// Display the Auction Debug Info.
 			goodbids()->load_view( 'admin/auctions/debug.php', compact( 'auction_id' ) );
 		}
