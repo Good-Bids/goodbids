@@ -31,7 +31,7 @@ if ( $auction->get_invoice_id() ) {
 				'<p><a href="%s" data-auction-id="%s" data-nonce="%s" class="button button-secondary">%s</a></p>',
 				'#gb-generate-invoice',
 				esc_attr( $auction_id ),
-				esc_attr( wp_create_nonce( 'gb-force-update-close-date' ) ),
+				esc_attr( wp_create_nonce( 'gb-generate-invoice' ) ),
 				esc_html__( 'Generate', 'goodbids' )
 			);
 		} else {

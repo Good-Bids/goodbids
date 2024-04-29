@@ -6,6 +6,7 @@ const GBAdminAuction = (($) => {
 	const init = () => {
 		forceAuctionCloseDate();
 		generateAuctionInvoice();
+		createStripeInvoice();
 	};
 
 	const forceAuctionCloseDate = () => {
@@ -82,6 +83,41 @@ const GBAdminAuction = (($) => {
 				error: function (response) {
 					console.log(response);
 					alert('There was an error generating the Auction Invoice.');
+				},
+			});
+
+			return false;
+		});
+	};
+
+	const createStripeInvoice = () => {
+		$('a[href="#gb-create-stripe-invoice"]').on('click', function (e) {
+			e.preventDefault();
+
+			const $btn = $(this);
+
+			$.ajax({
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: 'goodbids_create_stripe_invoice',
+					invoice_id: $(this).data('invoice-id'),
+					gb_nonce: $(this).data('nonce'),
+				},
+				success: function (response) {
+					if (response.success) {
+						alert('Stripe Invoice has been regenerated.');
+						$btn.fadeOut('fast');
+					} else {
+						console.log(response);
+						alert(
+							'There was an error generating the Stripe Invoice.',
+						);
+					}
+				},
+				error: function (response) {
+					console.log(response);
+					alert('There was an error generating the Stripe Invoice.');
 				},
 			});
 
