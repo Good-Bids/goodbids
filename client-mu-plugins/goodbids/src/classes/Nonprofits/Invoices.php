@@ -566,14 +566,17 @@ class Invoices {
 						echo esc_html__( 'Paid on', 'goodbids' ) . ' ';
 						echo esc_html( $invoice->get_payment_date() );
 					} elseif ( ! $invoice->get_stripe_invoice_id() ) {
-						printf(
-							'<a href="%s" data-invoice-id="%s" data-nonce="%s" class="button button-secondary">%s</a>',
-							'#gb-create-stripe-invoice',
-							esc_attr( $invoice->get_id() ),
-							esc_attr( wp_create_nonce( 'gb-create-stripe-invoice' ) ),
-							esc_html__( 'Generate', 'goodbids' )
-						);
-
+						if ( is_super_admin() ) {
+							printf(
+								'<a href="%s" data-invoice-id="%s" data-nonce="%s" class="button button-secondary">%s</a>',
+								'#gb-create-stripe-invoice',
+								esc_attr( $invoice->get_id() ),
+								esc_attr( wp_create_nonce( 'gb-create-stripe-invoice' ) ),
+								esc_html__( 'Generate', 'goodbids' )
+							);
+						} else {
+							echo '&mdash;';
+						}
 					} else {
 						printf(
 							'<a href="%s" class="button button-primary" target="_blank" rel="noopener noreferrer">%s</a>',
