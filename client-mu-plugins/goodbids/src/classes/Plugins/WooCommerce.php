@@ -474,9 +474,7 @@ class WooCommerce {
 				}
 
 				return 'SELECT 1';
-			},
-			10,
-			2
+			}
 		);
 
 		remove_action( 'woocommerce_checkout_order_created', 'wc_reserve_stock_for_order' );
