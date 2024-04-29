@@ -280,36 +280,64 @@ class Checkout {
 	}
 
 	/**
-	 * Add terms & conditions and privacy policy text to checkout
+	 * Add terms & conditions and privacy policy text to express checkout
 	 *
-	 * @since 1.0.0
+	 * @since 1.0.1
 	 *
 	 * @return void
 	 */
 	private function adjust_express_checkout_block(): void {
-		add_filter(
-			'render_block',
-			function ( string $block_content, array $block ): string {
-				if ( is_admin() || ! is_checkout() || empty( $block['blockName'] ) || 'woocommerce/checkout-express-payment-block' !== $block['blockName'] || is_main_site() ) {
-					return $block_content;
+		add_action(
+			'wp_footer',
+			function (): void {
+				if ( is_admin() || ! is_checkout() || is_main_site() ) {
+					return;
 				}
 
 				if ( ! goodbids()->woocommerce->cart->is_bid_order() ) {
-					return $block_content;
+					return;
 				}
 
 				$bid_amount = goodbids()->woocommerce->cart->get_total();
 				if ( ! $bid_amount ) {
-					return $block_content;
+					return;
 				}
 
-				$pattern    = '/(<[^>]*class="[^"]*wc-block-components-express-payment-continue-rule[^"]*"[^>]*>)/';
-				$disclaimer = $this->get_paid_bid_disclaimer( $bid_amount ) . '$1';
+				echo sprintf(
+					'<div class="goodbids-express-checkout-disclaimer" style="display: none;">%s</div>',
+					$this->get_paid_bid_disclaimer( $bid_amount )
+				);
 
-				return preg_replace( $pattern, $disclaimer, $block_content );
-			},
-			10,
-			2
+				// Insert the disclaimer when the continue rule is available.
+				echo <<<SCRIPT
+<script>
+(function() {
+	// Add observer when the DOM is ready
+	document.addEventListener( 'DOMContentLoaded', function() {
+
+		const goodbidsExpressCheckoutDisclaimer = function() {
+			const continueRule = document.querySelector( '.wc-block-components-express-payment-continue-rule' );
+
+			if ( ! continueRule ) {
+				setTimeout( function() {
+					goodbidsExpressCheckoutDisclaimer();
+				}, 500 );
+				return false;
+			}
+
+			const disclaimer = document.querySelector( '.goodbids-express-checkout-disclaimer' );
+			if ( disclaimer ) {
+				continueRule.before( disclaimer );
+				disclaimer.style.display = 'block';
+			}
+		};
+
+		goodbidsExpressCheckoutDisclaimer();
+	} );
+})();
+</script>
+SCRIPT;
+			}
 		);
 	}
 
