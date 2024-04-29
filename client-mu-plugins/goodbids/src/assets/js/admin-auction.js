@@ -5,6 +5,7 @@ const GBAdminAuction = (($) => {
 
 	const init = () => {
 		forceAuctionCloseDate();
+		generateAuctionInvoice();
 	};
 
 	const forceAuctionCloseDate = () => {
@@ -46,6 +47,41 @@ const GBAdminAuction = (($) => {
 					alert(
 						'There was an error updating the Auction Close Date.',
 					);
+				},
+			});
+
+			return false;
+		});
+	};
+
+	const generateAuctionInvoice = () => {
+		$('a[href="#gb-generate-invoice"]').on('click', function (e) {
+			e.preventDefault();
+
+			const $btn = $(this);
+
+			$.ajax({
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: 'goodbids_generate_invoice',
+					auction_id: $(this).data('auction-id'),
+					gb_nonce: $(this).data('nonce'),
+				},
+				success: function (response) {
+					if (response.success) {
+						alert('Auction Invoice has been generated.');
+						$btn.fadeOut('fast');
+					} else {
+						console.log(response);
+						alert(
+							'There was an error generating the Auction Invoice.',
+						);
+					}
+				},
+				error: function (response) {
+					console.log(response);
+					alert('There was an error generating the Auction Invoice.');
 				},
 			});
 

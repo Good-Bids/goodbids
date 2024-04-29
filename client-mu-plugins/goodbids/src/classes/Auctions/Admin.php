@@ -30,7 +30,7 @@ class Admin {
 		$this->add_admin_columns();
 
 		// Allow admins to force update the close date to the Auction End Date.
-		$this->force_update_close_date();
+		$this->ajax_force_update_close_date();
 
 		// Restrict certain edits from Live Auctions
 		$this->live_auction_restrictions();
@@ -46,6 +46,9 @@ class Admin {
 
 		// Hide Reward Product field when Auction is published.
 		$this->disable_reward_on_published_auctions();
+
+		// Generate the Auction Invoice.
+		$this->ajax_generate_invoice();
 	}
 
 	/**
@@ -232,7 +235,7 @@ class Admin {
 	 *
 	 * @return void
 	 */
-	private function force_update_close_date(): void {
+	private function ajax_force_update_close_date(): void {
 		add_action(
 			'wp_ajax_goodbids_force_auction_close_date',
 			function () {
@@ -628,6 +631,44 @@ class Admin {
 					}
 				</style>
 				<?php
+			}
+		);
+	}
+
+	/**
+	 * Admin AJAX Action from the Auction Edit screen to generate the Auction Invoice.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function ajax_generate_invoice(): void {
+		add_action(
+			'wp_ajax_goodbids_generate_invoice',
+			function () {
+				if ( empty( $_REQUEST['gb_nonce'] ) ) {
+					wp_send_json_error( __( 'Missing nonce.', 'goodbids' ) );
+				}
+
+				if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['gb_nonce'] ), 'gb-generate-invoice' ) ) {
+					wp_send_json_error( __( 'Invalid nonce.', 'goodbids' ) );
+				}
+
+				$auction_id = isset( $_POST['auction_id'] ) ? intval( $_POST['auction_id'] ) : 0;
+
+				if ( ! $auction_id ) {
+					wp_send_json_error( __( 'Invalid Auction ID.', 'goodbids' ) );
+				}
+
+				goodbids()->invoices->generate( $auction_id );
+
+				$auction = goodbids()->auctions->get( $auction_id );
+
+				if ( ! $auction->get_invoice_id() ) {
+					wp_send_json_error( __( 'Invoice not generated.', 'goodbids' ) );
+				}
+
+				wp_send_json_success();
 			}
 		);
 	}
