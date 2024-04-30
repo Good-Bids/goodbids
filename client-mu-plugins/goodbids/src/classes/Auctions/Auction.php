@@ -539,19 +539,10 @@ class Auction {
 			return false;
 		}
 
-		// commenting out extension logic for now
 		// TODO add a variable in the UI for 'ending soon notification threshold'
-		// $extension = $this->get_bid_extension();
-
-		$static_threshold_min = 60*60; // 60 minutes
-		$static_threshold_max = 60*120; // 120 minutes
-
-		// if ( ! $extension ) {
-		// 	return false;
-		// }
-
-		// Set threshold to be static
-		// $threshold = intval( round( $extension * .3 ) );
+		
+		$static_threshold_min = HOUR_IN_SECONDS * 1; // 60 minutes
+		$static_threshold_max = HOUR_IN_SECONDS * 2; // 120 minutes
 
 		try {
 			$end  = new DateTimeImmutable( $end_date_time, wp_timezone() );
