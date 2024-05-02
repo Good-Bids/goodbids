@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73c7f35c06e441373a208dba119d7bb0",
+    "content-hash": "3e65cc061d5ca57061744e3c4d569101",
     "packages": [
         {
             "name": "composer/installers",
@@ -1266,6 +1266,24 @@
             "homepage": "https://wordpress.org/plugins/delete-me/"
         },
         {
+            "name": "wpackagist-plugin/log-emails",
+            "version": "1.4.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/log-emails/",
+                "reference": "tags/1.4.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/log-emails.1.4.0.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/log-emails/"
+        },
+        {
             "name": "wpackagist-plugin/miniorange-oauth-20-server",
             "version": "6.0.5",
             "source": {
@@ -1300,6 +1318,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/olympus-google-fonts/"
+        },
+        {
+            "name": "wpackagist-plugin/stop-emails",
+            "version": "1.2.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/stop-emails/",
+                "reference": "tags/1.2.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/stop-emails.1.2.1.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/stop-emails/"
         },
         {
             "name": "wpackagist-plugin/svg-support",
