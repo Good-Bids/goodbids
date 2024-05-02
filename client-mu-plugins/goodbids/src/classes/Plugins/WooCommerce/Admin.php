@@ -8,6 +8,8 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+use GoodBids\Partners\Partners;
 use GoodBids\Utilities\Log;
 use WP_Post;
 use WP_Screen;
@@ -45,6 +47,12 @@ class Admin {
 
 		// Limit access to pages
 		$this->limit_access_to_pages();
+
+		// Add payment date column to WooCommerce Orders
+		$this->add_payment_date_column();
+
+		// Update order date column to show seconds on hover.
+		$this->update_order_date_column();
 	}
 
 	/**
@@ -391,5 +399,120 @@ class Admin {
 				return array_merge( $pages, $wc_pages );
 			}
 		);
+	}
+
+	/**
+	 * Get the Order Screen ID
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return string
+	 */
+	private function get_order_screen_id(): string {
+		return OrderUtil::custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order';
+	}
+
+	/**
+	 * Add Payment Date Column to WooCommerce Orders
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function add_payment_date_column(): void {
+		add_action(
+			'admin_init',
+			function (): void {
+				$screen_id = $this->get_order_screen_id();
+
+				$add_column = function( array $columns ): array {
+					$new_columns = [];
+
+					foreach ( $columns as $key => $column ) {
+						$new_columns[ $key ] = $column;
+						if ( 'order_date' === $key ) {
+							$new_columns['payment_date'] = esc_html__( 'Payment Date', 'goodbids' );
+						}
+					}
+
+					return $new_columns;
+				};
+
+				add_filter( "manage_{$screen_id}_columns", $add_column );
+				add_filter( "manage_edit-{$screen_id}_columns", $add_column );
+
+				$display_column = function( string $column_name, int|\WC_Order $order_id ): void {
+					if ( 'payment_date' !== $column_name ) {
+						return;
+					}
+
+					$order = false;
+
+					if ( is_numeric( $order_id ) ) {
+						$order = wc_get_order( $order_id );
+					} elseif ( $order_id instanceof \WC_Order ) {
+						$order = $order_id;
+					}
+
+					if ( ! $order ) {
+						echo '&mdash;';
+						return;
+					}
+
+					$payment_date = $order->get_date_paid();
+
+					if ( ! $payment_date ) {
+						echo '&mdash;';
+						return;
+					}
+
+					printf(
+						'<time datetime="%s" title="%s">%s</time>',
+						esc_attr( $payment_date->format( 'Y-m-d H:i:s' ) ),
+						esc_attr( $payment_date->format( 'F j, Y n:i:s a' ) ),
+						esc_html( $payment_date->format( 'M j, Y' ) )
+					);
+				};
+
+				add_action( "manage_{$screen_id}_custom_column", $display_column, 10, 2 );
+				add_action( "manage_{$screen_id}_posts_custom_column", $display_column, 10, 2 );
+
+				add_filter(
+					'woocommerce_shop_order_list_table_sortable_columns',
+					function ( array $columns ): array {
+						$columns['payment_date'] = 'payment_date';
+						return $columns;
+					}
+				);
+
+				add_filter(
+					'option_time_format',
+					function ( string $format ) use ( $screen_id ): string {
+						if ( ! function_exists( 'get_current_screen' ) ) {
+							return $format;
+						}
+
+						$screen = get_current_screen();
+
+						if ( $screen->id !== $screen_id ) {
+							return $format;
+						}
+
+						return 'n:i:s a';
+					}
+				);
+			}
+		);
+	}
+
+	/**
+	 * Update Order Date Column to show seconds on hover.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return void
+	 */
+	private function update_order_date_column(): void {
+
 	}
 }
