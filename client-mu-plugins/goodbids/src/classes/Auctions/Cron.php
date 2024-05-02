@@ -305,6 +305,10 @@ class Cron {
 
 				foreach ( $auctions->posts as $auction_id ) {
 					$auction = goodbids()->auctions->get( $auction_id );
+					if ( ! $auction->has_ended() ) {
+						continue;
+					}
+
 					$auction->trigger_close();
 				}
 			}

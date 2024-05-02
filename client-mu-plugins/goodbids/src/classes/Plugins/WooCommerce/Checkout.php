@@ -8,6 +8,7 @@
 
 namespace GoodBids\Plugins\WooCommerce;
 
+use Automattic\WooCommerce\StoreApi\Exceptions\RouteException;
 use GoodBids\Auctions\Bids;
 use GoodBids\Frontend\Notices;
 use GoodBids\Network\Nonprofit;
@@ -132,6 +133,7 @@ class Checkout {
 	 * @since 1.0.0
 	 *
 	 * @return void
+	 * @throws RouteException
 	 */
 	private function validate_bid(): void {
 		add_action(
@@ -152,37 +154,62 @@ class Checkout {
 
 				// Make sure Auction has started.
 				if ( ! $auction->has_started() ) {
-					goodbids()->notices->add_notice( Notices::AUCTION_NOT_STARTED );
-					return;
+					$notice = goodbids()->notices->get_notice( Notices::AUCTION_NOT_STARTED );
+
+					throw new RouteException(
+						esc_html( Notices::AUCTION_NOT_STARTED ),
+						wp_kses_post( $notice['message'] ),
+						400
+					);
 				}
 
 				// Make sure Auction has not ended.
 				if ( $auction->has_ended() ) {
-					goodbids()->notices->add_notice( Notices::AUCTION_HAS_ENDED );
+					$notice = goodbids()->notices->get_notice( Notices::AUCTION_HAS_ENDED );
 					goodbids()->woocommerce->orders->cancel( $order->get_id() );
-					return;
+
+					throw new RouteException(
+						esc_html( Notices::AUCTION_HAS_ENDED ),
+						wp_kses_post( $notice['message'] ),
+						400
+					);
 				}
 
 				// Perform Free Bids checks.
 				if ( goodbids()->woocommerce->orders->is_free_bid_order( $order->get_id() ) ) {
 					// Make sure Free Bids are allowed.
 					if ( ! $auction->are_free_bids_allowed() ) {
-						goodbids()->notices->add_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
-						return;
+						$notice = goodbids()->notices->get_notice( Notices::FREE_BIDS_NOT_ELIGIBLE );
+
+						throw new RouteException(
+							esc_html( Notices::FREE_BIDS_NOT_ELIGIBLE ),
+							wp_kses_post( $notice['message'] ),
+							400
+						);
 					}
 
 					// Make sure the current user has available Free Bids.
 					if ( ! goodbids()->free_bids->get_available_count() ) {
-						goodbids()->notices->add_notice( Notices::NO_AVAILABLE_FREE_BIDS );
-						return;
+						$notice = goodbids()->notices->get_notice( Notices::NO_AVAILABLE_FREE_BIDS );
+
+						throw new RouteException(
+							esc_html( Notices::NO_AVAILABLE_FREE_BIDS ),
+							wp_kses_post( $notice['message'] ),
+							400
+						);
 					}
 				}
 
 				// Perform this check last to ensure the bid hasn't already been placed.
 				if ( ! $auction->bid_allowed( $info ) ) {
 					goodbids()->woocommerce->orders->cancel( $order->get_id() );
-					goodbids()->notices->add_notice( Notices::BID_ALREADY_PLACED );
-					return;
+					$notice = goodbids()->notices->get_notice( Notices::BID_ALREADY_PLACED );
+
+					throw new RouteException(
+						esc_html( Notices::BID_ALREADY_PLACED ),
+						wp_kses_post( $notice['message'] ),
+						400
+					);
 				}
 
 				// Lock the Bid.
