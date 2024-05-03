@@ -314,13 +314,44 @@ class Core {
 				if ( empty( $local['version'] ) || version_compare( $json['version'], $local['version'], '!=' ) ) {
 					Log::warning( 'Local config file version mismatch.' );
 				}
-				$json = array_merge( $json, $local );
+
+				$json = $this->merge_local_config( $json, $local );
 			}
 		}
 
 		$this->config = $json;
 
 		return true;
+	}
+
+	/**
+	 * Merge local json config with the base json config.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param array $json
+	 * @param array $local
+	 *
+	 * @return array
+	 */
+	private function merge_local_config( array $json, array $local ): array {
+		$merged = [];
+
+		foreach ( $json as $key => $value ) {
+			$merged[ $key ] = $value;
+
+			if ( empty( $local[ $key] ) ) {
+				continue;
+			}
+
+			if ( is_array( $value ) ) {
+				$merged[ $key ] = array_merge( $value, $local[ $key ] );
+			} else {
+				$merged[ $key ] = $local[ $key ];
+			}
+		}
+
+		return $merged;
 	}
 
 	/**

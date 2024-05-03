@@ -98,3 +98,19 @@ Set your `phpcs` standard to point to `/Absolute/Path/To/goodbids/.phpcs.xml",`
 ## Local Config Override
 
 You can override the default local config by adding a `client-mu-plugins/goodbids/config.local.json` file. This will allow you to override specific settings without risk of committing to the repository.
+
+Here is a recommended starting point for your local config file:
+
+```json
+{
+  "version": "1.0",
+  "advanced": {
+    "debug-mode": true,
+    "logging": true
+  },
+  "active-plugins": [
+    "log-emails",
+    "stop-emails"
+  ]
+}
+```

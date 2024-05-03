@@ -35,7 +35,10 @@
 	"repositories": [
 		{
 			"type": "composer",
-			"url": "https://wpackagist.org"
+			"url": "https://wpackagist.org",
+      "only": [
+        "wpackagist-plugin/*"
+      ]
 		},
 		{
 			"type":"composer",
@@ -58,8 +61,10 @@
 		"vlucas/phpdotenv": "^5.5",
 		"wpackagist-plugin/accessibility-checker": "^1.10",
 		"wpackagist-plugin/delete-me": "^3.1",
+		"wpackagist-plugin/log-emails": "^1.4",
 		"wpackagist-plugin/miniorange-oauth-20-server": "^6.0",
 		"wpackagist-plugin/olympus-google-fonts": "^3.6",
+		"wpackagist-plugin/stop-emails": "^1.2",
 		"wpackagist-plugin/svg-support": "^2.5",
 		"wpackagist-plugin/tidio-live-chat": "^6.0",
 		"wpackagist-plugin/top-bar": "^3.0",
