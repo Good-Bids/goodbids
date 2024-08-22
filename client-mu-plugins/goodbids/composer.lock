@@ -4,7 +4,7 @@
 		"Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
 		"This file is @generated automatically"
 	],
-	"content-hash": "3e65cc061d5ca57061744e3c4d569101",
+	"content-hash": "b435c33c7a006bfbaf3cc029eecda680",
 	"packages": [
 		{
 			"name": "composer/installers",
@@ -46,7 +46,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Kyle Robinson Young",
@@ -181,7 +183,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["BSD-3-Clause"],
+			"license": [
+				"BSD-3-Clause"
+			],
 			"authors": [
 				{
 					"name": "Cameron Eagans",
@@ -231,7 +235,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["BSD-3-Clause"],
+			"license": [
+				"BSD-3-Clause"
+			],
 			"authors": [
 				{
 					"name": "Neuman Vong",
@@ -246,7 +252,10 @@
 			],
 			"description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
 			"homepage": "https://github.com/firebase/php-jwt",
-			"keywords": ["jwt", "php"],
+			"keywords": [
+				"jwt",
+				"php"
+			],
 			"support": {
 				"issues": "https://github.com/firebase/php-jwt/issues",
 				"source": "https://github.com/firebase/php-jwt/tree/v6.10.1"
@@ -281,7 +290,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Graham Campbell",
@@ -343,13 +354,17 @@
 				}
 			},
 			"autoload": {
-				"files": ["helpers.php"],
+				"files": [
+					"helpers.php"
+				],
 				"psr-4": {
 					"Illuminate\\Support\\": ""
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Taylor Otwell",
@@ -393,7 +408,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Taylor Otwell",
@@ -439,7 +456,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Taylor Otwell",
@@ -483,7 +502,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Taylor Otwell",
@@ -566,7 +587,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Jordi Boggiano",
@@ -576,7 +599,11 @@
 			],
 			"description": "Sends your logs to files, sockets, inboxes, databases and various web services",
 			"homepage": "https://github.com/Seldaek/monolog",
-			"keywords": ["log", "logging", "psr-3"],
+			"keywords": [
+				"log",
+				"logging",
+				"psr-3"
+			],
 			"support": {
 				"issues": "https://github.com/Seldaek/monolog/issues",
 				"source": "https://github.com/Seldaek/monolog/tree/3.6.0"
@@ -627,7 +654,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Stephen Beemsterboer",
@@ -685,7 +714,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["Apache-2.0"],
+			"license": [
+				"Apache-2.0"
+			],
 			"authors": [
 				{
 					"name": "Johannes M. Schmitt",
@@ -699,7 +730,12 @@
 				}
 			],
 			"description": "Option Type for PHP",
-			"keywords": ["language", "option", "php", "type"],
+			"keywords": [
+				"language",
+				"option",
+				"php",
+				"type"
+			],
 			"support": {
 				"issues": "https://github.com/schmittjoh/php-option/issues",
 				"source": "https://github.com/schmittjoh/php-option/tree/1.9.2"
@@ -745,7 +781,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "PHP-FIG",
@@ -796,7 +834,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "PHP-FIG",
@@ -805,7 +845,11 @@
 			],
 			"description": "Common interface for logging libraries",
 			"homepage": "https://github.com/php-fig/log",
-			"keywords": ["log", "psr", "psr-3"],
+			"keywords": [
+				"log",
+				"psr",
+				"psr-3"
+			],
 			"support": {
 				"source": "https://github.com/php-fig/log/tree/3.0.0"
 			},
@@ -840,7 +884,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "PHP-FIG",
@@ -848,7 +894,13 @@
 				}
 			],
 			"description": "Common interfaces for simple caching",
-			"keywords": ["cache", "caching", "psr", "psr-16", "simple-cache"],
+			"keywords": [
+				"cache",
+				"caching",
+				"psr",
+				"psr-16",
+				"simple-cache"
+			],
 			"support": {
 				"source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
 			},
@@ -885,13 +937,17 @@
 				}
 			},
 			"autoload": {
-				"files": ["bootstrap.php"],
+				"files": [
+					"bootstrap.php"
+				],
 				"psr-4": {
 					"Symfony\\Polyfill\\Ctype\\": ""
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Gert de Pagter",
@@ -904,7 +960,12 @@
 			],
 			"description": "Symfony polyfill for ctype functions",
 			"homepage": "https://symfony.com",
-			"keywords": ["compatibility", "ctype", "polyfill", "portable"],
+			"keywords": [
+				"compatibility",
+				"ctype",
+				"polyfill",
+				"portable"
+			],
 			"support": {
 				"source": "https://github.com/symfony/polyfill-ctype/tree/v1.29.0"
 			},
@@ -955,13 +1016,17 @@
 				}
 			},
 			"autoload": {
-				"files": ["bootstrap.php"],
+				"files": [
+					"bootstrap.php"
+				],
 				"psr-4": {
 					"Symfony\\Polyfill\\Mbstring\\": ""
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Nicolas Grekas",
@@ -1025,14 +1090,20 @@
 				}
 			},
 			"autoload": {
-				"files": ["bootstrap.php"],
+				"files": [
+					"bootstrap.php"
+				],
 				"psr-4": {
 					"Symfony\\Polyfill\\Php80\\": ""
 				},
-				"classmap": ["Resources/stubs"]
+				"classmap": [
+					"Resources/stubs"
+				]
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Ion Bazan",
@@ -1049,7 +1120,12 @@
 			],
 			"description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
 			"homepage": "https://symfony.com",
-			"keywords": ["compatibility", "polyfill", "portable", "shim"],
+			"keywords": [
+				"compatibility",
+				"polyfill",
+				"portable",
+				"shim"
+			],
 			"support": {
 				"source": "https://github.com/symfony/polyfill-php80/tree/v1.29.0"
 			},
@@ -1116,7 +1192,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["BSD-3-Clause"],
+			"license": [
+				"BSD-3-Clause"
+			],
 			"authors": [
 				{
 					"name": "Graham Campbell",
@@ -1130,7 +1208,11 @@
 				}
 			],
 			"description": "Loads environment variables from `.env` to `getenv()`, `$_ENV` and `$_SERVER` automagically.",
-			"keywords": ["dotenv", "env", "environment"],
+			"keywords": [
+				"dotenv",
+				"env",
+				"environment"
+			],
 			"support": {
 				"issues": "https://github.com/vlucas/phpdotenv/issues",
 				"source": "https://github.com/vlucas/phpdotenv/tree/v5.6.0"
@@ -1274,6 +1356,24 @@
 			"homepage": "https://wordpress.org/plugins/svg-support/"
 		},
 		{
+			"name": "wpackagist-plugin/tidio-live-chat",
+			"version": "6.0.21",
+			"source": {
+				"type": "svn",
+				"url": "https://plugins.svn.wordpress.org/tidio-live-chat/",
+				"reference": "tags/6.0.21"
+			},
+			"dist": {
+				"type": "zip",
+				"url": "https://downloads.wordpress.org/plugin/tidio-live-chat.6.0.21.zip"
+			},
+			"require": {
+				"composer/installers": "^1.0 || ^2.0"
+			},
+			"type": "wordpress-plugin",
+			"homepage": "https://wordpress.org/plugins/tidio-live-chat/"
+		},
+		{
 			"name": "wpackagist-plugin/top-bar",
 			"version": "3.0.6",
 			"source": {
@@ -1308,6 +1408,24 @@
 			},
 			"type": "wordpress-plugin",
 			"homepage": "https://wordpress.org/plugins/user-switching/"
+		},
+		{
+			"name": "wpackagist-plugin/woo-preview-emails",
+			"version": "2.2.13",
+			"source": {
+				"type": "svn",
+				"url": "https://plugins.svn.wordpress.org/woo-preview-emails/",
+				"reference": "tags/2.2.13"
+			},
+			"dist": {
+				"type": "zip",
+				"url": "https://downloads.wordpress.org/plugin/woo-preview-emails.2.2.13.zip"
+			},
+			"require": {
+				"composer/installers": "^1.0 || ^2.0"
+			},
+			"type": "wordpress-plugin",
+			"homepage": "https://wordpress.org/plugins/woo-preview-emails/"
 		},
 		{
 			"name": "wpackagist-plugin/woocommerce",
@@ -1382,6 +1500,24 @@
 			"homepage": "https://wordpress.org/plugins/wp-crontrol/"
 		},
 		{
+			"name": "wpackagist-plugin/zapier",
+			"version": "1.5.1",
+			"source": {
+				"type": "svn",
+				"url": "https://plugins.svn.wordpress.org/zapier/",
+				"reference": "tags/1.5.1"
+			},
+			"dist": {
+				"type": "zip",
+				"url": "https://downloads.wordpress.org/plugin/zapier.1.5.1.zip"
+			},
+			"require": {
+				"composer/installers": "^1.0 || ^2.0"
+			},
+			"type": "wordpress-plugin",
+			"homepage": "https://wordpress.org/plugins/zapier/"
+		},
+		{
 			"name": "wpengine/advanced-custom-fields-pro",
 			"version": "6.2.10",
 			"dist": {
@@ -1435,7 +1571,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Franck Nijhof",
@@ -1508,7 +1646,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["LGPL-3.0-or-later"],
+			"license": [
+				"LGPL-3.0-or-later"
+			],
 			"authors": [
 				{
 					"name": "Juliette Reinders Folmer",
@@ -1584,10 +1724,14 @@
 				}
 			},
 			"autoload": {
-				"classmap": ["PHPCSUtils/"]
+				"classmap": [
+					"PHPCSUtils/"
+				]
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["LGPL-3.0-or-later"],
+			"license": [
+				"LGPL-3.0-or-later"
+			],
 			"authors": [
 				{
 					"name": "Juliette Reinders Folmer",
@@ -1657,7 +1801,10 @@
 			"require-dev": {
 				"phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
 			},
-			"bin": ["bin/phpcbf", "bin/phpcs"],
+			"bin": [
+				"bin/phpcbf",
+				"bin/phpcs"
+			],
 			"type": "library",
 			"extra": {
 				"branch-alias": {
@@ -1665,7 +1812,9 @@
 				}
 			},
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["BSD-3-Clause"],
+			"license": [
+				"BSD-3-Clause"
+			],
 			"authors": [
 				{
 					"name": "Greg Sherwood",
@@ -1682,7 +1831,11 @@
 			],
 			"description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
 			"homepage": "https://github.com/PHPCSStandards/PHP_CodeSniffer",
-			"keywords": ["phpcs", "standards", "static analysis"],
+			"keywords": [
+				"phpcs",
+				"standards",
+				"static analysis"
+			],
 			"support": {
 				"issues": "https://github.com/PHPCSStandards/PHP_CodeSniffer/issues",
 				"security": "https://github.com/PHPCSStandards/PHP_CodeSniffer/security/policy",
@@ -1742,7 +1895,9 @@
 			},
 			"type": "phpcodesniffer-standard",
 			"notification-url": "https://packagist.org/downloads/",
-			"license": ["MIT"],
+			"license": [
+				"MIT"
+			],
 			"authors": [
 				{
 					"name": "Contributors",
@@ -1750,7 +1905,12 @@
 				}
 			],
 			"description": "PHP_CodeSniffer rules (sniffs) to enforce WordPress coding conventions",
-			"keywords": ["phpcs", "standards", "static analysis", "wordpress"],
+			"keywords": [
+				"phpcs",
+				"standards",
+				"static analysis",
+				"wordpress"
+			],
 			"support": {
 				"issues": "https://github.com/WordPress/WordPress-Coding-Standards/issues",
 				"source": "https://github.com/WordPress/WordPress-Coding-Standards",

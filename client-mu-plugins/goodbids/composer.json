@@ -69,6 +69,7 @@
     "wpackagist-plugin/tidio-live-chat": "^6.0",
     "wpackagist-plugin/top-bar": "^3.0",
     "wpackagist-plugin/user-switching": "^1.7",
+    "wpackagist-plugin/woo-preview-emails": "^2.2",
     "wpackagist-plugin/woocommerce": "^8.6",
     "wpackagist-plugin/woocommerce-gateway-stripe": "^8.2",
     "wpackagist-plugin/woocommerce-services": "^2.5",
